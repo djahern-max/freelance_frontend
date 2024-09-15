@@ -1,0 +1,94 @@
+/* Import the Poppins font from Google Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap");
+
+/* General header styles */
+.header {
+  display: flex;
+  justify-content: space-between; /* Distribute space between logo and button */
+  align-items: center;
+  padding: 20px;
+  background-color: #f8f8f8;
+}
+
+.logo {
+  font-size: 2rem; /* Make the text larger */
+  font-weight: bold; /* Bold font */
+  color: #e65a00; /* Orange color */
+  font-family: "Poppins", sans-serif; /* Apply Poppins Google font */
+  display: flex;
+  align-items: center; /* Align logo text and image */
+}
+
+.logo-image {
+  margin-right: 10px; /* Space between image and the text */
+}
+
+/* Spinning animation for the sun */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Apply spinning effect to the sun image */
+.logo-image img {
+  width: 50px; /* Adjust the size of the image */
+  height: auto;
+  animation: spin 20s linear infinite; /* Spinning effect */
+}
+
+/* Hide the logo for screens larger than 745px */
+@media (min-width: 746px) {
+  .logo-image {
+    display: none; /* Completely hide the logo on larger screens */
+  }
+}
+
+.nav .cta {
+  background-color: #ff6600;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.nav .cta:hover {
+  background-color: #e65a00;
+}
+
+/* Ensure button stays aligned to the right */
+.nav {
+  margin-left: auto; /* Push the Sign Up button to the far right */
+}
+
+.nav a {
+  text-decoration: none;
+  color: #fff;
+  font-weight: 500;
+}
+
+/* Media query for screens smaller than 745px */
+@media (max-width: 745px) {
+  .logo {
+    display: none;
+  }
+
+  .logo-image {
+    display: block; /* Show the image only on smaller screens */
+  }
+
+  .logo-image img {
+    width: 90px; /* Adjust the size of the image for smaller screens */
+    height: auto;
+    animation: spin 20s linear infinite; /* Spinning effect for smaller screens */
+  }
+
+  .header {
+    justify-content: space-between; /* Ensure elements stay spaced properly */
+  }
+}

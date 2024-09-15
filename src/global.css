@@ -1,0 +1,23 @@
+/* Reset */
+body,
+html {
+  color: #616161;
+  font-family: sans-serif; /* Optionally set a default font as well */
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Arial", sans-serif;
+  color: #333;
+  line-height: 1.6;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
