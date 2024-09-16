@@ -1,7 +1,8 @@
+/* General styling for body and features */
 body,
 html {
   color: #757575;
-  font-family: sans-serif; /* Optionally set a default font as well */
+  font-family: sans-serif;
 }
 
 .features {
@@ -10,30 +11,25 @@ html {
   text-align: center;
 }
 
-.features h2 {
-  font-size: 2rem;
-  margin-bottom: 40px;
-}
-
 .feature-cards {
   display: flex;
   justify-content: space-around;
   gap: 20px;
-  flex-wrap: wrap; /* Ensure the cards wrap on smaller screens */
+  flex-wrap: wrap;
 }
 
 .card {
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 30%; /* Each card takes up 30% of available width */
+  width: 22%; /* Adjust this for different screen sizes */
   padding: 20px;
-  text-align: center; /* Center the text in the card */
-  min-width: 250px; /* Ensure cards don't shrink below this width */
+  text-align: center;
+  min-width: 200px; /* Make sure cards don't get too small */
   margin: 10px 0;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Center content vertically */
+  align-items: center;
 }
 
 .card img {
@@ -48,44 +44,41 @@ html {
   color: #757575;
 }
 
-.card p {
-  font-size: 1rem;
-  color: #757575;
-}
-
-/* General styles for larger screens */
-.features .card p {
-  font-size: 1rem; /* Regular font size for larger screens */
-  color: #333; /* Example styling for the paragraph */
-}
-
-/* Media query to hide <h3> and <p> elements, and center the img tags on screens smaller than 460px */
-@media (max-width: 460px) {
-  .features .card h3,
-  .features .card p {
-    display: none; /* Hides both the heading and the paragraph */
+/* Media query for screens larger than 1116px */
+@media (min-width: 1116px) {
+  .card {
+    width: 22%; /* Fit 4 cards comfortably */
   }
+}
+
+/* Media query for screens between 845px and 1116px */
+@media (min-width: 845px) and (max-width: 1115px) {
+  .card {
+    width: 30%; /* Reduce the width slightly to fit 3 cards in a row */
+  }
+}
+
+/* For smaller screens below 845px */
+@media (max-width: 844px) {
+  .card {
+    width: 45%; /* Fit 2 cards in a row */
+  }
+}
+
+/* For mobile screens */
+@media (max-width: 460px) {
+  .card {
+    width: 100%; /* Make each card full width on smaller screens */
+    margin-bottom: 20px;
+  }
+
+  /* .features .card h3,
+  .features .card p {
+    display: none; 
+  } */
 
   .features .card img {
     display: block;
-    margin: 0 auto; /* Centers the image */
-  }
-
-  /* Adjust the cards to take full width on smaller screens */
-  .card {
-    width: 100%; /* Make each card take up full width on small screens */
-    margin-bottom: 20px; /* Add some space between cards */
-  }
-}
-
-/* Optional alternative: horizontal scroll for smaller screens */
-@media (max-width: 320px) {
-  .feature-cards {
-    overflow-x: auto; /* Allow horizontal scrolling */
-  }
-
-  .card {
-    flex-shrink: 0; /* Prevent the cards from shrinking */
-    width: 250px; /* Set a fixed width for each card */
+    margin: 0 auto;
   }
 }

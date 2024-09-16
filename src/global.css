@@ -3,6 +3,7 @@ body,
 html {
   color: #757575;
   font-family: sans-serif; /* Optionally set a default font as well */
+  background-color: #f8f8f8;
 }
 
 * {

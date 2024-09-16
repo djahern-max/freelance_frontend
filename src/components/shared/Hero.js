@@ -8,7 +8,7 @@ const Hero = () => {
   // Function to update the header text based on screen width
   const updateHeaderText = () => {
     if (window.innerWidth < 745) {
-      setHeaderText("RYZE");
+      setHeaderText("RYZE.ai");
     } else {
       setHeaderText("The Future is Now");
     }

@@ -4,6 +4,7 @@ import "./Features.css";
 import News from "../../images/news.png";
 import School from "../../images/school.png";
 import Chat from "../../images/chat.png";
+import Podcasts from "../../images/podcast.png";
 
 const Features = () => {
   return (
@@ -12,22 +13,22 @@ const Features = () => {
         {/* Card for Newsletters */}
         <Link to="/newsletter" className="card">
           <img src={News} alt="News" />
-          <h3>Read</h3>
-          <p>AI Newsletters</p>
+          <h3>News</h3>
         </Link>
-
-        {/* Card for Tutorials */}
-        <Link to="/tutorials" className="card">
-          <img src={School} alt="School" />
-          <h3>Learn</h3>
-          <p>Podcasts & Tutorials</p>
-        </Link>
-
         {/* Card for Posts */}
         <Link to="/posts" className="card">
           <img src={Chat} alt="Chat" />
-          <h3>Discuss</h3>
-          <p>Connect & Discuss</p>
+          <h3>Collaborate</h3>
+        </Link>
+        {/* Card for Tutorials */}
+        <Link to="/tutorials" className="card">
+          <img src={School} alt="School" />
+          <h3>Tutorials</h3>
+        </Link>
+        {/* Card for Posts */}
+        <Link to="/posts" className="card">
+          <img src={Podcasts} alt="Chat" />
+          <h3>Podcasts</h3>
         </Link>
       </div>
     </section>

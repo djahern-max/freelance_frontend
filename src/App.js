@@ -7,6 +7,7 @@ import Register from "./components/auth/Register"; // Adjusted path for Register
 import NewsletterPage from "./components/pages/NewsletterPage"; // New page for newsletters
 import TutorialsPage from "./components/pages/TutorialsPage"; // New page for learning
 import PostsPage from "./components/pages/PostsPage"; // New page for posts
+import "./global.css";
 
 function App() {
   return (
