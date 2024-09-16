@@ -12,7 +12,7 @@ const PostsPage = () => {
 
   return (
     <div className={styles.dashboardContainer}>
-      <h1 className={styles.heading}>Welcome to Ryze.ai!</h1>
+      <h1 className={styles.heading}>Welcome to RYZE.ai!</h1>
       <p className={styles.description}>
         This site is under construction but stay tuned, it is going to be
         awesome!

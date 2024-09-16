@@ -45,7 +45,7 @@ const Login = () => {
   return (
     <div className={styles.loginPage}>
       <div className={styles.loginContainer}>
-        <h2 className={styles.heading}>Login to Ryze.ai</h2>
+        <h2 className={styles.heading}>Login to RYZE.ai</h2>
         <form onSubmit={handleSubmit} className={styles.loginForm}>
           <div className={styles.formGroup}>
             <label>Email</label>

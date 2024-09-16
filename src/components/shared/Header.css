@@ -74,6 +74,10 @@
 
 /* Media query for screens smaller than 745px */
 @media (max-width: 745px) {
+  .header {
+    padding: 20px; /* Reduce the padding for smaller screens */
+  }
+
   .logo {
     display: none;
   }

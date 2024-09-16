@@ -9,6 +9,7 @@
   padding: 50px 20px;
   background-color: #f8f8f8;
   text-align: left;
+  margin-top: 0;
 }
 
 .hero-text {
@@ -17,12 +18,12 @@
 
 .hero h1 {
   font-size: 3rem;
-  color: #616161;
+  color: #757575;
   margin-bottom: 20px;
 }
 .hero p {
   font-size: 1.5rem;
-  color: #616161;
+  color: #757575;
   margin-bottom: 30px;
 }
 
@@ -87,60 +88,12 @@
   animation: spin 20s linear infinite; /* Image rotates continuously */
 }
 
-/* Media query for screens smaller than 745px */
-/* Apply Poppins font only on screens smaller than 745px */
 @media (max-width: 745px) {
   @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap");
 
-  .hero h1 {
-    font-family: "Poppins", sans-serif; /* Apply Poppins font */
-    font-weight: 700; /* Bold weight for the h1 */
+  .hero {
+    padding: 2px 2px;
   }
-}
-
-.hero p {
-  font-size: 1.5rem;
-  color: #666;
-  margin-bottom: 30px;
-}
-
-.email-form {
-  display: flex;
-  align-items: center;
-  border: 2px solid #ff6600;
-  border-radius: 0;
-  overflow: hidden;
-}
-
-.email-form input {
-  border: none;
-  padding: 15px;
-  font-size: 1rem;
-  flex-grow: 1;
-  outline: none;
-}
-
-.email-form button {
-  background-color: #ff6600;
-  color: white;
-  border: none;
-  padding: 15px 30px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s ease;
-  border-radius: 0;
-}
-
-.email-form button:hover {
-  background-color: #e65a00;
-}
-
-/* Hide the image on smaller screens */
-/* Media query for screens smaller than 745px */
-/* Media query for screens smaller than 745px */
-/* Media query for screens smaller than 745px */
-@media (max-width: 745px) {
-  @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap");
 
   .hero-image {
     display: none; /* Hide the image on smaller screens */

@@ -5,7 +5,7 @@ import simpleSun from "../../images/simple_sun.png";
 const Header = () => {
   return (
     <header className="header">
-      <div className="logo">RYZE AI</div>
+      <div className="logo">RYZE.ai</div>
       <div className="logo-image">
         <img src={simpleSun} alt="Simple Sun Logo" />
       </div>
