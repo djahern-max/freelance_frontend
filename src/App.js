@@ -1,12 +1,15 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Home from "./components/pages/HomePage"; // Adjusted path for Homepage.js
-import LoginPage from "./components/pages/LoginPage";
-import Register from "./components/auth/Register"; // Adjusted path for Register.js
-
-import NewsletterPage from "./components/pages/NewsletterPage"; // New page for newsletters
-import TutorialsPage from "./components/pages/TutorialsPage"; // New page for learning
-import PostsPage from "./components/pages/PostsPage"; // New page for posts
+import Home from "./components/pages/HomePage";
+import Login from "./components/auth/Login";
+import Logout from "./components/auth/Logout";
+import NewsletterPage from "./components/pages/NewsletterPage";
+import TutorialsPage from "./components/pages/TutorialsPage";
+import PostsPage from "./components/pages/PostsPage";
+import CollaborationDashboard from "./components/dashboards/CollaborationDashboard";
+import TutorialsDashboard from "./components/dashboards/TutorialsDashboard";
+import PodcastsDashboard from "./components/dashboards/PodcastsDashboard";
+import ProtectedRoute from "./components/common/ProtectedRoute";
 import "./global.css";
 
 function App() {
@@ -15,13 +18,38 @@ function App() {
       <Routes>
         {/* Existing routes */}
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<Register />} />
-
+        <Route path="/login" element={<Login />} />
+        <Route path="/logout" element={<Logout />} />
         {/* New routes for Features cards */}
         <Route path="/newsletter" element={<NewsletterPage />} />
         <Route path="/tutorials" element={<TutorialsPage />} />
         <Route path="/posts" element={<PostsPage />} />
+
+        {/* Protected routes */}
+        <Route
+          path="/collaboration-dashboard"
+          element={
+            <ProtectedRoute>
+              <CollaborationDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/tutorials-dashboard"
+          element={
+            <ProtectedRoute>
+              <TutorialsDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/podcasts-dashboard"
+          element={
+            <ProtectedRoute>
+              <PodcastsDashboard />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </Router>
   );

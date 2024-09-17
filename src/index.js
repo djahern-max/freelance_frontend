@@ -1,5 +1,7 @@
 import React from "react";
-import ReactDOM from "react-dom/client"; // Note: This should be 'react-dom/client' in React 18+
+import ReactDOM from "react-dom/client"; // Ensure correct import for React 18+
+import { Provider } from "react-redux"; // Import Provider from react-redux
+import { store } from "./redux/store"; // Import the Redux store you created
 import "./global.css"; // Ensure this file exists and the path is correct
 import App from "./App";
 import reportWebVitals from "./reportWebVitals"; // Import reportWebVitals
@@ -9,7 +11,11 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <React.StrictMode>
-    <App />
+    <Provider store={store}>
+      {" "}
+      {/* Wrap the App with Provider */}
+      <App />
+    </Provider>
   </React.StrictMode>
 );
 
