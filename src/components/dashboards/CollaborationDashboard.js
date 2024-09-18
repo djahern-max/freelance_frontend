@@ -1,7 +1,7 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { logout } from "../../redux/authSlice";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Dashboard.css"; // Import the shared dashboard CSS
 
 const CollaborationDashboard = () => {
@@ -20,12 +20,12 @@ const CollaborationDashboard = () => {
 
       {/* Separate div for links */}
       <div className="button-container">
-        <a href="/tutorials-dashboard" className="dashboard-link">
+        <Link to="/tutorials-dashboard" className="dashboard-link">
           Go to Tutorials
-        </a>
-        <a href="/podcasts-dashboard" className="dashboard-link">
+        </Link>
+        <Link to="/podcasts-dashboard" className="dashboard-link">
           Go to Podcasts
-        </a>
+        </Link>
       </div>
 
       {/* Separate div for logout button */}

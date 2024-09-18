@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux"; // Import useSelector
+import { useSelector } from "react-redux";
 import "./Features.css";
 import News from "../../images/news.png";
 import School from "../../images/school.png";
@@ -8,15 +8,15 @@ import Chat from "../../images/chat.png";
 import Podcasts from "../../images/podcast.png";
 
 const Features = () => {
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated); // Access Redux state
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const navigate = useNavigate();
 
   const handleProtectedClick = (e, path) => {
     if (!isAuthenticated) {
-      e.preventDefault();
-      navigate("/login", { state: { from: path } }); // Pass the intended path to login page
+      e.preventDefault(); // Prevent the default action if not authenticated
+      navigate("/login", { state: { from: path } }); // Pass the path they want to go to
     } else {
-      navigate(path); // Navigate to the protected route if authenticated
+      navigate(path); // Navigate to the dashboard directly if authenticated
     }
   };
 

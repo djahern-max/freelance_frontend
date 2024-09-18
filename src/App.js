@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "./components/pages/HomePage";
 import Login from "./components/auth/Login";
 import Logout from "./components/auth/Logout";
+import Register from "./components/auth/Register";
 import NewsletterPage from "./components/pages/NewsletterPage";
 import TutorialsPage from "./components/pages/TutorialsPage";
 import PostsPage from "./components/pages/PostsPage";
@@ -18,6 +19,7 @@ function App() {
       <Routes>
         {/* Existing routes */}
         <Route path="/" element={<Home />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
         {/* New routes for Features cards */}
