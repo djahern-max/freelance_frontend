@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Login.css"; // Reuse the same CSS file
 
@@ -9,6 +9,10 @@ const Register = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  useEffect(() => {
+    console.log("API URL:", process.env.REACT_APP_API_URL); // Log API URL for debugging
+  }, []);
+
   const handleRegister = async (e) => {
     e.preventDefault();
 
@@ -18,7 +22,7 @@ const Register = () => {
     }
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/users/`, {
+      const response = await fetch(`${apiUrl}/users/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

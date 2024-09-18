@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { login } from "../../redux/authSlice";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -15,23 +15,25 @@ const Login = () => {
 
   const from = location.state?.from || "/";
 
+  useEffect(() => {
+    console.log("API URL:", process.env.REACT_APP_API_URL); // Log API URL for debugging
+    console.log("Current Route:", location.pathname); // Log the current route
+  }, [location.pathname]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/auth/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: username, // Make sure to use 'email' if that's what your backend expects
-            password: password,
-          }),
-        }
-      );
+      const response = await fetch(`${apiUrl}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: username, // Make sure to use 'email' if that's what your backend expects
+          password: password,
+        }),
+      });
 
       if (!response.ok) {
         throw new Error("Invalid credentials");
