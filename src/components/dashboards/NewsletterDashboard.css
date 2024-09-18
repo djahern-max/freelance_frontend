@@ -1,0 +1,94 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap");
+
+/* Flexbox container for centering the newsletter dashboard */
+.newsletter-dashboard-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #e0e0e0; /* Background shading */
+}
+
+/* Newsletter container styling */
+.newsletter-dashboard {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+  background-color: #fdfdfd; /* Lighter background inside the border */
+  text-align: center;
+  max-width: 800px;
+  border: 4px solid #ff6600; /* Orange border */
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Shading behind the container */
+}
+
+.newsletter-header {
+  max-width: 100%;
+  text-align: center;
+}
+
+.newsletter-header h1 {
+  font-size: 2.5rem;
+  color: #757575;
+  margin-bottom: 20px;
+}
+
+.newsletter-header .headline {
+  font-size: 1.8rem;
+  color: #ff6600;
+  margin-bottom: 30px;
+  font-family: "Poppins", sans-serif;
+}
+
+.newsletter-content {
+  font-size: 1.2rem;
+  color: #757575;
+  line-height: 1.8;
+  text-align: left;
+}
+
+.newsletter-content p {
+  margin-bottom: 15px;
+}
+
+.logout-container {
+  margin-top: 30px;
+}
+
+.logout-button {
+  background-color: #ff6600;
+  color: white;
+  padding: 15px 30px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #e65a00;
+}
+
+/* Responsive styling */
+@media (max-width: 745px) {
+  .newsletter-dashboard {
+    padding: 20px;
+    max-width: 100%;
+  }
+
+  .newsletter-header h1 {
+    font-size: 2.2rem;
+  }
+
+  .newsletter-content {
+    font-size: 1.1rem;
+  }
+
+  .logout-button {
+    width: 100%;
+    padding: 10px;
+  }
+}
