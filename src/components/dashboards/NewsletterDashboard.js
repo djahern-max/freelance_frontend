@@ -10,7 +10,7 @@ const NewsletterDashboard = () => {
 
   const handleLogout = () => {
     dispatch(logout()); // Clear the authentication state
-    navigate("/login"); // Redirect to login page
+    navigate("/"); // Redirect to login page
   };
 
   // Get today's date

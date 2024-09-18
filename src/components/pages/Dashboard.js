@@ -9,7 +9,7 @@ const DashboardPage = () => {
     // Clear the JWT token from localStorage
     localStorage.removeItem("token");
     // Redirect to the login page
-    navigate("/login");
+    navigate("/");
   };
 
   return (
