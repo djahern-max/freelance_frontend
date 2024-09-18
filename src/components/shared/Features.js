@@ -13,21 +13,36 @@ const Features = () => {
 
   const handleProtectedClick = (e, path) => {
     if (!isAuthenticated) {
-      e.preventDefault(); // Prevent the default action if not authenticated
-      navigate("/login", { state: { from: path } }); // Pass the path they want to go to
+      e.preventDefault();
+      navigate("/login", { state: { from: path } });
     } else {
-      navigate(path); // Navigate to the dashboard directly if authenticated
+      navigate(path);
+    }
+  };
+
+  const handleEmailOnlyClick = (e, path) => {
+    const email = prompt("Please enter your email to access the newsletter:");
+    if (email) {
+      // Navigate to the Newsletter Dashboard
+      navigate("/newsletter-dashboard", { state: { email } });
+    } else {
+      e.preventDefault();
     }
   };
 
   return (
     <section className="features" id="features">
       <div className="feature-cards">
-        <Link to="/newsletter" className="card">
+        {/* Handle Newsletter access by email */}
+        <div
+          className="card"
+          onClick={(e) => handleEmailOnlyClick(e, "/newsletter-dashboard")}
+        >
           <img src={News} alt="News" />
           <h3>News</h3>
-        </Link>
+        </div>
 
+        {/* Handle protected sections */}
         <div
           className="card"
           onClick={(e) => handleProtectedClick(e, "/collaboration-dashboard")}
