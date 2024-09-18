@@ -22,7 +22,7 @@ const Register = () => {
     }
 
     try {
-      const response = await fetch(`${apiUrl}/users/`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/users/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

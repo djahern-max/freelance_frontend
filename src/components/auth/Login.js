@@ -24,16 +24,19 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`${apiUrl}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: username, // Make sure to use 'email' if that's what your backend expects
-          password: password,
-        }),
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: username, // Make sure to use 'email' if that's what your backend expects
+            password: password,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Invalid credentials");
