@@ -72,6 +72,21 @@
   font-weight: 500;
 }
 
+.header .nav {
+  display: flex;
+  gap: 20px;
+}
+
+.header .icon {
+  cursor: pointer;
+  display: inline-block;
+}
+
+.header .icon img {
+  width: 30px;
+  height: 30px;
+}
+
 /* Media query for screens smaller than 745px */
 @media (max-width: 745px) {
   .header {

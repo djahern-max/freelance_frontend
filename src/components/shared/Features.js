@@ -23,19 +23,10 @@ const Features = () => {
   const handleProtectedClick = (e, path) => {
     if (!isAuthenticated) {
       e.preventDefault();
-      navigate("/email", { state: { from: path } });
+      // Navigate to the login page instead of the email page
+      navigate("/login", { state: { from: path } });
     } else {
       navigate(path);
-    }
-  };
-
-  const handleEmailOnlyClick = (e, path) => {
-    const email = prompt("Please enter your email to access the newsletter:");
-    if (email) {
-      // Navigate to the Newsletter Dashboard
-      navigate("/newsletter-dashboard", { state: { email } });
-    } else {
-      e.preventDefault();
     }
   };
 
