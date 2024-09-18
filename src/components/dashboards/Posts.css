@@ -1,0 +1,62 @@
+.posts-container {
+  text-align: center;
+  padding: 20px;
+}
+
+.search-section {
+  margin-bottom: 20px;
+}
+
+.search-section input {
+  width: 50%;
+  padding: 8px;
+  margin-top: 10px;
+}
+
+.post-form {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form-fields {
+  display: flex;
+  justify-content: center;
+  gap: 20px; /* Adjust the gap between title and content */
+  width: 100%;
+}
+
+.form-fields input,
+.form-fields textarea {
+  width: 30%; /* Adjust the width of input and textarea */
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.post-form button {
+  padding: 10px 20px;
+  background-color: #ff6600;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.posts-list {
+  margin-top: 20px;
+}
+
+.post-item {
+  border-bottom: 1px solid #ccc;
+  padding: 15px;
+}
+
+.post-item button {
+  padding: 5px 10px;
+  margin: 5px;
+  background-color: #ff6600;
+  color: white;
+  border: none;
+  cursor: pointer;
+}

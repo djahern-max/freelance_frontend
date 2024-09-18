@@ -2,7 +2,8 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { logout } from "../../redux/authSlice";
 import { Link, useNavigate } from "react-router-dom";
-import "./Dashboard.css"; // Import the shared dashboard CSS
+import "./Dashboard.css";
+import Posts from "./Posts";
 
 const CollaborationDashboard = () => {
   const dispatch = useDispatch();
@@ -15,10 +16,7 @@ const CollaborationDashboard = () => {
 
   return (
     <div className="dashboard-container">
-      <h1>Collaboration Dashboard</h1>
-      <p>This is the placeholder for the collaboration dashboard.</p>
-
-      {/* Separate div for links */}
+      <Posts />
       <div className="button-container">
         <Link to="/tutorials-dashboard" className="dashboard-link">
           Go to Tutorials
