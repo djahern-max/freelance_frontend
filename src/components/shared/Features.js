@@ -11,10 +11,19 @@ const Features = () => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const navigate = useNavigate();
 
+  const handleNewsClick = (e, path) => {
+    if (!isAuthenticated) {
+      e.preventDefault();
+      navigate("/email", { state: { from: path } });
+    } else {
+      navigate(path);
+    }
+  };
+
   const handleProtectedClick = (e, path) => {
     if (!isAuthenticated) {
       e.preventDefault();
-      navigate("/login", { state: { from: path } });
+      navigate("/email", { state: { from: path } });
     } else {
       navigate(path);
     }
@@ -36,7 +45,7 @@ const Features = () => {
         {/* Handle Newsletter access by email */}
         <div
           className="card"
-          onClick={(e) => handleEmailOnlyClick(e, "/newsletter-dashboard")}
+          onClick={(e) => handleNewsClick(e, "/newsletter-dashboard")}
         >
           <img src={News} alt="News" />
           <h3>News</h3>
