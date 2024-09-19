@@ -87,6 +87,16 @@
   height: 30px;
 }
 
+.logout-icon {
+  cursor: pointer;
+  margin-left: 20px; /* Adjust the spacing to fit your layout */
+}
+
+.logout-icon img {
+  width: 30px; /* Adjust size */
+  height: 30px; /* Adjust size */
+}
+
 /* Media query for screens smaller than 745px */
 @media (max-width: 745px) {
   .header {

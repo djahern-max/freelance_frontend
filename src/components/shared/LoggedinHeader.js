@@ -1,0 +1,89 @@
+import React from "react";
+import { useSelector, useDispatch } from "react-redux"; // Added useDispatch
+import { useNavigate } from "react-router-dom";
+import "./Header.css";
+import News from "../../images/news.png";
+import School from "../../images/school.png";
+import Chat from "../../images/chat.png";
+import Podcasts from "../../images/podcast.png";
+import simpleSun from "../../images/simple_sun.png";
+import Logout from "../../images/Logout.png"; // Make sure this matches the JSX usage
+import { logout } from "../../redux/authSlice";
+
+const LoggedInHeader = () => {
+  // Changed to "LoggedInHeader" for clarity
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const dispatch = useDispatch(); // Added useDispatch
+  const navigate = useNavigate();
+
+  // Handle logout logic
+  const handleLogout = () => {
+    // Dispatch logout action to clear user data
+    dispatch(logout());
+    // Redirect to login page
+    navigate("/login");
+  };
+
+  const handleNewsClick = (e, path) => {
+    if (!isAuthenticated) {
+      e.preventDefault();
+      navigate("/email", { state: { from: path } });
+    } else {
+      navigate(path);
+    }
+  };
+
+  const handleProtectedClick = (e, path) => {
+    if (!isAuthenticated) {
+      e.preventDefault();
+      navigate("/login", { state: { from: path } });
+    } else {
+      navigate(path);
+    }
+  };
+
+  return (
+    <header className="header">
+      <div className="logo">RYZE.ai</div>
+      <div className="logo-image">
+        <img src={simpleSun} alt="Simple Sun Logo" />
+      </div>
+      <nav className="nav">
+        {/* News icon: requires email if not authenticated */}
+        <div
+          className="icon"
+          onClick={(e) => handleNewsClick(e, "/newsletter-dashboard")}
+        >
+          <img src={News} alt="News" />
+        </div>
+        {/* Protected icons */}
+        <div
+          className="icon"
+          onClick={(e) => handleProtectedClick(e, "/collaboration-dashboard")}
+        >
+          <img src={Chat} alt="Collaborate" />
+        </div>
+        <div
+          className="icon"
+          onClick={(e) => handleProtectedClick(e, "/tutorials-dashboard")}
+        >
+          <img src={School} alt="Tutorials" />
+        </div>
+        <div
+          className="icon"
+          onClick={(e) => handleProtectedClick(e, "/podcasts-dashboard")}
+        >
+          <img src={Podcasts} alt="Podcasts" />
+        </div>
+
+        {isAuthenticated && (
+          <div className="icon logout-icon" onClick={handleLogout}>
+            <img src={Logout} alt="Logout" />
+          </div>
+        )}
+      </nav>
+    </header>
+  );
+};
+
+export default LoggedInHeader;

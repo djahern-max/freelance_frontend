@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
-import "./Posts.css";
+import "./CollaborationDashboard.css"; // Use the same CSS
 
 const Posts = () => {
   const [posts, setPosts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [newPost, setNewPost] = useState({ title: "", content: "" });
 
-  // Fetch posts based on the search term
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -20,7 +19,6 @@ const Posts = () => {
     fetchPosts();
   }, [searchTerm]);
 
-  // Handle the post submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -40,7 +38,6 @@ const Posts = () => {
     }
   };
 
-  // Handle voting on posts
   const handleVote = async (postId, direction) => {
     try {
       const response = await fetch("/api/vote", {
@@ -65,13 +62,14 @@ const Posts = () => {
   };
 
   return (
-    <div className="posts-container">
-      <h1>Ask a Question</h1>
+    <div className="dashboard-container">
+      <h1 className="dashboard-title">Ask a Question</h1>
 
       <div className="search-section">
-        <h2>Search Questions</h2>
+        <h2 className="dashboard-subtitle">Search Questions</h2>
         <input
           type="text"
+          className="search-input" /* Use the same input class */
           placeholder="Search posts..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -82,12 +80,14 @@ const Posts = () => {
         <div className="form-fields">
           <input
             type="text"
+            className="input-field" /* Reuse common input field class */
             placeholder="Post Title"
             value={newPost.title}
             onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
             required
           />
           <textarea
+            className="textarea-field" /* Reuse textarea class */
             placeholder="Content"
             value={newPost.content}
             onChange={(e) =>
@@ -96,18 +96,31 @@ const Posts = () => {
             required
           />
         </div>
-        <button type="submit">Submit Post</button>
+        <button type="submit" className="submit-button">
+          Submit Post
+        </button>{" "}
+        {/* Reuse button class */}
       </form>
 
-      <h2>Questions Asked</h2>
+      <h2 className="dashboard-subtitle">Questions Asked</h2>
       <div className="posts-list">
         {posts.map((post) => (
           <div key={post.id} className="post-item">
             <h3>{post.title}</h3>
             <p>{post.content}</p>
             <p>Votes: {post.votes}</p>
-            <button onClick={() => handleVote(post.id, 1)}>Like</button>
-            <button onClick={() => handleVote(post.id, 0)}>Unlike</button>
+            <button
+              className="like-button"
+              onClick={() => handleVote(post.id, 1)}
+            >
+              Like
+            </button>
+            <button
+              className="unlike-button"
+              onClick={() => handleVote(post.id, 0)}
+            >
+              Unlike
+            </button>
           </div>
         ))}
       </div>

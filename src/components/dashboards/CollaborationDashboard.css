@@ -1,0 +1,185 @@
+/* Flexbox container for centering the collaboration dashboard */
+.collaboration-dashboard-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #e0e0e0; /* Background shading */
+}
+
+/* Collaboration container styling */
+.collaboration-dashboard {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+  background-color: #fdfdfd; /* Lighter background inside the border */
+  text-align: center;
+  max-width: 800px;
+  border: 4px solid #ff6600; /* Orange border */
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Shading behind the container */
+}
+
+.collaboration-header {
+  max-width: 100%;
+  text-align: center;
+}
+
+.collaboration-header h1 {
+  font-size: 2.5rem;
+  color: #757575;
+  margin-bottom: 20px;
+}
+
+.collaboration-header .headline {
+  font-size: 1.8rem;
+  color: #ff6600;
+  margin-bottom: 30px;
+  font-family: "Poppins", sans-serif;
+}
+
+.collaboration-content {
+  font-size: 1.2rem;
+  color: #757575;
+  line-height: 1.8;
+  text-align: left;
+}
+
+.collaboration-content p {
+  margin-bottom: 15px;
+}
+
+.logout-container {
+  margin-top: 30px;
+}
+
+.logout-button {
+  background-color: #ff6600;
+  color: white;
+  padding: 15px 30px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #e65a00;
+}
+
+/* Style for the icons container */
+/* Style for the icons container */
+.icon-links {
+  display: flex;
+  justify-content: space-evenly; /* Spread the icons evenly across the container */
+  gap: 60px; /* Adjust gap for additional spacing between icons */
+  margin-bottom: 20px;
+  width: 100%; /* Adjust the width to allow even spacing across the container */
+}
+
+.icon {
+  width: 40px; /* Icon size */
+  height: 40px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.icon:hover {
+  transform: scale(1.1); /* Slightly enlarges the icon when hovered */
+}
+
+.post-form {
+  margin-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+}
+
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: 20px; /* Adds vertical space between input fields */
+}
+
+.form-fields label {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 8px; /* Space between label and input */
+  color: #757575; /* Color similar to the rest of the dashboard */
+}
+
+.form-fields input,
+.form-fields textarea {
+  width: 150%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+  transition: box-shadow 0.2s ease;
+  transform: translateX(-17%); /* Add this */
+}
+
+.form-fields input {
+  height: 40px; /* One-line input for Post Title */
+}
+
+.form-fields textarea {
+  height: 100px; /* Bigger textarea for Content */
+  resize: vertical; /* Allows users to resize it vertically */
+}
+
+.form-fields input:focus,
+.form-fields textarea:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(255, 102, 0, 0.8);
+}
+
+.post-form button {
+  padding: 12px 24px;
+  background-color: #ff6600;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+  font-size: 16px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.post-form button:hover {
+  background-color: #e65c00;
+  transform: translateY(-2px);
+}
+
+/* Responsive styling */
+@media (max-width: 745px) {
+  .collaboration-dashboard {
+    padding: 20px;
+    max-width: 100%;
+  }
+
+  .collaboration-header h1 {
+    font-size: 2.2rem;
+  }
+
+  .collaboration-content {
+    font-size: 1.1rem;
+  }
+
+  .logout-button {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .icon {
+    width: 30px; /* Further reduce icon size on small screens */
+    height: 30px;
+  }
+}
