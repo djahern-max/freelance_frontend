@@ -5,10 +5,8 @@ import Login from "./components/auth/Login";
 import Logout from "./components/auth/Logout";
 import Register from "./components/auth/Register";
 import Email from "./components/auth/Email";
-import NewsletterPage from "./components/pages/NewsletterPage";
+
 import NewsletterDashboard from "./components/dashboards/NewsletterDashboard";
-import TutorialsPage from "./components/pages/TutorialsPage";
-import PostsPage from "./components/pages/PostsPage";
 import CollaborationDashboard from "./components/dashboards/CollaborationDashboard";
 import TutorialsDashboard from "./components/dashboards/TutorialsDashboard";
 import PodcastsDashboard from "./components/dashboards/PodcastsDashboard";
@@ -25,10 +23,6 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/email" element={<Email />} />
-        {/* New routes for Features cards */}
-        <Route path="/newsletter" element={<NewsletterPage />} />
-        <Route path="/tutorials" element={<TutorialsPage />} />
-        <Route path="/posts" element={<PostsPage />} />
         <Route path="/newsletter-dashboard" element={<NewsletterDashboard />} />
 
         {/* Protected routes */}

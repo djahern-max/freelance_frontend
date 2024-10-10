@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Login.css"; // Reuse the same CSS file
+import "./Login.css";
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -10,38 +10,61 @@ const Register = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("API URL:", process.env.REACT_APP_API_URL); // Log API URL for debugging
+    console.log("API URL:", process.env.REACT_APP_API_URL);
   }, []);
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setError("");
 
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
     }
 
+    const apiUrl = `${process.env.REACT_APP_API_URL}/users/`;
+    console.log("Using API route:", apiUrl);
+
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/users/`, {
+      console.log("Sending registration request:", { username, password });
+
+      const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: username, // Assuming username is treated as email
+          email: username,
           password: password,
         }),
       });
 
+      console.log("Response status:", response.status);
+      console.log("Response headers:", Object.fromEntries(response.headers));
+
+      const responseData = await response.text();
+      console.log("Raw response body:", responseData);
+
+      let jsonData;
+      try {
+        jsonData = JSON.parse(responseData);
+        console.log("Parsed JSON response:", jsonData);
+      } catch (parseError) {
+        console.error("Failed to parse response as JSON:", parseError);
+      }
+
       if (!response.ok) {
-        const errorData = await response.json();
-        setError(errorData.detail); // Display the error message returned from the backend
+        const errorMessage =
+          jsonData?.detail || "Registration failed. Please try again.";
+        setError(errorMessage);
         return;
       }
 
+      console.log("Registration successful, navigating to login");
       navigate("/login");
     } catch (err) {
-      setError("Registration failed. Try again.");
+      console.error("Registration request failed:", err);
+      setError("An error occurred during registration. Please try again.");
     }
   };
 
@@ -54,18 +77,21 @@ const Register = () => {
           placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          required
         />
         <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          required
         />
         <input
           type="password"
           placeholder="Confirm Password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
+          required
         />
         <button type="submit">Register</button>
         {error && <p className="error-message">{error}</p>}

@@ -7,6 +7,10 @@ import podcastIcon from "../../images/podcast.png"; // Adjust the path according
 import schoolIcon from "../../images/school.png";
 import chatIcon from "../../images/chat.png";
 import logoutIcon from "../../images/Logout.png";
+import AI from "../../images/AI.webp"; // Adjust the path accordingly
+import Coding from "../../images/Coding.webp";
+import Energy from "../../images/Efficient_Energy.webp";
+import Power from "../../images/nuclear_power.webp";
 
 import "./NewsletterDashboard.css"; // Import specific CSS for the newsletter dashboard
 
@@ -73,38 +77,91 @@ const NewsletterDashboard = () => {
             </div>
 
             <h1>{today}</h1>
-            <p className="headline">Latest in AI News</p>
+            {/* <p className="headline">Latest in AI News</p> */}
           </div>
 
           <div className="newsletter-content">
+            <div className="newsletter-section">
+              <h2>Advancements in AI: Unlocking New Frontiers</h2>
+              {/* <img
+                src={AI}
+                alt="AI Advancements"
+                className="newsletter-image"
+              /> */}
+              <p>
+                Artificial Intelligence continues to push boundaries,
+                transforming industries and reshaping how we live and work.
+                Recent breakthroughs in AI include the development of{" "}
+                <strong>Generative AI</strong> models that can create text,
+                images, and even code with unprecedented accuracy. AI’s role in
+                healthcare, biotechnology, robotics, and autonomous systems is
+                expanding rapidly.
+              </p>
+            </div>
+
+            <div className="newsletter-section">
+              <h2>Coding and AI: The Perfect Partnership</h2>
+              <img
+                src={Coding}
+                alt="Coding and AI"
+                className="newsletter-image"
+              />
+              <p>
+                As AI capabilities grow, so does the demand for AI-integrated
+                coding solutions. AI tools like <strong>GitHub Copilot</strong>{" "}
+                now assist developers by automating coding tasks, offering
+                real-time suggestions, and even debugging code. Low-code/no-code
+                platforms also benefit from AI, enabling faster development
+                without extensive coding knowledge.
+              </p>
+            </div>
+
+            <div className="newsletter-section">
+              <h2>The Energy Demands of AI: A Power-Hungry Future</h2>
+              <img
+                src={Power}
+                alt="Power Demand"
+                className="newsletter-image"
+              />
+              <p>
+                While AI is revolutionizing industries, it’s also placing
+                significant demands on global energy infrastructure. Training
+                large AI models requires immense computational power, which
+                draws vast amounts of electricity. This has prompted concerns
+                about AI’s environmental impact and led to innovations in{" "}
+                <strong>green AI</strong>, focused on reducing energy
+                consumption through more efficient algorithms and renewable
+                energy.
+              </p>
+            </div>
+
+            <div className="newsletter-section">
+              <h2>AI’s Role in Power Management</h2>
+              <img
+                src={Energy}
+                alt="AI Power Management"
+                className="newsletter-image"
+              />
+              <p>
+                Interestingly, AI is now being used to{" "}
+                <strong>optimize energy grids</strong> and manage power
+                consumption. By predicting energy demand, AI helps distribute
+                electricity more efficiently and reduce waste. AI systems in
+                smart cities are already improving energy efficiency in
+                buildings and transportation, pointing to a more sustainable
+                future.
+              </p>
+            </div>
+          </div>
+
+          <div className="newsletter-footer">
+            <h3>Stay Tuned for More AI Insights!</h3>
             <p>
-              1. <strong>Apple</strong> is banking on AI to boost sales of its
-              new iPhone 16. The company says the new handset has been built
-              specifically for artificial intelligence as it looks to regain its
-              competitive edge.
-            </p>
-            <p>
-              2. Researchers are exploring how AI can help predict and prepare
-              for the next pandemic.
-            </p>
-            <p>
-              3. Discussions about AI-created recipes and how consumers may
-              respond continue.
-            </p>
-            <p>
-              4. AI is being used in comedy writing to help comedians generate
-              jokes.
-            </p>
-            <p>
-              5. Concerns rise about "AI washing," where companies exaggerate AI
-              capabilities.
-            </p>
-            <p>
-              6. The impact of AI on electricity grids is under examination.
-            </p>
-            <p>
-              7. AI is being utilized in insect farming, TV production, and
-              addressing labor shortages in Japan.
+              AI and coding are changing the world at an incredible pace, and
+              we’re here to keep you updated on the latest trends. From
+              breakthroughs in AI research to the growing impact on power
+              demand, we’ll continue to bring you cutting-edge updates every
+              month.
             </p>
           </div>
 
