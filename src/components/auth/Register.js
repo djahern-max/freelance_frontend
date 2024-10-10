@@ -22,7 +22,7 @@ const Register = () => {
       return;
     }
 
-    const apiUrl = `${process.env.REACT_APP_API_URL}/users/`;
+    const apiUrl = `${process.env.REACT_APP_API_URL}/auth/register`;
     console.log("Using API route:", apiUrl);
 
     try {
@@ -34,7 +34,7 @@ const Register = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: username,
+          username: username, // Updated this to "username"
           password: password,
         }),
       });

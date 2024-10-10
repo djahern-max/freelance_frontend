@@ -45,18 +45,17 @@ const Features = () => {
         {/* Handle protected sections */}
         <div
           className="card"
-          onClick={(e) => handleProtectedClick(e, "/collaboration-dashboard")}
-        >
-          <img src={Chat} alt="Collaborate" />
-          <h3>Collaborate</h3>
-        </div>
-
-        <div
-          className="card"
           onClick={(e) => handleProtectedClick(e, "/tutorials-dashboard")}
         >
           <img src={School} alt="Tutorials" />
           <h3>Tutorials</h3>
+        </div>
+        <div
+          className="card"
+          onClick={(e) => handleProtectedClick(e, "/collaboration-dashboard")}
+        >
+          <img src={Chat} alt="Collaborate" />
+          <h3>Collaborate</h3>
         </div>
 
         <div
