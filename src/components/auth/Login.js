@@ -22,8 +22,10 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
     try {
+      console.log("Sending login request:", { username, password: "********" });
       const response = await fetch(
         `${process.env.REACT_APP_API_URL}/auth/login`,
         {
@@ -32,25 +34,36 @@ const Login = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            email: username, // Make sure to use 'email' if that's what your backend expects
+            username: username,
             password: password,
           }),
         }
       );
 
+      console.log("Response status:", response.status);
+      console.log("Response headers:", Object.fromEntries(response.headers));
+      const responseText = await response.text();
+      console.log("Raw response body:", responseText);
+
       if (!response.ok) {
-        throw new Error("Invalid credentials");
+        let errorMessage;
+        try {
+          const errorData = JSON.parse(responseText);
+          errorMessage = errorData.detail || "Invalid credentials";
+        } catch (e) {
+          errorMessage = "Login failed. Please try again.";
+        }
+        throw new Error(errorMessage);
       }
 
-      const data = await response.json();
+      const data = JSON.parse(responseText);
       const { access_token } = data;
 
       dispatch(login({ token: access_token, username }));
-
-      // Redirect to the page the user was trying to access before login
       navigate(from, { replace: true });
     } catch (error) {
-      setError("Login failed. Please check your credentials and try again.");
+      console.error("Login error:", error);
+      setError(error.message);
     }
   };
 
