@@ -65,7 +65,7 @@ const Hero = () => {
       <div className="hero-text">
         {/* Dynamically change the h1 text */}
         <h1>{headerText}</h1>
-        <p>Subscribe to get our daily AI Newsletter</p>
+        <p>Subscribe to our Newsletter</p>
 
         {/* Form for email subscription */}
         <form className="email-form" onSubmit={handleSubmit}>

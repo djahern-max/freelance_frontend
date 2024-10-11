@@ -73,7 +73,7 @@ const Login = () => {
         <h2>Login</h2>
         <input
           type="text"
-          placeholder="Email" // Change placeholder to Email
+          placeholder="Username" // Change placeholder to Email
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />

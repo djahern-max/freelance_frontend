@@ -8,8 +8,6 @@ import Email from "./components/auth/Email";
 import VideoUpload from "./components/pages/VideoUpload";
 import NewsletterDashboard from "./components/dashboards/NewsletterDashboard";
 import CollaborationDashboard from "./components/dashboards/CollaborationDashboard";
-// import TutorialsDashboard from "./components/dashboards/TutorialsDashboard";
-// import PodcastsDashboard from "./components/dashboards/PodcastsDashboard";
 import AppDashboard from "./components/dashboards/AppDashboard";
 import NotesDashboard from "./components/dashboards/NotesDashboard";
 import ProtectedRoute from "./components/common/ProtectedRoute";
@@ -36,22 +34,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-        {/* <Route
-          path="/tutorials-dashboard"
-          element={
-            <ProtectedRoute>
-              <TutorialsDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/podcasts-dashboard"
-          element={
-            <ProtectedRoute>
-              <PodcastsDashboard />
-            </ProtectedRoute>
-          }
-        /> */}
 
         <Route path="/app-dashboard" element={<AppDashboard />} />
         <Route path="/notes-dashboard" element={<NotesDashboard />} />
