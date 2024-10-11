@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 import "./Header.css";
 import News from "../../images/news.png";
 import School from "../../images/school.png";
-import Chat from "../../images/chat.png";
-import Podcasts from "../../images/podcast.png";
+import Notes from "../../images/Notes.png";
+import Apps from "../../images/Apps.png";
 import simpleSun from "../../images/simple_sun.png";
 
 const Header = () => {
@@ -44,24 +44,26 @@ const Header = () => {
         >
           <img src={News} alt="News" />
         </div>
-        {/* Protected icons */}
-        <div
-          className="icon"
-          onClick={(e) => handleProtectedClick(e, "/collaboration-dashboard")}
-        >
-          <img src={Chat} alt="Collaborate" />
-        </div>
+
         <div
           className="icon"
           onClick={(e) => handleProtectedClick(e, "/tutorials-dashboard")}
         >
           <img src={School} alt="Tutorials" />
         </div>
+
         <div
           className="icon"
-          onClick={(e) => handleProtectedClick(e, "/podcasts-dashboard")}
+          onClick={(e) => handleProtectedClick(e, "/notes-dashboard")}
         >
-          <img src={Podcasts} alt="Podcasts" />
+          <img src={Notes} alt="Notes" />
+        </div>
+
+        <div
+          className="icon"
+          onClick={(e) => handleProtectedClick(e, "/apps-dashboard")}
+        >
+          <img src={Apps} alt="Projects" />
         </div>
       </nav>
     </header>

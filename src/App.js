@@ -5,11 +5,13 @@ import Login from "./components/auth/Login";
 import Logout from "./components/auth/Logout";
 import Register from "./components/auth/Register";
 import Email from "./components/auth/Email";
-
+import VideoUpload from "./components/pages/VideoUpload";
 import NewsletterDashboard from "./components/dashboards/NewsletterDashboard";
 import CollaborationDashboard from "./components/dashboards/CollaborationDashboard";
-import TutorialsDashboard from "./components/dashboards/TutorialsDashboard";
-import PodcastsDashboard from "./components/dashboards/PodcastsDashboard";
+// import TutorialsDashboard from "./components/dashboards/TutorialsDashboard";
+// import PodcastsDashboard from "./components/dashboards/PodcastsDashboard";
+import AppDashboard from "./components/dashboards/AppDashboard";
+import NotesDashboard from "./components/dashboards/NotesDashboard";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import "./global.css";
 
@@ -34,7 +36,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
+        {/* <Route
           path="/tutorials-dashboard"
           element={
             <ProtectedRoute>
@@ -47,6 +49,17 @@ function App() {
           element={
             <ProtectedRoute>
               <PodcastsDashboard />
+            </ProtectedRoute>
+          }
+        /> */}
+
+        <Route path="/app-dashboard" element={<AppDashboard />} />
+        <Route path="/notes-dashboard" element={<NotesDashboard />} />
+        <Route
+          path="/video-upload"
+          element={
+            <ProtectedRoute>
+              <VideoUpload />
             </ProtectedRoute>
           }
         />

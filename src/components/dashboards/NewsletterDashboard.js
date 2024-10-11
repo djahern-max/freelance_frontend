@@ -2,12 +2,10 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/authSlice";
 import { useNavigate } from "react-router-dom";
-
-import podcastIcon from "../../images/podcast.png"; // Adjust the path accordingly
 import schoolIcon from "../../images/school.png";
-import chatIcon from "../../images/chat.png";
+import Notes from "../../images/Notes.png";
+import Apps from "../../images/Apps.png";
 import logoutIcon from "../../images/Logout.png";
-import AI from "../../images/AI.webp"; // Adjust the path accordingly
 import Coding from "../../images/Coding.webp";
 import Energy from "../../images/Efficient_Energy.webp";
 import Power from "../../images/nuclear_power.webp";
@@ -48,14 +46,7 @@ const NewsletterDashboard = () => {
       <div className="newsletter-dashboard-wrapper">
         <div className="newsletter-dashboard">
           <div className="newsletter-header">
-            {/* Adding the icons with links */}
             <div className="icon-links">
-              <img
-                src={podcastIcon}
-                alt="Podcast"
-                className="icon"
-                onClick={() => handleNavigation("/podcasts-dashboard")}
-              />
               <img
                 src={schoolIcon}
                 alt="School"
@@ -63,11 +54,19 @@ const NewsletterDashboard = () => {
                 onClick={() => handleNavigation("/tutorials-dashboard")}
               />
               <img
-                src={chatIcon}
-                alt="Chat"
+                src={Notes}
+                alt="Notes"
                 className="icon"
-                onClick={() => handleNavigation("/collaboration-dashboard")}
+                onClick={() => handleNavigation("/tutorials-dashboard")}
               />
+
+              <img
+                src={Apps}
+                alt="Projects"
+                className="icon"
+                onClick={() => handleNavigation("/tutorials-dashboard")}
+              />
+
               <img
                 src={logoutIcon}
                 alt="Logout"
@@ -77,17 +76,12 @@ const NewsletterDashboard = () => {
             </div>
 
             <h1>{today}</h1>
-            {/* <p className="headline">Latest in AI News</p> */}
           </div>
 
           <div className="newsletter-content">
             <div className="newsletter-section">
               <h2>Advancements in AI: Unlocking New Frontiers</h2>
-              {/* <img
-                src={AI}
-                alt="AI Advancements"
-                className="newsletter-image"
-              /> */}
+
               <p>
                 Artificial Intelligence continues to push boundaries,
                 transforming industries and reshaping how we live and work.

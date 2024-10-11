@@ -1,11 +1,11 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import "./Features.css";
 import News from "../../images/news.png";
 import School from "../../images/school.png";
-import Chat from "../../images/chat.png";
-import Podcasts from "../../images/podcast.png";
+import Notes from "../../images/Notes.png";
+import Apps from "../../images/Apps.png";
 
 const Features = () => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -50,20 +50,20 @@ const Features = () => {
           <img src={School} alt="Tutorials" />
           <h3>Tutorials</h3>
         </div>
-        <div
-          className="card"
-          onClick={(e) => handleProtectedClick(e, "/collaboration-dashboard")}
-        >
-          <img src={Chat} alt="Collaborate" />
-          <h3>Collaborate</h3>
-        </div>
 
         <div
           className="card"
-          onClick={(e) => handleProtectedClick(e, "/podcasts-dashboard")}
+          onClick={(e) => handleProtectedClick(e, "/notes-dashboard")}
         >
-          <img src={Podcasts} alt="Podcasts" />
-          <h3>Podcasts</h3>
+          <img src={Notes} alt="Notes" />
+          <h3>Notes</h3>
+        </div>
+        <div
+          className="card"
+          onClick={(e) => handleProtectedClick(e, "/app-dashboard")}
+        >
+          <img src={Apps} alt="Projects" />
+          <h3>Projects</h3>
         </div>
       </div>
     </section>
