@@ -1,0 +1,175 @@
+.videoUploadContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f8f8f8;
+  padding: 20px;
+}
+
+.videoUploadForm {
+  background-color: white;
+  padding: 40px;
+  border: 2px solid #ff6600;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.formHeader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.videoUploadForm h2 {
+  font-family: "Poppins", sans-serif;
+  font-size: 2rem;
+  color: #757575;
+  margin: 0;
+  text-align: center;
+}
+
+.navigateIconButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.navigateIcon {
+  width: 32px;
+  height: 32px;
+}
+
+.navigateIconButton::after {
+  content: "Go to Videos";
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #333;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+  white-space: nowrap;
+}
+
+.navigateIconButton:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.formGroup label {
+  font-size: 1rem;
+  color: #757575;
+  margin-bottom: 5px;
+}
+
+.formGroup input[type="text"],
+.formGroup textarea,
+.formGroup input[type="file"] {
+  padding: 10px;
+  border: 2px solid #ff6600;
+  border-radius: 5px;
+  font-size: 1rem;
+  outline: none;
+}
+
+.formGroup textarea {
+  resize: vertical;
+  height: 100px;
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus {
+  border-color: #e65a00;
+}
+
+.formGroup input[type="checkbox"] {
+  width: auto;
+  margin-right: 10px;
+}
+
+.submitButton {
+  background-color: #ff6600;
+  color: white;
+  border: none;
+  padding: 15px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border-radius: 5px;
+  width: 100%;
+  text-align: center;
+}
+
+.submitButton:hover {
+  background-color: #e65a00;
+}
+
+.formGroup input[type="file"] {
+  padding: 10px;
+  border: none;
+  color: #757575;
+  font-size: 1rem;
+}
+
+.successMessage,
+.errorMessage {
+  text-align: center;
+  font-weight: bold;
+  margin-top: 10px;
+  font-size: 16px;
+}
+
+.successMessage {
+  color: #33e714; /* Fluorescent green */
+}
+
+.errorMessage {
+  color: red;
+}
+
+@media (max-width: 745px) {
+  .videoUploadContainer {
+    padding: 10px;
+  }
+
+  .videoUploadForm {
+    padding: 20px;
+    width: 100%;
+  }
+
+  .videoUploadForm h2 {
+    font-size: 1.5rem;
+  }
+
+  .formGroup input,
+  .formGroup textarea {
+    padding: 10px;
+  }
+
+  .submitButton {
+    padding: 10px;
+  }
+}

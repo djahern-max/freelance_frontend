@@ -1,14 +1,18 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import styles from "./VideoUpload.module.css";
+import navigateIcon from "../../images/navigate_videos.png";
 
 const VideoUpload = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [file, setFile] = useState(null);
   const [isProject, setIsProject] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState(null);
 
-  // Fetch the API URL from environment variables
   const apiUrl = process.env.REACT_APP_API_URL;
+  const navigate = useNavigate();
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -23,26 +27,47 @@ const VideoUpload = () => {
     formData.append("file", file);
 
     try {
-      const response = await axios.post(
-        `${apiUrl}/videos/`, // Use the API URL from environment variables
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axios.post(`${apiUrl}/videos/`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       console.log("Upload successful:", response.data);
+      setUploadStatus("success");
     } catch (error) {
       console.error("Error uploading video:", error);
+      setUploadStatus("error");
     }
   };
 
+  const handleNavigate = () => {
+    navigate("/videos");
+  };
+
   return (
-    <div>
-      <h2>Upload Video</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
+    <div className={styles.videoUploadContainer}>
+      <form className={styles.videoUploadForm} onSubmit={handleSubmit}>
+        <div className={styles.formHeader}>
+          <h2>Upload Video</h2>
+          <button
+            className={styles.navigateIconButton}
+            onClick={handleNavigate}
+            type="button"
+          >
+            <img
+              src={navigateIcon}
+              alt="Go to Videos"
+              className={styles.navigateIcon}
+            />
+          </button>
+        </div>
+        {uploadStatus === "success" && (
+          <div className={styles.successMessage}>Upload successful!</div>
+        )}
+        {uploadStatus === "error" && (
+          <div className={styles.errorMessage}>Error uploading video.</div>
+        )}
+        <div className={styles.formGroup}>
           <label>Title:</label>
           <input
             type="text"
@@ -51,14 +76,14 @@ const VideoUpload = () => {
             required
           />
         </div>
-        <div>
+        <div className={styles.formGroup}>
           <label>Description:</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
         </div>
-        <div>
+        <div className={styles.formGroup}>
           <label>File:</label>
           <input
             type="file"
@@ -67,15 +92,9 @@ const VideoUpload = () => {
             required
           />
         </div>
-        <div>
-          <label>Is Project:</label>
-          <input
-            type="checkbox"
-            checked={isProject}
-            onChange={() => setIsProject(!isProject)}
-          />
-        </div>
-        <button type="submit">Upload Video</button>
+        <button type="submit" className={styles.submitButton}>
+          Upload Video
+        </button>
       </form>
     </div>
   );
