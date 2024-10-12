@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import "./Header.css";
 import News from "../../images/news.png";
-import School from "../../images/school.png";
+import School from "../../images/navigate_videos.png";
 import Notes from "../../images/Notes.png";
 import Apps from "../../images/Apps.png";
 import simpleSun from "../../images/simple_sun.png";

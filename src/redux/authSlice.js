@@ -1,10 +1,11 @@
-// src/redux/authSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 
+const storedToken = localStorage.getItem("authToken");
+
 const initialState = {
-  isAuthenticated: false,
+  isAuthenticated: !!storedToken,
   user: null,
-  token: null, // Store the JWT token here
+  token: storedToken,
 };
 
 const authSlice = createSlice({
@@ -14,12 +15,14 @@ const authSlice = createSlice({
     login: (state, action) => {
       state.isAuthenticated = true;
       state.user = action.payload.username;
-      state.token = action.payload.token; // Store the token
+      state.token = action.payload.token;
+      localStorage.setItem("authToken", action.payload.token);
     },
     logout: (state) => {
       state.isAuthenticated = false;
       state.user = null;
-      state.token = null; // Clear the token
+      state.token = null;
+      localStorage.removeItem("authToken");
     },
   },
 });

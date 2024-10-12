@@ -2,7 +2,7 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/authSlice";
 import { useNavigate } from "react-router-dom";
-import schoolIcon from "../../images/school.png";
+import schoolIcon from "../../images/navigate_videos.png";
 import Notes from "../../images/Notes.png";
 import Apps from "../../images/Apps.png";
 import logoutIcon from "../../images/Logout.png";

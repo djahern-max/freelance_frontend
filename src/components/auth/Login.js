@@ -16,8 +16,8 @@ const Login = () => {
   const from = location.state?.from || "/";
 
   useEffect(() => {
-    console.log("API URL:", process.env.REACT_APP_API_URL); // Log API URL for debugging
-    console.log("Current Route:", location.pathname); // Log the current route
+    console.log("API URL:", process.env.REACT_APP_API_URL);
+    console.log("Current Route:", location.pathname);
   }, [location.pathname]);
 
   const handleSubmit = async (e) => {
@@ -59,6 +59,9 @@ const Login = () => {
       const data = JSON.parse(responseText);
       const { access_token } = data;
 
+      // Store token in localStorage
+      localStorage.setItem("authToken", access_token);
+
       dispatch(login({ token: access_token, username }));
       navigate(from, { replace: true });
     } catch (error) {
@@ -73,7 +76,7 @@ const Login = () => {
         <h2>Login</h2>
         <input
           type="text"
-          placeholder="Username" // Change placeholder to Email
+          placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />

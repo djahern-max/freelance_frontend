@@ -6,7 +6,6 @@ import Logout from "./components/auth/Logout";
 import Register from "./components/auth/Register";
 import Email from "./components/auth/Email";
 import VideoUpload from "./components/pages/VideoUpload";
-import Videos from "./components/dashboards/Videos";
 import NewsletterDashboard from "./components/dashboards/NewsletterDashboard";
 import CollaborationDashboard from "./components/dashboards/CollaborationDashboard";
 import AppDashboard from "./components/dashboards/AppDashboard";
@@ -43,14 +42,6 @@ function App() {
           element={
             <ProtectedRoute>
               <VideoUpload />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/videos"
-          element={
-            <ProtectedRoute>
-              <Videos />
             </ProtectedRoute>
           }
         />
