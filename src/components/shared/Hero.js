@@ -4,7 +4,7 @@ import "./Hero.css";
 import simpleSun from "../../images/simple_sun.png";
 
 const Hero = () => {
-  const [headerText, setHeaderText] = useState("The Future is Now");
+  const [headerText, setHeaderText] = useState("United we RYZE");
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -13,9 +13,9 @@ const Hero = () => {
   // Function to update the header text based on screen width
   const updateHeaderText = () => {
     if (window.innerWidth < 745) {
-      setHeaderText("RYZE.ai");
+      setHeaderText("United we RYZE");
     } else {
-      setHeaderText("The Future is Now");
+      setHeaderText("United we RYZE");
     }
   };
 
@@ -65,7 +65,7 @@ const Hero = () => {
       <div className="hero-text">
         {/* Dynamically change the h1 text */}
         <h1>{headerText}</h1>
-        <p>Subscribe to our Newsletter</p>
+        <p>Devided we Debug</p>
 
         {/* Form for email subscription */}
         <form className="email-form" onSubmit={handleSubmit}>

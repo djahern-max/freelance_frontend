@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./EmailSignup.css";
+import sun from "../../images/sun.png"; // Import the sun image
 
 const EmailSignup = () => {
   const [email, setEmail] = useState("");
@@ -36,7 +37,9 @@ const EmailSignup = () => {
 
   return (
     <section className="email-signup" id="signup">
-      <h2>Join the AI Revolution</h2>
+      <div className="image-placeholder">
+        <img src={sun} alt="Sun" />
+      </div>
       <p>Get updates and insights straight to your inbox.</p>
       <form onSubmit={handleSubmit}>
         <input

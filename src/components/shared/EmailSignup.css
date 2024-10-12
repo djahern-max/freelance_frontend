@@ -1,25 +1,27 @@
 .email-signup {
   background-color: #ff6600;
   color: white;
-  padding: 30px 20px 40px 20px; /* Top, Right, Bottom, Left */
+  padding: 30px 20px 40px 20px;
   text-align: center;
   display: flex;
-  flex-direction: column; /* Stack content vertically */
-  justify-content: center; /* Vertically center the content */
+  flex-direction: column;
+  justify-content: center;
 }
 
-.email-signup h2 {
-  font-size: 2rem;
+.email-signup .image-placeholder {
   margin-bottom: 20px;
 }
 
-/* Adjust the margin-bottom for the paragraph */
+.email-signup .image-placeholder img {
+  width: 100px; /* Adjust the size of the image */
+  height: auto;
+}
+
 .email-signup p {
   font-size: 1.2rem;
   margin-bottom: 10px;
 }
 
-/* Ensure there's no extra margin below the form */
 .email-signup form {
   display: flex;
   justify-content: center;
