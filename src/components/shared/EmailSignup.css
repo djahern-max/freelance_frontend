@@ -6,6 +6,10 @@
 }
 
 .email-signup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
   background-color: #ff6600; /* The orange background */
   color: white;
   padding: 30px 20px 40px 20px;
@@ -61,4 +65,43 @@
 
 .email-signup button:hover {
   background-color: #444;
+}
+
+.phrase-container {
+  height: 60px; /* Adjust this value based on your design */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.phrase {
+  font-size: 24px; /* Adjust as needed */
+  text-align: center;
+  margin: 0;
+  transition: opacity 0.3s ease;
+}
+
+.build-it-text {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+}
+
+form {
+  display: flex;
+  gap: 10px;
+  /* Add any other existing styles */
+}
+
+input[type="email"] {
+  /* Add your input styles */
+}
+
+button {
+  /* Add your button styles */
+}
+
+.message {
+  margin-top: 10px;
+  text-align: center;
 }

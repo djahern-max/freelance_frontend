@@ -6,6 +6,8 @@ import newsIcon from "../../images/news.png";
 import notesIcon from "../../images/Notes.png";
 import appsIcon from "../../images/Apps.png";
 import logoutIcon from "../../images/Logout.png";
+import edit from "../../images/Notes.png";
+import del from "../../images/Delete.png";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -190,18 +192,18 @@ const Notes = () => {
           <li key={note.id} className={styles.noteItem}>
             <h2>{note.title}</h2>
             <p>{note.content}</p>
-            <button
-              className={styles.editButton}
+            <img
+              src={edit}
+              alt="Edit Note"
+              className={styles.iconButton}
               onClick={() => editNote(note)}
-            >
-              Edit
-            </button>
-            <button
-              className={styles.deleteButton}
+            />
+            <img
+              src={del}
+              alt="Delete Note"
+              className={styles.iconButton}
               onClick={() => deleteNote(note.id)}
-            >
-              Delete
-            </button>
+            />
           </li>
         ))}
       </ul>

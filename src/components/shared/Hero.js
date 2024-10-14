@@ -4,7 +4,7 @@ import "./Hero.css";
 import simpleSun from "../../images/simple_sun.png";
 
 const Hero = () => {
-  const [headerText, setHeaderText] = useState("United we RYZE");
+  const [headerText, setHeaderText] = useState("United we Create");
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -13,9 +13,9 @@ const Hero = () => {
   // Function to update the header text based on screen width
   const updateHeaderText = () => {
     if (window.innerWidth < 745) {
-      setHeaderText("United we Ryze");
+      setHeaderText("United we Create");
     } else {
-      setHeaderText("United we Ryze");
+      setHeaderText("United we Create");
     }
   };
 

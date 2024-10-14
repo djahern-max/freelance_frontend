@@ -21,6 +21,7 @@
   color: #757575;
   margin-bottom: 20px;
 }
+
 .hero p {
   font-size: 1.5rem;
   color: #757575;
@@ -30,33 +31,44 @@
 /* Email form styling */
 .email-form {
   display: flex;
-  align-items: center;
-  border: 2px solid #ff6600; /* Orange border */
-  border-radius: 0; /* Remove rounded corners for rectangular form */
+  align-items: stretch;
+  border: 2px solid #ff6600;
+  border-radius: 10px; /* Updated to 10px as requested */
   overflow: hidden;
+  padding: 0; /* Ensure no padding inside the form */
 }
 
 .email-form input {
   border: none;
   padding: 15px;
-  font-size: 1rem; /* Default font size */
+  font-size: 1rem;
   flex-grow: 1;
   outline: none;
+  border-radius: 8px 0 0 8px; /* Slightly less than the container to account for border */
+  margin: 0;
 }
 
 .email-form button {
-  background-color: #ff6600; /* Orange background */
+  background-color: #ff6600;
   color: white;
   border: none;
   padding: 15px 30px;
   cursor: pointer;
   font-size: 1rem;
   transition: background-color 0.3s ease;
-  border-radius: 0; /* Remove rounded corners */
+  border-radius: 0; /* Remove border-radius from the button */
+  margin: 0;
+  flex-shrink: 0;
 }
 
 .email-form button:hover {
-  background-color: #e65a00; /* Darker orange on hover */
+  background-color: #e65a00;
+}
+
+/* Ensure no gap between input and button */
+.email-form input:focus,
+.email-form button:focus {
+  outline: none;
 }
 
 /* Hero image styling */
@@ -64,7 +76,7 @@
   max-width: 40%;
   display: flex;
   justify-content: center;
-  margin-right: 20px; /* Add space between text and image */
+  margin-right: 20px;
 }
 
 .hero-image img {
@@ -85,12 +97,21 @@
 .hero-image img {
   width: 300px;
   height: auto;
-  animation: spin 20s linear infinite; /* Image rotates continuously */
+  animation: spin 20s linear infinite;
+}
+
+/* Success and error message styling */
+.success-message {
+  color: #4caf50;
+  margin-top: 10px;
+}
+
+.error-message {
+  color: #f44336;
+  margin-top: 10px;
 }
 
 @media (max-width: 745px) {
-  @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap");
-
   .hero {
     padding: 2px 2px;
   }
@@ -119,10 +140,10 @@
     max-width: 400px;
     display: flex;
     flex-direction: column; /* Stack the input and button vertically */
-    align-items: center;
-    border-radius: 12px; /* Rounded corners for the entire form */
-    border: 2px solid #ff6600; /* Add orange border around the form */
-    overflow: hidden; /* Make sure the corners of child elements (input/button) are rounded */
+    align-items: stretch; /* Changed from center to stretch */
+    border-radius: 25px; /* Consistent with desktop version */
+    border: 2px solid #ff6600;
+    overflow: hidden;
   }
 
   .email-form input {
@@ -130,13 +151,13 @@
     margin-bottom: 10px; /* Add spacing between input and button */
     padding: 10px;
     font-size: 1rem;
-    border-radius: 0; /* Remove rounded corners here */
+    border-radius: 23px 23px 0 0; /* Rounded top corners */
   }
 
   .email-form button {
     width: 100%;
     padding: 10px;
     font-size: 1rem;
-    border-radius: 0; /* Remove rounded corners here */
+    border-radius: 0 0 23px 23px; /* Rounded bottom corners */
   }
 }

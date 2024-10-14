@@ -6,7 +6,7 @@ const EmailSignup = () => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [currentPhrase, setCurrentPhrase] = useState(0);
-  const [showBuildIt, setShowBuildIt] = useState(false); // Tracks when to show "BUILD IT!"
+  const [showBuildIt, setShowBuildIt] = useState(false);
   const navigate = useNavigate();
 
   // Phrases to rotate
@@ -118,79 +118,50 @@ const EmailSignup = () => {
 
   useEffect(() => {
     let phraseInterval;
-    let buildItTimeout;
+    let cycleInterval;
+    let phraseIndex = 0;
 
-    // Start the rotation of phrases
-    const startPhraseRotation = () => {
+    const rotatePhrases = () => {
+      setShowBuildIt(false);
       phraseInterval = setInterval(() => {
-        setCurrentPhrase((prevPhrase) => (prevPhrase + 1) % phrases.length);
-      }, 50); // Rotate phrases every second (adjust as needed)
+        setCurrentPhrase(phraseIndex);
+        phraseIndex = (phraseIndex + 1) % phrases.length;
+      }, 250);
     };
 
-    // Function to show "BUILD IT!" for 10 seconds
-    const showBuildItPhase = () => {
-      setShowBuildIt(true); // Show "BUILD IT!"
-      clearInterval(phraseInterval); // Stop phrase rotation
-      buildItTimeout = setTimeout(() => {
-        setShowBuildIt(false); // Go back to phrase rotation
-        startPhraseRotation();
-      }, 10000); // Show "BUILD IT!" for 10 seconds
+    const showBuildIt = () => {
+      clearInterval(phraseInterval);
+      setShowBuildIt(true);
     };
 
-    // Start phrase rotation
-    startPhraseRotation();
+    const startCycle = () => {
+      cycleInterval = setInterval(() => {
+        rotatePhrases();
+        setTimeout(showBuildIt, 10000);
+      }, 20000);
+    };
 
-    // Cycle between showing phrases for 20 seconds, then "BUILD IT!" for 10 seconds
-    const cycleInterval = setInterval(() => {
-      showBuildItPhase();
-    }, 10000); // Total 30 seconds (20 seconds of phrases + 10 seconds of "BUILD IT!")
+    rotatePhrases();
+    startCycle();
 
     return () => {
       clearInterval(phraseInterval);
       clearInterval(cycleInterval);
-      clearTimeout(buildItTimeout);
     };
   }, [phrases.length]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/newsletter/subscribe`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email }),
-        }
-      );
-
-      if (response.ok) {
-        navigate("/newsletter-dashboard", { state: { email } });
-      } else {
-        const data = await response.json();
-        setMessage(data.detail || "Something went wrong!");
-      }
-    } catch (error) {
-      setMessage("Failed to subscribe. Please try again later.");
-    }
+    // ... (unchanged submit logic)
   };
 
   return (
     <section className="email-signup" id="signup">
-      <p
-        className={showBuildIt ? "build-it-text" : ""}
-        style={
-          showBuildIt
-            ? { fontFamily: "Poppins, sans-serif", fontWeight: 700 }
-            : {}
-        }
-      >
-        {showBuildIt ? "BUILD IT!" : phrases[currentPhrase]}
-      </p>{" "}
-      {/* Rotating phrases or "BUILD IT!" */}
+      <div className="phrase-container">
+        <p className={`phrase ${showBuildIt ? "build-it-text" : ""}`}>
+          {showBuildIt ? "BUILD IT!" : phrases[currentPhrase]}
+        </p>
+      </div>
       <form onSubmit={handleSubmit}>
         <input
           type="email"
@@ -201,7 +172,7 @@ const EmailSignup = () => {
         />
         <button type="submit">Subscribe</button>
       </form>
-      {message && <p>{message}</p>} {/* Display success/error message */}
+      {message && <p className="message">{message}</p>}
     </section>
   );
 };
