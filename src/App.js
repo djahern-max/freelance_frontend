@@ -8,9 +8,9 @@ import Email from "./components/auth/Email";
 import VideoUpload from "./components/pages/VideoUpload";
 import Videos from "./components/dashboards/Videos";
 import NewsletterDashboard from "./components/dashboards/NewsletterDashboard";
-import CollaborationDashboard from "./components/dashboards/CollaborationDashboard";
+
 import AppDashboard from "./components/dashboards/AppDashboard";
-import NotesDashboard from "./components/dashboards/NotesDashboard";
+import Notes from "./components/pages/Notes";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import "./global.css";
 
@@ -28,16 +28,21 @@ function App() {
 
         {/* Protected routes */}
         <Route
-          path="/collaboration-dashboard"
+          path="/app-dashboard"
           element={
             <ProtectedRoute>
-              <CollaborationDashboard />
+              <AppDashboard />
             </ProtectedRoute>
           }
         />
-
-        <Route path="/app-dashboard" element={<AppDashboard />} />
-        <Route path="/notes-dashboard" element={<NotesDashboard />} />
+        <Route
+          path="/notes"
+          element={
+            <ProtectedRoute>
+              <Notes />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/video-upload"
           element={

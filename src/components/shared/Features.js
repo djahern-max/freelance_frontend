@@ -53,7 +53,7 @@ const Features = () => {
 
         <div
           className="card"
-          onClick={(e) => handleProtectedClick(e, "/notes-dashboard")}
+          onClick={(e) => handleProtectedClick(e, "/notes")}
         >
           <img src={Notes} alt="Notes" />
           <h3>Notes</h3>

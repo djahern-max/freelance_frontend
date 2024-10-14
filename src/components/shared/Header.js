@@ -32,7 +32,7 @@ const Header = () => {
 
   return (
     <header className="header">
-      <div className="logo">RYZE.ai</div>
+      {/* <div className="logo">RYZE.ai</div> */}
       <div className="logo-image">
         <img src={simpleSun} alt="Simple Sun Logo" />
       </div>
@@ -54,7 +54,7 @@ const Header = () => {
 
         <div
           className="icon"
-          onClick={(e) => handleProtectedClick(e, "/notes-dashboard")}
+          onClick={(e) => handleProtectedClick(e, "/notes")}
         >
           <img src={Notes} alt="Notes" />
         </div>

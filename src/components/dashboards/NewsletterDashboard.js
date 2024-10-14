@@ -3,14 +3,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/authSlice";
 import { useNavigate } from "react-router-dom";
 import schoolIcon from "../../images/navigate_videos.png";
-import Notes from "../../images/Notes.png";
-import Apps from "../../images/Apps.png";
+import notesIcon from "../../images/Notes.png";
+import appsIcon from "../../images/Apps.png";
 import logoutIcon from "../../images/Logout.png";
 import Coding from "../../images/Coding.webp";
 import Energy from "../../images/Efficient_Energy.webp";
 import Power from "../../images/nuclear_power.webp";
 
-import "./NewsletterDashboard.css"; // Import specific CSS for the newsletter dashboard
+import styles from "./NewsletterDashboard.module.css"; // Import CSS module
 
 const NewsletterDashboard = () => {
   const dispatch = useDispatch();
@@ -20,7 +20,7 @@ const NewsletterDashboard = () => {
 
   const handleLogout = () => {
     dispatch(logout()); // Clear the authentication state
-    navigate("/"); // Redirect to login page
+    navigate("/login"); // Redirect to login page
   };
 
   const handleNavigation = (path) => {
@@ -43,45 +43,47 @@ const NewsletterDashboard = () => {
 
   return (
     <div>
-      <div className="newsletter-dashboard-wrapper">
-        <div className="newsletter-dashboard">
-          <div className="newsletter-header">
-            <div className="icon-links">
-              <img
-                src={schoolIcon}
-                alt="School"
-                className="icon"
-                onClick={() => handleNavigation("/tutorials-dashboard")}
-              />
-              <img
-                src={Notes}
-                alt="Notes"
-                className="icon"
-                onClick={() => handleNavigation("/tutorials-dashboard")}
-              />
+      {/* Add the icon bar for navigation */}
+      <div className={styles["icon-bar"]}>
+        <img
+          src={schoolIcon}
+          alt="School"
+          title="Go to Videos"
+          className={styles.icon}
+          onClick={() => handleNavigation("/videos")}
+        />
+        <img
+          src={notesIcon}
+          alt="Notes"
+          title="Go to Notes"
+          className={styles.icon}
+          onClick={() => handleNavigation("/notes")}
+        />
+        <img
+          src={appsIcon}
+          alt="Projects"
+          title="Go to Projects"
+          className={styles.icon}
+          onClick={() => handleNavigation("/app-dashboard")}
+        />
+        <img
+          src={logoutIcon}
+          alt="Logout"
+          title="Logout"
+          className={styles.icon}
+          onClick={handleLogout}
+        />
+      </div>
 
-              <img
-                src={Apps}
-                alt="Projects"
-                className="icon"
-                onClick={() => handleNavigation("/tutorials-dashboard")}
-              />
-
-              <img
-                src={logoutIcon}
-                alt="Logout"
-                className="icon"
-                onClick={handleLogout}
-              />
-            </div>
-
+      <div className={styles["newsletter-dashboard-wrapper"]}>
+        <div className={styles["newsletter-dashboard"]}>
+          <div className={styles["newsletter-header"]}>
             <h1>{today}</h1>
           </div>
 
-          <div className="newsletter-content">
-            <div className="newsletter-section">
+          <div className={styles["newsletter-content"]}>
+            <div className={styles["newsletter-section"]}>
               <h2>Advancements in AI: Unlocking New Frontiers</h2>
-
               <p>
                 Artificial Intelligence continues to push boundaries,
                 transforming industries and reshaping how we live and work.
@@ -93,12 +95,12 @@ const NewsletterDashboard = () => {
               </p>
             </div>
 
-            <div className="newsletter-section">
+            <div className={styles["newsletter-section"]}>
               <h2>Coding and AI: The Perfect Partnership</h2>
               <img
                 src={Coding}
                 alt="Coding and AI"
-                className="newsletter-image"
+                className={styles["newsletter-image"]}
               />
               <p>
                 As AI capabilities grow, so does the demand for AI-integrated
@@ -110,12 +112,12 @@ const NewsletterDashboard = () => {
               </p>
             </div>
 
-            <div className="newsletter-section">
+            <div className={styles["newsletter-section"]}>
               <h2>The Energy Demands of AI: A Power-Hungry Future</h2>
               <img
                 src={Power}
                 alt="Power Demand"
-                className="newsletter-image"
+                className={styles["newsletter-image"]}
               />
               <p>
                 While AI is revolutionizing industries, it’s also placing
@@ -129,12 +131,12 @@ const NewsletterDashboard = () => {
               </p>
             </div>
 
-            <div className="newsletter-section">
+            <div className={styles["newsletter-section"]}>
               <h2>AI’s Role in Power Management</h2>
               <img
                 src={Energy}
                 alt="AI Power Management"
-                className="newsletter-image"
+                className={styles["newsletter-image"]}
               />
               <p>
                 Interestingly, AI is now being used to{" "}
@@ -148,7 +150,7 @@ const NewsletterDashboard = () => {
             </div>
           </div>
 
-          <div className="newsletter-footer">
+          <div className={styles["newsletter-footer"]}>
             <h3>Stay Tuned for More AI Insights!</h3>
             <p>
               AI and coding are changing the world at an incredible pace, and
@@ -157,12 +159,6 @@ const NewsletterDashboard = () => {
               demand, we’ll continue to bring you cutting-edge updates every
               month.
             </p>
-          </div>
-
-          <div className="logout-container">
-            <button onClick={handleLogout} className="logout-button">
-              Exit
-            </button>
           </div>
         </div>
       </div>

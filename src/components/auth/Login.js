@@ -20,12 +20,23 @@ const Login = () => {
     console.log("Current Route:", location.pathname);
   }, [location.pathname]);
 
+  // Helper function to check if the token has expired
+  const isTokenExpired = (token) => {
+    try {
+      const decodedToken = JSON.parse(atob(token.split(".")[1])); // Decode JWT token payload
+      const currentTime = Math.floor(Date.now() / 1000); // Get current time in seconds
+      return decodedToken.exp < currentTime; // Check if token expiration is less than current time
+    } catch (e) {
+      console.error("Token decoding error:", e);
+      return true;
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
     try {
-      console.log("Sending login request:", { username, password: "********" });
       const response = await fetch(
         `${process.env.REACT_APP_API_URL}/auth/login`,
         {
@@ -40,30 +51,21 @@ const Login = () => {
         }
       );
 
-      console.log("Response status:", response.status);
-      console.log("Response headers:", Object.fromEntries(response.headers));
-      const responseText = await response.text();
-      console.log("Raw response body:", responseText);
-
+      const data = await response.json();
       if (!response.ok) {
-        let errorMessage;
-        try {
-          const errorData = JSON.parse(responseText);
-          errorMessage = errorData.detail || "Invalid credentials";
-        } catch (e) {
-          errorMessage = "Login failed. Please try again.";
-        }
-        throw new Error(errorMessage);
+        throw new Error(data.detail || "Invalid credentials");
       }
 
-      const data = JSON.parse(responseText);
       const { access_token } = data;
-
-      // Store token in localStorage
       localStorage.setItem("authToken", access_token);
 
-      dispatch(login({ token: access_token, username }));
-      navigate(from, { replace: true });
+      // Validate the token before dispatching login
+      if (!isTokenExpired(access_token)) {
+        dispatch(login({ token: access_token, username }));
+        navigate(from, { replace: true });
+      } else {
+        throw new Error("Token is invalid or expired.");
+      }
     } catch (error) {
       console.error("Login error:", error);
       setError(error.message);

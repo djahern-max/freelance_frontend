@@ -13,9 +13,9 @@ const Hero = () => {
   // Function to update the header text based on screen width
   const updateHeaderText = () => {
     if (window.innerWidth < 745) {
-      setHeaderText("United we RYZE");
+      setHeaderText("United we Ryze");
     } else {
-      setHeaderText("United we RYZE");
+      setHeaderText("United we Ryze");
     }
   };
 

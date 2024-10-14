@@ -5,8 +5,10 @@ const ProtectedRoute = ({ children }) => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const location = useLocation();
 
+  // Debugging: log the isAuthenticated state
+  console.log("ProtectedRoute: isAuthenticated", isAuthenticated);
+
   if (!isAuthenticated) {
-    // Redirect to login and pass the current location they are trying to access
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 

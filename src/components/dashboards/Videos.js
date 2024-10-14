@@ -90,7 +90,7 @@ const Videos = () => {
           alt="Notes"
           title="Go to Notes"
           className={styles.icon}
-          onClick={() => navigate("/notes-dashboard")}
+          onClick={() => navigate("/notes")}
         />
         <img
           src={appsIcon}
@@ -111,7 +111,7 @@ const Videos = () => {
       <div className={styles["upload-container"]}>
         <button
           className={styles["upload-button"]}
-          onClick={() => console.log("Upload video")}
+          onClick={() => navigate("/video-upload")}
           title="Upload a video"
         >
           <img src={uploadIcon} alt="Upload" />

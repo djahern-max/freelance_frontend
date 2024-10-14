@@ -1,5 +1,12 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap");
+
+.build-it-text {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+}
+
 .email-signup {
-  background-color: #ff6600;
+  background-color: #ff6600; /* The orange background */
   color: white;
   padding: 30px 20px 40px 20px;
   text-align: center;
@@ -10,11 +17,16 @@
 
 .email-signup .image-placeholder {
   margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
 }
 
 .email-signup .image-placeholder img {
-  width: 100px; /* Adjust the size of the image */
+  width: 180px; /* Increased the size */
   height: auto;
+  object-fit: cover; /* Ensures the image is fully visible */
+  border-radius: 15px; /* Reducing or removing the circular effect */
+  background-color: transparent; /* Ensure no background color */
 }
 
 .email-signup p {

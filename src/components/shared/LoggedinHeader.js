@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux"; // Added useDispatch
 import { useNavigate } from "react-router-dom";
 import "./Header.css";
 import News from "../../images/news.png";
-import School from "../../images/school.png";
+
 import Notes from "../../images/Notes.png";
 import Apps from "../../images/Apps.png";
 import simpleSun from "../../images/simple_sun.png";
@@ -56,16 +56,16 @@ const LoggedInHeader = () => {
         >
           <img src={News} alt="News" />
         </div>
-        <div
+        {/* <div
           className="icon"
           onClick={(e) => handleProtectedClick(e, "/tutorials-dashboard")}
         >
           <img src={School} alt="Tutorials" />
-        </div>
+        </div> */}
 
         <div
           className="icon"
-          onClick={(e) => handleProtectedClick(e, "/notes-dashboard")}
+          onClick={(e) => handleProtectedClick(e, "/notes")}
         >
           <img src={Notes} alt="Notes" />
         </div>
