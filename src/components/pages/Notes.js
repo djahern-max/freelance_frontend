@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import styles from "./Notes.module.css";
 import newsIcon from "../../images/news.png";
 import notesIcon from "../../images/Notes.png";
+import videos from "../../images/navigate_videos.png";
 import appsIcon from "../../images/Apps.png";
 import logoutIcon from "../../images/Logout.png";
 import edit from "../../images/Notes.png";
@@ -140,11 +141,11 @@ const Notes = () => {
           onClick={() => navigate("/newsletter-dashboard")}
         />
         <img
-          src={notesIcon}
+          src={videos}
           alt="Notes"
           title="Go to Notes"
           className={styles.icon}
-          onClick={() => navigate("/notes")}
+          onClick={() => navigate("/videos")}
         />
         <img
           src={appsIcon}
