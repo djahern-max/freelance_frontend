@@ -131,7 +131,7 @@ const Notes = () => {
 
   return (
     <div className={styles.notesContainer}>
-      {/* Header navigation like in Videos.js */}
+      {/* Header navigation */}
       <div className={styles["icon-bar"]}>
         <img
           src={newsIcon}
@@ -179,10 +179,10 @@ const Notes = () => {
           required
         />
         <textarea
-          className={styles.inputField}
+          className={`${styles.inputField} ${styles.commandDisplay}`}
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder="Content"
+          placeholder="Content (for commands use monospaced formatting)"
           required
         />
         <button type="submit">{editMode ? "Update Note" : "Add Note"}</button>
@@ -192,7 +192,7 @@ const Notes = () => {
         {notes.map((note) => (
           <li key={note.id} className={styles.noteItem}>
             <h2>{note.title}</h2>
-            <p>{note.content}</p>
+            <pre className={styles.codeBlock}>{note.content}</pre>
             <img
               src={edit}
               alt="Edit Note"
