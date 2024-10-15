@@ -65,12 +65,19 @@ const Videos = () => {
   };
 
   useEffect(() => {
+    let isMounted = true;
+
     const token = localStorage.getItem("authToken");
     if (!token) {
       setError("Token not found. Please log in again.");
       return;
     }
+
     fetchVideos();
+
+    return () => {
+      isMounted = false; // Cleanup on unmount
+    };
   }, []);
 
   const VideoItem = ({ video }) => {
@@ -133,9 +140,6 @@ const Videos = () => {
           <img src={uploadIcon} alt="Upload" />
         </button>
       </div>
-
-      <h1>Videos</h1>
-      {error && <div className={styles["error-message"]}>{error}</div>}
 
       <h2>My Videos</h2>
       <div className={styles["video-list"]}>

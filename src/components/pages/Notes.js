@@ -3,7 +3,6 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import styles from "./Notes.module.css";
 import newsIcon from "../../images/news.png";
-import notesIcon from "../../images/Notes.png";
 import videos from "../../images/navigate_videos.png";
 import appsIcon from "../../images/Apps.png";
 import logoutIcon from "../../images/Logout.png";
@@ -24,13 +23,27 @@ const Notes = () => {
   // Get token from localStorage
   const token = localStorage.getItem("authToken");
 
-  // Fetch notes when component mounts
   useEffect(() => {
-    if (!token) {
-      setError("Token not found. Please log in again.");
-      return;
-    }
-    fetchNotes();
+    let isMounted = true;
+
+    const fetchNotes = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/notes/`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (isMounted) setNotes(response.data);
+      } catch (error) {
+        handleError(error);
+      }
+    };
+
+    if (token) fetchNotes();
+
+    return () => {
+      isMounted = false;
+    };
   }, [token]);
 
   // Fetch all notes
@@ -189,24 +202,28 @@ const Notes = () => {
       </form>
 
       <ul className={styles.notesList}>
-        {notes.map((note) => (
-          <li key={note.id} className={styles.noteItem}>
-            <h2>{note.title}</h2>
-            <pre className={styles.codeBlock}>{note.content}</pre>
-            <img
-              src={edit}
-              alt="Edit Note"
-              className={styles.iconButton}
-              onClick={() => editNote(note)}
-            />
-            <img
-              src={del}
-              alt="Delete Note"
-              className={styles.iconButton}
-              onClick={() => deleteNote(note.id)}
-            />
-          </li>
-        ))}
+        {Array.isArray(notes) && notes.length > 0 ? (
+          notes.map((note) => (
+            <li key={note.id} className={styles.noteItem}>
+              <h2>{note.title}</h2>
+              <pre className={styles.codeBlock}>{note.content}</pre>
+              <img
+                src={edit}
+                alt="Edit Note"
+                className={styles.iconButton}
+                onClick={() => editNote(note)}
+              />
+              <img
+                src={del}
+                alt="Delete Note"
+                className={styles.iconButton}
+                onClick={() => deleteNote(note.id)}
+              />
+            </li>
+          ))
+        ) : (
+          <p>No notes available yet.</p>
+        )}
       </ul>
     </div>
   );

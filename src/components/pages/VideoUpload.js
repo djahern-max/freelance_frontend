@@ -27,9 +27,16 @@ const VideoUpload = () => {
     formData.append("file", file);
 
     try {
+      // Get the token from localStorage
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        throw new Error("No token found, please log in again.");
+      }
+
       const response = await axios.post(`${apiUrl}/videos/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`, // Add the token here
         },
       });
       console.log("Upload successful:", response.data);
