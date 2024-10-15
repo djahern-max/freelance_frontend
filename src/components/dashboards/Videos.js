@@ -30,9 +30,25 @@ const Videos = () => {
         },
       });
 
-      setUserVideos(response.data.user_videos);
-      setOtherVideos(response.data.other_videos);
+      // Log the API response structure to check if it's what you're expecting
+      console.log("API response data structure:", response.data);
+
+      // Ensure `user_videos` and `other_videos` are arrays and set them accordingly
+      setUserVideos(
+        Array.isArray(response.data.user_videos)
+          ? response.data.user_videos
+          : []
+      );
+      setOtherVideos(
+        Array.isArray(response.data.other_videos)
+          ? response.data.other_videos
+          : []
+      );
+
+      console.log("userVideos:", response.data.user_videos);
+      console.log("otherVideos:", response.data.other_videos);
     } catch (err) {
+      console.error("Error fetching videos:", err);
       if (err.response && err.response.status === 401) {
         setError("Unauthorized. Please log in again.");
       } else {
@@ -123,7 +139,7 @@ const Videos = () => {
 
       <h2>My Videos</h2>
       <div className={styles["video-list"]}>
-        {userVideos.length > 0 ? (
+        {Array.isArray(userVideos) && userVideos.length > 0 ? (
           userVideos.map((video) => <VideoItem key={video.id} video={video} />)
         ) : (
           <p>No videos uploaded by you yet.</p>
@@ -132,7 +148,7 @@ const Videos = () => {
 
       <h2>Other Videos</h2>
       <div className={styles["video-list"]}>
-        {otherVideos.length > 0 ? (
+        {Array.isArray(otherVideos) && otherVideos.length > 0 ? (
           otherVideos.map((video) => <VideoItem key={video.id} video={video} />)
         ) : (
           <p>No other videos available yet.</p>
