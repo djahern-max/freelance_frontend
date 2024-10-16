@@ -9,8 +9,7 @@ import logoutIcon from "../../images/Logout.png";
 import { useNavigate } from "react-router-dom";
 
 const Videos = () => {
-  const [userVideos, setUserVideos] = useState([]);
-  const [otherVideos, setOtherVideos] = useState([]);
+  const [videos, setVideos] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
@@ -24,36 +23,15 @@ const Videos = () => {
         throw new Error("Token not found. Please log in again.");
       }
 
-      const response = await axios.get(`${apiUrl}/video_display/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const response = await axios.get(`${apiUrl}/video_display/spaces`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      // Log the API response structure to check if it's what you're expecting
-      console.log("API response data structure:", response.data);
-
-      // Ensure `user_videos` and `other_videos` are arrays and set them accordingly
-      setUserVideos(
-        Array.isArray(response.data.user_videos)
-          ? response.data.user_videos
-          : []
-      );
-      setOtherVideos(
-        Array.isArray(response.data.other_videos)
-          ? response.data.other_videos
-          : []
-      );
-
-      console.log("userVideos:", response.data.user_videos);
-      console.log("otherVideos:", response.data.other_videos);
+      setVideos(Array.isArray(response.data) ? response.data : []);
+      console.log("Fetched videos:", response.data);
     } catch (err) {
       console.error("Error fetching videos:", err);
-      if (err.response && err.response.status === 401) {
-        setError("Unauthorized. Please log in again.");
-      } else {
-        setError("Failed to fetch videos. Please try again later.");
-      }
+      setError("Failed to fetch videos. Please try again later.");
     } finally {
       setIsLoading(false);
     }
@@ -65,31 +43,17 @@ const Videos = () => {
   };
 
   useEffect(() => {
-    let isMounted = true;
-
-    const token = localStorage.getItem("authToken");
-    if (!token) {
-      setError("Token not found. Please log in again.");
-      return;
-    }
-
     fetchVideos();
-
-    return () => {
-      isMounted = false; // Cleanup on unmount
-    };
   }, []);
 
   const VideoItem = ({ video }) => {
-    const apiUrl = process.env.REACT_APP_API_URL;
-    const videoUrl = `${apiUrl}/video_display/stream/${video.id}`;
-
     return (
       <div className={styles["video-item"]}>
-        <h3>{video.title}</h3>
-        <p>{video.description}</p>
+        <h3>{video.filename}</h3>
+        <p>Size: {(video.size / 1024 / 1024).toFixed(2)} MB</p>
+        <p>Last Modified: {new Date(video.last_modified).toLocaleString()}</p>
         <video controls>
-          <source src={videoUrl} type="video/mp4" />
+          <source src={video.url} type="video/mp4" />
           Your browser does not support the video tag.
         </video>
       </div>
@@ -143,21 +107,14 @@ const Videos = () => {
         </button>
       </div>
 
-      <h2>My Videos</h2>
-      <div className={styles["video-list"]}>
-        {Array.isArray(userVideos) && userVideos.length > 0 ? (
-          userVideos.map((video) => <VideoItem key={video.id} video={video} />)
-        ) : (
-          <p>No videos uploaded by you yet.</p>
-        )}
-      </div>
+      {error && <div className={styles["error-message"]}>{error}</div>}
 
-      <h2>Other Videos</h2>
+      <h2>Videos</h2>
       <div className={styles["video-list"]}>
-        {Array.isArray(otherVideos) && otherVideos.length > 0 ? (
-          otherVideos.map((video) => <VideoItem key={video.id} video={video} />)
+        {videos.length > 0 ? (
+          videos.map((video, index) => <VideoItem key={index} video={video} />)
         ) : (
-          <p>No other videos available yet.</p>
+          <p>No videos available.</p>
         )}
       </div>
     </div>
