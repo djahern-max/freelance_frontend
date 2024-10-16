@@ -205,3 +205,8 @@ button:hover {
   white-space: pre-wrap;
   margin-bottom: 10px;
 }
+
+.notesList {
+  list-style-type: none; /* This removes the bullet points */
+  padding-left: 0; /* Optional: Removes the default padding */
+}

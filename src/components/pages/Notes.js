@@ -33,7 +33,7 @@ const Notes = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        if (isMounted) setNotes(response.data);
+        if (isMounted) setNotes(response.data); // Will only get the current user's notes now
       } catch (error) {
         handleError(error);
       }

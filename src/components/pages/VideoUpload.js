@@ -8,14 +8,21 @@ const VideoUpload = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [file, setFile] = useState(null);
+  const [thumbnail, setThumbnail] = useState(null); // State for thumbnail file
   const [isProject, setIsProject] = useState(false);
   const [uploadStatus, setUploadStatus] = useState(null);
 
   const apiUrl = process.env.REACT_APP_API_URL;
   const navigate = useNavigate();
 
+  // Handle video file selection
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
+  };
+
+  // Handle thumbnail file selection
+  const handleThumbnailChange = (e) => {
+    setThumbnail(e.target.files[0]);
   };
 
   const handleSubmit = async (e) => {
@@ -24,7 +31,8 @@ const VideoUpload = () => {
     formData.append("title", title);
     formData.append("description", description);
     formData.append("is_project", isProject);
-    formData.append("file", file);
+    formData.append("file", file); // Add video file to form data
+    formData.append("thumbnail", thumbnail); // Add thumbnail to form data
 
     const token = localStorage.getItem("authToken"); // Retrieve token from local storage
 
@@ -87,11 +95,20 @@ const VideoUpload = () => {
           />
         </div>
         <div className={styles.formGroup}>
-          <label>File:</label>
+          <label>Video File:</label>
           <input
             type="file"
             onChange={handleFileChange}
             accept="video/*"
+            required
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label>Thumbnail:</label>
+          <input
+            type="file"
+            onChange={handleThumbnailChange}
+            accept="image/*" // Only accept image files for thumbnails
             required
           />
         </div>
