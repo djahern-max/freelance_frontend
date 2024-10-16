@@ -81,7 +81,9 @@ const Videos = () => {
   }, []);
 
   const VideoItem = ({ video }) => {
+    const apiUrl = process.env.REACT_APP_API_URL;
     const videoUrl = `${apiUrl}/video_display/stream/${video.id}`;
+
     return (
       <div className={styles["video-item"]}>
         <h3>{video.title}</h3>
