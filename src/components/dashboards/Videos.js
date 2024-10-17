@@ -54,9 +54,9 @@ const Videos = () => {
         <p>Last Modified: {new Date(video.last_modified).toLocaleString()}</p>
 
         {/* Display thumbnail */}
-        {video.thumbnail_url && (
+        {video.thumbnail_path && (
           <img
-            src={video.thumbnail_url}
+            src={video.thumbnail_path}
             alt="Video Thumbnail"
             className={styles["video-thumbnail"]}
           />
