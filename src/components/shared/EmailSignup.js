@@ -5,150 +5,22 @@ import "./EmailSignup.css";
 const EmailSignup = () => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
-  const [currentPhrase, setCurrentPhrase] = useState(0);
-  const [showBuildIt, setShowBuildIt] = useState(false);
+  const [currentPhrase, setCurrentPhrase] = useState("United we Code");
   const navigate = useNavigate();
 
-  // Phrases to rotate
-  const phrases = [
-    "Embrace Change",
-    "Accept Challenge",
-    "Create a Masterpiece",
-    "Welcome Transformation",
-    "Adapt to Growth",
-    "Thrive in Transition",
-    "Embrace Evolution",
-    "Flow with Change",
-    "Accept the New",
-    "Change is Progress",
-    "Ride the Waves of Change",
-    "Evolve with Time",
-    "Open to New Possibilities",
-    "Flourish Through Change",
-    "Shift Your Perspective",
-    "Embrace the Unknown",
-    "Leap Into the Future",
-    "Move Forward Fearlessly",
-    "Grow Through Change",
-    "Accept Transformation",
-    "Be Open to New Beginnings",
-    "Change Brings Opportunity",
-    "Step Into New Horizons",
-    "Embrace Progress",
-    "Go with the Flow of Life",
-    "Let Change Inspire You",
-    "Celebrate New Phases",
-    "Change Brings Growth",
-    "Shift to Thrive",
-    "Transformation is Power",
-    "Adapt and Flourish",
-    "See Change as Growth",
-    "Welcome Shifts with Grace",
-    "Change Sparks Evolution",
-    "Transition with Strength",
-    "Transform with Confidence",
-    "Accept What Is Coming",
-    "Evolve Bravely",
-    "Lean into Change",
-    "Growth is Change",
-    "Embrace New Paths",
-    "Change is Opportunity",
-    "Open to Evolution",
-    "Rise to the Occasion",
-    "Face Obstacles Head-On",
-    "Overcome Your Limits",
-    "Conquer the Difficult",
-    "Challenge Yourself",
-    "Take on the Impossible",
-    "Step Into Adversity",
-    "Face Challenges Boldly",
-    "Meet Resistance with Strength",
-    "Push Beyond Boundaries",
-    "Break Through Barriers",
-    "Go Beyond Your Comfort Zone",
-    "Master the Struggle",
-    "Take on the Tough Stuff",
-    "Defy the Odds",
-    "Conquer Every Challenge",
-    "Face the Uncomfortable",
-    "Chase Difficulties",
-    "Embrace Adversity",
-    "Accept the Test",
-    "Overcome Setbacks",
-    "Meet Challenges Head-On",
-    "Defeat What’s Difficult",
-    "Tackle the Obstacles",
-    "Face Fears with Courage",
-    "Pursue the Challenge",
-    "Conquer What’s Tough",
-    "Rise Above Limits",
-    "Test Your Resolve",
-    "Push Yourself Further",
-    "Boldly Face Resistance",
-    "Strength in Struggle",
-    "Power Through Obstacles",
-    "Embrace Tough Moments",
-    "Accept the Journey",
-    "Test Your Strength",
-    "Face Hurdles Fearlessly",
-    "Embrace the Struggle",
-    "Take on Life’s Tests",
-    "Grow Through Challenge",
-    "Craft Something Great",
-    "Build a Work of Art",
-    "Create Your Legacy",
-    "Make Your Mark",
-    "Shape Brilliance",
-    "Bring Your Vision to Life",
-    "Craft Your Best Work",
-    "Create Something Amazing",
-    "Design Something Extraordinary",
-    "Build a Lasting Impact",
-    "Form a Masterwork",
-    "Create Excellence",
-    "Manifest Greatness",
-    "Sculpt Your Dream",
-    "Build Your Masterpiece",
-    "Achieve Creative Brilliance",
-    "Construct with Purpose",
-    "Design Your Best Work",
-    "Bring Forth Greatness",
-    "Make Something Incredible",
-  ];
-
+  // Toggle between phrases every 3 seconds
   useEffect(() => {
-    let phraseInterval;
-    let cycleInterval;
-    let phraseIndex = 0;
+    const phrases = ["United we Code", "Divided we Debug"];
+    let index = 0;
 
-    const rotatePhrases = () => {
-      setShowBuildIt(false);
-      phraseInterval = setInterval(() => {
-        setCurrentPhrase(phraseIndex);
-        phraseIndex = (phraseIndex + 1) % phrases.length;
-      }, 250);
-    };
+    const interval = setInterval(() => {
+      index = (index + 1) % phrases.length; // Toggle between 0 and 1
+      setCurrentPhrase(phrases[index]);
+    }, 3000); // 3000 ms = 3 seconds
 
-    const showBuildIt = () => {
-      clearInterval(phraseInterval);
-      setShowBuildIt(true);
-    };
-
-    const startCycle = () => {
-      cycleInterval = setInterval(() => {
-        rotatePhrases();
-        setTimeout(showBuildIt, 10000);
-      }, 20000);
-    };
-
-    rotatePhrases();
-    startCycle();
-
-    return () => {
-      clearInterval(phraseInterval);
-      clearInterval(cycleInterval);
-    };
-  }, [phrases.length]);
+    // Clean up interval on component unmount
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -158,9 +30,8 @@ const EmailSignup = () => {
   return (
     <section className="email-signup" id="signup">
       <div className="phrase-container">
-        <p className={`phrase ${showBuildIt ? "build-it-text" : ""}`}>
-          {showBuildIt ? "BUILD IT!" : phrases[currentPhrase]}
-        </p>
+        {/* Dynamically toggle between "United we Code" and "Divided we Debug" */}
+        <p className="phrase">{currentPhrase}</p>
       </div>
       <form onSubmit={handleSubmit}>
         <input

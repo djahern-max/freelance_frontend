@@ -159,6 +159,13 @@ video {
   margin-bottom: 20px;
 }
 
+.video-thumbnail {
+  width: 200px;
+  height: auto;
+  margin-bottom: 10px;
+  border-radius: 8px;
+}
+
 /* Responsive Design */
 @media (max-width: 745px) {
   h1,

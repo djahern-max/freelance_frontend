@@ -4,31 +4,11 @@ import "./Hero.css";
 import simpleSun from "../../images/simple_sun.png";
 
 const Hero = () => {
-  const [headerText, setHeaderText] = useState("United we Create");
+  const [headerText, setHeaderText] = useState("Build the Future");
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate(); // Initialize useNavigate for navigation
-
-  // Function to update the header text based on screen width
-  const updateHeaderText = () => {
-    if (window.innerWidth < 745) {
-      setHeaderText("United we Build");
-    } else {
-      setHeaderText("United we Build");
-    }
-  };
-
-  // Run the updateHeaderText function on load and when resizing the window
-  useEffect(() => {
-    updateHeaderText();
-    window.addEventListener("resize", updateHeaderText);
-
-    // Clean up event listener on component unmount
-    return () => {
-      window.removeEventListener("resize", updateHeaderText);
-    };
-  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -63,9 +43,8 @@ const Hero = () => {
   return (
     <section className="hero">
       <div className="hero-text">
-        {/* Dynamically change the h1 text */}
+        {/* Use the static headerText */}
         <h1>{headerText}</h1>
-        <p>Devided we Debug</p>
 
         {/* Form for email subscription */}
         <form className="email-form" onSubmit={handleSubmit}>
