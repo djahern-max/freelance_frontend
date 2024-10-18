@@ -52,17 +52,6 @@ const Videos = () => {
         <h3>{video.filename}</h3>
         <p>Size: {(video.size / 1024 / 1024).toFixed(2)} MB</p>
         <p>Last Modified: {new Date(video.last_modified).toLocaleString()}</p>
-
-        {/* Display thumbnail */}
-        {video.thumbnail_path && (
-          <img
-            src={video.thumbnail_path}
-            alt="Video Thumbnail"
-            className={styles["video-thumbnail"]}
-          />
-        )}
-
-        {/* Video player */}
         <video controls>
           <source src={video.url} type="video/mp4" />
           Your browser does not support the video tag.
