@@ -47,15 +47,32 @@ const Videos = () => {
   }, []);
 
   const VideoItem = ({ video }) => {
+    const [showVideo, setShowVideo] = useState(false);
+
+    const handleClick = () => {
+      setShowVideo(true);
+    };
+
     return (
       <div className={styles["video-item"]}>
         <h3>{video.filename}</h3>
         <p>Size: {(video.size / 1024 / 1024).toFixed(2)} MB</p>
         <p>Last Modified: {new Date(video.last_modified).toLocaleString()}</p>
-        <video controls>
-          <source src={video.url} type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+        {!showVideo ? (
+          <div onClick={handleClick} style={{ cursor: "pointer" }}>
+            <img
+              src={video.thumbnail_path}
+              alt="Video Thumbnail"
+              style={{ width: "100%", borderRadius: "10px" }}
+            />
+            <p>Click to play</p>
+          </div>
+        ) : (
+          <video controls style={{ width: "100%", borderRadius: "10px" }}>
+            <source src={video.url} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        )}
       </div>
     );
   };

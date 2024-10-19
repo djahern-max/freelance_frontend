@@ -4,7 +4,7 @@ import "./Hero.css";
 import simpleSun from "../../images/simple_sun.png";
 
 const Hero = () => {
-  const [headerText, setHeaderText] = useState("Build the Future");
+  const [headerText, setHeaderText] = useState("Automate Your Life with AI");
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -46,19 +46,6 @@ const Hero = () => {
         {/* Use the static headerText */}
         <h1>{headerText}</h1>
 
-        {/* Form for email subscription */}
-        <form className="email-form" onSubmit={handleSubmit}>
-          <input
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <button type="submit">Subscribe</button>
-        </form>
-
-        {/* Show success or error message */}
         {success && <p className="success-message">{success}</p>}
         {error && <p className="error-message">{error}</p>}
       </div>
