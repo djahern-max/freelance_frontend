@@ -8,10 +8,14 @@ import appsIcon from "../../images/Apps.png";
 import logoutIcon from "../../images/Logout.png";
 import edit from "../../images/Notes.png";
 import del from "../../images/Delete.png";
+import { useDispatch, useSelector } from "react-redux";
+import { login, logout } from "../../redux/authSlice";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
 const Notes = () => {
+  const dispatch = useDispatch(); // Add this line to initialize dispatch
+  const { token, user } = useSelector((state) => state.auth); // Access Redux state
   const [notes, setNotes] = useState([]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -23,20 +27,37 @@ const Notes = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const token = localStorage.getItem("authToken");
-
+  // Check token on load
   useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/projects/`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setProjects(response.data);
-      } catch (error) {
-        console.error("Failed to fetch projects");
+    const validateToken = async () => {
+      if (token) {
+        try {
+          const response = await axios.get(`${API_URL}/auth/me`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          dispatch(login({ username: response.data.username, token })); // Dispatch Redux login
+        } catch (error) {
+          console.error("Token validation failed", error);
+          dispatch(logout()); // Dispatch Redux logout
+        }
       }
     };
 
+    validateToken(); // Call the function on mount
+  }, [token, dispatch]);
+
+  const fetchProjects = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/projects/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setProjects(response.data);
+    } catch (error) {
+      console.error("Failed to fetch projects");
+    }
+  };
+
+  useEffect(() => {
     if (token) fetchProjects();
   }, [token]);
 
@@ -62,9 +83,9 @@ const Notes = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
+    dispatch(logout()); // Use Redux logout
     navigate("/login");
   };
-
   const createNote = async (e) => {
     e.preventDefault();
     try {
@@ -138,6 +159,7 @@ const Notes = () => {
   const handleError = (error) => {
     if (error.response && error.response.status === 401) {
       setError("Unauthorized. Please log in again.");
+      handleLogout();
     } else {
       setError("An error occurred. Please try again.");
     }
