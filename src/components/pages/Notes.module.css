@@ -1,132 +1,30 @@
-/* Import the Poppins font from Google Fonts */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap");
 
-/* Main container for notes page */
+/* General page styling */
 .notesContainer {
-  width: 80%;
-  margin: auto;
-  text-align: center;
-  font-family: "Poppins", sans-serif;
-  background-color: #f8f8f8;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-}
-
-.noteForm {
-  margin-bottom: 30px;
   display: flex;
-  flex-direction: column; /* Stack the inputs and button vertically */
-  align-items: center; /* Center the elements */
-}
-
-.noteForm button:hover {
-  background-color: #e65a00;
-}
-
-.noteForm button {
-  background-color: #ff6600;
-  color: white;
-  border: none;
-  padding: 15px 30px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s ease;
-  border-radius: 5px;
-  margin-top: 20px; /* Add space between the text area and the button */
-}
-
-.inputField {
-  width: 100%; /* Full width for input fields */
-  max-width: 600px; /* Optional: Set a max-width to prevent fields from being too wide */
-  padding: 15px;
-  margin-bottom: 20px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
+  flex-direction: column;
+  padding: 20px;
+  background-color: #f8f8f8;
   font-family: "Poppins", sans-serif;
 }
 
-textarea.inputField {
-  height: 150px; /* Larger height for textarea */
-  resize: vertical; /* Allow resizing vertically */
-}
-
-/* Button styling similar to email form in Hero.css */
-button {
-  background-color: #ff6600;
-  color: white;
-  border: none;
-  padding: 15px 30px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s ease;
-  border-radius: 5px;
-  margin-right: 10px; /* Add spacing between buttons */
-}
-
-button:hover {
-  background-color: #e65a00;
-}
-
-/* Styling for Edit and Delete buttons specifically */
-.editButton,
-.deleteButton {
-  padding: 10px 20px;
-  border-radius: 5px;
-  font-size: 1rem;
-  cursor: pointer;
-  margin-right: 10px; /* Add space between buttons */
-  transition: background-color 0.3s ease;
-}
-
-.editButton {
-  background-color: #4caf50; /* Green for edit */
-  color: white;
-}
-
-.editButton:hover {
-  background-color: #45a049;
-}
-
-.deleteButton {
-  background-color: #f44336; /* Red for delete */
-  color: white;
-}
-
-.deleteButton:hover {
-  background-color: #d32f2f;
-}
-
-/* Notes list styling */
-.notesList {
-  margin-top: 30px;
-  text-align: left; /* Align text to the left for readability */
-}
-
-/* Individual note item styling */
-.noteItem {
-  border: 1px solid #ddd;
-  padding: 15px;
-  margin-bottom: 20px;
-  border-radius: 10px;
-  background-color: #fff;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Box shadow for notes */
-}
-
-.noteItem h2 {
-  font-size: 1.5rem;
+h1 {
+  font-size: 2.5rem;
   color: #757575;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
+  text-align: center;
 }
 
-.noteItem p {
-  font-size: 1.2rem;
-  color: #333;
+h2 {
+  font-size: 2rem;
+  color: #ff6600;
+  margin-top: 30px;
+  margin-bottom: 20px;
+  text-align: left;
 }
 
-/* Add the icon bar and icons styles similar to Videos.module.css */
-
+/* Icon bar styling */
 .icon-bar {
   display: flex;
   justify-content: space-around;
@@ -172,41 +70,315 @@ button:hover {
   visibility: visible;
 }
 
+/* Main content wrapper */
+.mainContent {
+  display: flex;
+  flex: 1;
+}
+
+/* Sidebar styling */
+.sidebar {
+  flex-basis: 20%;
+  max-width: 250px;
+  background-color: #f5f5f5;
+  padding: 20px;
+  height: 100vh;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+}
+
+.sidebar h2 {
+  font-size: 1.5rem;
+  color: #757575;
+  margin-bottom: 10px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.sidebar ul li {
+  margin-bottom: 10px;
+}
+
+.sidebar ul li a {
+  text-decoration: none;
+  color: #333;
+  transition: color 0.3s ease;
+}
+
+.sidebar ul li a:hover {
+  color: #ff6600;
+}
+
+/* Notes content area */
+.notesContent {
+  flex-grow: 1;
+  padding-left: 20px;
+}
+
+.noteForm {
+  margin-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.noteForm button:hover {
+  background-color: #e65a00;
+}
+
+.noteForm button {
+  background-color: #ff6600;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+  border-radius: 5px;
+  margin-top: 20px;
+}
+
+.inputField {
+  width: 100%;
+  max-width: 90%;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+textarea.inputField {
+  height: 150px;
+  resize: vertical;
+}
+
+/* Button styling */
+button {
+  background-color: #ff6600;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+button:hover {
+  background-color: #e65a00;
+}
+
+.editButton,
+.deleteButton {
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-right: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.editButton {
+  background-color: #4caf50;
+  color: white;
+}
+
+.editButton:hover {
+  background-color: #45a049;
+}
+
+.deleteButton {
+  background-color: #f44336;
+  color: white;
+}
+
+.deleteButton:hover {
+  background-color: #d32f2f;
+}
+
+/* Notes list styling */
+.notesList {
+  list-style-type: none;
+  padding-left: 0;
+  margin-top: 30px;
+  text-align: left;
+}
+
+.noteItem {
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.noteItem h2 {
+  font-size: 1.5rem;
+  color: #757575;
+  margin-bottom: 10px;
+}
+
+.noteItem p {
+  font-size: 1.2rem;
+  color: #333;
+}
+
 .iconButton {
-  width: 24px; /* Make the icons smaller */
+  width: 24px;
   height: 24px;
   cursor: pointer;
-  margin-right: 10px; /* Space between edit and delete icons */
+  margin-right: 10px;
   transition: transform 0.3s ease;
 }
 
 .iconButton:hover {
-  transform: scale(1.1); /* Slightly enlarge on hover */
+  transform: scale(1.1);
 }
 
-/* Add monospaced font for command display */
+/* Command display styling */
 .commandDisplay {
   font-family: "Courier New", Courier, monospace;
   background-color: #f5f5f5;
   border: 1px solid #ddd;
   padding: 10px;
   border-radius: 5px;
-  white-space: pre-wrap; /* Ensures commands wrap properly */
+  white-space: pre-wrap;
 }
 
-/* Code block styling */
 .codeBlock {
   background-color: #f3f3f3;
   padding: 10px;
   border-radius: 5px;
   border: 1px solid #ccc;
-  overflow-x: auto; /* Allow horizontal scroll for long commands */
+  overflow-x: auto;
   font-family: "Courier New", Courier, monospace;
   white-space: pre-wrap;
   margin-bottom: 10px;
 }
 
-.notesList {
-  list-style-type: none; /* This removes the bullet points */
-  padding-left: 0; /* Optional: Removes the default padding */
+/* Project selection styling */
+.selectField {
+  width: 200px;
+  padding: 10px;
+  margin-bottom: 20px;
+  font-size: 1rem;
+  font-family: "Poppins", sans-serif;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  background-color: #fff;
+  color: #333;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.selectField:hover {
+  border-color: #ff6600;
+}
+
+.selectField:focus {
+  outline: none;
+  border-color: #ff6600;
+}
+
+.selectField option {
+  padding: 10px;
+  font-size: 1rem;
+  background-color: #fff;
+  color: #333;
+}
+
+/* Create project button styling */
+.createProjectButton {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 1rem;
+  margin-top: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.createProjectButton:hover {
+  background-color: #45a049;
+}
+
+.createProjectLink {
+  text-decoration: none;
+  display: inline-block;
+  margin-top: 10px;
+}
+
+/* Add Note button styling */
+.addNoteButton {
+  background-color: #ff6600;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-top: 20px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.addNoteButton:hover {
+  background-color: #e65a00;
+}
+
+/* Dropdown for smaller screens */
+.dropdown {
+  display: none;
+}
+
+/* Responsive Design */
+@media (max-width: 745px) {
+  .sidebar {
+    display: none;
+  }
+
+  .dropdown {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .createProjectButton {
+    display: inline-block;
+    max-width: 300px;
+    width: auto;
+    margin: 10px auto 0;
+    padding: 12px 24px;
+  }
+
+  h1,
+  h2 {
+    font-size: 2rem;
+    text-align: center;
+  }
+
+  .notesContainer {
+    flex-direction: column;
+  }
+
+  .notesContent {
+    padding: 0;
+  }
+
+  .mainContent {
+    flex-direction: column;
+    padding: 0 10px;
+  }
+
+  .inputField {
+    max-width: 100%;
+  }
 }

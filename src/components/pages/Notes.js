@@ -17,41 +17,37 @@ const Notes = () => {
   const [content, setContent] = useState("");
   const [editMode, setEditMode] = useState(false);
   const [editNoteId, setEditNoteId] = useState(null);
+  const [projectId, setProjectId] = useState(null);
+  const [projects, setProjects] = useState([]);
+  const [selectedProject, setSelectedProject] = useState(null);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // Get token from localStorage
   const token = localStorage.getItem("authToken");
 
   useEffect(() => {
-    let isMounted = true;
-
-    const fetchNotes = async () => {
+    const fetchProjects = async () => {
       try {
-        const response = await axios.get(`${API_URL}/notes/`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const response = await axios.get(`${API_URL}/projects/`, {
+          headers: { Authorization: `Bearer ${token}` },
         });
-        if (isMounted) setNotes(response.data); // Will only get the current user's notes now
+        setProjects(response.data);
       } catch (error) {
-        handleError(error);
+        console.error("Failed to fetch projects");
       }
     };
 
-    if (token) fetchNotes();
-
-    return () => {
-      isMounted = false;
-    };
+    if (token) fetchProjects();
   }, [token]);
 
-  // Fetch all notes
-  const fetchNotes = async () => {
+  const fetchNotes = async (projectId = null) => {
     try {
       const response = await axios.get(`${API_URL}/notes/`, {
         headers: {
           Authorization: `Bearer ${token}`,
+        },
+        params: {
+          project_id: projectId,
         },
       });
       setNotes(response.data);
@@ -60,18 +56,21 @@ const Notes = () => {
     }
   };
 
+  useEffect(() => {
+    if (token && projectId) fetchNotes(projectId);
+  }, [token, projectId]);
+
   const handleLogout = () => {
     localStorage.removeItem("authToken");
     navigate("/login");
   };
 
-  // Create a new note
   const createNote = async (e) => {
     e.preventDefault();
     try {
       await axios.post(
         `${API_URL}/notes/`,
-        { title, content },
+        { title, content, project_id: projectId },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -81,27 +80,26 @@ const Notes = () => {
       );
       setTitle("");
       setContent("");
-      fetchNotes();
+      fetchNotes(projectId);
     } catch (error) {
       handleError(error);
     }
   };
 
-  // Edit an existing note
   const editNote = (note) => {
     setEditMode(true);
     setEditNoteId(note.id);
     setTitle(note.title);
     setContent(note.content);
+    setProjectId(note.project_id);
   };
 
-  // Update a note
   const updateNote = async (e) => {
     e.preventDefault();
     try {
       await axios.put(
         `${API_URL}/notes/${editNoteId}`,
-        { title, content },
+        { title, content, project_id: projectId },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -113,13 +111,12 @@ const Notes = () => {
       setEditNoteId(null);
       setTitle("");
       setContent("");
-      fetchNotes();
+      fetchNotes(projectId);
     } catch (error) {
       handleError(error);
     }
   };
 
-  // Delete a note
   const deleteNote = async (id) => {
     try {
       await axios.delete(`${API_URL}/notes/${id}`, {
@@ -127,13 +124,17 @@ const Notes = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      fetchNotes();
+      fetchNotes(projectId);
     } catch (error) {
       handleError(error);
     }
   };
 
-  // Error handler for token-related issues
+  const selectProject = (project) => {
+    setProjectId(project.id);
+    setSelectedProject(project);
+  };
+
   const handleError = (error) => {
     if (error.response && error.response.status === 401) {
       setError("Unauthorized. Please log in again.");
@@ -144,7 +145,6 @@ const Notes = () => {
 
   return (
     <div className={styles.notesContainer}>
-      {/* Header navigation */}
       <div className={styles["icon-bar"]}>
         <img
           src={newsIcon}
@@ -155,8 +155,8 @@ const Notes = () => {
         />
         <img
           src={videos}
-          alt="Notes"
-          title="Go to Notes"
+          alt="Videos"
+          title="Go to Videos"
           className={styles.icon}
           onClick={() => navigate("/videos")}
         />
@@ -176,55 +176,105 @@ const Notes = () => {
         />
       </div>
 
-      {/* Notes content */}
-      <h1>Notes</h1>
-      {error && <p className={styles.error}>{error}</p>}
-      <form
-        className={styles.noteForm}
-        onSubmit={editMode ? updateNote : createNote}
-      >
-        <input
-          type="text"
-          className={styles.inputField}
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Title"
-          required
-        />
-        <textarea
-          className={`${styles.inputField} ${styles.commandDisplay}`}
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="Content (for commands use monospaced formatting)"
-          required
-        />
-        <button type="submit">{editMode ? "Update Note" : "Add Note"}</button>
-      </form>
+      <div className={styles.mainContent}>
+        <div className={styles.sidebar}>
+          <button
+            className={styles.createProjectButton}
+            onClick={() => navigate("/create-project")}
+          >
+            Create Project
+          </button>
+          <h2>Projects</h2>
+          <ul>
+            {projects.map((project) => (
+              <li key={project.id}>
+                <a href="#" onClick={() => selectProject(project)}>
+                  {project.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-      <ul className={styles.notesList}>
-        {Array.isArray(notes) && notes.length > 0 ? (
-          notes.map((note) => (
-            <li key={note.id} className={styles.noteItem}>
-              <h2>{note.title}</h2>
-              <pre className={styles.codeBlock}>{note.content}</pre>
-              <img
-                src={edit}
-                alt="Edit Note"
-                className={styles.iconButton}
-                onClick={() => editNote(note)}
-              />
-              <img
-                src={del}
-                alt="Delete Note"
-                className={styles.iconButton}
-                onClick={() => deleteNote(note.id)}
-              />
-            </li>
-          ))
-        ) : (
-          <p>No notes available yet.</p>
-        )}
-      </ul>
+        <div className={styles.notesContent}>
+          {selectedProject && <h2>{selectedProject.name}</h2>}
+
+          <div className={styles.dropdown}>
+            <select
+              className={styles.selectField}
+              value={projectId || ""}
+              onChange={(e) =>
+                selectProject(
+                  projects.find((p) => p.id === parseInt(e.target.value))
+                )
+              }
+            >
+              <option value="">All Projects</option>
+              {projects.map((project) => (
+                <option key={project.id} value={project.id}>
+                  {project.name}
+                </option>
+              ))}
+            </select>
+            <button
+              className={styles.createProjectButton}
+              onClick={() => navigate("/create-project")}
+            >
+              Create Project
+            </button>
+          </div>
+
+          {error && <p className={styles.error}>{error}</p>}
+          <form
+            className={styles.noteForm}
+            onSubmit={editMode ? updateNote : createNote}
+          >
+            <input
+              type="text"
+              className={styles.inputField}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Title"
+              required
+            />
+            <textarea
+              className={`${styles.inputField} ${styles.commandDisplay}`}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="Content"
+              required
+            />
+            <button type="submit" className={styles.addNoteButton}>
+              {editMode ? "Update Note" : "Add Note"}
+            </button>
+          </form>
+
+          <ul className={styles.notesList}>
+            {Array.isArray(notes) && notes.length > 0 ? (
+              notes.map((note) => (
+                <li key={note.id} className={styles.noteItem}>
+                  <h2>{note.title}</h2>
+                  <pre className={styles.codeBlock}>{note.content}</pre>
+                  <img
+                    src={edit}
+                    alt="Edit Note"
+                    className={styles.iconButton}
+                    onClick={() => editNote(note)}
+                  />
+                  <img
+                    src={del}
+                    alt="Delete Note"
+                    className={styles.iconButton}
+                    onClick={() => deleteNote(note.id)}
+                  />
+                </li>
+              ))
+            ) : (
+              <p>No notes available yet.</p>
+            )}
+          </ul>
+        </div>
+      </div>
     </div>
   );
 };

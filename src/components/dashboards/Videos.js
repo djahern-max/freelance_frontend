@@ -55,9 +55,10 @@ const Videos = () => {
 
     return (
       <div className={styles["video-item"]}>
-        {/* <h3>{video.filename}</h3>
-        <p>Size: {(video.size / 1024 / 1024).toFixed(2)} MB</p>
-        <p>Last Modified: {new Date(video.last_modified).toLocaleString()}</p> */}
+        {/* Display title and description above the video */}
+        <h3>{video.title}</h3>
+        <p>{video.description}</p>
+
         {!showVideo ? (
           <div onClick={handleClick} style={{ cursor: "pointer" }}>
             <img

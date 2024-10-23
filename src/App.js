@@ -12,6 +12,7 @@ import NewsletterDashboard from "./components/dashboards/NewsletterDashboard";
 import AppDashboard from "./components/dashboards/AppDashboard";
 import Notes from "./components/pages/Notes";
 import ProtectedRoute from "./components/common/ProtectedRoute";
+import CreateProject from "./components/pages/CreateProject";
 import "./global.css";
 
 function App() {
@@ -26,7 +27,6 @@ function App() {
         <Route path="/logout" element={<Logout />} />
         <Route path="/email" element={<Email />} />
         <Route path="/newsletter-dashboard" element={<NewsletterDashboard />} />
-
         {/* Protected routes */}
         <Route
           path="/app-dashboard"
@@ -41,6 +41,22 @@ function App() {
           element={
             <ProtectedRoute>
               <Notes />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/videos"
+          element={
+            <ProtectedRoute>
+              <Videos />
+            </ProtectedRoute>
+          }
+        />{" "}
+        <Route
+          path="/create-project"
+          element={
+            <ProtectedRoute>
+              <CreateProject />
             </ProtectedRoute>
           }
         />
