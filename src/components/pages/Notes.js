@@ -78,11 +78,12 @@ const Notes = () => {
 
   const fetchNotes = async (projectId = null) => {
     try {
-      // Log the URL and projectId before the request
-      console.log(`Fetching notes for project ${projectId}`);
-      console.log(`Endpoint: ${API_URL}/notes/`);
+      const constructedUrl = `${API_URL}/notes/`;
+      console.log("Environment:", process.env.NODE_ENV);
+      console.log("API_URL:", API_URL);
+      console.log("Constructed URL:", constructedUrl);
 
-      const response = await axios.get(`${API_URL}/notes/`, {
+      const response = await axios.get(constructedUrl, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -95,7 +96,6 @@ const Notes = () => {
       handleError(error);
     }
   };
-
   useEffect(() => {
     if (token && projectId) fetchNotes(projectId);
   }, [token, projectId]);

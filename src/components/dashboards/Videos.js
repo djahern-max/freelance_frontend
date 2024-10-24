@@ -23,14 +23,27 @@ const Videos = () => {
         throw new Error("Token not found. Please log in again.");
       }
 
-      const response = await axios.get(`${apiUrl}/video_display/spaces`, {
+      const constructedUrl = `${apiUrl}/video_display/spaces`;
+      console.log("Environment:", process.env.NODE_ENV);
+      console.log("API_URL:", apiUrl);
+      console.log("Constructed URL:", constructedUrl);
+      console.log("Auth token:", token);
+
+      const response = await axios.get(constructedUrl, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       setVideos(Array.isArray(response.data) ? response.data : []);
+
+      // Log the response data
       console.log("Fetched videos:", response.data);
     } catch (err) {
       console.error("Error fetching videos:", err);
+      console.error("Error details:", {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status,
+      });
       setError("Failed to fetch videos. Please try again later.");
     } finally {
       setIsLoading(false);
