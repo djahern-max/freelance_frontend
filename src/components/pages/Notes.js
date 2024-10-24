@@ -78,6 +78,10 @@ const Notes = () => {
 
   const fetchNotes = async (projectId = null) => {
     try {
+      // Log the URL and projectId before the request
+      console.log(`Fetching notes for project ${projectId}`);
+      console.log(`Endpoint: ${API_URL}/notes/`);
+
       const response = await axios.get(`${API_URL}/notes/`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -99,7 +103,7 @@ const Notes = () => {
   const handleLogout = () => {
     localStorage.removeItem("authToken");
     dispatch(logout());
-    navigate("/login");
+    navigate("/");
   };
 
   const createNote = async (e) => {

@@ -10,7 +10,7 @@ const Logout = () => {
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate("/login");
+    navigate("/");
   };
 
   return <button onClick={handleLogout}>Logout</button>;
