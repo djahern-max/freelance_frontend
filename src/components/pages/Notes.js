@@ -14,8 +14,8 @@ import { login, logout } from "../../redux/authSlice";
 const API_URL = process.env.REACT_APP_API_URL;
 
 const Notes = () => {
-  const dispatch = useDispatch(); // Add this line to initialize dispatch
-  const { token, user } = useSelector((state) => state.auth); // Access Redux state
+  const dispatch = useDispatch();
+  const { token, user } = useSelector((state) => state.auth);
   const [notes, setNotes] = useState([]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -25,9 +25,19 @@ const Notes = () => {
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [error, setError] = useState(null);
+  const [shareUsername, setShareUsername] = useState(""); // For sharing note
+  const [isPublic, setIsPublic] = useState(false); // For toggling privacy
   const navigate = useNavigate();
 
-  // Check token on load
+  const editNote = (note) => {
+    setEditMode(true);
+    setEditNoteId(note.id);
+    setTitle(note.title);
+    setContent(note.content);
+    setProjectId(note.project_id);
+    setIsPublic(note.is_public); // Set current privacy state
+  };
+
   useEffect(() => {
     const validateToken = async () => {
       if (token) {
@@ -35,15 +45,20 @@ const Notes = () => {
           const response = await axios.get(`${API_URL}/auth/me`, {
             headers: { Authorization: `Bearer ${token}` },
           });
-          dispatch(login({ username: response.data.username, token })); // Dispatch Redux login
+          dispatch(login({ username: response.data.username, token }));
+          console.log(
+            "Logged in user and token:",
+            response.data.username,
+            token
+          );
         } catch (error) {
           console.error("Token validation failed", error);
-          dispatch(logout()); // Dispatch Redux logout
+          dispatch(logout());
         }
       }
     };
 
-    validateToken(); // Call the function on mount
+    validateToken();
   }, [token, dispatch]);
 
   const fetchProjects = async () => {
@@ -83,15 +98,19 @@ const Notes = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
-    dispatch(logout()); // Use Redux logout
+    dispatch(logout());
     navigate("/login");
   };
+
   const createNote = async (e) => {
     e.preventDefault();
+    const token =
+      localStorage.getItem("authToken") || localStorage.getItem("token");
+
     try {
       await axios.post(
         `${API_URL}/notes/`,
-        { title, content, project_id: projectId },
+        { title, content, project_id: projectId, is_public: isPublic },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -103,16 +122,9 @@ const Notes = () => {
       setContent("");
       fetchNotes(projectId);
     } catch (error) {
+      console.error("Error creating note:", error);
       handleError(error);
     }
-  };
-
-  const editNote = (note) => {
-    setEditMode(true);
-    setEditNoteId(note.id);
-    setTitle(note.title);
-    setContent(note.content);
-    setProjectId(note.project_id);
   };
 
   const updateNote = async (e) => {
@@ -139,6 +151,8 @@ const Notes = () => {
   };
 
   const deleteNote = async (id) => {
+    const token =
+      localStorage.getItem("authToken") || localStorage.getItem("token");
     try {
       await axios.delete(`${API_URL}/notes/${id}`, {
         headers: {
@@ -146,6 +160,38 @@ const Notes = () => {
         },
       });
       fetchNotes(projectId);
+    } catch (error) {
+      handleError(error);
+    }
+  };
+
+  const shareNote = async (noteId) => {
+    try {
+      await axios.post(
+        `${API_URL}/notes/${noteId}/share`,
+        { shared_with_username: shareUsername, can_edit: true },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setShareUsername("");
+    } catch (error) {
+      handleError(error);
+    }
+  };
+
+  const toggleNotePrivacy = async (noteId) => {
+    try {
+      await axios.put(`${API_URL}/notes/${noteId}/privacy`, null, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: { is_public: !isPublic },
+      });
+      setIsPublic(!isPublic);
     } catch (error) {
       handleError(error);
     }
@@ -289,6 +335,28 @@ const Notes = () => {
                     className={styles.iconButton}
                     onClick={() => deleteNote(note.id)}
                   />
+                  <div className={styles.noteActions}>
+                    {/* Share Form */}
+                    <input
+                      type="text"
+                      className={styles.shareInput}
+                      placeholder="Share with username"
+                      value={shareUsername}
+                      onChange={(e) => setShareUsername(e.target.value)}
+                    />
+                    <button
+                      className={styles.smallGreenButton}
+                      onClick={() => shareNote(note.id)}
+                    >
+                      Share
+                    </button>
+                    <button
+                      className={styles.smallGreenButton}
+                      onClick={() => toggleNotePrivacy(note.id)}
+                    >
+                      {note.is_public ? "Make Private" : "Make Public"}
+                    </button>
+                  </div>
                 </li>
               ))
             ) : (

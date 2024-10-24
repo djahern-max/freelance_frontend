@@ -211,7 +211,7 @@ button:hover {
 
 .noteItem {
   border: 1px solid #ddd;
-  padding: 15px;
+  padding: 20px;
   margin-bottom: 20px;
   border-radius: 10px;
   background-color: #fff;
@@ -336,6 +336,38 @@ button:hover {
 /* Dropdown for smaller screens */
 .dropdown {
   display: none;
+}
+
+/* Style for the share input field */
+.shareInput {
+  padding: 10px;
+  width: 200px;
+  margin-right: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+/* Button styling for Share and Make Public */
+.smallGreenButton {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 15px;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 5px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.smallGreenButton:hover {
+  background-color: #45a049;
+}
+
+/* Adjust spacing around the buttons */
+.noteActions {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
 }
 
 /* Responsive Design */
