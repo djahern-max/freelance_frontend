@@ -11,7 +11,7 @@ import del from "../../images/Delete.png";
 import { useDispatch, useSelector } from "react-redux";
 import { login, logout } from "../../redux/authSlice";
 
-const API_URL = process.env.REACT_APP_API_URL;
+const apiUrl = process.env.REACT_APP_API_URL;
 
 const Notes = () => {
   const dispatch = useDispatch();
@@ -78,10 +78,16 @@ const Notes = () => {
 
   const fetchNotes = async (projectId = null) => {
     try {
-      const constructedUrl = `${API_URL}/notes/`;
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        throw new Error("Token not found");
+      }
+
+      const constructedUrl = `${apiUrl}/notes/`;
       console.log("Environment:", process.env.NODE_ENV);
       console.log("API_URL:", API_URL);
       console.log("Constructed URL:", constructedUrl);
+      console.log("Auth token:", token);
 
       const response = await axios.get(constructedUrl, {
         headers: {
@@ -92,7 +98,16 @@ const Notes = () => {
         },
       });
       setNotes(response.data);
+
+      // Log the response data like in Videos.js
+      console.log("Fetched notes:", response.data);
     } catch (error) {
+      console.error("Error fetching notes:", error);
+      console.error("Error details:", {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+      });
       handleError(error);
     }
   };
