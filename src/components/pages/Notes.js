@@ -42,7 +42,7 @@ const Notes = () => {
     const validateToken = async () => {
       if (token) {
         try {
-          const response = await axios.get(`${API_URL}/auth/me`, {
+          const response = await axios.get(`${apiUrl}/auth/me`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           dispatch(login({ username: response.data.username, token }));
@@ -63,7 +63,7 @@ const Notes = () => {
 
   const fetchProjects = async () => {
     try {
-      const response = await axios.get(`${API_URL}/projects/`, {
+      const response = await axios.get(`${apiUrl}/projects/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setProjects(response.data);
@@ -85,7 +85,7 @@ const Notes = () => {
 
       const constructedUrl = `${apiUrl}/notes/`;
       console.log("Environment:", process.env.NODE_ENV);
-      console.log("API_URL:", API_URL);
+      console.log("API_URL:", apiUrl);
       console.log("Constructed URL:", constructedUrl);
       console.log("Auth token:", token);
 
@@ -111,6 +111,7 @@ const Notes = () => {
       handleError(error);
     }
   };
+
   useEffect(() => {
     if (token && projectId) fetchNotes(projectId);
   }, [token, projectId]);
@@ -128,7 +129,7 @@ const Notes = () => {
 
     try {
       await axios.post(
-        `${API_URL}/notes/`,
+        `${apiUrl}/notes/`,
         { title, content, project_id: projectId, is_public: isPublic },
         {
           headers: {
@@ -150,7 +151,7 @@ const Notes = () => {
     e.preventDefault();
     try {
       await axios.put(
-        `${API_URL}/notes/${editNoteId}`,
+        `${apiUrl}/notes/${editNoteId}`,
         { title, content, project_id: projectId },
         {
           headers: {
@@ -173,7 +174,7 @@ const Notes = () => {
     const token =
       localStorage.getItem("authToken") || localStorage.getItem("token");
     try {
-      await axios.delete(`${API_URL}/notes/${id}`, {
+      await axios.delete(`${apiUrl}/notes/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -187,7 +188,7 @@ const Notes = () => {
   const shareNote = async (noteId) => {
     try {
       await axios.post(
-        `${API_URL}/notes/${noteId}/share`,
+        `${apiUrl}/notes/${noteId}/share`,
         { shared_with_username: shareUsername, can_edit: true },
         {
           headers: {
@@ -204,7 +205,7 @@ const Notes = () => {
 
   const toggleNotePrivacy = async (noteId) => {
     try {
-      await axios.put(`${API_URL}/notes/${noteId}/privacy`, null, {
+      await axios.put(`${apiUrl}/notes/${noteId}/privacy`, null, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

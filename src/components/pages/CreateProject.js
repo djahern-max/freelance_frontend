@@ -36,6 +36,8 @@ const CreateProject = () => {
       setDescription("");
       setSuccess("Project created successfully!");
       setError(null);
+      // Redirect to /notes after success
+      navigate("/notes");
     } catch (error) {
       setSuccess(null);
       setError("Failed to create project. Please try again.");

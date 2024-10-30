@@ -379,16 +379,15 @@ button:hover {
   .dropdown {
     display: block;
     width: 100%;
-    margin-bottom: 10px;
+    margin-bottom: 5px; /* Reduce the space between the dropdown and button */
     text-align: center;
   }
 
   .createProjectButton {
-    display: inline-block;
-    max-width: 300px;
-    width: auto;
-    margin: 10px auto 0;
-    padding: 12px 24px;
+    display: block; /* Ensure it's placed on a new line */
+    max-width: 170px; /* Keep the same button width */
+    width: 100%; /* Make it responsive */
+    margin: 5px auto 20px; /* Maintain space below the button */
   }
 
   h1,
