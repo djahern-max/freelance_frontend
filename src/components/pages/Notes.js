@@ -27,8 +27,10 @@ const Notes = () => {
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [error, setError] = useState(null);
-  const [shareUsername, setShareUsername] = useState(""); // For sharing note
-  const [isPublic, setIsPublic] = useState(false); // For toggling privacy
+  const [shareUsername, setShareUsername] = useState("");
+  const [isPublic, setIsPublic] = useState(false);
+  const [sharedNotes, setSharedNotes] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const editNote = (note) => {
@@ -37,7 +39,7 @@ const Notes = () => {
     setTitle(note.title);
     setContent(note.content);
     setProjectId(note.project_id);
-    setIsPublic(note.is_public); // Set current privacy state
+    setIsPublic(note.is_public);
   };
 
   useEffect(() => {
@@ -48,20 +50,32 @@ const Notes = () => {
             headers: { Authorization: `Bearer ${token}` },
           });
           dispatch(login({ username: response.data.username, token }));
-          console.log(
-            "Logged in user and token:",
-            response.data.username,
-            token
-          );
         } catch (error) {
           console.error("Token validation failed", error);
           dispatch(logout());
         }
       }
     };
-
     validateToken();
   }, [token, dispatch]);
+
+  const fetchSharedNotes = async () => {
+    try {
+      const response = await axios.get(`${apiUrl}/notes/shared-with-me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log("Shared notes response:", response.data); // Add this log
+      setSharedNotes(response.data);
+    } catch (error) {
+      console.error("Failed to fetch shared notes:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (token) {
+      fetchSharedNotes();
+    }
+  }, [token]);
 
   const fetchProjects = async () => {
     try {
@@ -78,42 +92,25 @@ const Notes = () => {
     if (token) fetchProjects();
   }, [token]);
 
-  const [isLoading, setIsLoading] = useState(false);
-
   const fetchNotes = async (projectId = null) => {
     setIsLoading(true);
     try {
-      const token = localStorage.getItem("authToken");
-      if (!token) {
-        throw new Error("Token not found");
-      }
-
-      const params = new URLSearchParams();
-      if (projectId) {
-        params.append("project_id", projectId);
-      }
-
+      const params = projectId ? { project_id: projectId } : undefined;
       const response = await axios.get(`${apiUrl}/notes/`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        params: projectId ? { project_id: projectId } : undefined,
+        params,
       });
-
       setNotes(response.data);
-      console.log("Fetched notes:", response.data);
     } catch (error) {
       console.error("Error fetching notes:", error);
-      if (error.response) {
-        console.error("Error response:", error.response.data);
-      }
       handleError(error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Update useEffect to only fetch when there's both token and projectId
   useEffect(() => {
     if (token && projectId !== null) {
       fetchNotes(projectId);
@@ -128,9 +125,6 @@ const Notes = () => {
 
   const createNote = async (e) => {
     e.preventDefault();
-    const token =
-      localStorage.getItem("authToken") || localStorage.getItem("token");
-
     try {
       await axios.post(
         `${apiUrl}/notes/`,
@@ -175,8 +169,6 @@ const Notes = () => {
   };
 
   const deleteNote = async (id) => {
-    const token =
-      localStorage.getItem("authToken") || localStorage.getItem("token");
     try {
       await axios.delete(`${apiUrl}/notes/${id}`, {
         headers: {
@@ -189,7 +181,6 @@ const Notes = () => {
     }
   };
 
-  // In Notes.js, modify the toggleNotePrivacy function:
   const toggleNotePrivacy = async (noteId, currentIsPublic) => {
     try {
       await axios.put(
@@ -201,7 +192,6 @@ const Notes = () => {
           },
         }
       );
-      // Refresh notes to get updated state
       fetchNotes(projectId);
     } catch (error) {
       handleError(error);
@@ -263,6 +253,7 @@ const Notes = () => {
           >
             Create Project
           </button>
+
           <h2>Projects</h2>
           <ul>
             {projects.map((project) => (
@@ -272,6 +263,29 @@ const Notes = () => {
                 </a>
               </li>
             ))}
+          </ul>
+
+          <h2 className={styles.sharedNotesTitle}>Shared Notes</h2>
+          <ul className={styles.sharedNotesList}>
+            {sharedNotes &&
+              sharedNotes.map((note) => (
+                <li key={note.id} className={styles.sharedNoteItem}>
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setNotes([note]);
+                      setSelectedProject(null);
+                      setProjectId(null);
+                    }}
+                  >
+                    <span className={styles.noteTitle}>{note.title}</span>
+                    <div className={styles.sharedByText}>
+                      Shared by: {note.owner_username || "Unknown"}
+                    </div>
+                  </a>
+                </li>
+              ))}
           </ul>
         </div>
 
@@ -333,7 +347,6 @@ const Notes = () => {
               <p>Loading notes...</p>
             </div>
           ) : (
-            // In Notes.js, update the notes mapping section:
             <ul className={styles.notesList}>
               {Array.isArray(notes) && notes.length > 0 ? (
                 notes.map((note) => (

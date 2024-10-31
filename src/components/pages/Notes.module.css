@@ -449,16 +449,28 @@ button:hover {
 }
 
 .shareButton {
-  background-color: #ff6600;
+  background-color: #4caf50; /* Orange by default */
   color: white;
-  padding: 8px 20px;
+  padding: 8px 16px;
   border: none;
   border-radius: 4px;
   font-size: 0.9rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  white-space: nowrap;
+  height: 35px;
+  display: flex;
+  align-items: center;
 }
 
+.shareButton:hover {
+  background-color: #4caf50; /* Darker orange on hover */
+}
+
+.shareButton:disabled {
+  background-color: #cccccc !important; /* Grey only when disabled */
+  cursor: not-allowed;
+}
 .privacyToggle {
   background-color: #4caf50;
   color: white;
@@ -468,10 +480,6 @@ button:hover {
   font-size: 0.9rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
-}
-
-.shareButton:hover {
-  background-color: #e65a00;
 }
 
 .privacyToggle:hover {
@@ -536,6 +544,32 @@ button:hover {
 
 .privacyToggle.private:hover {
   background-color: #616161;
+}
+
+.sharedByText {
+  font-size: 0.8rem; /* Smaller font size */
+  font-weight: normal; /* Remove bold */
+  font-style: italic; /* Make it italic */
+  color: #666; /* Slightly muted color */
+  margin-top: 2px;
+}
+
+.sharedNoteItem a {
+  text-decoration: none;
+  display: block;
+  padding: 8px;
+  font-weight: bold; /* Keep the note title bold */
+}
+
+.sharedNoteItem a:hover {
+  background-color: #f5f5f5;
+}
+
+/* Optional: if you want the title to stay bold while the "Shared by" text remains normal */
+.sharedNoteItem .noteTitle {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 2px;
 }
 
 /* Responsive Design */

@@ -43,6 +43,7 @@ const NoteSharing = ({
       });
       if (response.ok) {
         const data = await response.json();
+        console.log("Shared users data:", data); // Add this log
         setSharedUsers(Array.isArray(data) ? data : data.shared_with || []);
       } else {
         setSharedUsers([]);
@@ -154,8 +155,8 @@ const NoteSharing = ({
       setIsLoading(false);
     }
   };
-
   const removeShare = async (userId) => {
+    console.log("Removing share for user:", userId); // Add this log
     try {
       const response = await fetch(
         `${apiUrl}/notes/${noteId}/share/${userId}`,
@@ -174,6 +175,18 @@ const NoteSharing = ({
     }
   };
 
+  // And in your JSX, modify the mapping:
+  {
+    sharedUsers.map((share) => (
+      <span key={share.id} className={styles.sharedUser}>
+        <span className={styles.username}>@{share.username}</span>
+        <XCircle
+          className={styles.removeIcon}
+          onClick={() => removeShare(share.shared_with_user_id)} // Use shared_with_user_id instead of user_id
+        />
+      </span>
+    ));
+  }
   return (
     <div className={styles.shareContainer}>
       {/* <CommandDisplay text={note.content} /> */}
@@ -206,19 +219,19 @@ const NoteSharing = ({
         <button
           className={styles.shareButton}
           onClick={handleShare}
-          disabled={isLoading || !shareUsername}
+          disabled={isLoading} // Remove the !shareUsername condition
         >
           {isLoading ? "Sharing..." : "Share"}
         </button>
 
-        <button
+        {/* <button
           className={`${styles.privacyToggle} ${
             note.is_public ? styles.public : styles.private
           }`}
           onClick={() => toggleNotePrivacy(note.id, note.is_public)}
         >
           {note.is_public ? "Make Private" : "Make Public"}
-        </button>
+        </button> */}
         <label className={styles.toggleSwitch}>
           <input
             type="checkbox"
@@ -240,7 +253,7 @@ const NoteSharing = ({
                 <span className={styles.username}>@{share.username}</span>
                 <XCircle
                   className={styles.removeIcon}
-                  onClick={() => removeShare(share.user_id)}
+                  onClick={() => removeShare(share.shared_with_user_id)} // Use shared_with_user_id instead of user_id
                 />
               </span>
             ))}
