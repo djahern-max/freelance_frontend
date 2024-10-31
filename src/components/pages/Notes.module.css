@@ -366,8 +366,176 @@ button:hover {
 /* Adjust spacing around the buttons */
 .noteActions {
   display: flex;
+  gap: 10px; /* Add spacing between buttons */
+  flex-wrap: wrap; /* Allow wrapping if space is limited */
   align-items: center;
   margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.smallGreenButton {
+  background-color: #4caf50;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.smallGreenButton:hover {
+  background-color: #45a049;
+}
+
+.shareInput {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-right: 0.5rem;
+  min-width: 200px;
+}
+
+.suggestions {
+  position: absolute;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  width: 200px;
+  z-index: 1000;
+}
+
+.suggestionItem {
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.suggestionItem:hover {
+  background-color: #f5f5f5;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  font-size: 1.1rem;
+  color: #666;
+}
+
+/* Note sharing section styling */
+.shareSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.shareControls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+}
+
+.shareInput {
+  padding: 8px 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  min-width: 200px;
+  transition: border-color 0.3s ease;
+}
+
+.shareButton {
+  background-color: #ff6600;
+  color: white;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.privacyToggle {
+  background-color: #4caf50;
+  color: white;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.shareButton:hover {
+  background-color: #e65a00;
+}
+
+.privacyToggle:hover {
+  background-color: #45a049;
+}
+
+.sharedWithSection {
+  margin-top: 10px;
+}
+
+.sharedWithTitle {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.sharedUser {
+  display: inline-flex;
+  align-items: center;
+  background-color: #f5f5f5;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+}
+
+.sharedUsername {
+  font-size: 0.9rem;
+  color: #333;
+  margin-right: 8px;
+}
+
+.removeShare {
+  cursor: pointer;
+  color: #666;
+  transition: color 0.3s ease;
+}
+
+.removeShare:hover {
+  color: #f44336;
+}
+
+/* Privacy toggle button */
+.privacyToggle {
+  background-color: #4caf50;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.privacyToggle:hover {
+  background-color: #45a049;
+}
+
+.privacyToggle.private {
+  background-color: #757575;
+}
+
+.privacyToggle.private:hover {
+  background-color: #616161;
 }
 
 /* Responsive Design */

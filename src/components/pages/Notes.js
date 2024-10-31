@@ -10,6 +10,8 @@ import edit from "../../images/Notes.png";
 import del from "../../images/Delete.png";
 import { useDispatch, useSelector } from "react-redux";
 import { login, logout } from "../../redux/authSlice";
+import NoteSharing from "./NoteSharing";
+import CommandDisplay from "../shared/CommandDisplay";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -76,44 +78,46 @@ const Notes = () => {
     if (token) fetchProjects();
   }, [token]);
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const fetchNotes = async (projectId = null) => {
+    setIsLoading(true);
     try {
       const token = localStorage.getItem("authToken");
       if (!token) {
         throw new Error("Token not found");
       }
 
-      const constructedUrl = `${apiUrl}/notes/`;
-      console.log("Environment:", process.env.NODE_ENV);
-      console.log("API_URL:", apiUrl);
-      console.log("Constructed URL:", constructedUrl);
-      console.log("Auth token:", token);
+      const params = new URLSearchParams();
+      if (projectId) {
+        params.append("project_id", projectId);
+      }
 
-      const response = await axios.get(constructedUrl, {
+      const response = await axios.get(`${apiUrl}/notes/`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        params: {
-          project_id: projectId,
-        },
+        params: projectId ? { project_id: projectId } : undefined,
       });
-      setNotes(response.data);
 
-      // Log the response data like in Videos.js
+      setNotes(response.data);
       console.log("Fetched notes:", response.data);
     } catch (error) {
       console.error("Error fetching notes:", error);
-      console.error("Error details:", {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-      });
+      if (error.response) {
+        console.error("Error response:", error.response.data);
+      }
       handleError(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  // Update useEffect to only fetch when there's both token and projectId
   useEffect(() => {
-    if (token && projectId) fetchNotes(projectId);
+    if (token && projectId !== null) {
+      fetchNotes(projectId);
+    }
   }, [token, projectId]);
 
   const handleLogout = () => {
@@ -185,33 +189,20 @@ const Notes = () => {
     }
   };
 
-  const shareNote = async (noteId) => {
+  // In Notes.js, modify the toggleNotePrivacy function:
+  const toggleNotePrivacy = async (noteId, currentIsPublic) => {
     try {
-      await axios.post(
-        `${apiUrl}/notes/${noteId}/share`,
-        { shared_with_username: shareUsername, can_edit: true },
+      await axios.put(
+        `${apiUrl}/notes/${noteId}/privacy?is_public=${!currentIsPublic}`,
+        null,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
           },
         }
       );
-      setShareUsername("");
-    } catch (error) {
-      handleError(error);
-    }
-  };
-
-  const toggleNotePrivacy = async (noteId) => {
-    try {
-      await axios.put(`${apiUrl}/notes/${noteId}/privacy`, null, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        params: { is_public: !isPublic },
-      });
-      setIsPublic(!isPublic);
+      // Refresh notes to get updated state
+      fetchNotes(projectId);
     } catch (error) {
       handleError(error);
     }
@@ -337,52 +328,47 @@ const Notes = () => {
             </button>
           </form>
 
-          <ul className={styles.notesList}>
-            {Array.isArray(notes) && notes.length > 0 ? (
-              notes.map((note) => (
-                <li key={note.id} className={styles.noteItem}>
-                  <h2>{note.title}</h2>
-                  <pre className={styles.codeBlock}>{note.content}</pre>
-                  <img
-                    src={edit}
-                    alt="Edit Note"
-                    className={styles.iconButton}
-                    onClick={() => editNote(note)}
-                  />
-                  <img
-                    src={del}
-                    alt="Delete Note"
-                    className={styles.iconButton}
-                    onClick={() => deleteNote(note.id)}
-                  />
-                  <div className={styles.noteActions}>
-                    {/* Share Form */}
-                    <input
-                      type="text"
-                      className={styles.shareInput}
-                      placeholder="Share with username"
-                      value={shareUsername}
-                      onChange={(e) => setShareUsername(e.target.value)}
+          {isLoading ? (
+            <div className={styles.loadingContainer}>
+              <p>Loading notes...</p>
+            </div>
+          ) : (
+            // In Notes.js, update the notes mapping section:
+            <ul className={styles.notesList}>
+              {Array.isArray(notes) && notes.length > 0 ? (
+                notes.map((note) => (
+                  <li key={note.id} className={styles.noteItem}>
+                    <h2>{note.title}</h2>
+                    <CommandDisplay text={note.content} />
+                    <div className={styles.noteActions}>
+                      <img
+                        src={edit}
+                        alt="Edit Note"
+                        className={styles.iconButton}
+                        onClick={() => editNote(note)}
+                      />
+                      <img
+                        src={del}
+                        alt="Delete Note"
+                        className={styles.iconButton}
+                        onClick={() => deleteNote(note.id)}
+                      />
+                    </div>
+                    <NoteSharing
+                      noteId={note.id}
+                      token={token}
+                      apiUrl={apiUrl}
+                      onShareComplete={() => fetchNotes(projectId)}
+                      toggleNotePrivacy={toggleNotePrivacy}
+                      note={note}
                     />
-                    <button
-                      className={styles.smallGreenButton}
-                      onClick={() => shareNote(note.id)}
-                    >
-                      Share
-                    </button>
-                    <button
-                      className={styles.smallGreenButton}
-                      onClick={() => toggleNotePrivacy(note.id)}
-                    >
-                      {note.is_public ? "Make Private" : "Make Public"}
-                    </button>
-                  </div>
-                </li>
-              ))
-            ) : (
-              <p>No notes available yet.</p>
-            )}
-          </ul>
+                  </li>
+                ))
+              ) : (
+                <p>No notes available yet.</p>
+              )}
+            </ul>
+          )}
         </div>
       </div>
     </div>

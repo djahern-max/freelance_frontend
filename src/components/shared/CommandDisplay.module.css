@@ -1,0 +1,54 @@
+.noteContainer {
+  position: relative;
+  background-color: #f8f8f8;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 12px;
+  min-height: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.noteContent {
+  flex-grow: 1;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: monospace;
+  color: #333;
+  padding-right: 32px; /* Make space for the copy button */
+}
+
+.copyButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 4px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.copyButton:hover {
+  background-color: #e0e0e0;
+}
+
+.copyIcon,
+.successIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.copyIcon {
+  color: #666;
+}
+
+.successIcon {
+  color: #4caf50;
+}
