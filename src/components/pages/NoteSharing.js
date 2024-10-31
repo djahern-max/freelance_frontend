@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { XCircle } from "lucide-react";
 import styles from "./NoteSharing.module.css";
-// import CommandDisplay from "../shared/CommandDisplay";
 
 const NoteSharing = ({
   noteId,
@@ -21,38 +20,18 @@ const NoteSharing = ({
   const suggestionsRef = useRef(null);
 
   useEffect(() => {
-    fetchSharedUsers();
-    // Add click outside listener
-    const handleClickOutside = (event) => {
-      if (
-        suggestionsRef.current &&
-        !suggestionsRef.current.contains(event.target)
-      ) {
-        setShowSuggestions(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [noteId]);
-
-  const fetchSharedUsers = async () => {
-    try {
-      const response = await fetch(`${apiUrl}/notes/${noteId}/shares`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Shared users data:", data); // Add this log
-        setSharedUsers(Array.isArray(data) ? data : data.shared_with || []);
-      } else {
-        setSharedUsers([]);
-      }
-    } catch (error) {
-      console.error("Error fetching shared users:", error);
+    if (note && note.shared_with) {
+      setSharedUsers(
+        note.shared_with.map((share) => ({
+          id: share.user_id,
+          username: share.username,
+          can_edit: share.can_edit,
+        }))
+      );
+    } else {
       setSharedUsers([]);
     }
-  };
+  }, [note]);
 
   const searchUsers = async (query) => {
     if (!query.startsWith("@")) return;
@@ -106,6 +85,7 @@ const NoteSharing = ({
         ? shareUsername.slice(1)
         : shareUsername;
 
+      // First, search for the user
       const userSearchResponse = await fetch(
         `${apiUrl}/notes/users/search?q=${username}`,
         {
@@ -124,6 +104,7 @@ const NoteSharing = ({
         throw new Error("User not found");
       }
 
+      // Share the note
       const response = await fetch(`${apiUrl}/notes/${noteId}/share`, {
         method: "POST",
         headers: {
@@ -136,17 +117,37 @@ const NoteSharing = ({
         }),
       });
 
+      const responseData = await response.json();
+      console.log("Share response:", response.status, responseData);
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || "Failed to share note");
+        if (
+          response.status === 400 &&
+          responseData.detail?.includes("already shared")
+        ) {
+          setError("Note is already shared with this user");
+        } else {
+          throw new Error(responseData.detail || "Failed to share note");
+        }
+        return;
       }
+
+      // Add the new share to the local state
+      setSharedUsers((prev) => [
+        ...prev,
+        {
+          id: userToShare.id,
+          username: userToShare.username,
+          can_edit: true,
+        },
+      ]);
 
       setShareUsername("");
       setSuggestions([]);
       setShowSuggestions(false);
-      await fetchSharedUsers();
       if (onShareComplete) onShareComplete();
     } catch (error) {
+      console.error("Share error:", error);
       setError(
         error.message ||
           "Failed to share note. Please check the username and try again."
@@ -155,9 +156,10 @@ const NoteSharing = ({
       setIsLoading(false);
     }
   };
+
   const removeShare = async (userId) => {
-    console.log("Removing share for user:", userId); // Add this log
     try {
+      console.log("Removing share - Note ID:", noteId, "User ID:", userId);
       const response = await fetch(
         `${apiUrl}/notes/${noteId}/share/${userId}`,
         {
@@ -167,29 +169,21 @@ const NoteSharing = ({
       );
 
       if (response.ok) {
-        await fetchSharedUsers();
+        console.log("Share removed successfully");
+        setSharedUsers((prev) => prev.filter((user) => user.id !== userId));
         if (onShareComplete) onShareComplete();
+      } else {
+        console.error("Failed to remove share. Status:", response.status);
+        const errorText = await response.text();
+        console.error("Error details:", errorText);
       }
     } catch (error) {
       console.error("Error removing share:", error);
     }
   };
 
-  // And in your JSX, modify the mapping:
-  {
-    sharedUsers.map((share) => (
-      <span key={share.id} className={styles.sharedUser}>
-        <span className={styles.username}>@{share.username}</span>
-        <XCircle
-          className={styles.removeIcon}
-          onClick={() => removeShare(share.shared_with_user_id)} // Use shared_with_user_id instead of user_id
-        />
-      </span>
-    ));
-  }
   return (
     <div className={styles.shareContainer}>
-      {/* <CommandDisplay text={note.content} /> */}
       <div className={styles.shareControls}>
         <div className={styles.inputWrapper}>
           <input
@@ -219,19 +213,11 @@ const NoteSharing = ({
         <button
           className={styles.shareButton}
           onClick={handleShare}
-          disabled={isLoading} // Remove the !shareUsername condition
+          disabled={isLoading}
         >
           {isLoading ? "Sharing..." : "Share"}
         </button>
 
-        {/* <button
-          className={`${styles.privacyToggle} ${
-            note.is_public ? styles.public : styles.private
-          }`}
-          onClick={() => toggleNotePrivacy(note.id, note.is_public)}
-        >
-          {note.is_public ? "Make Private" : "Make Public"}
-        </button> */}
         <label className={styles.toggleSwitch}>
           <input
             type="checkbox"
@@ -248,12 +234,12 @@ const NoteSharing = ({
         <div className={styles.sharedWithSection}>
           <div className={styles.sharedWithTitle}>Shared with:</div>
           <div className={styles.sharedUsersList}>
-            {sharedUsers.map((share) => (
-              <span key={share.id} className={styles.sharedUser}>
-                <span className={styles.username}>@{share.username}</span>
+            {sharedUsers.map((user) => (
+              <span key={user.id} className={styles.sharedUser}>
+                <span className={styles.username}>@{user.username}</span>
                 <XCircle
                   className={styles.removeIcon}
-                  onClick={() => removeShare(share.shared_with_user_id)} // Use shared_with_user_id instead of user_id
+                  onClick={() => removeShare(user.id)}
                 />
               </span>
             ))}
@@ -263,4 +249,5 @@ const NoteSharing = ({
     </div>
   );
 };
+
 export default NoteSharing;
