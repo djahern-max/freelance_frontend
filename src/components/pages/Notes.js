@@ -234,20 +234,20 @@ const Notes = () => {
     }
   };
 
-  const toggleNotePrivacy = async (noteId, currentIsPublic) => {
-    try {
-      await axios.put(
-        `${apiUrl}/notes/${noteId}/privacy?is_public=${!currentIsPublic}`,
-        null,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      fetchNotes(projectId);
-    } catch (error) {
-      handleError(error);
-    }
-  };
+  // const toggleNotePrivacy = async (noteId, currentIsPublic) => {
+  //   try {
+  //     await axios.put(
+  //       `${apiUrl}/notes/${noteId}/privacy?is_public=${!currentIsPublic}`,
+  //       null,
+  //       {
+  //         headers: { Authorization: `Bearer ${token}` },
+  //       }
+  //     );
+  //     fetchNotes(projectId);
+  //   } catch (error) {
+  //     handleError(error);
+  //   }
+  // };
 
   // Render helpers
   const renderIconBar = () => (
@@ -376,7 +376,7 @@ const Notes = () => {
               token={token}
               apiUrl={apiUrl}
               onShareComplete={() => fetchNotes(projectId)}
-              toggleNotePrivacy={toggleNotePrivacy}
+              // toggleNotePrivacy={toggleNotePrivacy}
               note={note}
             />
           </li>

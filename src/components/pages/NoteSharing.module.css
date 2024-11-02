@@ -240,6 +240,7 @@ input:checked + .slider:before {
 @media (max-width: 600px) {
   .shareControls {
     flex-wrap: wrap;
+    justify-content: center; /* Center all content in shareControls */
   }
 
   .privacyToggle {
@@ -256,6 +257,17 @@ input:checked + .slider:before {
   }
 
   .shareButton {
-    flex: 1;
+    width: 150px; /* Adjusted width */
+    margin: 0 auto; /* Center the button itself */
+    text-align: center; /* Center the text inside */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px; /* Add padding if needed for better spacing */
+    background-color: #28a745; /* Green color */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
   }
 }

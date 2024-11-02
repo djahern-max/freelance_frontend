@@ -8,7 +8,7 @@ const NoteSharing = ({
   apiUrl,
   onShareComplete,
   note,
-  toggleNotePrivacy,
+  // toggleNotePrivacy,
 }) => {
   const [shareUsername, setShareUsername] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -218,14 +218,14 @@ const NoteSharing = ({
           {isLoading ? "Sharing..." : "Share"}
         </button>
 
-        <label className={styles.toggleSwitch}>
+        {/* <label className={styles.toggleSwitch}>
           <input
             type="checkbox"
             checked={note.is_public}
             onChange={() => toggleNotePrivacy(note.id, note.is_public)}
           />
           <span className={styles.slider}></span>
-        </label>
+        </label> */}
       </div>
 
       {error && <div className={styles.error}>{error}</div>}
