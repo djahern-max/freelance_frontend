@@ -316,6 +316,46 @@ button:hover {
   margin-top: 10px;
 }
 
+.projectItem {
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.projectRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px;
+}
+
+.projectRow a {
+  text-decoration: none;
+  color: inherit;
+  flex-grow: 1;
+}
+
+.deleteX {
+  cursor: pointer;
+  color: #666;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 0 5px;
+  margin-left: 8px;
+}
+
+.deleteX:hover {
+  color: #dc3545;
+}
+
+.error {
+  color: #dc3545;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 4px;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+}
+
 /* Add Note button styling */
 .addNoteButton {
   background-color: #ff6600;

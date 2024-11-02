@@ -206,6 +206,34 @@ const Notes = () => {
     }
   };
 
+  const deleteProject = async (projectId) => {
+    try {
+      await axios.delete(`${apiUrl}/projects/${projectId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      // Reset states after successful deletion
+      setSelectedProject(null);
+      setProjectId(null);
+      setNotes([]);
+      setError(null); // Clear any existing error messages
+
+      // Refresh projects list
+      const response = await axios.get(`${apiUrl}/projects/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setProjects(response.data);
+    } catch (error) {
+      if (error.response?.status === 400) {
+        setError(
+          "This project contains notes. Please delete all notes within the project before deleting the project."
+        );
+      } else {
+        handleError(error);
+      }
+    }
+  };
+
   const toggleNotePrivacy = async (noteId, currentIsPublic) => {
     try {
       await axios.put(
@@ -267,34 +295,57 @@ const Notes = () => {
       <h2>Projects</h2>
       <ul>
         {projects.map((project) => (
-          <li key={project.id}>
-            <a href="#" onClick={() => selectProject(project)}>
-              {project.name}
-            </a>
+          <li key={project.id} className={styles.projectItem}>
+            <div className={styles.projectRow}>
+              <a href="#" onClick={() => selectProject(project)}>
+                {project.name}
+              </a>
+              <span
+                className={styles.deleteX}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (
+                    window.confirm(
+                      `Are you sure you want to delete ${project.name}?`
+                    )
+                  ) {
+                    deleteProject(project.id);
+                  }
+                }}
+              >
+                ×
+              </span>
+            </div>
           </li>
         ))}
       </ul>
 
       <h2 className={styles.sharedNotesTitle}>Shared Notes</h2>
       <ul className={styles.sharedNotesList}>
-        {sharedNotes?.map((note) => (
-          <li key={note.id} className={styles.sharedNoteItem}>
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                setNotes([note]);
-                setSelectedProject(null);
-                setProjectId(null);
-              }}
-            >
-              <span className={styles.noteTitle}>{note.title}</span>
-              <div className={styles.sharedByText}>
-                Shared by: {note.owner_username || "Unknown"}
-              </div>
-            </a>
-          </li>
-        ))}
+        {sharedNotes
+          ?.sort(
+            (a, b) =>
+              new Date(b.updated_at || b.created_at) -
+              new Date(a.updated_at || a.created_at)
+          )
+          .map((note) => (
+            <li key={note.id} className={styles.sharedNoteItem}>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setNotes([note]);
+                  setSelectedProject(null);
+                  setProjectId(null);
+                }}
+              >
+                <span className={styles.noteTitle}>{note.title}</span>
+                <div className={styles.sharedByText}>
+                  Shared by: {note.owner_username || "Unknown"}
+                </div>
+              </a>
+            </li>
+          ))}
       </ul>
     </div>
   );
@@ -331,7 +382,13 @@ const Notes = () => {
           </li>
         ))
       ) : (
-        <p>No notes available yet.</p>
+        <p>
+          {selectedProject
+            ? "Add a note"
+            : projects.length > 0
+            ? "Please make your selection from the menu or create a new project."
+            : "No notes available yet."}
+        </p>
       )}
     </ul>
   );
