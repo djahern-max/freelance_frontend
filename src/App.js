@@ -8,7 +8,7 @@ import Email from "./components/auth/Email";
 import VideoUpload from "./components/pages/VideoUpload";
 import Videos from "./components/dashboards/Videos";
 import NewsletterDashboard from "./components/dashboards/NewsletterDashboard";
-
+import CommandNotes from "./components/pages/CommandNotes";
 import AppDashboard from "./components/dashboards/AppDashboard";
 import Notes from "./components/pages/Notes";
 import ProtectedRoute from "./components/common/ProtectedRoute";
@@ -73,6 +73,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Videos />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/command-notes"
+          element={
+            <ProtectedRoute>
+              <CommandNotes />
             </ProtectedRoute>
           }
         />
