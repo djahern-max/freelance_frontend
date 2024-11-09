@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { XCircle } from "lucide-react";
-import styles from "./NoteSharing.module.css";
+import styles from "./RequestSharing.module.css";
 
-const NoteSharing = ({
-  noteId,
+const RequestSharing = ({
+  requestId,
   token,
   apiUrl,
   onShareComplete,
-  note,
-  // toggleNotePrivacy,
+  request,
+  toggleRequestPrivacy, // Ensure this is only used as a prop
 }) => {
   const [shareUsername, setShareUsername] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -20,9 +20,9 @@ const NoteSharing = ({
   const suggestionsRef = useRef(null);
 
   useEffect(() => {
-    if (note && note.shared_with) {
+    if (request && request.shared_with) {
       setSharedUsers(
-        note.shared_with.map((share) => ({
+        request.shared_with.map((share) => ({
           id: share.user_id,
           username: share.username,
           can_edit: share.can_edit,
@@ -31,7 +31,7 @@ const NoteSharing = ({
     } else {
       setSharedUsers([]);
     }
-  }, [note]);
+  }, [request]);
 
   const searchUsers = async (query) => {
     if (!query.startsWith("@")) return;
@@ -39,7 +39,7 @@ const NoteSharing = ({
 
     try {
       const response = await fetch(
-        `${apiUrl}/notes/users/search?q=${searchTerm}`,
+        `${apiUrl}/requests/users/search?q=${searchTerm}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -85,9 +85,8 @@ const NoteSharing = ({
         ? shareUsername.slice(1)
         : shareUsername;
 
-      // First, search for the user
       const userSearchResponse = await fetch(
-        `${apiUrl}/notes/users/search?q=${username}`,
+        `${apiUrl}/requests/users/search?q=${username}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -104,8 +103,7 @@ const NoteSharing = ({
         throw new Error("User not found");
       }
 
-      // Share the note
-      const response = await fetch(`${apiUrl}/notes/${noteId}/share`, {
+      const response = await fetch(`${apiUrl}/requests/${requestId}/share`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -125,14 +123,13 @@ const NoteSharing = ({
           response.status === 400 &&
           responseData.detail?.includes("already shared")
         ) {
-          setError("Note is already shared with this user");
+          setError("Request is already shared with this user");
         } else {
-          throw new Error(responseData.detail || "Failed to share note");
+          throw new Error(responseData.detail || "Failed to share request");
         }
         return;
       }
 
-      // Add the new share to the local state
       setSharedUsers((prev) => [
         ...prev,
         {
@@ -150,7 +147,7 @@ const NoteSharing = ({
       console.error("Share error:", error);
       setError(
         error.message ||
-          "Failed to share note. Please check the username and try again."
+          "Failed to share request. Please check the username and try again."
       );
     } finally {
       setIsLoading(false);
@@ -159,9 +156,8 @@ const NoteSharing = ({
 
   const removeShare = async (userId) => {
     try {
-      console.log("Removing share - Note ID:", noteId, "User ID:", userId);
       const response = await fetch(
-        `${apiUrl}/notes/${noteId}/share/${userId}`,
+        `${apiUrl}/requests/${requestId}/share/${userId}`,
         {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },
@@ -169,11 +165,9 @@ const NoteSharing = ({
       );
 
       if (response.ok) {
-        console.log("Share removed successfully");
         setSharedUsers((prev) => prev.filter((user) => user.id !== userId));
         if (onShareComplete) onShareComplete();
       } else {
-        console.error("Failed to remove share. Status:", response.status);
         const errorText = await response.text();
         console.error("Error details:", errorText);
       }
@@ -218,14 +212,17 @@ const NoteSharing = ({
           {isLoading ? "Sharing..." : "Share"}
         </button>
 
-        {/* <label className={styles.toggleSwitch}>
+        <label className={styles.toggleSwitch}>
           <input
             type="checkbox"
-            checked={note.is_public}
-            onChange={() => toggleNotePrivacy(note.id, note.is_public)}
+            checked={request.is_public}
+            onChange={() => toggleRequestPrivacy(request.id, request.is_public)}
           />
           <span className={styles.slider}></span>
-        </label> */}
+        </label>
+        <span className={styles.privacyStatus}>
+          {request.is_public ? "Public" : "Not Public"}
+        </span>
       </div>
 
       {error && <div className={styles.error}>{error}</div>}
@@ -250,4 +247,4 @@ const NoteSharing = ({
   );
 };
 
-export default NoteSharing;
+export default RequestSharing;

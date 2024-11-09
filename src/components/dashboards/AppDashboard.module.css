@@ -1,0 +1,31 @@
+.dashboardContainer {
+  background-color: #f9f9f9;
+  padding-top: 20px;
+  min-height: 100vh;
+}
+
+.headerContainer {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-size: 2rem;
+  color: #ff6600;
+  text-align: center;
+  margin: 30px 0 20px 0;
+}
+
+.dashboardContent {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboardSection {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+}

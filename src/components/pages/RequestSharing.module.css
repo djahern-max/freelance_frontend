@@ -106,7 +106,7 @@
 
 /* Toggle switch for small screens */
 .toggleSwitch {
-  display: none;
+  display: inline-block; /* Or flex, as needed */
   position: relative;
   width: 60px;
   height: 34px;
@@ -241,14 +241,6 @@ input:checked + .slider:before {
   .shareControls {
     flex-wrap: wrap;
     justify-content: center; /* Center all content in shareControls */
-  }
-
-  .privacyToggle {
-    display: none;
-  }
-
-  .toggleSwitch {
-    display: block;
   }
 
   .inputWrapper {

@@ -112,22 +112,27 @@ video {
 .upload-container {
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-top: 20px; /* Add space between orange line and cloud */
+  margin-bottom: 20px; /* Optional: add space below cloud if needed */
 }
 
 .upload-button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 25px;
   background-color: transparent;
   border: none;
   cursor: pointer;
-  position: relative;
+  font-size: 1rem; /* Larger text */
+  font-family: "Poppins", sans-serif;
+  color: #333; /* Matching text color */
 }
 
 .upload-button img {
-  width: 60px;
-  height: 60px;
-  transition: transform 0.3s ease;
+  width: 50px; /* Increased icon size */
+  height: 50px;
 }
-
 .upload-button:hover img {
   transform: scale(1.1);
 }

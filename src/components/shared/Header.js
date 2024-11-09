@@ -1,71 +1,81 @@
 import React from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import OpenRequestsIcon from "../../images/news.png"; // Assuming this is the "Open Requests" icon
+import CreateRequestIcon from "../../images/Notes.png";
+import VideosIcon from "../../images/navigate_videos.png";
+import ApplicationsIcon from "../../images/Apps.png";
+import LogoutIcon from "../../images/Logout.png";
 import "./Header.css";
-import News from "../../images/news.png";
-import School from "../../images/navigate_videos.png";
-import Notes from "../../images/Notes.png";
-import Apps from "../../images/Apps.png";
-import simpleSun from "../../images/simple_sun.png";
 
 const Header = () => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleNewsClick = (e, path) => {
-    if (!isAuthenticated) {
-      e.preventDefault();
-      navigate("/email", { state: { from: path } });
-    } else {
-      navigate(path);
-    }
-  };
+  const pages = [
+    {
+      path: "/public-requests",
+      icon: OpenRequestsIcon,
+      alt: "Open Requests",
+      title: "Open Requests",
+    },
+    {
+      path: "/requests",
+      icon: CreateRequestIcon,
+      alt: "Create Request",
+      title: "Create Request",
+    },
+    { path: "/videos", icon: VideosIcon, alt: "Videos", title: "Videos" },
+    {
+      path: "/app-dashboard",
+      icon: ApplicationsIcon,
+      alt: "Applications",
+      title: "Applications",
+    },
+  ];
 
-  const handleProtectedClick = (e, path) => {
-    if (!isAuthenticated) {
-      e.preventDefault();
+  const handleNavigation = (path) => {
+    if (!isAuthenticated && path !== "/public-requests") {
       navigate("/login", { state: { from: path } });
     } else {
       navigate(path);
     }
   };
 
+  const handleLogout = () => {
+    if (isAuthenticated) {
+      // Clear any authentication tokens or user data here if necessary
+      navigate("/login"); // Redirect to login after logout
+    }
+  };
+
   return (
     <header className="header">
-      <div className="logo">RYZE.ai</div>
-      <div className="logo-image">
-        <img src={simpleSun} alt="Simple Sun Logo" />
+      <div className="icon-bar">
+        {location.pathname === "/" ? (
+          <h1 className="header-title">RYZE.ai</h1>
+        ) : (
+          <>
+            {pages.map((page) =>
+              location.pathname !== page.path ? (
+                <div
+                  key={page.path}
+                  className="icon"
+                  onClick={() => handleNavigation(page.path)}
+                >
+                  <img src={page.icon} alt={page.alt} title={page.title} />
+                </div>
+              ) : null
+            )}
+            {isAuthenticated && (
+              <div className="icon" onClick={handleLogout}>
+                <img src={LogoutIcon} alt="Logout" title="Logout" />
+              </div>
+            )}
+          </>
+        )}
       </div>
-      <nav className="nav">
-        {/* News icon: requires email if not authenticated */}
-        <div
-          className="icon"
-          onClick={(e) => handleNewsClick(e, "/newsletter-dashboard")}
-        >
-          <img src={News} alt="News" />
-        </div>
-
-        <div
-          className="icon"
-          onClick={(e) => handleProtectedClick(e, "/tutorials-dashboard")}
-        >
-          <img src={School} alt="Tutorials" />
-        </div>
-
-        <div
-          className="icon"
-          onClick={(e) => handleProtectedClick(e, "/notes")}
-        >
-          <img src={Notes} alt="Notes" />
-        </div>
-
-        <div
-          className="icon"
-          onClick={(e) => handleProtectedClick(e, "/apps-dashboard")}
-        >
-          <img src={Apps} alt="Projects" />
-        </div>
-      </nav>
     </header>
   );
 };

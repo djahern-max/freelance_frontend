@@ -1,10 +1,26 @@
 .videoUploadContainer {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
   height: 100vh;
   background-color: #f8f8f8;
   padding: 20px;
+}
+
+.videoUploadContainer > Header {
+  margin-bottom: 20px;
+}
+
+.headerContainer {
+  width: 100%;
+}
+
+.formContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  width: 100%;
 }
 
 .videoUploadForm {
@@ -110,30 +126,6 @@
   margin-right: 10px;
 }
 
-.submitButton {
-  background-color: #ff6600;
-  color: white;
-  border: none;
-  padding: 15px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  border-radius: 5px;
-  width: 100%;
-  text-align: center;
-}
-
-.submitButton:hover {
-  background-color: #e65a00;
-}
-
-.formGroup input[type="file"] {
-  padding: 10px;
-  border: none;
-  color: #757575;
-  font-size: 1rem;
-}
-
 .successMessage,
 .errorMessage {
   text-align: center;
@@ -143,11 +135,89 @@
 }
 
 .successMessage {
-  color: #33e714; /* Fluorescent green */
+  color: #33e714;
 }
 
 .errorMessage {
   color: red;
+}
+
+.fileUploadWrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.hiddenInput {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+
+.fileUploadButton {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: #ff6600;
+  color: #ffffff !important; /* Added !important to override any existing styles */
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+  border: none;
+  min-width: 140px;
+  text-align: center;
+  font-weight: normal; /* Added to ensure consistent weight */
+}
+
+/* Also ensure the hover state maintains white text */
+.fileUploadButton:hover {
+  background-color: #323332;
+  color: #ffffff !important;
+}
+
+.fileName {
+  color: #666;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+/* Keep your existing formGroup styles */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.formGroup label {
+  color: #666;
+  font-size: 1rem;
+}
+
+.uploadButton {
+  background-color: #ff6600; /* Green color */
+  color: #ffffff;
+  font-size: 1.1rem; /* Slightly larger font size */
+  font-weight: normal; /* Unbold the text */
+  padding: 12px 30px; /* Larger padding for a bigger button */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-align: center;
+  max-width: 250px; /* Increased width */
+  margin: 0 auto;
+}
+
+.uploadButton:hover {
+  background-color: #323332;
 }
 
 @media (max-width: 745px) {
@@ -169,7 +239,7 @@
     padding: 10px;
   }
 
-  .submitButton {
+  .uploadButton {
     padding: 10px;
   }
 }

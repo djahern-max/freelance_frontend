@@ -3,29 +3,24 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { login, logout } from "../../redux/authSlice";
-import NoteSharing from "./NoteSharing";
+import RequestSharing from "./RequestSharing";
 import CommandDisplay from "../shared/CommandDisplay";
-import styles from "./Notes.module.css";
+import styles from "./Request.module.css";
+import Header from "../shared/Header";
 
 // Import images
-import newsIcon from "../../images/news.png";
-import videos from "../../images/navigate_videos.png";
-import appsIcon from "../../images/Apps.png";
-import logoutIcon from "../../images/Logout.png";
 import edit from "../../images/Notes.png";
 import del from "../../images/Delete.png";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
-const Notes = () => {
-  // Redux hooks
+const Request = () => {
   const dispatch = useDispatch();
   const { token } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
-  // State declarations
-  const [notes, setNotes] = useState([]);
-  const [sharedNotes, setSharedNotes] = useState([]);
+  const [requests, setRequests] = useState([]);
+  const [sharedRequests, setSharedRequests] = useState([]);
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [projectId, setProjectId] = useState(null);
@@ -35,12 +30,11 @@ const Notes = () => {
   const [isPublic, setIsPublic] = useState(false);
 
   const [editMode, setEditMode] = useState(false);
-  const [editNoteId, setEditNoteId] = useState(null);
+  const [editRequestId, setEditRequestId] = useState(null);
 
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Callbacks
   const handleLogout = useCallback(() => {
     localStorage.removeItem("authToken");
     dispatch(logout());
@@ -59,18 +53,18 @@ const Notes = () => {
     [handleLogout]
   );
 
-  const fetchNotes = useCallback(
+  const fetchRequests = useCallback(
     async (projectId = null) => {
       setIsLoading(true);
       try {
         const params = projectId ? { project_id: projectId } : undefined;
-        const response = await axios.get(`${apiUrl}/notes/`, {
+        const response = await axios.get(`${apiUrl}/requests/`, {
           headers: { Authorization: `Bearer ${token}` },
           params,
         });
-        setNotes(response.data);
+        setRequests(response.data);
       } catch (error) {
-        console.error("Error fetching notes:", error);
+        console.error("Error fetching requests:", error);
         handleError(error);
       } finally {
         setIsLoading(false);
@@ -79,7 +73,6 @@ const Notes = () => {
     [token, handleError]
   );
 
-  // Effects
   useEffect(() => {
     const validateToken = async () => {
       if (token) {
@@ -98,19 +91,22 @@ const Notes = () => {
   }, [token, dispatch]);
 
   useEffect(() => {
-    const fetchSharedNotes = async () => {
+    const fetchSharedRequests = async () => {
       if (token) {
         try {
-          const response = await axios.get(`${apiUrl}/notes/shared-with-me`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          setSharedNotes(response.data);
+          const response = await axios.get(
+            `${apiUrl}/requests/shared-with-me`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          setSharedRequests(response.data);
         } catch (error) {
-          console.error("Failed to fetch shared notes:", error);
+          console.error("Failed to fetch shared requests:", error);
         }
       }
     };
-    fetchSharedNotes();
+    fetchSharedRequests();
   }, [token]);
 
   useEffect(() => {
@@ -131,18 +127,17 @@ const Notes = () => {
 
   useEffect(() => {
     if (token && projectId !== null) {
-      fetchNotes(projectId);
+      fetchRequests(projectId);
     }
-  }, [token, projectId, fetchNotes]);
+  }, [token, projectId, fetchRequests]);
 
-  // Event handlers
-  const editNote = (note) => {
+  const editRequest = (request) => {
     setEditMode(true);
-    setEditNoteId(note.id);
-    setTitle(note.title);
-    setContent(note.content);
-    setProjectId(note.project_id);
-    setIsPublic(note.is_public);
+    setEditRequestId(request.id);
+    setTitle(request.title);
+    setContent(request.content);
+    setProjectId(request.project_id);
+    setIsPublic(request.is_public);
   };
 
   const selectProject = (project) => {
@@ -150,12 +145,11 @@ const Notes = () => {
     setSelectedProject(project);
   };
 
-  // API handlers
-  const createNote = async (e) => {
+  const createRequest = async (e) => {
     e.preventDefault();
     try {
       await axios.post(
-        `${apiUrl}/notes/`,
+        `${apiUrl}/requests/`,
         { title, content, project_id: projectId, is_public: isPublic },
         {
           headers: {
@@ -166,17 +160,17 @@ const Notes = () => {
       );
       setTitle("");
       setContent("");
-      fetchNotes(projectId);
+      fetchRequests(projectId);
     } catch (error) {
       handleError(error);
     }
   };
 
-  const updateNote = async (e) => {
+  const updateRequest = async (e) => {
     e.preventDefault();
     try {
       await axios.put(
-        `${apiUrl}/notes/${editNoteId}`,
+        `${apiUrl}/requests/${editRequestId}`,
         { title, content, project_id: projectId },
         {
           headers: {
@@ -186,21 +180,21 @@ const Notes = () => {
         }
       );
       setEditMode(false);
-      setEditNoteId(null);
+      setEditRequestId(null);
       setTitle("");
       setContent("");
-      fetchNotes(projectId);
+      fetchRequests(projectId);
     } catch (error) {
       handleError(error);
     }
   };
 
-  const deleteNote = async (id) => {
+  const deleteRequest = async (id) => {
     try {
-      await axios.delete(`${apiUrl}/notes/${id}`, {
+      await axios.delete(`${apiUrl}/requests/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      fetchNotes(projectId);
+      fetchRequests(projectId);
     } catch (error) {
       handleError(error);
     }
@@ -212,13 +206,11 @@ const Notes = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // Reset states after successful deletion
       setSelectedProject(null);
       setProjectId(null);
-      setNotes([]);
-      setError(null); // Clear any existing error messages
+      setRequests([]);
+      setError(null);
 
-      // Refresh projects list
       const response = await axios.get(`${apiUrl}/projects/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -226,7 +218,7 @@ const Notes = () => {
     } catch (error) {
       if (error.response?.status === 400) {
         setError(
-          "This project contains notes. Please delete all notes within the project before deleting the project."
+          "This project contains requests. Please delete all requests within the project before deleting the project."
         );
       } else {
         handleError(error);
@@ -234,54 +226,21 @@ const Notes = () => {
     }
   };
 
-  // const toggleNotePrivacy = async (noteId, currentIsPublic) => {
-  //   try {
-  //     await axios.put(
-  //       `${apiUrl}/notes/${noteId}/privacy?is_public=${!currentIsPublic}`,
-  //       null,
-  //       {
-  //         headers: { Authorization: `Bearer ${token}` },
-  //       }
-  //     );
-  //     fetchNotes(projectId);
-  //   } catch (error) {
-  //     handleError(error);
-  //   }
-  // };
-
-  // Render helpers
-  const renderIconBar = () => (
-    <div className={styles["icon-bar"]}>
-      <img
-        src={newsIcon}
-        alt="News"
-        title="Go to News"
-        className={styles.icon}
-        onClick={() => navigate("/newsletter-dashboard")}
-      />
-      <img
-        src={videos}
-        alt="Videos"
-        title="Go to Videos"
-        className={styles.icon}
-        onClick={() => navigate("/videos")}
-      />
-      <img
-        src={appsIcon}
-        alt="Projects"
-        title="Go to Projects"
-        className={styles.icon}
-        onClick={() => navigate("/app-dashboard")}
-      />
-      <img
-        src={logoutIcon}
-        alt="Logout"
-        title="Logout"
-        className={styles.icon}
-        onClick={handleLogout}
-      />
-    </div>
-  );
+  const toggleRequestPrivacy = async (requestId, currentIsPublic) => {
+    try {
+      await axios.put(
+        `${apiUrl}/requests/${requestId}/privacy`,
+        null, // No data in the body
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { is_public: !currentIsPublic }, // Pass is_public as a query parameter
+        }
+      );
+      fetchRequests(projectId); // Refresh the requests list if needed
+    } catch (error) {
+      console.error("Error toggling request privacy:", error);
+    }
+  };
 
   const renderSidebar = () => (
     <div className={styles.sidebar}>
@@ -320,28 +279,28 @@ const Notes = () => {
         ))}
       </ul>
 
-      <h2 className={styles.sharedNotesTitle}>Shared Notes</h2>
-      <ul className={styles.sharedNotesList}>
-        {sharedNotes
+      <h2 className={styles.sharedRequestsTitle}>Shared Requests</h2>
+      <ul className={styles.sharedRequestsList}>
+        {sharedRequests
           ?.sort(
             (a, b) =>
               new Date(b.updated_at || b.created_at) -
               new Date(a.updated_at || a.created_at)
           )
-          .map((note) => (
-            <li key={note.id} className={styles.sharedNoteItem}>
+          .map((request) => (
+            <li key={request.id} className={styles.sharedRequestItem}>
               <a
                 href="#"
                 onClick={(e) => {
                   e.preventDefault();
-                  setNotes([note]);
+                  setRequests([request]);
                   setSelectedProject(null);
                   setProjectId(null);
                 }}
               >
-                <span className={styles.noteTitle}>{note.title}</span>
+                <span className={styles.requestTitle}>{request.title}</span>
                 <div className={styles.sharedByText}>
-                  Shared by: {note.owner_username || "Unknown"}
+                  Shared by: {request.owner_username || "Unknown"}
                 </div>
               </a>
             </li>
@@ -350,55 +309,55 @@ const Notes = () => {
     </div>
   );
 
-  const renderNotesList = () => (
-    <ul className={styles.notesList}>
-      {Array.isArray(notes) && notes.length > 0 ? (
-        notes.map((note) => (
-          <li key={note.id} className={styles.noteItem}>
-            <h2>{note.title}</h2>
-            <CommandDisplay text={note.content} />
-            <div className={styles.noteActions}>
+  const renderRequestsList = () => (
+    <ul className={styles.requestsList}>
+      {Array.isArray(requests) && requests.length > 0 ? (
+        requests.map((request) => (
+          <li key={request.id} className={styles.requestItem}>
+            <h2>{request.title}</h2>
+            <CommandDisplay text={request.content} />
+            <div className={styles.requestActions}>
               <img
                 src={edit}
-                alt="Edit Note"
+                alt="Edit Request"
                 className={styles.iconButton}
-                onClick={() => editNote(note)}
+                onClick={() => editRequest(request)}
               />
               <img
                 src={del}
-                alt="Delete Note"
+                alt="Delete Request"
                 className={styles.iconButton}
-                onClick={() => deleteNote(note.id)}
+                onClick={() => deleteRequest(request.id)}
               />
             </div>
-            <NoteSharing
-              noteId={note.id}
+            <RequestSharing
+              requestId={request.id}
               token={token}
               apiUrl={apiUrl}
-              onShareComplete={() => fetchNotes(projectId)}
-              // toggleNotePrivacy={toggleNotePrivacy}
-              note={note}
+              onShareComplete={() => fetchRequests(projectId)}
+              request={request}
+              toggleRequestPrivacy={toggleRequestPrivacy}
             />
           </li>
         ))
       ) : (
         <p>
           {selectedProject
-            ? "Add a note"
+            ? "Add a request"
             : projects.length > 0
             ? "Please make your selection from the menu or create a new project."
-            : "No notes available yet."}
+            : "No requests available yet."}
         </p>
       )}
     </ul>
   );
 
   return (
-    <div className={styles.notesContainer}>
-      {renderIconBar()}
+    <div className={styles.requestsContainer}>
+      <Header />
       <div className={styles.mainContent}>
         {renderSidebar()}
-        <div className={styles.notesContent}>
+        <div className={styles.requestsContent}>
           {selectedProject && <h2>{selectedProject.name}</h2>}
 
           <div className={styles.dropdown}>
@@ -428,8 +387,8 @@ const Notes = () => {
 
           {error && <p className={styles.error}>{error}</p>}
           <form
-            className={styles.noteForm}
-            onSubmit={editMode ? updateNote : createNote}
+            className={styles.requestForm}
+            onSubmit={editMode ? updateRequest : createRequest}
           >
             <input
               type="text"
@@ -446,17 +405,17 @@ const Notes = () => {
               placeholder="Content"
               required
             />
-            <button type="submit" className={styles.addNoteButton}>
-              {editMode ? "Update Note" : "Add Note"}
+            <button type="submit" className={styles.addRequestButton}>
+              {editMode ? "Update Request" : "Add Request"}
             </button>
           </form>
 
           {isLoading ? (
             <div className={styles.loadingContainer}>
-              <p>Loading notes...</p>
+              <p>Loading requests...</p>
             </div>
           ) : (
-            renderNotesList()
+            renderRequestsList()
           )}
         </div>
       </div>
@@ -464,4 +423,4 @@ const Notes = () => {
   );
 };
 
-export default Notes;
+export default Request;

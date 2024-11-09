@@ -2,11 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "./Videos.module.css";
 import uploadIcon from "../../images/upload.png";
-import newsIcon from "../../images/news.png";
-import notesIcon from "../../images/Notes.png";
-import appsIcon from "../../images/Apps.png";
-import logoutIcon from "../../images/Logout.png";
 import { useNavigate } from "react-router-dom";
+import Header from "../shared/Header";
 
 const Videos = () => {
   const [videos, setVideos] = useState([]);
@@ -48,11 +45,6 @@ const Videos = () => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("authToken");
-    navigate("/login");
   };
 
   useEffect(() => {
@@ -97,36 +89,7 @@ const Videos = () => {
 
   return (
     <div className={styles["videos-container"]}>
-      <div className={styles["icon-bar"]}>
-        <img
-          src={newsIcon}
-          alt="News"
-          title="Go to News"
-          className={styles.icon}
-          onClick={() => navigate("/newsletter-dashboard")}
-        />
-        <img
-          src={notesIcon}
-          alt="Notes"
-          title="Go to Notes"
-          className={styles.icon}
-          onClick={() => navigate("/notes")}
-        />
-        <img
-          src={appsIcon}
-          alt="Projects"
-          title="Go to Projects"
-          className={styles.icon}
-          onClick={() => navigate("/app-dashboard")}
-        />
-        <img
-          src={logoutIcon}
-          alt="Logout"
-          title="Logout"
-          className={styles.icon}
-          onClick={handleLogout}
-        />
-      </div>
+      <Header />
 
       <div className={styles["upload-container"]}>
         <button
@@ -135,6 +98,7 @@ const Videos = () => {
           title="Upload a video"
         >
           <img src={uploadIcon} alt="Upload" />
+          <span>Upload a Video</span>
         </button>
       </div>
 
