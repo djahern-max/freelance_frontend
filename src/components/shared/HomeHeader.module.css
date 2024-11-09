@@ -1,0 +1,22 @@
+/* HomeHeader.module.css */
+.homeHeader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  background-color: #f8f8f8;
+  border-bottom: 2px solid #ff6600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.homeHeaderTitle {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #ff6600;
+  margin: 0;
+  text-align: center;
+}

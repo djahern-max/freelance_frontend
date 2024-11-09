@@ -6,9 +6,10 @@ html {
 }
 
 .features {
-  padding: 50px 20px;
+  padding: 40px 20px 50px 20px; /* Reduced top padding from 100px to 40px */
   background-color: #f8f8f8;
   text-align: center;
+  margin-top: 80px; /* Keeping this to account for fixed header height */
 }
 
 .feature-cards {
@@ -16,17 +17,19 @@ html {
   justify-content: space-around;
   gap: 20px;
   flex-wrap: wrap;
-  margin-top: 0px; /* Reduce or remove top margin to bring cards closer */
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
+/* Rest of your existing styles remain the same */
 .card {
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 22%; /* Adjust this for different screen sizes */
+  width: 22%;
   padding: 20px;
   text-align: center;
-  min-width: 200px; /* Make sure cards don't get too small */
+  min-width: 200px;
   margin: 10px 0;
   display: flex;
   flex-direction: column;
@@ -45,38 +48,30 @@ html {
   color: #757575;
 }
 
-/* Media query for screens larger than 1116px */
+/* Your existing media queries remain the same */
 @media (min-width: 1116px) {
   .card {
-    width: 22%; /* Fit 4 cards comfortably */
+    width: 22%;
   }
 }
 
-/* Media query for screens between 845px and 1116px */
 @media (min-width: 845px) and (max-width: 1115px) {
   .card {
-    width: 30%; /* Reduce the width slightly to fit 3 cards in a row */
+    width: 30%;
   }
 }
 
-/* For smaller screens below 845px */
 @media (max-width: 844px) {
   .card {
-    width: 45%; /* Fit 2 cards in a row */
+    width: 45%;
   }
 }
 
-/* For mobile screens */
 @media (max-width: 460px) {
   .card {
-    width: 100%; /* Make each card full width on smaller screens */
+    width: 100%;
     margin-bottom: 20px;
   }
-
-  /* .features .card h3,
-  .features .card p {
-    display: none; 
-  } */
 
   .features .card img {
     display: block;

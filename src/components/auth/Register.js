@@ -4,6 +4,8 @@ import "./Login.css";
 
 const Register = () => {
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -26,16 +28,16 @@ const Register = () => {
     console.log("Using API route:", apiUrl);
 
     try {
-      console.log("Sending registration request:", { username, password });
-
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: username, // Updated this to "username"
-          password: password,
+          username,
+          email,
+          full_name: fullName,
+          password,
         }),
       });
 
@@ -48,7 +50,6 @@ const Register = () => {
       let jsonData;
       try {
         jsonData = JSON.parse(responseData);
-        console.log("Parsed JSON response:", jsonData);
       } catch (parseError) {
         console.error("Failed to parse response as JSON:", parseError);
       }
@@ -77,6 +78,20 @@ const Register = () => {
           placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          required
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="text"
+          placeholder="Full Name"
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
           required
         />
         <input

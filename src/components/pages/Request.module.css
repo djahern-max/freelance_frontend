@@ -123,18 +123,17 @@ h2 {
   text-align: center;
 }
 
-/* Create project button in sidebar */
 .createProjectButton {
-  display: none; /* Hidden by default, only shows in larger screens */
   background-color: #4caf50;
   color: white;
   border: none;
   padding: 12px 24px;
   font-size: 1rem;
-  margin-top: 10px;
+  margin: 10px auto 20px;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  display: block; /* Make button visible by default */
 }
 
 .createProjectButton:hover {
@@ -294,57 +293,40 @@ textarea.inputField {
   color: #ff0000; /* Optional: Change color on hover */
 }
 
-/* Responsive Design */
 @media (max-width: 745px) {
   .sidebar {
     display: none;
   }
 
   .dropdown {
-    display: block; /* Shows dropdown for smaller screens */
-  }
-
-  .createProjectButton {
-    display: block; /* Shows create project button on smaller screens */
-    max-width: 170px;
-    width: 100%;
-    margin: 5px auto 20px;
-  }
-
-  h1,
-  h2 {
-    font-size: 2rem;
+    display: block;
     text-align: center;
   }
 
-  .requestsContainer {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    width: 100%;
+  /* Ensure the button is visible and properly styled in dropdown */
+  .dropdown .createProjectButton {
+    display: block;
+    margin: 10px auto 20px;
   }
 
-  .requestsContent {
-    padding: 0;
-  }
-
-  .mainContent {
-    display: flex;
-    flex: 1;
-    margin-top: 20px; /* Add some space below the header */
-  }
-
-  .inputField {
-    max-width: 100%;
+  /* Hide the sidebar version of the button */
+  .sidebar .createProjectButton {
+    display: none;
   }
 }
 
 @media (min-width: 746px) {
-  .createProjectButton {
-    display: block; /* Shows create project button in sidebar for larger screens */
+  .dropdown {
+    display: none;
   }
 
-  .dropdown {
-    display: none; /* Hides dropdown for larger screens */
+  /* Show the sidebar version of the button */
+  .sidebar .createProjectButton {
+    display: block;
+  }
+
+  /* Hide the dropdown version of the button */
+  .dropdown .createProjectButton {
+    display: none;
   }
 }

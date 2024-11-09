@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "../../../src/components/shared/Header";
+import HomeHeader from "../../../src/components/shared/HomeHeader";
 
 import Features from "../../../src/components/shared/Features";
 
@@ -8,7 +8,7 @@ import "../../../src/global.css";
 const Homepage = () => {
   return (
     <div>
-      <Header />
+      <HomeHeader />
       {/* <Hero /> */}
       <Features />
       {/* <EmailSignup />
