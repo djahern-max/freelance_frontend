@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import "./Login.css";
 
 const Register = () => {
@@ -10,10 +10,13 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from || "/";
 
   useEffect(() => {
     console.log("API URL:", process.env.REACT_APP_API_URL);
-  }, []);
+    console.log("Return path:", from); // Log the return path for debugging
+  }, [from]);
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -62,7 +65,13 @@ const Register = () => {
       }
 
       console.log("Registration successful, navigating to login");
-      navigate("/login");
+      // Pass the return path to the login page
+      navigate("/login", {
+        state: {
+          from: from,
+          registrationSuccess: true, // Optional: Add this if you want to show a success message on login
+        },
+      });
     } catch (err) {
       console.error("Registration request failed:", err);
       setError("An error occurred during registration. Please try again.");
@@ -112,7 +121,10 @@ const Register = () => {
         {error && <p className="error-message">{error}</p>}
         <div className="register-link">
           <p>
-            Already have an account? <a href="/login">Login</a>
+            Already have an account?{" "}
+            <Link to="/login" state={{ from: from }}>
+              Login
+            </Link>
           </p>
         </div>
       </form>

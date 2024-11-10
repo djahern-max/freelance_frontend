@@ -1,31 +1,39 @@
 .dashboardContainer {
-  background-color: #f9f9f9;
-  padding-top: 20px;
+  background-color: #f8fafc; /* Match the main container background */
+  padding-top: 2rem; /* Converted to rem for consistency */
   min-height: 100vh;
 }
 
 .headerContainer {
-  width: 100%;
-  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem; /* Consistent spacing */
 }
 
 h1 {
-  font-size: 2rem;
-  color: #ff6600;
+  font-size: 1.875rem; /* Matches .title in mainContainer */
+  color: #1f2937; /* Consistent text color */
+  font-weight: bold;
   text-align: center;
-  margin: 30px 0 20px 0;
+  margin: 2rem 0 1.5rem 0;
 }
 
 .dashboardContent {
-  padding: 20px;
+  padding: 2rem; /* Consistent padding */
   max-width: 1200px;
   margin: 0 auto;
 }
 
 .dashboardSection {
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  margin-bottom: 20px;
+  background-color: #ffffff; /* Consistent card background */
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1); /* Hover shadow effect */
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb; /* Border color consistency */
+  transition: box-shadow 0.3s;
+}
+
+.dashboardSection:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1); /* Hover effect for a consistent style */
 }

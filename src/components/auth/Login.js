@@ -4,6 +4,7 @@ import { login } from "../../redux/authSlice";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import "./Login.css";
+import api from "../../utils/api";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -37,38 +38,33 @@ const Login = () => {
     setError("");
 
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/auth/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: username,
-            password: password,
-          }),
-        }
-      );
-
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.detail || "Invalid credentials");
-      }
+      const { data } = await api.post("/auth/login", {
+        username,
+        password,
+      });
 
       const { access_token } = data;
-      localStorage.setItem("authToken", access_token);
 
-      // Validate the token before dispatching login
+      // Get user info after successful login
+      const { data: userData } = await api.get("/auth/me", {
+        headers: { Authorization: `Bearer ${access_token}` },
+      });
+
       if (!isTokenExpired(access_token)) {
-        dispatch(login({ token: access_token, username }));
+        dispatch(
+          login({
+            token: access_token,
+            username: userData.username,
+            userId: userData.id.toString(),
+          })
+        );
         navigate(from, { replace: true });
       } else {
         throw new Error("Token is invalid or expired.");
       }
     } catch (error) {
       console.error("Login error:", error);
-      setError(error.message);
+      setError(error.response?.data?.detail || error.message);
     }
   };
 

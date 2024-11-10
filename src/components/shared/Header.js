@@ -1,7 +1,8 @@
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
-import OpenRequestsIcon from "../../images/news.png"; // Assuming this is the "Open Requests" icon
+import { logout } from "../../redux/authSlice";
+import OpenRequestsIcon from "../../images/news.png";
 import CreateRequestIcon from "../../images/Notes.png";
 import VideosIcon from "../../images/navigate_videos.png";
 import ApplicationsIcon from "../../images/Apps.png";
@@ -9,6 +10,7 @@ import LogoutIcon from "../../images/Logout.png";
 import "./Header.css";
 
 const Header = () => {
+  const dispatch = useDispatch();
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const navigate = useNavigate();
   const location = useLocation();
@@ -45,7 +47,7 @@ const Header = () => {
 
   const handleLogout = () => {
     if (isAuthenticated) {
-      // Clear any authentication tokens or user data here if necessary
+      dispatch(logout()); // Dispatch logout action to clear auth state
       navigate("/login"); // Redirect to login after logout
     }
   };

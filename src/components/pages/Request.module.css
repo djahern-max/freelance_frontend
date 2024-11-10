@@ -266,14 +266,19 @@ textarea.inputField {
   transform: scale(1.1);
 }
 
-/* Remove bullet points and extra styling */
 .requestTitle {
   font-weight: bold;
   margin-left: 0;
+  position: relative;
+  padding-left: 20px; /* Space for bullet point */
 }
 
 .requestTitle::before {
-  content: none; /* Remove bullet point */
+  content: "•"; /* Bullet point */
+  position: absolute;
+  left: 0;
+  color: #ff6600; /* Optional: match color to your theme */
+  font-size: 1.2rem; /* Adjust size as needed */
 }
 
 .projectRow {

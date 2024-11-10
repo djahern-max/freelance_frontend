@@ -1,43 +1,142 @@
-.publicRequestsContainer {
-  background-color: #f9f9f9;
-  padding-top: 20px; /* Add padding to the top */
-  min-height: 100vh; /* Ensure container takes full viewport height */
+.mainContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.mainContent {
+  max-width: 800px;
+  width: 100%;
 }
 
 .headerContainer {
-  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
 }
 
-h1 {
-  font-size: 2rem;
-  color: #ff6600;
-  text-align: center;
-  margin: 30px 0 20px 0; /* This adds 30px top margin to the h1 element specifically */
-}
-
-.error {
-  color: #d9534f;
-  text-align: center;
-}
-
-.requestList {
-  list-style-type: none;
-  padding: 0;
-}
-
-.requestItem {
-  background-color: #ffffff;
-  padding: 20px;
-  margin: 10px 0;
-  border-radius: 5px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.requestItem h2 {
+.title {
+  font-size: 24px;
+  font-weight: bold;
   color: #333;
 }
 
-.requestItem p {
-  color: #666;
+.activeRequests {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  color: #555;
+}
+
+.icon {
+  margin-right: 5px;
+}
+
+.alert {
+  background-color: #ffdddd;
+  color: #d8000c;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #d8000c;
+  border-radius: 5px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+}
+
+.card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cardTitle {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.cardOwner {
+  color: #777;
+  font-size: 14px;
+}
+
+.cardContent {
+  color: #555;
+  margin: 10px 0;
+}
+
+.infoContainer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #888;
+}
+
+.dateContainer,
+.commentContainer {
+  display: flex;
+  align-items: center;
+}
+
+.lockIcon,
+.clockIcon,
+.commentIcon {
+  margin-right: 5px;
+}
+
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.buttonOutline,
+.buttonDefault {
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.buttonOutline {
+  background-color: transparent;
+  border: 1px solid #007bff;
+  color: #007bff;
+}
+
+.buttonDefault {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+}
+
+.noRequestsContainer {
+  text-align: center;
+  color: #777;
+  margin-top: 30px;
+}
+
+.noRequestsIcon {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.noRequestsText {
+  font-size: 16px;
+  color: #555;
 }
