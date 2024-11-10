@@ -40,7 +40,7 @@ const Features = () => {
           onClick={(e) => handleProtectedClick(e, "/requests")}
         >
           <img src={NotesIcon} alt="Notes" />
-          <h3>Requests</h3>
+          <h3>Submit Request</h3>
         </div>
 
         {/* Protected sections - require authentication */}

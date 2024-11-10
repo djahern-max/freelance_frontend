@@ -1,77 +1,118 @@
-import React from "react";
+import React, { useState } from "react";
 import Header from "../shared/Header";
-import { Layout, Grid, ChartLine, Users, FileText } from "lucide-react";
+import { ThumbsUp } from "lucide-react";
 import styles from "./AppDashboard.module.css";
 
 const AppDashboard = () => {
+  const [applications, setApplications] = useState([
+    { id: 1, name: "My Awesome App", url: "https://awesomeapp.com", votes: 42 },
+    {
+      id: 2,
+      name: "Productivity Booster",
+      url: "https://productivitybooster.com",
+      votes: 35,
+    },
+    { id: 3, name: "Task Manager", url: "https://taskmanager.com", votes: 27 },
+  ]);
+  const [newApp, setNewApp] = useState({ name: "", url: "" });
+
+  // Function to increase votes and reorder list based on votes
+  const likeApp = (id) => {
+    setApplications((prevApplications) => {
+      const updatedApps = prevApplications.map((app) =>
+        app.id === id ? { ...app, votes: app.votes + 1 } : app
+      );
+      return updatedApps.sort((a, b) => b.votes - a.votes);
+    });
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewApp((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const addApplication = () => {
+    if (!newApp.name || !newApp.url) return;
+
+    const newApplication = {
+      id: applications.length + 1,
+      name: newApp.name,
+      url: newApp.url,
+      votes: 0,
+    };
+
+    setApplications((prevApps) => [...prevApps, newApplication]);
+    setNewApp({ name: "", url: "" });
+  };
+
   return (
     <div className={styles.pageContainer}>
       <Header />
       <div className={styles.mainContent}>
-        {/* <div className={styles.header}>
-          <h1 className={styles.title}>App Dashboard</h1>
-        </div> */}
-
-        <div className={styles.statsGrid}>
-          <div className={styles.statCard}>
-            <div className={styles.statIcon}>
-              <FileText size={24} />
-            </div>
-            <div className={styles.statContent}>
-              <h3 className={styles.statTitle}>Total Requests</h3>
-              <p className={styles.statValue}>24</p>
-            </div>
-          </div>
-
-          <div className={styles.statCard}>
-            <div className={styles.statIcon}>
-              <Users size={24} />
-            </div>
-            <div className={styles.statContent}>
-              <h3 className={styles.statTitle}>Active Users</h3>
-              <p className={styles.statValue}>12</p>
-            </div>
-          </div>
-
-          <div className={styles.statCard}>
-            <div className={styles.statIcon}>
-              <ChartLine size={24} />
-            </div>
-            <div className={styles.statContent}>
-              <h3 className={styles.statTitle}>Response Rate</h3>
-              <p className={styles.statValue}>89%</p>
-            </div>
-          </div>
-
-          <div className={styles.statCard}>
-            <div className={styles.statIcon}>
-              <Layout size={24} />
-            </div>
-            <div className={styles.statContent}>
-              <h3 className={styles.statTitle}>Projects</h3>
-              <p className={styles.statValue}>8</p>
-            </div>
-          </div>
-        </div>
+        <p className={styles.placeholderMessage}>
+          This is just placeholder data for now, stay tuned for the completed
+          application within a couple of weeks (11.10.2024). The idea is that
+          developers can submit their applications and users can vote on them.
+          ... and RYZE to the top of the list!
+        </p>
 
         <div className={styles.dashboardGrid}>
           <div className={styles.dashboardCard}>
-            <h2 className={styles.cardTitle}>Recent Activity</h2>
             <div className={styles.cardContent}>
-              {/* Add activity content here */}
-              <p className={styles.emptyState}>No recent activity</p>
+              {applications.length > 0 ? (
+                <ul className={styles.applicationList}>
+                  {applications.map((app) => (
+                    <li key={app.id} className={styles.applicationItem}>
+                      <div className={styles.applicationInfo}>
+                        <a
+                          href={app.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={styles.applicationName}
+                        >
+                          {app.name}
+                        </a>
+                        <p className={styles.applicationUrl}>{app.url}</p>
+                      </div>
+                      <div className={styles.voteSection}>
+                        <button
+                          className={styles.voteButton}
+                          onClick={() => likeApp(app.id)}
+                        >
+                          <ThumbsUp size={18} />
+                          <span>{app.votes}</span>
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className={styles.emptyState}>No applications listed yet</p>
+              )}
             </div>
           </div>
 
           <div className={styles.dashboardCard}>
-            <h2 className={styles.cardTitle}>Quick Actions</h2>
             <div className={styles.cardContent}>
-              {/* Add quick actions here */}
-              <div className={styles.actionButtons}>
-                <button className={styles.actionButton}>Create Request</button>
-                <button className={styles.actionButton}>Upload Video</button>
-                <button className={styles.actionButton}>View Projects</button>
-              </div>
+              <input
+                type="text"
+                name="name"
+                value={newApp.name}
+                onChange={handleInputChange}
+                placeholder="Application Name"
+                className={styles.inputField}
+              />
+              <input
+                type="text"
+                name="url"
+                value={newApp.url}
+                onChange={handleInputChange}
+                placeholder="Application URL"
+                className={styles.inputField}
+              />
+              <button className={styles.primaryButton} onClick={addApplication}>
+                Add Application
+              </button>
             </div>
           </div>
         </div>

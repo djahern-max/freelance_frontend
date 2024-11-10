@@ -1,157 +1,142 @@
-@import "../../styles/variables.module.css";
-
-.pageContainer {
-  min-height: 100vh;
-  background-color: #f8f9fa;
-}
-
 .mainContent {
   max-width: 1200px;
   margin: 0 auto;
   padding: var(--spacing-lg);
-  padding-top: 80px; /* Account for header */
+  padding-top: var(--spacing-lg); /* Uniform padding from the header */
+  margin-top: var(--spacing-xl); /* Consistent spacing below header */
 }
 
-.header {
-  margin-bottom: var(--spacing-xl);
+.placeholderMessage {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  font-style: italic;
+  margin-top: var(
+    --spacing-lg
+  ); /* Consistent space between message and header */
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
 }
 
-.title {
-  font-size: var(--font-size-xl);
-  color: var(--color-text-primary);
-  font-weight: 600;
+.applicationList {
+  list-style: none;
+  padding: 0;
   margin: 0;
 }
 
-/* Stats Grid */
-.statsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: var(--spacing-md);
-  margin-bottom: var(--spacing-xl);
-}
-
-.statCard {
+.applicationItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   background-color: white;
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
+  padding: var(--spacing-md);
   border: 1px solid var(--color-border);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-sm);
+  transition: box-shadow 0.2s;
 }
 
-.statIcon {
+.applicationItem:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.applicationInfo {
+  flex: 1;
+}
+
+.applicationName {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.applicationUrl {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-xs);
+}
+
+.voteSection {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
+}
+
+.voteButton {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  background-color: var(--color-secondary);
+  border: none;
   border-radius: var(--radius-md);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  color: var(--color-primary);
+  transition: background-color 0.2s;
+}
+
+.voteButton:hover {
   background-color: var(--color-primary);
   color: white;
 }
 
-.statContent {
-  flex: 1;
-}
-
-.statTitle {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  margin: 0 0 var(--spacing-xs) 0;
-  font-weight: 500;
-}
-
-.statValue {
-  font-size: var(--font-size-xl);
-  color: var(--color-text-primary);
-  font-weight: 600;
-  margin: 0;
-}
-
-/* Dashboard Grid */
-.dashboardGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: var(--spacing-lg);
-}
-
-.dashboardCard {
-  background-color: white;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
-  overflow: hidden;
-}
-
-.cardTitle {
-  font-size: var(--font-size-lg);
-  color: var(--color-text-primary);
-  font-weight: 600;
-  margin: 0;
-  padding: var(--spacing-lg);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.cardContent {
-  padding: var(--spacing-lg);
-}
-
-.emptyState {
-  text-align: center;
-  color: var(--color-text-secondary);
+/* Styling for the primary button in Quick Actions */
+.primaryButton {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
   font-size: var(--font-size-base);
-  margin: var(--spacing-xl) 0;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-/* Action Buttons */
+.primaryButton:hover {
+  background-color: var(--color-primary-dark);
+}
+
 .actionButtons {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
+  align-items: center;
 }
 
-.actionButton {
-  padding: var(--spacing-sm) var(--spacing-md);
-  background-color: white;
+.inputField {
+  width: 100%;
+  padding: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-sm);
-  cursor: pointer;
-  transition: all 0.2s ease;
+  font-size: var(--font-size-base);
 }
 
-.actionButton:hover {
-  background-color: var(--color-secondary);
-  border-color: var(--color-primary);
-  color: var(--color-primary);
+.primaryButton {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.primaryButton:hover {
+  background-color: var(--color-primary-dark);
 }
 
 @media (max-width: 768px) {
   .mainContent {
-    padding: var(--spacing-md);
-    margin-top: calc(
-      var(--spacing-xl) * 2
-    ); /* Double the top margin for more space */
+    padding: var(--spacing-lg);
+    margin-top: var(
+      --spacing-lg
+    ); /* Reduce the top margin on smaller screens */
   }
 
-  .header {
-    margin-bottom: var(--spacing-lg);
-  }
-
-  .statsGrid {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  }
-
-  .dashboardGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .actionButton {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    font-size: var(--font-size-sm);
-    width: 100%;
-    text-align: center;
+  .placeholderMessage {
+    margin-top: var(--spacing-lg); /* Reduce the spacing above the message */
+    margin-bottom: var(--spacing-lg); /* Reduce the spacing below the message */
   }
 }
