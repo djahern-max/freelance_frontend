@@ -128,10 +128,16 @@
   color: var(--color-primary);
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
   .mainContent {
     padding: var(--spacing-md);
+    margin-top: calc(
+      var(--spacing-xl) * 2
+    ); /* Double the top margin for more space */
+  }
+
+  .header {
+    margin-bottom: var(--spacing-lg);
   }
 
   .statsGrid {
@@ -140,5 +146,12 @@
 
   .dashboardGrid {
     grid-template-columns: 1fr;
+  }
+
+  .actionButton {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    width: 100%;
+    text-align: center;
   }
 }

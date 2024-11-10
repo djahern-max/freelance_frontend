@@ -15,7 +15,7 @@
 .login-form {
   background-color: white;
   padding: 40px;
-  border: 2px solid #ff6600; /* Orange border */
+  border: 2px solid #2563eb;
   border-radius: 10px; /* Rounded corners */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
   width: 100%;
@@ -29,7 +29,7 @@
   font-family: "Poppins", sans-serif;
   font-size: 2rem;
   font-weight: 700;
-  color: #757575;
+  color: #f97316;
   margin-bottom: 20px;
 }
 
@@ -38,19 +38,19 @@
   width: 100%;
   padding: 15px;
   margin-bottom: 20px;
-  border: 2px solid #ff6600; /* Orange border for consistency */
+  border: 2px solid #2563eb;
   border-radius: 5px; /* Rounded corners */
   font-size: 1rem;
   outline: none;
 }
 
 .login-form input:focus {
-  border-color: #e65a00; /* Darker orange on focus */
+  border-color: #2563eb;
 }
 
 /* Submit button styling */
 .login-form button {
-  background-color: #ff6600;
+  background-color: #2563eb;
   color: white;
   border: none;
   padding: 15px;
@@ -62,7 +62,7 @@
 }
 
 .login-form button:hover {
-  background-color: #e65a00;
+  background-color: #6b7280;
 }
 
 /* Link to register page */
@@ -73,7 +73,7 @@
 }
 
 .login-form .register-link a {
-  color: #ff6600; /* Orange link color */
+  color: #1d4ed8;
   text-decoration: none;
 }
 

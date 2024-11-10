@@ -8,9 +8,9 @@ const AppDashboard = () => {
     <div className={styles.pageContainer}>
       <Header />
       <div className={styles.mainContent}>
-        <div className={styles.header}>
+        {/* <div className={styles.header}>
           <h1 className={styles.title}>App Dashboard</h1>
-        </div>
+        </div> */}
 
         <div className={styles.statsGrid}>
           <div className={styles.statCard}>

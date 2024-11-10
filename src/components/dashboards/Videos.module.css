@@ -124,6 +124,31 @@
     padding: var(--spacing-md);
   }
 
+  .header {
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-lg); /* Increase spacing between title and button */
+    margin-bottom: var(--spacing-lg); /* Adds more space below header */
+  }
+
+  .title {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-sm); /* Adjust spacing below title */
+  }
+
+  .upload-button {
+    padding: var(--spacing-xs) var(--spacing-xs);
+    font-size: var(--font-size-sm);
+    max-width: 160px;
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    margin-top: var(
+      --spacing-lg
+    ); /* Increase top margin to drop button further */
+    height: 36px;
+  }
+
   .video-list {
     grid-template-columns: 1fr;
   }
