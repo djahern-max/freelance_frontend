@@ -1,22 +1,24 @@
-/* HomeHeader.module.css */
+@import "../../styles/variables.module.css";
+
 .homeHeader {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: 80px;
-  background-color: #f8f8f8;
-  border-bottom: 2px solid #ff6600;
+  height: 60px;
+  background-color: #ffffff;
+  border-bottom: 2px solid #0066ff; /* Blue border */
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  box-shadow: var(--shadow-sm);
 }
 
 .homeHeaderTitle {
-  font-size: 2rem;
+  font-size: 2rem; /* Kept larger size */
   font-weight: bold;
-  color: #ff6600;
+  color: #ff6600; /* Kept orange color for RYZE.ai */
   margin: 0;
   text-align: center;
 }

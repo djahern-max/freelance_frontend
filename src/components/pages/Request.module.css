@@ -1,336 +1,166 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap");
+@import "../../styles/variables.module.css";
 
-/* General page styling */
 .requestsContainer {
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  background-color: #f8f8f8;
-  font-family: "Poppins", sans-serif;
-}
-
-h1 {
-  font-size: 2.5rem;
-  color: #757575;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-h2 {
-  font-size: 1.8rem; /* Reduced font size for "Test Request" */
-  color: #ff6600;
-  margin-top: 30px;
-  margin-bottom: 10px;
-  text-align: left;
-}
-
-/* Main content styling */
-.mainContent {
-  display: flex;
-  flex: 1;
-}
-
-/* Icon bar styling */
-.icon-bar {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 10px;
-  background-color: #ffffff;
-  border-bottom: 2px solid #ff6600;
-  margin-bottom: 20px;
-}
-
-.icon {
-  cursor: pointer;
-  width: 30px; /* Reduced icon size */
-  height: 30px;
-  transition: transform 0.3s ease;
-  position: relative;
-}
-
-.icon:hover {
-  transform: scale(1.1);
-}
-
-.icon::after {
-  content: attr(title);
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: white;
-  color: black;
-  padding: 5px 10px;
-  border: 2px solid #ff6600;
-  border-radius: 4px;
-  font-size: 14px;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-  white-space: nowrap;
-}
-
-.icon:hover::after {
-  opacity: 1;
-  visibility: visible;
+  min-height: 100vh;
+  background-color: #f8f9fa;
 }
 
 .mainContent {
   display: flex;
-  flex: 1;
-  margin-top: 10px; /* This controls the space between orange line and sidebar */
+  padding-top: 60px;
+  min-height: calc(100vh - 60px);
 }
 
-/* Sidebar styling */
+/* Sidebar */
 .sidebar {
   width: 250px;
-  padding: 20px;
-  background-color: #f5f5f5;
-  border-right: 1px solid #ddd;
-  min-height: calc(100vh - 60px); /* Adjust based on your header height */
+  background-color: #f8f9fa;
+  border-right: 1px solid var(--color-border);
+  padding: var(--spacing-lg);
+  height: calc(100vh - 60px);
+  position: fixed;
 }
+
 .sidebar h2 {
-  font-size: 1.5rem;
-  color: #757575;
-  margin-bottom: 10px;
+  font-size: var(--font-size-lg);
+  color: #666;
+  margin: var(--spacing-xl) 0 var(--spacing-md) 0;
+  font-weight: 500;
 }
 
-.sidebar ul {
-  list-style: none;
-  padding-left: 0;
-}
-
-.sidebar ul li {
-  margin-bottom: 10px;
-}
-
-.sidebar ul li a {
-  text-decoration: none;
-  color: #333;
-  transition: color 0.3s ease;
-}
-
-.sidebar ul li a:hover {
-  color: #ff6600;
-}
-
-/* Project selection area for smaller screens */
-.dropdown {
-  display: none;
-  width: 100%;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.createProjectButton {
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  font-size: 1rem;
-  margin: 10px auto 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  display: block; /* Make button visible by default */
-}
-
-.createProjectButton:hover {
-  background-color: #45a049;
-}
-
-/* Content area for requests */
+/* Main Content Area */
 .requestsContent {
   flex: 1;
-  padding: 20px;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  margin-left: 250px;
+  background-color: white;
 }
 
-.dropdown .createProjectButton {
-  display: none; /* Or adjust based on your preference */
-}
-
-/* Form styling */
-.requestForm {
-  margin-bottom: 30px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
+/* Form Styling */
 .inputField {
   width: 100%;
-  max-width: 90%;
-  padding: 15px;
-  margin-bottom: 20px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid #e0e0e0;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  margin-bottom: var(--spacing-md);
+}
+
+.inputField:focus {
+  border-color: #0066ff;
+  outline: none;
+  box-shadow: 0 0 0 1px #0066ff;
 }
 
 textarea.inputField {
-  height: 150px;
+  min-height: 150px;
   resize: vertical;
 }
 
-/* Button styling */
-.addRequestButton {
-  background-color: #ff6600;
+/* Buttons */
+.createProjectButton {
+  width: 100%;
+  background-color: #0066ff;
   color: white;
   border: none;
-  padding: 15px 30px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
   cursor: pointer;
-  font-size: 1rem;
-  margin-top: 20px;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.2s;
+}
+
+.createProjectButton:hover {
+  background-color: #0052cc;
+}
+
+.addRequestButton {
+  background-color: #0066ff;
+  color: white;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .addRequestButton:hover {
-  background-color: #e65a00;
+  background-color: #0052cc;
 }
 
-/* Project selection styling */
-.selectField {
-  width: 200px;
-  padding: 10px;
-  margin-bottom: 20px;
-  font-size: 1rem;
-  font-family: "Poppins", sans-serif;
-  border: 2px solid #ccc;
-  border-radius: 8px;
-  background-color: #fff;
-  color: #333;
-  cursor: pointer;
-  transition: border-color 0.3s ease;
-}
-
-.selectField:hover {
-  border-color: #ff6600;
-}
-
-.selectField:focus {
-  outline: none;
-  border-color: #ff6600;
-}
-
-.selectField option {
-  padding: 10px;
-  font-size: 1rem;
-  background-color: #fff;
-  color: #333;
-}
-
-/* Error message styling */
-.error {
-  color: #dc3545;
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: 4px;
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
-}
-/* Project and request list styling */
-.projectsList,
-.requestsList {
+/* Project List */
+.projectsList {
   list-style: none;
-  padding-left: 0; /* Removed bullet points */
+  padding: 0;
+  margin: 0;
 }
 
-/* Request item styling */
-.requestItem {
-  border: 1px solid #ddd;
-  padding: 20px;
-  margin-bottom: 20px;
-  border-radius: 10px;
-  background-color: #fff;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+.projectItem {
+  margin-bottom: var(--spacing-xs);
 }
 
-.requestItem h2 {
-  font-size: 1.5rem; /* Further reduction for request title */
-  color: #757575;
-  margin-bottom: 10px;
+.projectItem a {
+  display: block;
+  padding: var(--spacing-sm);
+  color: #333;
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  transition: background-color 0.2s;
 }
 
-/* Icon button styling */
-.iconButton {
-  width: 20px; /* Smaller icons within requests */
-  height: 20px;
-  cursor: pointer;
-  margin-right: 8px;
-  transition: transform 0.3s ease;
+.projectItem a:hover {
+  background-color: rgba(0, 102, 255, 0.05);
 }
 
-.iconButton:hover {
-  transform: scale(1.1);
+/* Dropdown for mobile */
+.dropdown {
+  display: none;
 }
 
-.requestTitle {
-  font-weight: bold;
-  margin-left: 0;
-  position: relative;
-  padding-left: 20px; /* Space for bullet point */
-}
-
-.requestTitle::before {
-  content: "•"; /* Bullet point */
-  position: absolute;
-  left: 0;
-  color: #ff6600; /* Optional: match color to your theme */
-  font-size: 1.2rem; /* Adjust size as needed */
-}
-
-.projectRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.deleteX {
-  cursor: pointer;
-  color: #888;
-  margin-left: auto; /* This will push the delete icon to the right */
-  font-weight: bold;
-}
-
-.deleteX:hover {
-  color: #ff0000; /* Optional: Change color on hover */
-}
-
+/* Responsive Design */
 @media (max-width: 745px) {
   .sidebar {
     display: none;
   }
 
+  .requestsContent {
+    margin-left: 0;
+    padding: var(--spacing-md);
+  }
+
   .dropdown {
     display: block;
-    text-align: center;
+    margin-bottom: var(--spacing-lg);
   }
 
-  /* Ensure the button is visible and properly styled in dropdown */
+  .selectField {
+    width: 100%;
+    margin-bottom: var(--spacing-md);
+  }
+
+  /* Show create project button in dropdown only on mobile */
   .dropdown .createProjectButton {
     display: block;
-    margin: 10px auto 20px;
-  }
-
-  /* Hide the sidebar version of the button */
-  .sidebar .createProjectButton {
-    display: none;
+    width: 100%;
+    margin-bottom: var(--spacing-lg);
   }
 }
 
 @media (min-width: 746px) {
+  /* Hide dropdown elements on desktop */
   .dropdown {
     display: none;
   }
 
-  /* Show the sidebar version of the button */
-  .sidebar .createProjectButton {
+  /* Show sidebar elements on desktop */
+  .sidebar {
     display: block;
   }
 
-  /* Hide the dropdown version of the button */
+  /* Hide mobile create project button */
   .dropdown .createProjectButton {
     display: none;
   }

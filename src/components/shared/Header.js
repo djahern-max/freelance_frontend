@@ -7,7 +7,7 @@ import CreateRequestIcon from "../../images/Notes.png";
 import VideosIcon from "../../images/navigate_videos.png";
 import ApplicationsIcon from "../../images/Apps.png";
 import LogoutIcon from "../../images/Logout.png";
-import "./Header.css";
+import styles from "./Header.module.css";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -28,7 +28,12 @@ const Header = () => {
       alt: "Create Request",
       title: "Create Request",
     },
-    { path: "/videos", icon: VideosIcon, alt: "Videos", title: "Videos" },
+    {
+      path: "/videos",
+      icon: VideosIcon,
+      alt: "Videos",
+      title: "Videos",
+    },
     {
       path: "/app-dashboard",
       icon: ApplicationsIcon,
@@ -47,32 +52,42 @@ const Header = () => {
 
   const handleLogout = () => {
     if (isAuthenticated) {
-      dispatch(logout()); // Dispatch logout action to clear auth state
-      navigate("/login"); // Redirect to login after logout
+      dispatch(logout());
+      navigate("/login");
     }
   };
 
   return (
-    <header className="header">
-      <div className="icon-bar">
+    <header className={styles.header}>
+      <div className={styles.iconBar}>
         {location.pathname === "/" ? (
-          <h1 className="header-title">RYZE.ai</h1>
+          <h1 className={styles.headerTitle}>RYZE.ai</h1>
         ) : (
           <>
             {pages.map((page) =>
               location.pathname !== page.path ? (
                 <div
                   key={page.path}
-                  className="icon"
+                  className={styles.icon}
                   onClick={() => handleNavigation(page.path)}
                 >
-                  <img src={page.icon} alt={page.alt} title={page.title} />
+                  <img
+                    className={styles.iconImage}
+                    src={page.icon}
+                    alt={page.alt}
+                    title={page.title}
+                  />
                 </div>
               ) : null
             )}
             {isAuthenticated && (
-              <div className="icon" onClick={handleLogout}>
-                <img src={LogoutIcon} alt="Logout" title="Logout" />
+              <div className={styles.icon} onClick={handleLogout}>
+                <img
+                  className={styles.iconImage}
+                  src={LogoutIcon}
+                  alt="Logout"
+                  title="Logout"
+                />
               </div>
             )}
           </>

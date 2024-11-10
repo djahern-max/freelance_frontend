@@ -17,7 +17,7 @@ import Requests from "./components/pages/Request";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import CreateProject from "./components/pages/CreateProject";
 import api from "./utils/api"; // Import your API instance
-import "./global.css";
+import "./styles/global.css";
 
 function App() {
   const dispatch = useDispatch();

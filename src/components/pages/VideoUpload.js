@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import styles from "./VideoUpload.module.css";
-import navigateIcon from "../../images/navigate_videos.png";
+import { ArrowLeft, Upload, Image, FileVideo } from "lucide-react";
 import Header from "../shared/Header";
+import styles from "./VideoUpload.module.css";
 
 const VideoUpload = () => {
   const [title, setTitle] = useState("");
@@ -11,16 +11,16 @@ const VideoUpload = () => {
   const [file, setFile] = useState(null);
   const [thumbnail, setThumbnail] = useState(null);
   const [uploadStatus, setUploadStatus] = useState(null);
-
   const apiUrl = process.env.REACT_APP_API_URL;
   const navigate = useNavigate();
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
-
-  const handleThumbnailChange = (e) => {
-    setThumbnail(e.target.files[0]);
+  const handleFileChange = (e, type) => {
+    const selectedFile = e.target.files[0];
+    if (type === "video") {
+      setFile(selectedFile);
+    } else {
+      setThumbnail(selectedFile);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -31,81 +31,87 @@ const VideoUpload = () => {
     formData.append("file", file);
     formData.append("thumbnail", thumbnail);
 
-    const token = localStorage.getItem("authToken");
-
     try {
-      const response = await axios.post(`${apiUrl}/videos/`, formData, {
+      const token = localStorage.getItem("authToken");
+      await axios.post(`${apiUrl}/videos/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
         },
       });
       setUploadStatus("success");
+      setTimeout(() => navigate("/videos"), 2000);
     } catch (error) {
       setUploadStatus("error");
     }
   };
 
-  const handleNavigate = () => {
-    navigate("/videos");
-  };
-
   return (
     <div className={styles.videoUploadContainer}>
-      <div className={styles.headerContainer}>
-        <Header />
-      </div>
+      <Header />
       <div className={styles.formContainer}>
         <form className={styles.videoUploadForm} onSubmit={handleSubmit}>
           <div className={styles.formHeader}>
-            <h2>Upload Video</h2>
+            <h1 className={styles.title}>Upload Video</h1>
             <button
-              className={styles.navigateIconButton}
-              onClick={handleNavigate}
               type="button"
+              className={styles.navigateButton}
+              onClick={() => navigate("/videos")}
             >
-              <img
-                src={navigateIcon}
-                alt="Go to Videos"
-                className={styles.navigateIcon}
-              />
+              <ArrowLeft size={20} />
+              Back to Videos
             </button>
           </div>
-          {uploadStatus === "success" && (
-            <div className={styles.successMessage}>Upload successful!</div>
+
+          {uploadStatus && (
+            <div
+              className={
+                uploadStatus === "success"
+                  ? styles.successMessage
+                  : styles.errorMessage
+              }
+            >
+              {uploadStatus === "success"
+                ? "Upload successful! Redirecting..."
+                : "Error uploading video. Please try again."}
+            </div>
           )}
-          {uploadStatus === "error" && (
-            <div className={styles.errorMessage}>Error uploading video.</div>
-          )}
+
           <div className={styles.formGroup}>
-            <label>Title:</label>
+            <label htmlFor="title">Title</label>
             <input
+              id="title"
               type="text"
+              className={styles.input}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
             />
           </div>
+
           <div className={styles.formGroup}>
-            <label>Description:</label>
+            <label htmlFor="description">Description</label>
             <textarea
+              id="description"
+              className={styles.input}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
 
           <div className={styles.formGroup}>
-            <label>Video File:</label>
+            <label>Video File</label>
             <div className={styles.fileUploadWrapper}>
               <input
                 type="file"
-                onChange={handleFileChange}
+                onChange={(e) => handleFileChange(e, "video")}
                 accept="video/*"
                 className={styles.hiddenInput}
                 id="videoFile"
                 required
               />
               <label htmlFor="videoFile" className={styles.fileUploadButton}>
+                <FileVideo size={20} />
                 Choose Video File
               </label>
               {file && <span className={styles.fileName}>{file.name}</span>}
@@ -113,11 +119,11 @@ const VideoUpload = () => {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Thumbnail:</label>
+            <label>Thumbnail</label>
             <div className={styles.fileUploadWrapper}>
               <input
                 type="file"
-                onChange={handleThumbnailChange}
+                onChange={(e) => handleFileChange(e, "thumbnail")}
                 accept="image/*"
                 className={styles.hiddenInput}
                 id="thumbnailFile"
@@ -127,6 +133,7 @@ const VideoUpload = () => {
                 htmlFor="thumbnailFile"
                 className={styles.fileUploadButton}
               >
+                <Image size={20} />
                 Choose Thumbnail
               </label>
               {thumbnail && (
@@ -136,6 +143,7 @@ const VideoUpload = () => {
           </div>
 
           <button type="submit" className={styles.uploadButton}>
+            <Upload size={20} />
             Upload Video
           </button>
         </form>

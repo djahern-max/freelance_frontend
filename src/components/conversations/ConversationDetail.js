@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { Send, ArrowLeft } from "lucide-react";
+import Header from "../shared/Header";
 import styles from "./ConversationDetail.module.css";
 
 const ConversationDetail = () => {
@@ -135,26 +136,20 @@ const ConversationDetail = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <button
-          className={styles.backButton}
-          onClick={() => navigate("/conversations")}
-        >
-          <ArrowLeft size={20} />
-        </button>
-        <h2>{otherUser}</h2>
-      </div>
+      <Header />
+      <div className={styles.messageArea}>
+        <div className={styles.header}>
+          <button
+            className={styles.backButton}
+            onClick={() => navigate("/conversations")}
+          >
+            <ArrowLeft size={20} />
+          </button>
+          <h2>{otherUser}</h2>
+        </div>
 
-      <div className={styles.messageContainer}>
-        {conversation.messages.map((message) => {
-          console.log("Rendering message:", {
-            messageId: message.id,
-            messageUserId: message.user_id,
-            currentUserId: userId,
-            isCurrentUser: message.user_id === userId,
-          });
-
-          return (
+        <div className={styles.messageContainer}>
+          {conversation.messages.map((message) => (
             <div
               key={message.id}
               className={`${styles.message} ${
@@ -168,25 +163,23 @@ const ConversationDetail = () => {
                 </span>
               </div>
             </div>
-          );
-        })}
-        <div ref={messagesEndRef} />
+          ))}
+          <div ref={messagesEndRef} />
+        </div>
+
+        <form className={styles.inputContainer} onSubmit={sendMessage}>
+          <input
+            type="text"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            placeholder="Type your message..."
+            className={styles.input}
+          />
+          <button type="submit" className={styles.sendButton}>
+            <Send size={20} />
+          </button>
+        </form>
       </div>
-
-      <form className={styles.inputContainer} onSubmit={sendMessage}>
-        <input
-          type="text"
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="Type your message..."
-          className={styles.input}
-        />
-        <button type="submit" className={styles.sendButton}>
-          <Send size={20} />
-        </button>
-      </form>
-
-      {error && <div className={styles.error}>{error}</div>}
     </div>
   );
 };

@@ -103,10 +103,8 @@ const PublicRequests = () => {
         <div className={styles.headerContainer}>
           <h1 className={styles.title}>Public Requests</h1>
           <div className={styles.activeRequests}>
-            <Users className={styles.icon} />
-            <span className={styles.requestCount}>
-              {publicRequests.length} Active Requests
-            </span>
+            <Users className={styles.metaIcon} />
+            <span>{publicRequests.length} Active Requests</span>
           </div>
         </div>
 
@@ -116,63 +114,51 @@ const PublicRequests = () => {
           </div>
         )}
 
-        <div className={styles.grid}>
-          {publicRequests.map((request) => (
-            <div key={request.id} className={styles.card}>
-              <div className={styles.cardHeader}>
-                <h2 className={styles.cardTitle}>{request.title}</h2>
-                <p className={styles.cardOwner}>by {request.owner_username}</p>
-                {request.contains_sensitive_data && (
-                  <Lock className={styles.lockIcon} />
-                )}
+        {publicRequests.map((request) => (
+          <div key={request.id} className={styles.card}>
+            <h2 className={styles.requestTitle}>{request.title}</h2>
+            <div className={styles.byLine}>by {request.owner_username}</div>
+            <p className={styles.description}>{request.content}</p>
+
+            <div className={styles.metaContainer}>
+              <div className={styles.metaRow}>
+                <Clock className={styles.metaIcon} />
+                <span>{formatDate(request.created_at)}</span>
               </div>
-
-              <p className={styles.cardContent}>{request.content}</p>
-
-              <div className={styles.infoContainer}>
-                <div className={styles.dateContainer}>
-                  <Clock className={styles.clockIcon} />
-                  {formatDate(request.created_at)}
-                </div>
-                <div className={styles.commentContainer}>
-                  <MessageSquare className={styles.commentIcon} />
-                  {request.comment_count || 0} responses
-                </div>
-              </div>
-
-              <div className={styles.cardFooter}>
-                <button
-                  className={styles.buttonOutline}
-                  onClick={() => navigate(`/requests/${request.id}`)}
-                >
-                  View Details
-                </button>
-
-                {parseInt(user.id) === request.user_id ? (
-                  // If this is the user's own request, show responses button
-                  <div className={styles.responseSection}>
-                    <button
-                      className={styles.buttonDefault}
-                      onClick={() =>
-                        navigate(`/requests/responses?request=${request.id}`)
-                      }
-                    >
-                      View Responses ({request.comment_count || 0})
-                    </button>
-                  </div>
-                ) : (
-                  // For other users, show the Start Conversation button
-                  <button
-                    className={styles.buttonDefault}
-                    onClick={() => handleStartConversation(request)}
-                  >
-                    Start Conversation
-                  </button>
-                )}
+              <div className={styles.metaRow}>
+                <MessageSquare className={styles.metaIcon} />
+                <span>{request.comment_count || 0} responses</span>
               </div>
             </div>
-          ))}
-        </div>
+
+            <div className={styles.buttonContainer}>
+              <button
+                className={styles.buttonOutline}
+                onClick={() => navigate(`/requests/${request.id}`)}
+              >
+                View Details
+              </button>
+
+              {parseInt(user.id) === request.user_id ? (
+                <button
+                  className={styles.buttonPrimary}
+                  onClick={() =>
+                    navigate(`/requests/responses?request=${request.id}`)
+                  }
+                >
+                  View Responses ({request.comment_count || 0})
+                </button>
+              ) : (
+                <button
+                  className={styles.buttonPrimary}
+                  onClick={() => handleStartConversation(request)}
+                >
+                  Start Conversation
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
 
         {publicRequests.length === 0 && (
           <div className={styles.noRequestsContainer}>
