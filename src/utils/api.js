@@ -1,8 +1,18 @@
 // src/utils/api.js
 import axios from "axios";
 
+// Determine the base URL based on environment
+const getBaseURL = () => {
+  if (process.env.NODE_ENV === "production") {
+    // In production, we use relative path since NGINX handles the routing
+    return "/api";
+  }
+  // In development, use the full localhost URL
+  return process.env.REACT_APP_API_URL || "http://localhost:8000";
+};
+
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || "http://localhost:8000",
+  baseURL: getBaseURL(),
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
