@@ -31,24 +31,32 @@ const ConversationDetail = () => {
   const isDeveloper = user.userType === "developer";
 
   useEffect(() => {
-    fetchConversation();
-    const interval = setInterval(fetchConversation, 5000);
-    return () => clearInterval(interval);
-  }, [id]);
+    if (id && token) {
+      fetchConversation();
+      const interval = setInterval(fetchConversation, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [id, token]);
 
   const fetchConversation = async () => {
     try {
-      const [conversationRes, requestRes] = await Promise.all([
-        axios.get(`${apiUrl}/conversations/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        axios.get(`${apiUrl}/requests/${conversation?.request_id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-      ]);
-
+      // First, fetch conversation details
+      const conversationRes = await axios.get(`${apiUrl}/conversations/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setConversation(conversationRes.data);
-      setRequestDetails(requestRes.data);
+
+      // Then, use the request_id from the conversation response
+      if (conversationRes.data?.request_id) {
+        const requestRes = await axios.get(
+          `${apiUrl}/requests/${conversationRes.data.request_id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setRequestDetails(requestRes.data);
+      }
+
       scrollToBottom();
     } catch (err) {
       console.error("Error fetching conversation:", err);
