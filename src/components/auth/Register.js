@@ -1,133 +1,184 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import "./Login.css";
+import styles from "./Register.module.css";
 
 const Register = () => {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    userType: "client",
+  });
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from || "/";
 
-  useEffect(() => {
-    console.log("API URL:", process.env.REACT_APP_API_URL);
-    console.log("Return path:", from); // Log the return path for debugging
-  }, [from]);
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setError("");
+    setIsLoading(true);
 
-    if (password !== confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
+      setIsLoading(false);
       return;
     }
 
-    const apiUrl = `${process.env.REACT_APP_API_URL}/auth/register`;
-    console.log("Using API route:", apiUrl);
-
     try {
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username,
-          email,
-          full_name: fullName,
-          password,
-        }),
-      });
+      const requestBody = {
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        user_type: formData.userType,
+      };
 
-      console.log("Response status:", response.status);
-      console.log("Response headers:", Object.fromEntries(response.headers));
-
-      const responseData = await response.text();
-      console.log("Raw response body:", responseData);
-
-      let jsonData;
-      try {
-        jsonData = JSON.parse(responseData);
-      } catch (parseError) {
-        console.error("Failed to parse response as JSON:", parseError);
-      }
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/auth/register`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(requestBody),
+        }
+      );
 
       if (!response.ok) {
-        const errorMessage =
-          jsonData?.detail || "Registration failed. Please try again.";
-        setError(errorMessage);
-        return;
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Registration failed");
       }
 
-      console.log("Registration successful, navigating to login");
-      // Pass the return path to the login page
+      // Redirect to login with success message
       navigate("/login", {
         state: {
-          from: from,
-          registrationSuccess: true, // Optional: Add this if you want to show a success message on login
+          from,
+          registrationSuccess: true,
+          message:
+            "Account created successfully! You can complete your profile after logging in.",
         },
       });
     } catch (err) {
-      console.error("Registration request failed:", err);
-      setError("An error occurred during registration. Please try again.");
+      setError(err.message || "Registration failed. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="login-container">
-      <form className="login-form" onSubmit={handleRegister}>
-        <h2>Register</h2>
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Full Name"
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Confirm Password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-        />
-        <button type="submit">Register</button>
-        {error && <p className="error-message">{error}</p>}
-        <div className="register-link">
+    <div className={styles.container}>
+      <div className={styles.formWrapper}>
+        <div className={styles.header}>
+          <h1 className={styles.title}>Create Account</h1>
+          <p className={styles.subtitle}>
+            Join RYZE.AI to connect with AI solutions
+          </p>
+        </div>
+
+        {error && <div className={styles.error}>{error}</div>}
+
+        <form onSubmit={handleRegister} className={styles.form}>
+          <div className={styles.formGroup}>
+            <label htmlFor="userType">I am a:</label>
+            <select
+              id="userType"
+              name="userType"
+              value={formData.userType}
+              onChange={handleInputChange}
+              className={styles.select}
+            >
+              <option value="client">Client seeking AI solutions</option>
+              <option value="developer">AI Developer</option>
+            </select>
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="username">Username</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={formData.username}
+              onChange={handleInputChange}
+              required
+              className={styles.input}
+              autoComplete="username"
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              required
+              className={styles.input}
+              autoComplete="email"
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleInputChange}
+              required
+              className={styles.input}
+              autoComplete="new-password"
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="confirmPassword">Confirm Password</label>
+            <input
+              type="password"
+              id="confirmPassword"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleInputChange}
+              required
+              className={styles.input}
+              autoComplete="new-password"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className={styles.submitButton}
+            disabled={isLoading}
+          >
+            {isLoading ? "Creating Account..." : "Create Account"}
+          </button>
+
+          <p className={styles.hint}>
+            You can complete your profile details after signing up
+          </p>
+        </form>
+
+        <div className={styles.footer}>
           <p>
             Already have an account?{" "}
-            <Link to="/login" state={{ from: from }}>
-              Login
+            <Link to="/login" className={styles.link} state={{ from }}>
+              Sign in
             </Link>
           </p>
         </div>
-      </form>
+      </div>
     </div>
   );
 };

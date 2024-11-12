@@ -3,13 +3,17 @@
 .videoUploadContainer {
   min-height: 100vh;
   background-color: #f8f9fa;
+  padding-top: var(
+    --header-height,
+    64px
+  ); /* Add default if variable not defined */
 }
 
 .formContainer {
   max-width: 600px;
   margin: 0 auto;
   padding: var(--spacing-lg);
-  padding-top: 80px; /* Account for header */
+  /* Remove fixed padding-top since container now has padding-top */
 }
 
 .videoUploadForm {
@@ -25,6 +29,8 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: var(--spacing-xl);
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
 }
 
 .title {
@@ -45,6 +51,7 @@
   cursor: pointer;
   border-radius: var(--radius-md);
   transition: background-color 0.2s;
+  white-space: nowrap;
 }
 
 .navigateButton:hover {
@@ -84,6 +91,10 @@ textarea.input {
 
 .fileUploadWrapper {
   margin-top: var(--spacing-xs);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  align-items: center;
 }
 
 .fileUploadButton {
@@ -98,6 +109,7 @@ textarea.input {
   cursor: pointer;
   font-size: var(--font-size-sm);
   transition: all 0.2s;
+  white-space: nowrap;
 }
 
 .fileUploadButton:hover {
@@ -106,9 +118,9 @@ textarea.input {
 }
 
 .fileName {
-  margin-left: var(--spacing-sm);
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
+  word-break: break-all;
 }
 
 .uploadButton {
@@ -123,6 +135,10 @@ textarea.input {
   cursor: pointer;
   transition: background-color 0.2s;
   margin-top: var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
 }
 
 .uploadButton:hover {
@@ -159,6 +175,24 @@ textarea.input {
   }
 
   .videoUploadForm {
-    padding: var(--spacing-lg);
+    padding: var(--spacing-md);
+  }
+
+  .formHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .navigateButton {
+    margin-top: var(--spacing-xs);
+  }
+
+  .fileUploadWrapper {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .fileName {
+    width: 100%;
   }
 }

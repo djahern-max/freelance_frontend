@@ -1,0 +1,389 @@
+@import "../../styles/variables.module.css";
+
+.requestsContainer {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.sharingContainer {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm);
+  min-height: 40px; /* Prevent layout shift */
+}
+
+/* Share input field */
+.sharingContainer input {
+  flex: 1;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+}
+
+button.share {
+  background-color: var(--color-accent);
+  color: white;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  min-width: 80px; /* Prevent size changes */
+}
+
+button.share:hover {
+  background-color: #ea580c;
+}
+
+.toggleContainer {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-width: 120px; /* Prevent layout shift */
+}
+
+/* Toggle switch */
+.toggleSwitch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.toggleSwitch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--color-border);
+  transition: 0.2s;
+  border-radius: 24px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.2s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--color-primary);
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+/* Label styling */
+.toggleLabel {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  min-width: 50px; /* Prevent layout shift */
+}
+
+.mainContent {
+  display: flex;
+  padding-top: 60px;
+  min-height: calc(100vh - 60px);
+  background-color: #f8f9fa;
+}
+
+.requestForm p {
+  margin-top: var(--spacing-lg);
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background-color: #f8f9fa;
+  border-right: 1px solid var(--color-border);
+  padding: var(--spacing-lg);
+  height: calc(100vh - 60px);
+  position: fixed;
+  overflow-y: auto;
+}
+
+.sidebar h2 {
+  font-size: var(--font-size-lg);
+  color: #666;
+  margin: var(--spacing-xl) 0 var(--spacing-md) 0;
+  font-weight: 500;
+}
+
+/* Main Content Area */
+.requestsContent {
+  flex: 1;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  margin-left: 250px;
+  background-color: white;
+  min-height: calc(100vh - 60px);
+}
+
+/* Form Styling */
+.inputField {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid #e0e0e0;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  margin-bottom: var(--spacing-md);
+  transition: all 0.2s ease;
+}
+
+.inputField:focus {
+  border-color: var(--color-text-primary);
+  outline: none;
+  box-shadow: 0 0 0 1px var(--color-text-primary);
+}
+
+textarea.inputField {
+  min-height: 150px;
+  resize: vertical;
+}
+
+/* Dropdown Styling */
+.selectField {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid #e0e0e0;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  background-color: white;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666666%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px;
+}
+
+.selectField:focus {
+  border-color: var(--color-text-primary);
+  outline: none;
+  box-shadow: 0 0 0 1px var(--color-text-primary);
+}
+
+/* Buttons */
+.createProjectButton {
+  width: 100%;
+  background-color: #0066ff;
+  color: white;
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.createProjectButton:hover {
+  background-color: #0052cc;
+}
+
+.addRequestButton {
+  background-color: #0066ff;
+  color: white;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-bottom: var(--spacing-md);
+}
+
+.addRequestButton:hover {
+  background-color: #0052cc;
+}
+
+/* Project List */
+.projectsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.projectItem {
+  margin-bottom: var(--spacing-xs);
+}
+
+.projectRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-md);
+  transition: background-color 0.2s;
+}
+
+.projectRow:hover {
+  background-color: rgba(0, 102, 255, 0.05);
+}
+
+.projectName {
+  color: #333;
+  text-decoration: none;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.deleteX {
+  cursor: pointer;
+  margin-left: var(--spacing-xs);
+  color: #666;
+  font-size: 1.2em;
+  padding: 0 var(--spacing-xs);
+}
+
+.deleteX:hover {
+  color: #ff4444;
+}
+
+.requestsContent h2 {
+  margin-bottom: var(--spacing-lg);
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+/* Icon styling */
+.shareContainer img,
+.iconButton {
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  margin: 0 var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text-primary); /* This sets the color to #111827 */
+  transition: color 0.2s ease;
+}
+
+.shareContainer img:hover,
+.iconButton:hover {
+  color: var(--color-primary); /* Makes icons blue on hover */
+}
+
+/* If you have specific icons that need different sizing */
+.removeIcon {
+  width: 24px !important; /* Increased from 16px */
+  height: 24px !important; /* Increased from 16px */
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  transition: color 0.3s ease;
+}
+
+.removeIcon:hover {
+  color: var(--color-error);
+}
+
+/* Responsive Design */
+@media (max-width: 745px) {
+  .sidebar {
+    display: none;
+  }
+
+  .requestsContent {
+    margin-left: 0;
+    padding: var(--spacing-md);
+  }
+
+  .dropdown {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .selectField {
+    width: auto;
+    min-width: 200px;
+    max-width: 100%;
+  }
+
+  .dropdown .createProjectButton {
+    width: auto;
+    min-width: 200px;
+    max-width: 100%;
+  }
+}
+
+@media (min-width: 746px) {
+  .dropdown {
+    display: none;
+  }
+
+  .sidebar {
+    display: block;
+  }
+
+  .dropdown .createProjectButton {
+    display: none;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 745px) {
+  .sidebar {
+    display: none;
+  }
+
+  .requestsContent {
+    margin-left: 0;
+    padding: var(--spacing-md);
+  }
+
+  .dropdown {
+    display: block;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .selectField {
+    width: 100%;
+    margin-bottom: var(--spacing-md);
+  }
+
+  /* Show create project button in dropdown only on mobile */
+  .dropdown .createProjectButton {
+    display: block;
+    width: 100%;
+    margin-bottom: var(--spacing-lg);
+  }
+}
+
+@media (min-width: 746px) {
+  /* Hide dropdown elements on desktop */
+  .dropdown {
+    display: none;
+  }
+
+  /* Show sidebar elements on desktop */
+  .sidebar {
+    display: block;
+  }
+
+  /* Hide mobile create project button */
+  .dropdown .createProjectButton {
+    display: none;
+  }
+}

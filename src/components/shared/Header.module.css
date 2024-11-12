@@ -1,14 +1,12 @@
-@import "../../styles/variables.module.css";
-
 .header {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  background-color: var(--color-background);
-  box-shadow: var(--shadow-sm);
+  width: 100%;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 102, 255, 0.1);
   padding: 0;
-  border-bottom: 2px solid #0066ff; /* Changed from #ff6600 to #0066ff to match the blue theme */
+  border-bottom: 1px solid var(--color-primary);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -17,40 +15,78 @@
   box-sizing: border-box;
 }
 
-/* Keep the rest of your header styles the same */
-.headerTitle {
-  font-size: var(--font-size-xl);
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin: 0;
-}
-
 .iconBar {
   display: flex;
   justify-content: space-around;
   align-items: center;
   width: 100%;
-  max-width: 1200px;
-  padding: 0 var(--spacing-lg);
+  max-width: 1000px;
+  padding: 0 var(--spacing-sm);
   box-sizing: border-box;
+  gap: var(--spacing-sm);
 }
 
 .icon {
   cursor: pointer;
-  width: 32px;
-  height: 32px;
-  transition: transform 0.3s ease;
+  width: 40px; /* Reduced from 45px */
+  height: 40px; /* Reduced from 45px */
+  padding: 4px; /* Reduced from 6px */
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: var(--radius-md);
+  background-color: transparent;
+  color: var(--color-text-secondary);
 }
 
 .icon:hover {
-  transform: scale(1.1);
+  transform: translateY(-2px);
+  background-color: var(--color-background-hover);
+  color: var(--color-primary);
 }
 
 .iconImage {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+  transition: all 0.2s ease;
+}
+
+.icon.active {
+  background-color: var(--color-background-hover);
+  color: var(--color-primary);
+}
+
+.icon.active .iconImage {
+  color: var(--color-primary);
+}
+
+@media (max-width: 768px) {
+  .header {
+    height: 60px;
+  }
+
+  .iconBar {
+    padding: 0 var(--spacing-sm);
+    gap: var(--spacing-sm);
+  }
+
+  .icon {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    height: 60px;
+  }
+
+  .iconBar {
+    padding: 0 var(--spacing-sm);
+    gap: var(--spacing-sm);
+  }
+
+  .icon {
+    width: 40px; /* Slightly smaller on mobile but still larger than before */
+    height: 40px;
+  }
 }

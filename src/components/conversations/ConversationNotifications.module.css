@@ -1,0 +1,182 @@
+/* ConversationNotifications.module.css */
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.newBadge {
+  font-size: 0.75rem;
+  background-color: #0066ff;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-weight: normal;
+}
+
+.conversationsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.conversationItem {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+  background-color: #f8f9fa;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.conversationItem:hover {
+  background-color: #e9ecef;
+}
+
+.unread {
+  background-color: #e6f0ff;
+  border-left: 3px solid #0066ff;
+}
+
+.conversationContent {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.messageIcon {
+  width: 16px;
+  height: 16px;
+  color: #0066ff;
+}
+
+.conversationText {
+  flex-grow: 1;
+  margin-right: 32px; /* Make room for delete button */
+  font-size: 0.875rem;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.newIndicator {
+  color: #0066ff;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.deleteButton {
+  opacity: 0;
+  background: none;
+  border: none;
+  padding: 4px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.conversationItem:hover .deleteButton {
+  opacity: 1;
+}
+
+.deleteButton:hover {
+  background-color: #fee2e2;
+}
+
+.trashIcon {
+  width: 14px;
+  height: 14px;
+}
+
+.warningIcon {
+  width: 14px;
+  height: 14px;
+  color: #dc3545;
+}
+
+.deleteConfirm {
+  opacity: 1;
+  background-color: #fee2e2;
+  animation: pulse 1.5s infinite;
+}
+
+.deleteIcon {
+  width: 14px;
+  height: 14px;
+  color: #dc2626;
+  transition: all 0.2s ease;
+}
+
+.deleteButton:hover .deleteIcon {
+  color: #dc2626;
+}
+
+@keyframes pulse {
+  0% {
+    transform: translateY(-50%) scale(1);
+  }
+  50% {
+    transform: translateY(-50%) scale(1.1);
+  }
+  100% {
+    transform: translateY(-50%) scale(1);
+  }
+}
+
+.confirmButton,
+.cancelButton {
+  border: none;
+  padding: 2px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+
+.confirmButton {
+  background-color: #dc3545;
+  color: white;
+}
+
+.cancelButton {
+  background-color: #6c757d;
+  color: white;
+}
+
+.conversationTime {
+  font-size: 0.75rem;
+  color: #666;
+  margin-top: 0.25rem;
+  margin-left: 1.5rem;
+}
+
+.loadingText {
+  font-size: 0.875rem;
+  color: #666;
+  padding: 0.5rem;
+}
+
+.emptyState {
+  font-size: 0.875rem;
+  color: #666;
+  padding: 0.5rem;
+  text-align: center;
+  font-style: italic;
+}

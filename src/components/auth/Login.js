@@ -1,97 +1,140 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { login } from "../../redux/authSlice";
-import { useNavigate, useLocation } from "react-router-dom";
-import { Link } from "react-router-dom";
-import "./Login.css";
-import api from "../../utils/api";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux"; // Added useSelector
+import { useNavigate, Link } from "react-router-dom";
+import { login, loginStart, loginFailure } from "../../redux/authSlice"; // Added loginStart and loginFailure
+import axios from "axios";
+import styles from "./Login.module.css";
+
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
 const Login = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+  });
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
-
-  const from = location.state?.from || "/";
-
-  useEffect(() => {
-    console.log("API URL:", process.env.REACT_APP_API_URL);
-    console.log("Current Route:", location.pathname);
-  }, [location.pathname]);
-
-  // Helper function to check if the token has expired
-  const isTokenExpired = (token) => {
-    try {
-      const decodedToken = JSON.parse(atob(token.split(".")[1])); // Decode JWT token payload
-      const currentTime = Math.floor(Date.now() / 1000); // Get current time in seconds
-      return decodedToken.exp < currentTime; // Check if token expiration is less than current time
-    } catch (e) {
-      console.error("Token decoding error:", e);
-      return true;
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    console.log("Login attempt starting...");
+    dispatch(loginStart());
 
     try {
-      const { data } = await api.post("/auth/login", {
-        username,
-        password,
+      console.log("Making login request...");
+      const loginResponse = await axios.post(`${API_URL}/auth/login`, {
+        username: formData.username,
+        password: formData.password,
       });
 
-      const { access_token } = data;
+      console.log("Login response received:", loginResponse.data);
+      const token = loginResponse.data.access_token;
 
-      // Get user info after successful login
-      const { data: userData } = await api.get("/auth/me", {
-        headers: { Authorization: `Bearer ${access_token}` },
-      });
+      if (token) {
+        console.log("Token received, getting user info...");
+        const userResponse = await axios.get(`${API_URL}/auth/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-      if (!isTokenExpired(access_token)) {
+        console.log("User info received:", userResponse.data);
+
         dispatch(
           login({
-            token: access_token,
-            username: userData.username,
-            userId: userData.id.toString(),
+            token,
+            user: userResponse.data,
           })
         );
-        navigate(from, { replace: true });
-      } else {
-        throw new Error("Token is invalid or expired.");
+
+        const userType = userResponse.data.user_type;
+        console.log("Navigating to dashboard for user type:", userType);
+
+        if (userType === "client") {
+          navigate("/client-dashboard");
+        } else if (userType === "developer") {
+          navigate("/developer-dashboard");
+        } else {
+          throw new Error(`Invalid user type: ${userType}`);
+        }
       }
-    } catch (error) {
-      console.error("Login error:", error);
-      setError(error.response?.data?.detail || error.message);
+    } catch (err) {
+      console.error("Login error:", err);
+      dispatch(loginFailure(err.response?.data?.detail || "Failed to login"));
     }
   };
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   return (
-    <div className="login-container">
-      <form className="login-form" onSubmit={handleSubmit}>
-        <h2>Login</h2>
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button type="submit">Login</button>
-        {error && <p className="error-message">{error}</p>}
-        <div className="register-link">
+    <div className={styles.container}>
+      <div className={styles.formWrapper}>
+        <div className={styles.header}>
+          <h1 className={styles.title}>Welcome Back</h1>
+          <p className={styles.subtitle}>Sign in to your account</p>
+        </div>
+
+        {error && <div className={styles.error}>{error}</div>}
+
+        <form onSubmit={handleSubmit} className={styles.form}>
+          <div className={styles.formGroup}>
+            <label htmlFor="username" className={styles.label}>
+              Username
+            </label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              required
+              className={styles.input}
+              autoComplete="username"
+              autoFocus
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="password" className={styles.label}>
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              className={styles.input}
+              autoComplete="current-password"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className={styles.submitButton}
+            disabled={isLoading}
+          >
+            {isLoading ? "Signing in..." : "Sign In"}
+          </button>
+        </form>
+
+        <div className={styles.footer}>
           <p>
-            Don't have an account? <Link to="/register">Register</Link>
+            Don't have an account?{" "}
+            <Link to="/register" className={styles.link}>
+              Register
+            </Link>
           </p>
         </div>
-      </form>
+      </div>
     </div>
   );
 };

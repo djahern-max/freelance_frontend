@@ -1,66 +1,78 @@
+// Features.js
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import "./Features.css";
-import PublicRequestsIcon from "../../images/news.png"; // Rename to match the new purpose if necessary
-import VideosIcon from "../../images/navigate_videos.png";
-import NotesIcon from "../../images/Notes.png";
-import ProjectsIcon from "../../images/Apps.png";
+import { Search, FileText, Video, Grid } from "lucide-react";
+import styles from "./Features.module.css";
 
 const Features = () => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const navigate = useNavigate();
 
-  // Allow access to Public Requests without authentication
-  const handlePublicRequestsClick = () => {
-    navigate("/public-requests");
-  };
+  const features = [
+    {
+      icon: Search,
+      title: "Public Requests",
+      path: "/public-requests",
+      requiresAuth: false,
+    },
+    {
+      icon: FileText,
+      title: "My Requests",
+      path: "/requests",
+      requiresAuth: true,
+    },
+    {
+      icon: Video,
+      title: "Videos",
+      path: "/videos",
+      requiresAuth: true,
+    },
+    {
+      icon: Grid,
+      title: "Applications",
+      path: "/app-dashboard",
+      requiresAuth: true,
+    },
+  ];
 
-  // Require authentication for other sections
-  const handleProtectedClick = (e, path) => {
-    if (!isAuthenticated) {
-      e.preventDefault();
-      navigate("/login", { state: { from: path } });
+  const handleNavigation = (feature) => {
+    if (feature.requiresAuth && !isAuthenticated) {
+      navigate("/login", { state: { from: feature.path } });
     } else {
-      navigate(path);
+      navigate(feature.path);
     }
   };
 
   return (
-    <section className="features" id="features">
-      <div className="feature-cards">
-        {/* Public Requests - accessible without authentication */}
-        <div className="card" onClick={handlePublicRequestsClick}>
-          <img src={PublicRequestsIcon} alt="Public Requests" />
-          <h3>Open Requests</h3>
+    <div className={styles.container}>
+      <section className={styles.features}>
+        <div className={styles.featureCards}>
+          {features.map((feature) => (
+            <div
+              key={feature.path}
+              className={styles.card}
+              onClick={() => handleNavigation(feature)}
+            >
+              <div className={styles.iconWrapper}>
+                <feature.icon
+                  size={32}
+                  strokeWidth={1.5}
+                  className={styles.icon}
+                />
+              </div>
+              <h3 className={styles.title}>{feature.title}</h3>
+            </div>
+          ))}
         </div>
+      </section>
 
-        <div
-          className="card"
-          onClick={(e) => handleProtectedClick(e, "/requests")}
-        >
-          <img src={NotesIcon} alt="Notes" />
-          <h3>Submit Request</h3>
-        </div>
-
-        {/* Protected sections - require authentication */}
-        <div
-          className="card"
-          onClick={(e) => handleProtectedClick(e, "/videos")}
-        >
-          <img src={VideosIcon} alt="Videos" />
-          <h3>Videos</h3>
-        </div>
-
-        <div
-          className="card"
-          onClick={(e) => handleProtectedClick(e, "/app-dashboard")}
-        >
-          <img src={ProjectsIcon} alt="Projects" />
-          <h3>Applications</h3>
-        </div>
+      <div className={styles.comingSoon}>
+        <em>
+          * Top developers, featured projects, and popular videos coming soon
+        </em>
       </div>
-    </section>
+    </div>
   );
 };
 

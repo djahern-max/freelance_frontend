@@ -2,19 +2,17 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: var(--spacing-lg);
-  padding-top: var(--spacing-lg); /* Uniform padding from the header */
-  margin-top: var(--spacing-xl); /* Consistent spacing below header */
+  padding-top: 40px;
+  margin-top: var(--spacing-xl); /* Adjust spacing here */
 }
 
+/* Placeholder message styling */
 .placeholderMessage {
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
   font-style: italic;
-  margin-top: var(
-    --spacing-lg
-  ); /* Consistent space between message and header */
-  margin-bottom: var(--spacing-lg);
   text-align: center;
+  margin-bottom: var(--spacing-lg);
 }
 
 .applicationList {
@@ -127,6 +125,128 @@
   background-color: var(--color-primary-dark);
 }
 
+.greenBackground {
+  background-color: #e0f7e4; /* Light green */
+}
+
+.yellowBackground {
+  background-color: #fff9e1; /* Light yellow */
+}
+
+.roseBackground {
+  background-color: #fbe4e6; /* Light rose */
+}
+
+.totalScore {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-left: var(--spacing-sm);
+}
+
+.rankLabel {
+  font-size: var(--font-size-sm);
+  font-weight: bold;
+  color: var(--color-primary);
+  margin-left: var(--spacing-m); /* Adds space between "=" and the label */
+  margin-top: var(--spacing-xs);
+}
+
+.totalScoreContainer {
+  display: flex;
+  align-items: center;
+}
+
+.equalsSign {
+  margin-right: var(--spacing-xs); /* Spacing to the right of '=' */
+}
+
+.totalScore {
+  font-weight: bold;
+  margin-right: var(--spacing-xs); /* Space between total and label */
+}
+
+.rankLabel {
+  font-size: var(--font-size-sm);
+  font-weight: bold;
+  color: var(--color-primary);
+  margin-left: var(--spacing-xs); /* Space between "=" and the label */
+}
+
+/* General styling */
+.placeholderMessage {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  font-style: italic;
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Color-coding for rankings */
+.topRankGreen {
+  background-color: #e6ffed;
+}
+
+.topRankYellow {
+  background-color: #fffbe6;
+}
+
+.topRankRed {
+  background-color: #ffeded;
+}
+
+/* Link styling */
+.applicationName {
+  font-size: var(--font-size-base);
+  font-weight: bold;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.applicationUrl .link {
+  font-size: var(--font-size-sm);
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+.applicationUrl .link:hover {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
+
+/* Voting section */
+.voteSection {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.voteButton {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  transition: color 0.2s;
+}
+
+.voteButton:hover {
+  color: var(--color-primary-dark);
+}
+
+.totalVotes {
+  font-weight: bold;
+  font-size: var(--font-size-sm);
+}
+
+.rankLabel {
+  font-weight: bold;
+  margin-left: var(--spacing-xs);
+}
+
 @media (max-width: 768px) {
   .mainContent {
     padding: var(--spacing-lg);
@@ -138,5 +258,12 @@
   .placeholderMessage {
     margin-top: var(--spacing-lg); /* Reduce the spacing above the message */
     margin-bottom: var(--spacing-lg); /* Reduce the spacing below the message */
+  }
+}
+
+@media (max-width: 580px) {
+  .rankLabel,
+  .totalScore {
+    display: none;
   }
 }

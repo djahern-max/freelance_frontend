@@ -7,6 +7,7 @@ import RequestSharing from "./RequestSharing";
 import CommandDisplay from "../shared/CommandDisplay";
 import styles from "./Request.module.css";
 import Header from "../shared/Header";
+import ConversationNotifications from "../conversations/ConversationNotification";
 
 // Import images
 import edit from "../../images/Notes.png";
@@ -252,6 +253,7 @@ const Request = () => {
       </button>
 
       <h2>Projects</h2>
+
       <ul>
         {projects.map((project) => (
           <li key={project.id} className={styles.projectItem}>
@@ -278,6 +280,7 @@ const Request = () => {
           </li>
         ))}
       </ul>
+      <ConversationNotifications apiUrl={apiUrl} />
 
       <h2 className={styles.sharedRequestsTitle}>Shared Requests</h2>
       <ul className={styles.sharedRequestsList}>

@@ -2,11 +2,14 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import { logout } from "../../redux/authSlice";
-import OpenRequestsIcon from "../../images/news.png";
-import CreateRequestIcon from "../../images/Notes.png";
-import VideosIcon from "../../images/navigate_videos.png";
-import ApplicationsIcon from "../../images/Apps.png";
-import LogoutIcon from "../../images/Logout.png";
+import {
+  FileText,
+  PlusSquare,
+  Video,
+  Grid,
+  LogOut,
+  Search,
+} from "lucide-react";
 import styles from "./Header.module.css";
 
 const Header = () => {
@@ -18,26 +21,22 @@ const Header = () => {
   const pages = [
     {
       path: "/public-requests",
-      icon: OpenRequestsIcon,
-      alt: "Open Requests",
+      icon: Search,
       title: "Open Requests",
     },
     {
       path: "/requests",
-      icon: CreateRequestIcon,
-      alt: "Create Request",
+      icon: FileText,
       title: "Create Request",
     },
     {
       path: "/videos",
-      icon: VideosIcon,
-      alt: "Videos",
+      icon: Video,
       title: "Videos",
     },
     {
       path: "/app-dashboard",
-      icon: ApplicationsIcon,
-      alt: "Applications",
+      icon: Grid,
       title: "Applications",
     },
   ];
@@ -64,29 +63,32 @@ const Header = () => {
           <h1 className={styles.headerTitle}>RYZE.ai</h1>
         ) : (
           <>
-            {pages.map((page) =>
-              location.pathname !== page.path ? (
-                <div
-                  key={page.path}
-                  className={styles.icon}
-                  onClick={() => handleNavigation(page.path)}
-                >
-                  <img
-                    className={styles.iconImage}
-                    src={page.icon}
-                    alt={page.alt}
-                    title={page.title}
-                  />
-                </div>
-              ) : null
-            )}
-            {isAuthenticated && (
-              <div className={styles.icon} onClick={handleLogout}>
-                <img
+            {pages.map((page) => (
+              <div
+                key={page.path}
+                className={`${styles.icon} ${
+                  location.pathname === page.path ? styles.active : ""
+                }`}
+                onClick={() => handleNavigation(page.path)}
+                title={page.title}
+              >
+                <page.icon
                   className={styles.iconImage}
-                  src={LogoutIcon}
-                  alt="Logout"
-                  title="Logout"
+                  size={24}
+                  strokeWidth={1.5}
+                />
+              </div>
+            ))}
+            {isAuthenticated && (
+              <div
+                className={styles.icon}
+                onClick={handleLogout}
+                title="Logout"
+              >
+                <LogOut
+                  className={styles.iconImage}
+                  size={24}
+                  strokeWidth={1.5}
                 />
               </div>
             )}

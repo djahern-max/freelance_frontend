@@ -4,16 +4,42 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.loadingContainer {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 60px; /* Match header height */
+  background-color: #f8f9fa;
+}
+
+.loading {
+  padding: var(--spacing-md);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
 }
 
 .messageArea {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 60px); /* Account for header */
-  margin-top: 60px; /* Push content below fixed header */
+  height: 100%;
+  padding-top: 60px; /* Header height */
+  position: relative;
 }
 
 .header {
+  position: fixed;
+  top: 60px; /* Position below main header */
+  left: 0;
+  right: 0;
+  z-index: 10;
   display: flex;
   align-items: center;
   padding: var(--spacing-md) var(--spacing-lg);
@@ -48,10 +74,14 @@
   flex-grow: 1;
   overflow-y: auto;
   padding: var(--spacing-lg);
+  padding-top: calc(
+    var(--spacing-lg) + 60px
+  ); /* Account for conversation header */
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
   background-color: #f8f9fa;
+  margin-bottom: 70px; /* Space for input container */
 }
 
 .message {
@@ -95,6 +125,10 @@
 }
 
 .inputContainer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   padding: var(--spacing-md);
   background-color: white;
   border-top: 1px solid var(--color-border);
@@ -131,4 +165,15 @@
 
 .sendButton:hover {
   background-color: var(--color-primary-dark);
+}
+
+/* Safe area inset padding for iOS devices */
+@supports (padding: max(0px)) {
+  .inputContainer {
+    padding-bottom: max(var(--spacing-md), env(safe-area-inset-bottom));
+  }
+
+  .messageContainer {
+    padding-bottom: max(70px, calc(70px + env(safe-area-inset-bottom)));
+  }
 }
