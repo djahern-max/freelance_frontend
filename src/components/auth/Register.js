@@ -9,6 +9,7 @@ const Register = () => {
     password: "",
     confirmPassword: "",
     userType: "client",
+    full_name: "",
   });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -17,6 +18,7 @@ const Register = () => {
   const location = useLocation();
   const from = location.state?.from || "/";
 
+  // Add this function to handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -27,6 +29,7 @@ const Register = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    console.log("Form Data:", formData);
     setError("");
     setIsLoading(true);
 
@@ -42,19 +45,25 @@ const Register = () => {
         email: formData.email,
         password: formData.password,
         user_type: formData.userType,
+        full_name: formData.full_name,
       };
+
+      console.log("Request Payload:", requestBody);
 
       const response = await fetch(
         `${process.env.REACT_APP_API_URL}/auth/register`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify(requestBody),
         }
       );
 
       if (!response.ok) {
         const errorData = await response.json();
+        console.log("Error Response:", errorData);
         throw new Error(errorData.detail || "Registration failed");
       }
 
@@ -126,6 +135,20 @@ const Register = () => {
               required
               className={styles.input}
               autoComplete="email"
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="full_name">Full Name</label>
+            <input
+              type="text"
+              id="full_name"
+              name="full_name"
+              value={formData.full_name}
+              onChange={handleInputChange}
+              required
+              className={styles.input}
+              autoComplete="name"
             />
           </div>
 
