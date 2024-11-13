@@ -16,7 +16,7 @@ const CreateProject = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await api.post("/projects", {
+      await api.post("/projects/", {
         name: projectName,
         description,
       });
