@@ -16,29 +16,50 @@ const ClientDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch projects separately
-        const projectsRes = await api.get("/projects");
-        console.log("Projects Response:", projectsRes.data);
-        setProjects(projectsRes.data);
-
-        // Try other requests separately to avoid Promise.all failing everything
+        // Fetch requests with debugging
         try {
+          console.log("Fetching requests...");
           const requestsRes = await api.get("/requests");
-          setRequests(requestsRes.data);
+          console.log("Raw requests response:", requestsRes);
+
+          // Log the content type
+          console.log(
+            "Response content type:",
+            requestsRes.headers["content-type"]
+          );
+
+          if (
+            requestsRes.headers["content-type"].includes("application/json")
+          ) {
+            if (Array.isArray(requestsRes.data)) {
+              setRequests(requestsRes.data);
+            } else {
+              console.error(
+                "Expected an array for requests but received:",
+                requestsRes.data
+              );
+              setRequests([]);
+            }
+          } else {
+            console.error(
+              "Received non-JSON response:",
+              requestsRes.headers["content-type"]
+            );
+            setRequests([]);
+          }
         } catch (error) {
-          console.log("Requests fetch failed:", error);
+          console.log("Requests fetch failed:", {
+            error,
+            response: error.response,
+            status: error.response?.status,
+            data: error.response?.data,
+          });
           setRequests([]);
         }
 
-        try {
-          const conversationsRes = await api.get("/conversations/user/list");
-          setConversations(conversationsRes.data);
-        } catch (error) {
-          console.log("Conversations fetch failed:", error);
-          setConversations([]);
-        }
+        // ... rest of your code
       } catch (error) {
-        console.error("Error fetching projects:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
@@ -47,23 +68,11 @@ const ClientDashboard = () => {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    console.log("Projects state updated:", projects);
-  }, [projects]);
-
-  // Add debug rendering
-  console.log("Current projects state:", projects);
-
   return (
     <div className={styles.dashboard}>
       <Header />
       <div className={styles.content}>
         <h1>Client Dashboard</h1>
-
-        {/* Debug info */}
-        <div style={{ display: "none" }}>
-          Debug - Projects count: {projects?.length || 0}
-        </div>
 
         <div className={styles.statsGrid}>
           <div className={styles.statCard}>

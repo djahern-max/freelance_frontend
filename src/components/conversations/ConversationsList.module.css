@@ -3,8 +3,8 @@
 .container {
   min-height: 100vh;
   background-color: #f8f9fa;
+  padding-top: 60px; /* Adjust based on your header's height */
 }
-
 .mainContent {
   max-width: 1200px;
   margin: 0 auto;
