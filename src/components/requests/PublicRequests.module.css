@@ -236,6 +236,44 @@
   color: #9ca3af;
 }
 
+.description {
+  position: relative;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin: var(--spacing-md) 0;
+  transition: max-height 0.3s ease-out;
+}
+
+.readMoreButton {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  padding: 0;
+  margin-left: var(--spacing-sm);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.2s ease;
+}
+
+.readMoreButton:hover {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
+
+.requestCard {
+  /* ... existing styles ... */
+  transition: all 0.3s ease;
+}
+
+/* Optional: Add a subtle animation when expanding */
+.requestCard[data-expanded="true"] {
+  transform: scale(1.01);
+  box-shadow: var(--shadow-lg);
+}
+
 /* Media Queries for Responsiveness */
 @media (max-width: 768px) {
   .mainContent {

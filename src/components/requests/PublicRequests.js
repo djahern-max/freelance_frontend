@@ -21,6 +21,7 @@ const PublicRequests = () => {
   const [loading, setLoading] = useState(true);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
+  const [expandedCards, setExpandedCards] = useState({});
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -101,82 +102,170 @@ const PublicRequests = () => {
     );
   }
 
+  const toggleCardExpansion = (requestId) => {
+    setExpandedCards((prev) => ({
+      ...prev,
+      [requestId]: !prev[requestId],
+    }));
+  };
+
   return (
     <div className={styles.mainContainer}>
       <Header />
       <main className={styles.mainContent}>
         <div className={styles.headerContainer}>
-          <h1 className={styles.title}>Available Requests</h1>
+          <h1 className={styles.title}>Available Projects</h1>
+          {isAuthenticated && user?.userType === "developer" && (
+            <p className={styles.subtitle}>
+              Browse and respond to client projects that match your expertise
+            </p>
+          )}
         </div>
 
         {error && (
           <div className={styles.alert} role="alert">
-            {error}
+            <div className={styles.alertContent}>
+              <span>{error}</span>
+              <button className={styles.retryButton} onClick={fetchData}>
+                Try Again
+              </button>
+            </div>
           </div>
         )}
 
-        <div className={styles.requestsGrid}>
-          {publicRequests.map((request) => (
-            <div key={request.id} className={styles.requestCard}>
-              <div className={styles.cardHeader}>
-                <h2 className={styles.requestTitle}>{request.title}</h2>
-                {request.estimated_budget && (
-                  <div className={styles.budget}>
-                    <DollarSign className={styles.icon} />$
-                    {request.estimated_budget.toLocaleString()}
-                  </div>
-                )}
-              </div>
-
-              <p className={styles.description}>{request.content}</p>
-
-              <div className={styles.metaInfo}>
-                <div className={styles.metaItem}>
-                  <Clock className={styles.icon} />
-                  {new Date(request.created_at).toLocaleDateString()}
+        {publicRequests.length === 0 ? (
+          <div className={styles.emptyState}>
+            <MessageSquare className={styles.emptyIcon} size={48} />
+            <h2>No Projects Available</h2>
+            <p>There are currently no projects available.</p>
+            {!isAuthenticated ? (
+              <button
+                className={styles.buttonPrimary}
+                onClick={() => setShowAuthDialog(true)}
+              >
+                Sign Up to Create a Project
+              </button>
+            ) : (
+              user?.userType === "client" && (
+                <button
+                  className={styles.buttonPrimary}
+                  onClick={() => navigate("/create-request")}
+                >
+                  Create Your First Project
+                </button>
+              )
+            )}
+          </div>
+        ) : (
+          <div className={styles.requestsGrid}>
+            {publicRequests.map((request) => (
+              <div
+                key={request.id}
+                className={styles.requestCard}
+                data-expanded={expandedCards[request.id]}
+              >
+                <div className={styles.cardHeader}>
+                  <h2 className={styles.requestTitle}>{request.title}</h2>
+                  {request.estimated_budget && (
+                    <div className={styles.budget}>
+                      <DollarSign className={styles.icon} />
+                      <span>${request.estimated_budget.toLocaleString()}</span>
+                    </div>
+                  )}
                 </div>
-                <div className={styles.metaItem}>
-                  <MessageSquare className={styles.icon} />
-                  {conversations[request.id] || 0} responses
-                </div>
-                {request.owner_username && (
-                  <div className={styles.metaItem}>
-                    <Users className={styles.icon} />
-                    {request.owner_username}
-                  </div>
-                )}
-              </div>
 
-              <div className={styles.cardActions}>
-                {!isAuthenticated ? (
-                  <button
-                    className={styles.buttonPrimary}
-                    onClick={() => {
-                      setSelectedRequest(request);
-                      setShowAuthDialog(true);
-                    }}
-                  >
-                    Sign In to Respond
-                  </button>
-                ) : user?.userType === "developer" ? (
-                  <button
-                    className={styles.buttonPrimary}
-                    onClick={() => handleStartConversation(request)}
-                  >
-                    Respond to Request
-                  </button>
-                ) : (
-                  <button
-                    className={styles.buttonOutline}
-                    onClick={() => navigate(`/requests/${request.id}`)}
-                  >
-                    View Details
-                  </button>
-                )}
+                <div className={styles.description}>
+                  {request.content.length > 200 &&
+                  !expandedCards[request.id] ? (
+                    <>
+                      {request.content.substring(0, 200)}
+                      <span className={styles.fade} />
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleCardExpansion(request.id);
+                        }}
+                        className={styles.readMoreButton}
+                      >
+                        Read More
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      {request.content}
+                      {request.content.length > 200 && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleCardExpansion(request.id);
+                          }}
+                          className={styles.readMoreButton}
+                        >
+                          Show Less
+                        </button>
+                      )}
+                    </>
+                  )}
+                </div>
+
+                <div className={styles.metaInfo}>
+                  <div className={styles.metaItem} title="Posted Date">
+                    <Clock className={styles.icon} size={16} />
+                    <span>
+                      {new Date(request.created_at).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <div className={styles.metaItem} title="Response Count">
+                    <MessageSquare className={styles.icon} size={16} />
+                    <span>{conversations[request.id] || 0} responses</span>
+                  </div>
+                  {request.owner_username && (
+                    <div className={styles.metaItem} title="Request Owner">
+                      <Users className={styles.icon} size={16} />
+                      <span>{request.owner_username}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className={styles.cardActions}>
+                  {!isAuthenticated ? (
+                    <button
+                      className={styles.buttonPrimary}
+                      onClick={() => {
+                        setSelectedRequest(request);
+                        setShowAuthDialog(true);
+                      }}
+                    >
+                      Sign In to Respond
+                    </button>
+                  ) : user?.userType === "developer" ? (
+                    <button
+                      className={styles.buttonPrimary}
+                      onClick={() => handleStartConversation(request)}
+                      disabled={loading}
+                    >
+                      {loading ? (
+                        <>
+                          <Loader className={styles.spinnerIcon} size={16} />
+                          <span>Please wait...</span>
+                        </>
+                      ) : (
+                        "Respond to Request"
+                      )}
+                    </button>
+                  ) : (
+                    <button
+                      className={styles.buttonOutline}
+                      onClick={() => navigate(`/requests/${request.id}`)}
+                    >
+                      View Details
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         <AuthDialog
           isOpen={showAuthDialog}

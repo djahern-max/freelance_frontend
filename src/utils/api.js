@@ -3,7 +3,6 @@ import { clearAuthData } from "./authCleanup";
 
 const getBaseURL = () => {
   if (process.env.NODE_ENV === "production") {
-    // Use window.location to determine the host dynamically
     const protocol = window.location.protocol;
     const hostname = window.location.hostname;
     return `${protocol}//${hostname}/api`;
@@ -17,29 +16,32 @@ const api = axios.create({
     "Content-Type": "application/json",
     Accept: "application/json",
   },
-  withCredentials: true,
+  withCredentials: true, // This might need to be false depending on your CORS setup
 });
 
-// Helper function to check if endpoint should return JSON
-const isJsonEndpoint = (url) => {
-  const jsonPaths = ["requests", "projects", "conversations"];
-  return jsonPaths.some((path) => url.includes(path));
-};
+// Add default auth header if token exists
+const token = localStorage.getItem("token");
+if (token) {
+  api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+}
 
 // Request interceptor
 api.interceptors.request.use(
   (config) => {
+    // Get fresh token on each request
     const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    // Log request details in development
+    // Debug logging
     if (process.env.NODE_ENV === "development") {
       console.log("API Request:", {
         url: `${config.baseURL}${config.url}`,
         method: config.method,
         headers: config.headers,
+        auth: config.headers.Authorization ? "Present" : "Missing",
+        token: !!token,
       });
     }
     return config;
@@ -53,93 +55,94 @@ api.interceptors.request.use(
 // Response interceptor
 api.interceptors.response.use(
   (response) => {
-    // Only validate JSON content type for specific endpoints
-    if (isJsonEndpoint(response.config.url)) {
-      const contentType = response.headers["content-type"] || "";
-
-      // More flexible content type checking
-      if (
-        !contentType.includes("application/json") &&
-        !contentType.includes("text/json")
-      ) {
-        console.warn(
-          `Warning: Unexpected content type for ${response.config.url}: ${contentType}`
-        );
-        // Log the response for debugging
-        console.log("Response data:", response.data);
-
-        // Try to parse if it's actually JSON despite content type
-        if (typeof response.data === "object") {
-          return response;
-        }
-
-        return Promise.reject(
-          new Error(`Expected JSON response but received: ${contentType}`)
-        );
-      }
+    // Log successful responses in development
+    if (process.env.NODE_ENV === "development") {
+      console.log("API Response:", {
+        url: response.config.url,
+        status: response.status,
+        headers: response.headers,
+        contentType: response.headers["content-type"],
+      });
     }
-
     return response;
   },
   async (error) => {
-    // Enhanced error logging
+    // Log detailed error information
     const errorDetails = {
       url: error.config?.url,
       status: error.response?.status,
       statusText: error.response?.statusText,
       data: error.response?.data,
-      headers: error.response?.headers,
-      message: error.message,
+      headers: error.config?.headers,
+      authHeader: error.config?.headers?.Authorization ? "Present" : "Missing",
     };
 
     console.error("API Error Details:", errorDetails);
 
-    // Handle authentication errors
-    if (error.response?.status === 401 || error.response?.status === 403) {
-      console.log("Authentication error detected");
+    // Handle auth errors
+    if (error.response?.status === 401) {
+      console.log("Authentication error - token might be invalid or expired");
       clearAuthData();
-
-      // Check current location before redirecting
+      
+      // Only redirect if not already on login page
       if (!window.location.pathname.includes("/login")) {
         window.location.href = "/login";
       }
-      return Promise.reject(new Error("Authentication failed"));
+      return Promise.reject(new Error("Authentication failed - please log in again"));
     }
 
-    // Handle network errors
-    if (!error.response) {
-      console.error("Network error:", error.message);
-      return Promise.reject(
-        new Error("Network error: Please check your connection")
-      );
+    if (error.response?.status === 403) {
+      console.log("Authorization error - insufficient permissions");
+      return Promise.reject(new Error("You don't have permission to perform this action"));
+    }
+
+    // Handle CORS errors
+    if (error.message.includes("Network Error")) {
+      console.error("Possible CORS or network error:", error);
+      return Promise.reject(new Error("Unable to connect to server. Please check your connection."));
     }
 
     return Promise.reject(error);
   }
 );
 
-// Enhanced helper methods
+// Helper methods
 api.helpers = {
   handleError: (error) => {
     console.error("API Error:", error);
-
-    // Network errors
+    
+    if (error.message.includes("Authentication failed")) {
+      return "Your session has expired. Please log in again.";
+    }
+    
     if (!error.response) {
-      return "Network error: Please check your connection";
+      return "Network error: Unable to connect to server";
     }
-
-    // Server errors
-    if (error.response?.status >= 500) {
-      return "Server error: Please try again later";
+    
+    switch (error.response.status) {
+      case 401:
+        return "Please log in to continue";
+      case 403:
+        return "You don't have permission to perform this action";
+      case 404:
+        return "The requested resource was not found";
+      case 500:
+        return "Server error: Please try again later";
+      default:
+        return error.response?.data?.detail || "An unexpected error occurred";
     }
+  },
 
-    // Specific error messages
-    if (error.response?.data?.detail) {
-      return error.response.data.detail;
+  // Add method to check auth state
+  checkAuthState: () => {
+    const token = localStorage.getItem("token");
+    if (process.env.NODE_ENV === "development") {
+      console.log("Auth State Check:", {
+        hasToken: !!token,
+        tokenPreview: token ? `${token.substr(0, 10)}...` : null,
+      });
     }
-
-    // Generic error
-    return "An unexpected error occurred";
+    return !!token;
   },
 };
 

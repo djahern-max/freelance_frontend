@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { login, loginStart, loginFailure } from "../../redux/authSlice";
 import { clearAuthData } from "../../utils/authCleanup";
-import axios from "axios";
+import api from "../../utils/api"; // Use your API client instead of axios directly
 import styles from "./Login.module.css";
-
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -18,61 +16,84 @@ const Login = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // Add useEffect for clearing stale auth data
+  // Clear any existing auth data on mount
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      console.log("Found stale auth data, clearing...");
-      clearAuthData();
-    }
+    clearAuthData();
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login attempt starting...");
+    setError("");
+    setIsLoading(true);
     dispatch(loginStart());
 
     try {
-      console.log("Making login request...");
-      const loginResponse = await axios.post(`${API_URL}/auth/login`, {
+      // Step 1: Login and get token
+      const loginResponse = await api.post("/auth/login", {
         username: formData.username,
         password: formData.password,
       });
 
-      console.log("Login response received:", loginResponse.data);
       const token = loginResponse.data.access_token;
-
-      if (token) {
-        console.log("Token received, getting user info...");
-        const userResponse = await axios.get(`${API_URL}/auth/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        console.log("User info received:", userResponse.data);
-
-        dispatch(
-          login({
-            token,
-            user: userResponse.data,
-          })
-        );
-
-        const userType = userResponse.data.user_type;
-        console.log("Navigating to dashboard for user type:", userType);
-
-        if (userType === "client") {
-          navigate("/client-dashboard");
-        } else if (userType === "developer") {
-          navigate("/developer-dashboard");
-        } else {
-          throw new Error(`Invalid user type: ${userType}`);
-        }
+      if (!token) {
+        throw new Error("No token received from server");
       }
+
+      // Store token immediately
+      localStorage.setItem("token", token);
+
+      // Update API client headers
+      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+      // Step 2: Get user info
+      const userResponse = await api.get("/auth/me");
+      const userData = userResponse.data;
+
+      console.log("User data received:", userData);
+
+      // Dispatch login success with complete user data
+      dispatch(
+        login({
+          token,
+          user: userData,
+        })
+      );
+
+      // Determine redirect path
+      const redirectTo =
+        location.state?.from ||
+        (userData.user_type === "client"
+          ? "/client-dashboard"
+          : "/developer-dashboard");
+
+      // Navigate to appropriate dashboard
+      navigate(redirectTo, { replace: true });
     } catch (err) {
-      console.error("Login error:", err);
-      dispatch(loginFailure(err.response?.data?.detail || "Failed to login"));
-      setError(err.response?.data?.detail || "Failed to login");
+      console.error("Login error:", {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status,
+      });
+
+      // Clear any partial auth data
+      clearAuthData();
+
+      // Handle specific error cases
+      if (err.response?.status === 401) {
+        setError("Invalid username or password");
+      } else if (err.response?.status === 422) {
+        setError("Please check your input and try again");
+      } else if (!err.response) {
+        setError("Unable to connect to server. Please try again later.");
+      } else {
+        setError(
+          err.response?.data?.detail || "An error occurred during login"
+        );
+      }
+
+      dispatch(loginFailure(err.message));
     } finally {
       setIsLoading(false);
     }
@@ -82,8 +103,10 @@ const Login = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: value.trim(), // Trim whitespace
     }));
+    // Clear error when user starts typing
+    if (error) setError("");
   };
 
   return (
@@ -94,7 +117,17 @@ const Login = () => {
           <p className={styles.subtitle}>Sign in to your account</p>
         </div>
 
-        {error && <div className={styles.error}>{error}</div>}
+        {error && (
+          <div className={styles.error}>
+            <p>{error}</p>
+            <button
+              className={styles.dismissError}
+              onClick={() => setError("")}
+            >
+              ×
+            </button>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGroup}>
@@ -111,6 +144,7 @@ const Login = () => {
               className={styles.input}
               autoComplete="username"
               autoFocus
+              disabled={isLoading}
             />
           </div>
 
@@ -127,6 +161,7 @@ const Login = () => {
               required
               className={styles.input}
               autoComplete="current-password"
+              disabled={isLoading}
             />
           </div>
 
@@ -135,7 +170,11 @@ const Login = () => {
             className={styles.submitButton}
             disabled={isLoading}
           >
-            {isLoading ? "Signing in..." : "Sign In"}
+            {isLoading ? (
+              <span className={styles.loadingText}>Signing in...</span>
+            ) : (
+              "Sign In"
+            )}
           </button>
         </form>
 
