@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux"; // Added useSelector
+import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
-import { login, loginStart, loginFailure } from "../../redux/authSlice"; // Added loginStart and loginFailure
+import { login, loginStart, loginFailure } from "../../redux/authSlice";
+import { clearAuthData } from "../../utils/authCleanup";
 import axios from "axios";
 import styles from "./Login.module.css";
 
@@ -17,6 +18,15 @@ const Login = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  // Add useEffect for clearing stale auth data
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      console.log("Found stale auth data, clearing...");
+      clearAuthData();
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -62,6 +72,9 @@ const Login = () => {
     } catch (err) {
       console.error("Login error:", err);
       dispatch(loginFailure(err.response?.data?.detail || "Failed to login"));
+      setError(err.response?.data?.detail || "Failed to login");
+    } finally {
+      setIsLoading(false);
     }
   };
 

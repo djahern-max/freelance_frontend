@@ -1,13 +1,13 @@
-// src/utils/api.js
 import axios from "axios";
+import { clearAuthData } from "./authCleanup";
 
-// Determine the base URL based on environment
 const getBaseURL = () => {
   if (process.env.NODE_ENV === "production") {
-    // In production, we use relative path since NGINX handles the routing
-    return "/api";
+    // Use window.location to determine the host dynamically
+    const protocol = window.location.protocol;
+    const hostname = window.location.hostname;
+    return `${protocol}//${hostname}/api`;
   }
-  // In development, use the full localhost URL
   return process.env.REACT_APP_API_URL || "http://localhost:8000";
 };
 
@@ -15,10 +15,16 @@ const api = axios.create({
   baseURL: getBaseURL(),
   headers: {
     "Content-Type": "application/json",
-    Accept: "application/json", // Make sure this is set
+    Accept: "application/json",
   },
   withCredentials: true,
 });
+
+// Helper function to check if endpoint should return JSON
+const isJsonEndpoint = (url) => {
+  const jsonPaths = ["requests", "projects", "conversations"];
+  return jsonPaths.some((path) => url.includes(path));
+};
 
 // Request interceptor
 api.interceptors.request.use(
@@ -26,16 +32,14 @@ api.interceptors.request.use(
     const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-      // Add explicit accept header for this specific endpoint
-      if (config.url === "/requests") {
-        config.headers.Accept = "application/json";
-      }
-      console.log("Full Request Details:", {
+    }
+
+    // Log request details in development
+    if (process.env.NODE_ENV === "development") {
+      console.log("API Request:", {
         url: `${config.baseURL}${config.url}`,
         method: config.method,
         headers: config.headers,
-        baseURL: config.baseURL,
-        withCredentials: config.withCredentials,
       });
     }
     return config;
@@ -49,42 +53,94 @@ api.interceptors.request.use(
 // Response interceptor
 api.interceptors.response.use(
   (response) => {
-    // Add content-type checking
-    const contentType = response.headers["content-type"];
-    if (
-      response.config.url === "/requests" &&
-      !contentType?.includes("application/json")
-    ) {
-      console.warn(`Unexpected content type for /requests: ${contentType}`);
-      // You might want to reject these responses
-      // return Promise.reject(new Error(`Unexpected content type: ${contentType}`));
+    // Only validate JSON content type for specific endpoints
+    if (isJsonEndpoint(response.config.url)) {
+      const contentType = response.headers["content-type"] || "";
+
+      // More flexible content type checking
+      if (
+        !contentType.includes("application/json") &&
+        !contentType.includes("text/json")
+      ) {
+        console.warn(
+          `Warning: Unexpected content type for ${response.config.url}: ${contentType}`
+        );
+        // Log the response for debugging
+        console.log("Response data:", response.data);
+
+        // Try to parse if it's actually JSON despite content type
+        if (typeof response.data === "object") {
+          return response;
+        }
+
+        return Promise.reject(
+          new Error(`Expected JSON response but received: ${contentType}`)
+        );
+      }
     }
-    console.log("API Success Response:", {
-      url: response.config.url,
-      status: response.status,
-      contentType: response.headers["content-type"],
-      data: response.data,
-    });
+
     return response;
   },
   async (error) => {
-    console.error("API Error Details:", {
+    // Enhanced error logging
+    const errorDetails = {
       url: error.config?.url,
       status: error.response?.status,
       statusText: error.response?.statusText,
       data: error.response?.data,
-      headers: error.config?.headers,
-      contentType: error.response?.headers?.["content-type"],
-    });
+      headers: error.response?.headers,
+      message: error.message,
+    };
 
-    if (error.response?.status === 401) {
-      console.log("Unauthorized access - clearing auth data");
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.location.href = "/login";
+    console.error("API Error Details:", errorDetails);
+
+    // Handle authentication errors
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      console.log("Authentication error detected");
+      clearAuthData();
+
+      // Check current location before redirecting
+      if (!window.location.pathname.includes("/login")) {
+        window.location.href = "/login";
+      }
+      return Promise.reject(new Error("Authentication failed"));
     }
+
+    // Handle network errors
+    if (!error.response) {
+      console.error("Network error:", error.message);
+      return Promise.reject(
+        new Error("Network error: Please check your connection")
+      );
+    }
+
     return Promise.reject(error);
   }
 );
+
+// Enhanced helper methods
+api.helpers = {
+  handleError: (error) => {
+    console.error("API Error:", error);
+
+    // Network errors
+    if (!error.response) {
+      return "Network error: Please check your connection";
+    }
+
+    // Server errors
+    if (error.response?.status >= 500) {
+      return "Server error: Please try again later";
+    }
+
+    // Specific error messages
+    if (error.response?.data?.detail) {
+      return error.response.data.detail;
+    }
+
+    // Generic error
+    return "An unexpected error occurred";
+  },
+};
 
 export default api;

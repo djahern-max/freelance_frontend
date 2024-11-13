@@ -12,23 +12,18 @@ import {
   XCircle,
   FileText,
 } from "lucide-react";
-import Header from "../shared/Header";
 import styles from "./ConversationDetail.module.css";
 
 const ConversationDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const messagesEndRef = useRef(null);
   const [conversation, setConversation] = useState(null);
   const [requestDetails, setRequestDetails] = useState(null);
   const [newMessage, setNewMessage] = useState("");
   const [error, setError] = useState("");
-  const [proposalStatus, setProposalStatus] = useState(null);
-  const messagesEndRef = useRef(null);
   const { token, user } = useSelector((state) => state.auth);
   const apiUrl = process.env.REACT_APP_API_URL;
-
-  const isClient = user.userType === "client";
-  const isDeveloper = user.userType === "developer";
 
   useEffect(() => {
     if (id && token) {
@@ -38,34 +33,30 @@ const ConversationDetail = () => {
     }
   }, [id, token]);
 
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   const fetchConversation = async () => {
     try {
-      // First, fetch conversation details
       const conversationRes = await axios.get(`${apiUrl}/conversations/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
+      const requestRes = await axios.get(
+        `${apiUrl}/requests/${conversationRes.data.request_id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
       setConversation(conversationRes.data);
-
-      // Then, use the request_id from the conversation response
-      if (conversationRes.data?.request_id) {
-        const requestRes = await axios.get(
-          `${apiUrl}/requests/${conversationRes.data.request_id}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        setRequestDetails(requestRes.data);
-      }
-
+      setRequestDetails(requestRes.data);
       scrollToBottom();
     } catch (err) {
       console.error("Error fetching conversation:", err);
       setError("Failed to load conversation");
     }
-  };
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const sendMessage = async (e) => {
@@ -77,12 +68,9 @@ const ConversationDetail = () => {
         `${apiUrl}/conversations/${id}/messages`,
         { content: newMessage },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
-
       setNewMessage("");
       await fetchConversation();
     } catch (err) {
@@ -95,95 +83,12 @@ const ConversationDetail = () => {
       await axios.put(
         `${apiUrl}/conversations/${id}/proposal`,
         { status: accepted ? "accepted" : "rejected" },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      setProposalStatus(accepted ? "accepted" : "rejected");
       await fetchConversation();
     } catch (err) {
       setError("Failed to update proposal status");
     }
-  };
-
-  const renderStatusBar = () => {
-    if (!conversation) return null;
-
-    return (
-      <div className={styles.statusBar}>
-        <div className={styles.statusInfo}>
-          <span className={`${styles.status} ${styles[conversation.status]}`}>
-            {conversation.status}
-          </span>
-          {isClient && conversation.status === "pending" && (
-            <div className={styles.proposalActions}>
-              <button
-                className={styles.acceptButton}
-                onClick={() => handleProposal(true)}
-              >
-                <CheckCircle size={16} /> Accept Proposal
-              </button>
-              <button
-                className={styles.rejectButton}
-                onClick={() => handleProposal(false)}
-              >
-                <XCircle size={16} /> Decline
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
-
-  const renderRequestDetails = () => {
-    if (!requestDetails) return null;
-
-    return (
-      <div className={styles.requestDetails}>
-        <h3>Request Details</h3>
-        <div className={styles.requestInfo}>
-          <div className={styles.infoItem}>
-            <FileText size={16} />
-            <span>{requestDetails.title}</span>
-          </div>
-          <div className={styles.infoItem}>
-            <DollarSign size={16} />
-            <span>Budget: ${requestDetails.estimated_budget}</span>
-          </div>
-          {requestDetails.timeline && (
-            <div className={styles.infoItem}>
-              <Clock size={16} />
-              <span>Timeline: {requestDetails.timeline}</span>
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
-
-  const renderMessage = (message) => {
-    const isOwnMessage = message.user_id === user.id;
-    return (
-      <div
-        key={message.id}
-        className={`${styles.message} ${
-          isOwnMessage ? styles.sent : styles.received
-        }`}
-      >
-        <div className={styles.messageContent}>
-          <div className={styles.messageHeader}>
-            <span className={styles.username}>
-              {isOwnMessage ? "You" : message.username}
-            </span>
-            <span className={styles.timestamp}>
-              {new Date(message.created_at).toLocaleTimeString()}
-            </span>
-          </div>
-          {message.content}
-        </div>
-      </div>
-    );
   };
 
   if (!conversation) {
@@ -196,85 +101,154 @@ const ConversationDetail = () => {
 
   return (
     <div className={styles.container}>
-      <Header />
-      <div className={styles.conversationContainer}>
-        <div className={styles.sidebar}>
-          {renderRequestDetails()}
-          <div className={styles.participantInfo}>
-            <h3>Participants</h3>
-            <div className={styles.participant}>
-              <User size={16} />
-              <span>
-                {conversation.starter_username} (
-                {conversation.starter_user_type})
-              </span>
-            </div>
-            <div className={styles.participant}>
-              <User size={16} />
-              <span>
-                {conversation.recipient_username} (
-                {conversation.recipient_user_type})
-              </span>
-            </div>
-          </div>
+      <div className={styles.mainContent}>
+        <div className={styles.header}>
+          <button className={styles.backButton} onClick={() => navigate(-1)}>
+            <ArrowLeft size={20} />
+          </button>
+          <h1 className={styles.title}>{requestDetails?.title}</h1>
         </div>
 
-        <div className={styles.messageArea}>
-          <div className={styles.header}>
-            <button
-              className={styles.backButton}
-              onClick={() => navigate("/conversations")}
+        <div className={styles.messagesContainer}>
+          {conversation.messages.map((message) => (
+            <div
+              key={message.id}
+              className={`${styles.messageWrapper} ${
+                message.user_id === user.id ? styles.sent : styles.received
+              }`}
             >
-              <ArrowLeft size={20} />
-            </button>
-            <h2>{requestDetails?.title}</h2>
-          </div>
+              <div className={styles.message}>
+                <div className={styles.messageHeader}>
+                  <span className={styles.username}>
+                    {message.user_id === user.id ? "You" : message.username}
+                  </span>
+                  <span className={styles.timestamp}>
+                    {new Date(message.created_at).toLocaleTimeString()}
+                  </span>
+                </div>
+                <p className={styles.messageContent}>{message.content}</p>
+              </div>
+            </div>
+          ))}
+          <div ref={messagesEndRef} />
+        </div>
 
-          {renderStatusBar()}
-
-          <div className={styles.messageContainer}>
-            {conversation.messages.map(renderMessage)}
-            <div ref={messagesEndRef} />
-          </div>
-
-          <form
-            className={styles.inputContainer}
-            onSubmit={sendMessage}
-            style={{
-              opacity:
-                conversation.status === "completed" ||
-                conversation.status === "rejected"
-                  ? 0.5
-                  : 1,
-              pointerEvents:
-                conversation.status === "completed" ||
-                conversation.status === "rejected"
-                  ? "none"
-                  : "auto",
-            }}
-          >
+        <div className={styles.inputContainer}>
+          <form onSubmit={sendMessage} className={styles.inputForm}>
             <input
               type="text"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
-              placeholder={
-                conversation.status === "completed"
-                  ? "This conversation is completed"
-                  : conversation.status === "rejected"
-                  ? "This conversation is closed"
-                  : "Type your message..."
-              }
+              placeholder="Type your message..."
               className={styles.input}
               disabled={
                 conversation.status === "completed" ||
                 conversation.status === "rejected"
               }
             />
-            <button type="submit" className={styles.sendButton}>
+            <button
+              type="submit"
+              className={styles.sendButton}
+              disabled={
+                !newMessage.trim() ||
+                conversation.status === "completed" ||
+                conversation.status === "rejected"
+              }
+            >
               <Send size={20} />
             </button>
           </form>
         </div>
+      </div>
+
+      <div className={styles.sidebar}>
+        <div className={styles.sidebarSection}>
+          <h2 className={styles.sidebarTitle}>Request Details</h2>
+          <div className={styles.requestDetails}>
+            <div className={styles.infoItem}>
+              <FileText size={16} />
+              <span>{requestDetails?.title}</span>
+            </div>
+            <div className={styles.infoItem}>
+              <DollarSign size={16} />
+              <span>Budget: ${requestDetails?.estimated_budget}</span>
+            </div>
+            <div className={styles.infoItem}>
+              <Clock size={16} />
+              <span>
+                Posted:{" "}
+                {new Date(requestDetails?.created_at).toLocaleDateString()}
+              </span>
+            </div>
+            <div
+              className={`${styles.statusIndicator} ${
+                styles[conversation.status]
+              }`}
+            >
+              <span>
+                {conversation.status.charAt(0).toUpperCase() +
+                  conversation.status.slice(1)}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.sidebarSection}>
+          <h2 className={styles.sidebarTitle}>Participants</h2>
+          <div className={styles.participant}>
+            <User size={16} />
+            <span>{conversation.starter_username}</span>
+          </div>
+          <div className={styles.participant}>
+            <User size={16} />
+            <span>{conversation.recipient_username}</span>
+          </div>
+        </div>
+
+        {/* Sidebar Participants Section */}
+        {/* <div className={styles.sidebarSection}>
+          <h2 className={styles.sidebarTitle}>Participants</h2>
+          <div className={styles.infoItem}>
+            <User size={16} />
+            <span>
+              {conversation.starter_username} */}
+        {/* TODO: Future enhancement - Add user rating/reputation score
+          Consider metrics like:
+          - Customer satisfaction score for developers
+          - Reliability score for clients
+          - Project completion rate
+          - Communication rating
+          - Payment reliability (for clients)
+          - Code quality (for developers)
+      */}
+        {/* </span>
+          </div>
+          <div className={styles.infoItem}>
+            <User size={16} />
+            <span>{conversation.recipient_username}</span>
+          </div>
+        </div> */}
+        {user.userType === "client" && conversation.status === "pending" && (
+          <div className={styles.sidebarSection}>
+            <h2 className={styles.sidebarTitle}>Actions</h2>
+            <div className={styles.actions}>
+              <button
+                onClick={() => handleProposal(true)}
+                className={styles.acceptButton}
+              >
+                <CheckCircle size={16} />
+                Accept
+              </button>
+              <button
+                onClick={() => handleProposal(false)}
+                className={styles.rejectButton}
+              >
+                <XCircle size={16} />
+                Decline
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

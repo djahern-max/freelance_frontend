@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import styles from "./Register.module.css";
+import { clearAuthData } from "../../utils/authCleanup";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -18,7 +19,15 @@ const Register = () => {
   const location = useLocation();
   const from = location.state?.from || "/";
 
-  // Add this function to handle input changes
+  // Correctly placed useEffect for auth cleanup
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      console.log("Found stale auth data, clearing...");
+      clearAuthData();
+    }
+  }, []);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -27,6 +36,7 @@ const Register = () => {
     }));
   };
 
+  // Fixed handleRegister function - removed incorrect useEffect
   const handleRegister = async (e) => {
     e.preventDefault();
     console.log("Form Data:", formData);

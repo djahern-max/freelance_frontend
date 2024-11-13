@@ -2,71 +2,136 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import Header from "../shared/Header";
-import { Activity, MessageSquare, Plus, FileText } from "lucide-react";
+import {
+  Activity,
+  MessageSquare,
+  Plus,
+  FileText,
+  ChevronRight,
+} from "lucide-react";
 import styles from "./ClientDashboard.module.css";
-import { ChevronRight } from "lucide-react";
 
 const ClientDashboard = () => {
-  const [projects, setProjects] = useState([]);
-  const [requests, setRequests] = useState([]);
-  const [conversations, setConversations] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [dashboardData, setDashboardData] = useState({
+    projects: [],
+    requests: [],
+    conversations: [],
+  });
+  const [loadingStates, setLoadingStates] = useState({
+    projects: true,
+    requests: true,
+    conversations: true,
+  });
+  const [errors, setErrors] = useState({
+    projects: null,
+    requests: null,
+    conversations: null,
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch requests with debugging
-        try {
-          console.log("Fetching requests...");
-          const requestsRes = await api.get("/requests");
-          console.log("Raw requests response:", requestsRes);
-
-          // Log the content type
-          console.log(
-            "Response content type:",
-            requestsRes.headers["content-type"]
-          );
-
-          if (
-            requestsRes.headers["content-type"].includes("application/json")
-          ) {
-            if (Array.isArray(requestsRes.data)) {
-              setRequests(requestsRes.data);
-            } else {
-              console.error(
-                "Expected an array for requests but received:",
-                requestsRes.data
-              );
-              setRequests([]);
-            }
-          } else {
-            console.error(
-              "Received non-JSON response:",
-              requestsRes.headers["content-type"]
-            );
-            setRequests([]);
-          }
-        } catch (error) {
-          console.log("Requests fetch failed:", {
-            error,
-            response: error.response,
-            status: error.response?.status,
-            data: error.response?.data,
-          });
-          setRequests([]);
-        }
-
-        // ... rest of your code
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+    fetchDashboardData();
   }, []);
+
+  const fetchDashboardData = async () => {
+    // Reset any existing errors
+    setErrors({
+      projects: null,
+      requests: null,
+      conversations: null,
+    });
+
+    // Fetch Projects
+    fetchProjects();
+
+    // Fetch Requests
+    fetchRequests();
+
+    // Fetch Conversations
+    fetchConversations();
+  };
+
+  const fetchProjects = async () => {
+    try {
+      const projectsRes = await api.get("/projects/");
+      setDashboardData((prev) => ({
+        ...prev,
+        projects: Array.isArray(projectsRes.data) ? projectsRes.data : [],
+      }));
+    } catch (error) {
+      console.error("Projects fetch failed:", {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+      });
+      setErrors((prev) => ({
+        ...prev,
+        projects: "Unable to load projects. Please try again later.",
+      }));
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, projects: false }));
+    }
+  };
+
+  const fetchRequests = async () => {
+    try {
+      const requestsRes = await api.get("/requests/");
+      setDashboardData((prev) => ({
+        ...prev,
+        requests: Array.isArray(requestsRes.data) ? requestsRes.data : [],
+      }));
+    } catch (error) {
+      console.error("Requests fetch failed:", {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+      });
+      setErrors((prev) => ({
+        ...prev,
+        requests: "Unable to load requests. Please try again later.",
+      }));
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, requests: false }));
+    }
+  };
+
+  const fetchConversations = async () => {
+    try {
+      const conversationsRes = await api.get("/conversations/user/list");
+      setDashboardData((prev) => ({
+        ...prev,
+        conversations: Array.isArray(conversationsRes.data)
+          ? conversationsRes.data
+          : [],
+      }));
+    } catch (error) {
+      console.error("Conversations fetch failed:", {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+      });
+      setErrors((prev) => ({
+        ...prev,
+        conversations: "Unable to load conversations. Please try again later.",
+      }));
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, conversations: false }));
+    }
+  };
+
+  // Check if all sections are still loading
+  const isLoading = Object.values(loadingStates).some((state) => state);
+
+  if (isLoading) {
+    return (
+      <div className={styles.dashboard}>
+        <Header />
+        <div className={styles.loadingContainer}>
+          <div className={styles.loading}>Loading your dashboard...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.dashboard}>
@@ -74,12 +139,22 @@ const ClientDashboard = () => {
       <div className={styles.content}>
         <h1>Client Dashboard</h1>
 
+        {/* Display section-specific errors */}
+        {Object.entries(errors).map(
+          ([key, error]) =>
+            error && (
+              <div key={key} className={styles.error}>
+                {error}
+              </div>
+            )
+        )}
+
         <div className={styles.statsGrid}>
           <div className={styles.statCard}>
             <Activity className={styles.icon} />
             <div className={styles.statInfo}>
               <h3>Active Projects</h3>
-              <p>{projects?.length || 0}</p>
+              <p>{dashboardData.projects.length || 0}</p>
             </div>
           </div>
 
@@ -87,14 +162,15 @@ const ClientDashboard = () => {
             <FileText className={styles.icon} />
             <div className={styles.statInfo}>
               <h3>Open Requests</h3>
-              <p>{requests.length}</p>
+              <p>{dashboardData.requests.length || 0}</p>
             </div>
           </div>
+
           <div className={styles.statCard}>
             <MessageSquare className={styles.icon} />
             <div className={styles.statInfo}>
               <h3>Active Conversations</h3>
-              <p>{conversations.length}</p>
+              <p>{dashboardData.conversations.length || 0}</p>
             </div>
           </div>
         </div>
@@ -124,8 +200,8 @@ const ClientDashboard = () => {
         </div>
 
         <div className={styles.projectsList}>
-          {projects && projects.length > 0 ? (
-            projects.map((project) => (
+          {!errors.projects && dashboardData.projects.length > 0 ? (
+            dashboardData.projects.map((project) => (
               <div key={project.id} className={styles.projectCard}>
                 <h3>{project.name || "Unnamed Project"}</h3>
                 <p>{project.description || "No description"}</p>
@@ -139,11 +215,20 @@ const ClientDashboard = () => {
               </div>
             ))
           ) : (
-            <div className={styles.noProjects}>No projects found</div>
+            <div className={styles.noProjects}>
+              {errors.projects ? (
+                <button onClick={fetchProjects} className={styles.retryButton}>
+                  Retry Loading Projects
+                </button>
+              ) : (
+                "No projects found. Create your first project to get started!"
+              )}
+            </div>
           )}
         </div>
       </div>
     </div>
   );
 };
+
 export default ClientDashboard;

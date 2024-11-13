@@ -14,6 +14,7 @@ import {
 import api from "../../utils/api";
 import Header from "../shared/Header";
 import styles from "./ProjectDetails.module.css";
+import CreateRequestModal from "./CreateRequestModal";
 
 const ProjectDetails = () => {
   const { projectId } = useParams();
@@ -21,21 +22,40 @@ const ProjectDetails = () => {
   const [project, setProject] = useState(null);
   const [activeTab, setActiveTab] = useState("requests");
   const [loading, setLoading] = useState(true);
+  const [showRequestModal, setShowRequestModal] = useState(false);
+  const [error, setError] = useState(null);
+
+  const fetchProject = async () => {
+    try {
+      const response = await api.get(`/projects/${projectId}`);
+      setProject(response.data);
+      setError(null);
+    } catch (error) {
+      console.error("Error fetching project:", error);
+      setError("Failed to load project details");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchProject = async () => {
-      try {
-        const response = await api.get(`/projects/${projectId}`);
-        setProject(response.data);
-      } catch (error) {
-        console.error("Error fetching project:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchProject();
   }, [projectId]);
+
+  const handleCreateRequest = async (requestData) => {
+    try {
+      const response = await api.post("/requests/", {
+        ...requestData,
+        project_id: projectId,
+      });
+      setShowRequestModal(false);
+      fetchProject(); // Refresh project data
+      setError(null);
+    } catch (error) {
+      console.error("Error creating request:", error);
+      setError("Failed to create request. Please try again.");
+    }
+  };
 
   if (loading) {
     return <div className={styles.loading}>Loading project details...</div>;
@@ -68,6 +88,8 @@ const ProjectDetails = () => {
             <Settings size={16} />
           </button>
         </div>
+
+        {error && <div className={styles.error}>{error}</div>}
 
         {/* Project Stats */}
         <div className={styles.statsGrid}>
@@ -103,7 +125,10 @@ const ProjectDetails = () => {
 
         {/* Quick Actions */}
         <div className={styles.quickActions}>
-          <button className={styles.primaryButton}>
+          <button
+            className={styles.primaryButton}
+            onClick={() => setShowRequestModal(true)}
+          >
             <Plus size={16} />
             New Request
           </button>
@@ -112,6 +137,15 @@ const ProjectDetails = () => {
             Invite Team Member
           </button>
         </div>
+
+        {/* Create Request Modal */}
+        {showRequestModal && (
+          <CreateRequestModal
+            projectId={projectId}
+            onClose={() => setShowRequestModal(false)}
+            onSubmit={handleCreateRequest}
+          />
+        )}
 
         {/* Content Tabs */}
         <div className={styles.tabsContainer}>
@@ -149,7 +183,10 @@ const ProjectDetails = () => {
                   <FileText size={48} />
                   <h3>No Requests Yet</h3>
                   <p>Create your first request to get started</p>
-                  <button className={styles.primaryButton}>
+                  <button
+                    className={styles.primaryButton}
+                    onClick={() => setShowRequestModal(true)}
+                  >
                     <Plus size={16} />
                     New Request
                   </button>
