@@ -219,11 +219,10 @@
 
 .requestMeta {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   gap: var(--spacing-md);
-  margin: var(--spacing-md) 0;
-  padding-top: var(--spacing-md);
+  margin: var(--spacing-sm) 0; /* Reduced from var(--spacing-md) for desktop */
+  padding-top: var(--spacing-sm); /* Reduced padding for desktop */
   border-top: 1px solid var(--color-border);
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
@@ -245,7 +244,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--spacing-sm);
-  margin-top: var(--spacing-md);
+  margin-top: var(--spacing-sm); /* Reduced for desktop */
 }
 .viewButton:hover {
   background-color: var(--color-primary-dark);
@@ -280,35 +279,24 @@
   min-height: calc(100vh - 60px); /* Adjust based on your header height */
 }
 
+/* Tablet and smaller screens */
 @media (max-width: 768px) {
-  .requestCard {
-    padding: var(--spacing-md);
-    margin: var(--spacing-sm) var(--spacing-sm);
-  }
-
-  .requestMeta {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-xs);
-  }
-
-  .viewButton {
-    width: 100%;
-    margin: var(--spacing-md) 0 var(--spacing-xs) 0;
-  }
-
+  /* Layout & Container styles */
   .content {
     padding: var(--spacing-md) var(--spacing-sm);
   }
 
   .dashboardTitle {
     padding: 0 var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
   }
 
+  /* Stats Grid */
   .statsGrid {
     grid-template-columns: 1fr;
     padding: 0 var(--spacing-sm);
     margin: var(--spacing-md) 0;
+    gap: var(--spacing-sm);
   }
 
   .statCard {
@@ -317,19 +305,48 @@
     padding: var(--spacing-md);
   }
 
+  /* Actions Grid */
   .actionsGrid {
     grid-template-columns: 1fr;
     padding: 0 var(--spacing-sm);
     margin: var(--spacing-lg) 0;
+    gap: var(--spacing-sm);
   }
 
+  /* Recent Activity & Cards */
   .recentActivity {
-    margin: var(--spacing-lg) var(--spacing-sm);
+    margin: var(--spacing-md) var(--spacing-sm);
     padding: var(--spacing-md);
+  }
+
+  .requestCard {
+    padding: var(--spacing-md);
+    margin: var(--spacing-sm) var(--spacing-sm);
+  }
+
+  /* Request Meta Info */
+  .requestMeta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+  }
+
+  /* View Button */
+  .viewButton {
+    width: 100%;
+    margin-top: var(--spacing-lg);
   }
 }
 
+/* Mobile phones and smaller screens */
 @media (max-width: 480px) {
+  /* Text Sizes */
+  .dashboardTitle {
+    font-size: var(--font-size-lg);
+  }
+
   .statInfo h3 {
     font-size: var(--font-size-xs);
   }
@@ -338,8 +355,31 @@
     font-size: var(--font-size-lg);
   }
 
+  /* Buttons */
   .actionButton {
     font-size: var(--font-size-sm);
+    padding: var(--spacing-sm);
+  }
+
+  .viewButton {
+    font-size: var(--font-size-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin-top: var(--spacing-md);
+  }
+
+  /* Cards */
+  .requestCard {
+    padding: var(--spacing-sm);
+  }
+
+  .requestMeta {
+    font-size: var(--font-size-xs);
+    gap: var(--spacing-xs);
+  }
+
+  /* Stats */
+  .statCard {
+    height: 64px;
     padding: var(--spacing-sm);
   }
 }
