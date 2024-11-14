@@ -16,9 +16,17 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  margin: 0; /* Ensure no margin on body */
+  min-height: 100vh;
 }
 
-/* Global anchor styles */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Rest of your global styles remain the same */
 a {
   color: var(--color-primary);
   text-decoration: none;
@@ -28,7 +36,6 @@ a:hover {
   text-decoration: underline;
 }
 
-/* Global heading styles */
 h1,
 h2,
 h3,
@@ -38,6 +45,7 @@ h6 {
   color: var(--color-text-primary);
   font-weight: 600;
   line-height: 1.2;
+  margin: 0; /* Ensure no default margins on headings */
 }
 
 /* Remove list styles */
@@ -54,13 +62,21 @@ select {
   font-size: inherit;
 }
 
-/* Focus styles for accessibility */
 :focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
-/* Disable focus outline for mouse users, but keep it for keyboard */
 :focus:not(:focus-visible) {
   outline: none;
+}
+
+/* Update app-content to remove unnecessary spacing */
+.app-content {
+  flex: 1;
+  margin-top: 60px; /* Same as header height */
+  padding: 0; /* Remove default padding */
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #f9fafb;
 }

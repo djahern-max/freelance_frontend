@@ -33,6 +33,8 @@ const Request = () => {
   const [editMode, setEditMode] = useState(false);
   const [editRequestId, setEditRequestId] = useState(null);
 
+  const [estimatedBudget, setEstimatedBudget] = useState("");
+
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -139,6 +141,7 @@ const Request = () => {
     setContent(request.content);
     setProjectId(request.project_id);
     setIsPublic(request.is_public);
+    setEstimatedBudget(request.estimated_budget || "");
   };
 
   const selectProject = (project) => {
@@ -151,7 +154,13 @@ const Request = () => {
     try {
       await axios.post(
         `${apiUrl}/requests/`,
-        { title, content, project_id: projectId, is_public: isPublic },
+        {
+          title,
+          content,
+          project_id: projectId,
+          is_public: isPublic,
+          estimated_budget: estimatedBudget ? Number(estimatedBudget) : null,
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -161,6 +170,7 @@ const Request = () => {
       );
       setTitle("");
       setContent("");
+      setEstimatedBudget("");
       fetchRequests(projectId);
     } catch (error) {
       handleError(error);
@@ -172,7 +182,12 @@ const Request = () => {
     try {
       await axios.put(
         `${apiUrl}/requests/${editRequestId}`,
-        { title, content, project_id: projectId },
+        {
+          title,
+          content,
+          project_id: projectId,
+          estimated_budget: estimatedBudget ? Number(estimatedBudget) : null,
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -184,12 +199,12 @@ const Request = () => {
       setEditRequestId(null);
       setTitle("");
       setContent("");
+      setEstimatedBudget("");
       fetchRequests(projectId);
     } catch (error) {
       handleError(error);
     }
   };
-
   const deleteRequest = async (id) => {
     try {
       await axios.delete(`${apiUrl}/requests/${id}`, {
@@ -390,6 +405,7 @@ const Request = () => {
           </div>
 
           {error && <p className={styles.error}>{error}</p>}
+
           <form
             className={styles.requestForm}
             onSubmit={editMode ? updateRequest : createRequest}
@@ -408,6 +424,13 @@ const Request = () => {
               onChange={(e) => setContent(e.target.value)}
               placeholder="Content"
               required
+            />
+            <input
+              type="number"
+              className={styles.inputField}
+              value={estimatedBudget}
+              onChange={(e) => setEstimatedBudget(e.target.value)}
+              placeholder="Estimated Budget ($)"
             />
             <button type="submit" className={styles.addRequestButton}>
               {editMode ? "Update Request" : "Add Request"}

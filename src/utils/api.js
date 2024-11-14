@@ -2,13 +2,21 @@ import axios from "axios";
 import { clearAuthData } from "./authCleanup";
 
 const getBaseURL = () => {
-  if (process.env.NODE_ENV === "production") {
-    // Use the REACT_APP_API_URL from env which is '/api'
-    return process.env.REACT_APP_API_URL || "/api";
+  // Always use the environment variable first
+  if (process.env.REACT_APP_API_URL) {
+    return process.env.REACT_APP_API_URL;
   }
-  // Use the full URL for development
-  return process.env.REACT_APP_API_URL || "http://localhost:8000";
+
+  // Fallback for production
+  if (process.env.NODE_ENV === "production") {
+    return "/api";
+  }
+
+  // Development fallback
+  return "http://localhost:8000";
 };
+
+console.log("API Base URL:", getBaseURL()); // Add this for debugging
 
 const api = axios.create({
   baseURL: getBaseURL(),
@@ -19,35 +27,13 @@ const api = axios.create({
   withCredentials: true,
 });
 
-// Add default auth header if token exists
-const token = localStorage.getItem("token");
-if (token) {
-  api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-}
-
-// Request interceptor
+// Add request interceptor for debugging
 api.interceptors.request.use(
   (config) => {
-    // Get fresh token on each request
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-
-    // Debug logging
-    if (process.env.NODE_ENV === "development") {
-      console.log("API Request:", {
-        url: `${config.baseURL}${config.url}`,
-        method: config.method,
-        headers: config.headers,
-        auth: config.headers.Authorization ? "Present" : "Missing",
-        token: !!token,
-      });
-    }
+    console.log("Full Request URL:", `${config.baseURL}${config.url}`);
     return config;
   },
   (error) => {
-    console.error("Request interceptor error:", error);
     return Promise.reject(error);
   }
 );

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import api from "../../utils/api";
 import Header from "../shared/Header";
 import {
@@ -28,26 +29,21 @@ const ClientDashboard = () => {
     conversations: null,
   });
   const navigate = useNavigate();
+  const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
     fetchDashboardData();
   }, []);
 
   const fetchDashboardData = async () => {
-    // Reset any existing errors
     setErrors({
       projects: null,
       requests: null,
       conversations: null,
     });
 
-    // Fetch Projects
     fetchProjects();
-
-    // Fetch Requests
     fetchRequests();
-
-    // Fetch Conversations
     fetchConversations();
   };
 
@@ -119,12 +115,11 @@ const ClientDashboard = () => {
     }
   };
 
-  // Check if all sections are still loading
   const isLoading = Object.values(loadingStates).some((state) => state);
 
   if (isLoading) {
     return (
-      <div className={styles.dashboard}>
+      <div className={styles.dashboardContainer}>
         <Header />
         <div className={styles.loadingContainer}>
           <div className={styles.loading}>Loading your dashboard...</div>
@@ -134,12 +129,13 @@ const ClientDashboard = () => {
   }
 
   return (
-    <div className={styles.dashboard}>
+    <div className={styles.dashboardContainer}>
       <Header />
       <div className={styles.content}>
-        <h1>Client Dashboard</h1>
+        <h1 className={styles.dashboardTitle}>
+          {user?.fullName ? `${user.fullName}'s Dashboard` : "Dashboard"}
+        </h1>
 
-        {/* Display section-specific errors */}
         {Object.entries(errors).map(
           ([key, error]) =>
             error && (

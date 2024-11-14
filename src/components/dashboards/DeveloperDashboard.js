@@ -6,6 +6,44 @@ import Header from "../shared/Header";
 import api from "../../utils/api";
 import styles from "./DeveloperDashboard.module.css";
 
+// New RequestCard component
+const RequestCard = ({ request, navigate }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const maxLength = 150;
+  const needsTruncation = request.content.length > maxLength;
+
+  return (
+    <div className={styles.requestCard}>
+      <h3>{request.title}</h3>
+      <p className={styles.requestContent}>
+        {isExpanded || !needsTruncation
+          ? request.content
+          : `${request.content.substring(0, maxLength)}...`}
+        {needsTruncation && (
+          <button
+            className={styles.viewMoreButton}
+            onClick={() => setIsExpanded(!isExpanded)}
+          >
+            {isExpanded ? "View less" : "View more"}
+          </button>
+        )}
+      </p>
+      <div className={styles.requestMeta}>
+        {request.estimated_budget && (
+          <span>Budget: ${request.estimated_budget}</span>
+        )}
+        <span>Posted: {new Date(request.created_at).toLocaleDateString()}</span>
+      </div>
+      <button
+        onClick={() => navigate(`/requests/${request.id}`)}
+        className={styles.viewButton}
+      >
+        View Details
+      </button>
+    </div>
+  );
+};
+
 const DeveloperDashboard = () => {
   const [activeRequests, setActiveRequests] = useState([]);
   const [conversations, setConversations] = useState([]);
@@ -13,39 +51,21 @@ const DeveloperDashboard = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const auth = useSelector((state) => state.auth);
+  const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
-      console.log("Starting dashboard data fetch");
-      console.log("Current auth state:", auth);
-
       try {
-        // Try fetching public requests first
-        console.log("Fetching public requests...");
         const requestsRes = await api.get("/requests/public");
-        console.log("Public requests response:", requestsRes);
-
-        // Set empty array if no data returned
         setActiveRequests(requestsRes.data || []);
 
-        // Then try fetching conversations
-        console.log("Fetching conversations...");
         const conversationsRes = await api.get("/conversations/user/list");
-        console.log("Conversations response:", conversationsRes);
-
-        // Set empty array if no data returned
         setConversations(conversationsRes.data || []);
 
         setError(null);
       } catch (err) {
         console.error("API Error:", err);
-
-        if (err.response?.status === 404) {
-          // Handle no data case
-          setActiveRequests([]);
-          setConversations([]);
-          setError(null);
-        } else if (err.response?.status === 401) {
+        if (err.response?.status === 401) {
           setError("Session expired. Please log in again.");
           navigate("/login");
         } else {
@@ -65,61 +85,42 @@ const DeveloperDashboard = () => {
   }, [auth, navigate]);
 
   if (loading) {
-    return <div className={styles.loading}>Loading dashboard...</div>;
+    return (
+      <div className={styles.dashboardContainer}>
+        <Header />
+        <div className={styles.loadingContainer}>
+          <div className={styles.loading}>Loading dashboard...</div>
+        </div>
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <div className={styles.error}>
-        <p>{error}</p>
-        <button
-          onClick={() => window.location.reload()}
-          className={styles.retryButton}
-        >
-          Retry
-        </button>
+      <div className={styles.dashboardContainer}>
+        <Header />
+        <div className={styles.content}>
+          <div className={styles.error}>
+            <p>{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className={styles.retryButton}
+            >
+              Retry
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
 
-  const renderRequestsList = () => {
-    if (activeRequests.length === 0) {
-      return (
-        <div className={styles.emptyState}>
-          <p>No public requests available at the moment.</p>
-          <p>Check back later for new opportunities!</p>
-        </div>
-      );
-    }
-    return (
-      <div className={styles.requestsList}>
-        {activeRequests.slice(0, 5).map((request) => (
-          <div key={request.id} className={styles.requestCard}>
-            <h3>{request.title}</h3>
-            <p>{request.content}</p>
-            <div className={styles.requestMeta}>
-              <span>Budget: ${request.estimated_budget}</span>
-              <span>
-                Posted: {new Date(request.created_at).toLocaleDateString()}
-              </span>
-            </div>
-            <button
-              onClick={() => navigate(`/requests/${request.id}`)}
-              className={styles.viewButton}
-            >
-              View Details
-            </button>
-          </div>
-        ))}
-      </div>
-    );
-  };
-
   return (
-    <div className={styles.dashboard}>
+    <div className={styles.dashboardContainer}>
       <Header />
       <div className={styles.content}>
-        <h1>Developer Dashboard</h1>
+        <h1 className={styles.dashboardTitle}>
+          {user?.fullName ? `${user.fullName}'s Dashboard` : "Dashboard"}
+        </h1>
 
         <div className={styles.statsGrid}>
           <div className={styles.statCard}>
@@ -166,7 +167,25 @@ const DeveloperDashboard = () => {
 
         <div className={styles.recentActivity}>
           <h2>Recent Opportunities</h2>
-          {renderRequestsList()}
+          {activeRequests.length === 0 ? (
+            <div className={styles.emptyState}>
+              <p>No public requests available at the moment.</p>
+              <p>Check back later for new opportunities!</p>
+            </div>
+          ) : (
+            <div className={styles.requestsList}>
+              {activeRequests.slice(0, 5).map((request) => {
+                console.log("Request data:", request);
+                return (
+                  <RequestCard
+                    key={request.id}
+                    request={request}
+                    navigate={navigate}
+                  />
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>

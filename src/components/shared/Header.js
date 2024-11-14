@@ -9,44 +9,84 @@ import {
   Grid,
   LogOut,
   Search,
+  Home,
+  Layout,
+  FolderPlus,
 } from "lucide-react";
 import styles from "./Header.module.css";
 
 const Header = () => {
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const userType = useSelector((state) => state.auth.user?.userType);
   const navigate = useNavigate();
   const location = useLocation();
 
-  const pages = [
-    {
-      path: "/public-requests",
-      icon: Search,
-      title: "Open Requests",
-    },
-    {
-      path: "/requests",
-      icon: FileText,
-      title: "Create Request",
-    },
-    {
-      path: "/videos",
-      icon: Video,
-      title: "Videos",
-    },
-    {
-      path: "/app-dashboard",
-      icon: Grid,
-      title: "Applications",
-    },
-  ];
+  // Define navigation items based on user type
+  const getNavigationItems = () => {
+    // If not authenticated, show only home
+    if (!isAuthenticated) {
+      return [
+        {
+          path: "/",
+          icon: Home,
+          title: "Home",
+        },
+      ];
+    }
+
+    // Client navigation items
+    if (userType === "client") {
+      return [
+        {
+          path: "/client-dashboard",
+          icon: Layout,
+          title: "Dashboard",
+        },
+        {
+          path: "/create-project",
+          icon: FolderPlus,
+          title: "Create Project",
+        },
+        {
+          path: "/requests",
+          icon: FileText,
+          title: "Create Request",
+        },
+      ];
+    }
+
+    // Developer navigation items
+    return [
+      {
+        path: "/developer-dashboard",
+        icon: Layout,
+        title: "Dashboard",
+      },
+      {
+        path: "/public-requests",
+        icon: Search,
+        title: "Available Requests",
+      },
+      {
+        path: "/app-dashboard",
+        icon: Grid,
+        title: "App Showcase",
+      },
+      {
+        path: "/videos",
+        icon: Video,
+        title: "Videos",
+      },
+    ];
+  };
+
+  const pages = getNavigationItems();
 
   const handleNavigation = (path) => {
-    if (!isAuthenticated && path !== "/public-requests") {
-      navigate("/login", { state: { from: path } });
-    } else {
-      navigate(path);
-    }
+    // Remove the condition that was forcing navigation to login
+    // for authenticated users
+    navigate(path);
   };
 
   const handleLogout = () => {
@@ -55,6 +95,11 @@ const Header = () => {
       navigate("/login");
     }
   };
+
+  // Debug logging
+  console.log("Current user type:", userType);
+  console.log("Current navigation items:", pages);
+  console.log("Is authenticated:", isAuthenticated);
 
   return (
     <header className={styles.header}>

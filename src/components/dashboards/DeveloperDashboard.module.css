@@ -1,19 +1,23 @@
-/* Base Dashboard Layout */
-.dashboard {
-  min-height: 100vh;
+.dashboardContainer {
+  min-height: calc(100vh - 60px); /* Adjust for header height */
   background-color: var(--color-background);
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .content {
   max-width: 1200px;
   margin: 0 auto;
-  padding: var(--spacing-lg);
+  padding: var(--spacing-lg) var(--spacing-md);
+  box-sizing: border-box;
 }
 
-.content h1 {
+.dashboardTitle {
   font-size: var(--font-size-xl);
   color: var(--color-text-primary);
   margin-bottom: var(--spacing-lg);
+  font-weight: 600;
 }
 
 /* Loading State */
@@ -68,10 +72,6 @@
   transition: background-color 0.2s ease;
 }
 
-.retryButton:hover {
-  background-color: var(--color-primary-dark);
-}
-
 /* Stats Grid */
 .statsGrid {
   display: grid;
@@ -91,22 +91,6 @@
   border: 1px solid var(--color-border);
   position: relative;
   overflow: hidden;
-}
-
-.statCard::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    135deg,
-    transparent 0%,
-    transparent 50%,
-    rgba(var(--color-primary-rgb), 0.05) 100%
-  );
-  pointer-events: none;
 }
 
 .icon {
@@ -134,9 +118,10 @@
 /* Actions Grid */
 .actionsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: 1fr; /* Change to single column for mobile */
   gap: var(--spacing-md);
-  margin-bottom: var(--spacing-xl);
+  margin: var(--spacing-lg) 0; /* Add vertical margin */
+  padding: 0 var(--spacing-sm); /* Add horizontal padding */
 }
 
 .actionButton {
@@ -153,8 +138,8 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
-  position: relative;
-  overflow: hidden;
+  margin: var(--spacing-xs) 0; /* Add vertical margin */
+  height: 48px; /* Set consistent height */
 }
 
 .actionButton:hover {
@@ -163,33 +148,12 @@
   color: var(--color-primary);
 }
 
-.actionButton::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 300%;
-  height: 300%;
-  background: radial-gradient(
-    circle,
-    rgba(255, 255, 255, 0.2) 0%,
-    transparent 60%
-  );
-  transform: translate(-50%, -50%) scale(0);
-  transition: transform 0.5s ease-out;
-  pointer-events: none;
-}
-
-.actionButton:hover::after {
-  transform: translate(-50%, -50%) scale(1);
-}
-
 .buttonIcon {
   width: 20px;
   height: 20px;
 }
 
-/* Recent Activity Section */
+/* Recent Activity */
 .recentActivity {
   background: white;
   border-radius: var(--radius-lg);
@@ -214,18 +178,29 @@
   padding: var(--spacing-md);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  background: linear-gradient(to right bottom, white, var(--color-secondary));
+  background: white;
   display: flex;
   flex-direction: column;
-  transition: all 0.2s ease-in-out;
-  position: relative;
-  overflow: hidden;
+  margin-bottom: var(--spacing-md);
 }
 
-.requestCard:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
-  border-color: var(--color-primary);
+.requestContent {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: var(--spacing-sm) 0;
+  line-height: 1.5;
+  position: relative;
+}
+
+.viewMoreButton {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+  padding: 0;
+  margin-left: var(--spacing-xs);
+  cursor: pointer;
+  font-weight: 500;
 }
 
 .requestCard h3 {
@@ -244,16 +219,16 @@
 
 .requestMeta {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--spacing-md);
-  margin-top: auto;
+  margin: var(--spacing-md) 0;
   padding-top: var(--spacing-md);
   border-top: 1px solid var(--color-border);
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
 }
 
-/* View Button */
 .viewButton {
   min-width: 120px;
   align-self: flex-end;
@@ -271,25 +246,14 @@
   justify-content: center;
   gap: var(--spacing-sm);
   margin-top: var(--spacing-md);
-  box-shadow: var(--shadow-sm);
 }
-
 .viewButton:hover {
   background-color: var(--color-primary-dark);
   transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
 }
 
 .viewButton:active {
   transform: translateY(0);
-  box-shadow: var(--shadow-sm);
-}
-
-.viewButton:disabled {
-  background-color: var(--color-disabled);
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
 }
 
 /* Empty State */
@@ -308,24 +272,59 @@
   color: var(--color-text-secondary);
 }
 
-/* Responsive Design */
-@media (max-width: 1024px) {
-  .statsGrid {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  }
+/* Loading Container */
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 60px); /* Adjust based on your header height */
 }
 
 @media (max-width: 768px) {
-  .content {
+  .requestCard {
     padding: var(--spacing-md);
+    margin: var(--spacing-sm) var(--spacing-sm);
   }
 
-  .statsGrid,
-  .actionsGrid {
+  .requestMeta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+
+  .viewButton {
+    width: 100%;
+    margin: var(--spacing-md) 0 var(--spacing-xs) 0;
+  }
+
+  .content {
+    padding: var(--spacing-md) var(--spacing-sm);
+  }
+
+  .dashboardTitle {
+    padding: 0 var(--spacing-sm);
+  }
+
+  .statsGrid {
     grid-template-columns: 1fr;
+    padding: 0 var(--spacing-sm);
+    margin: var(--spacing-md) 0;
   }
 
   .statCard {
+    margin: var(--spacing-xs) 0;
+    height: 72px;
+    padding: var(--spacing-md);
+  }
+
+  .actionsGrid {
+    grid-template-columns: 1fr;
+    padding: 0 var(--spacing-sm);
+    margin: var(--spacing-lg) 0;
+  }
+
+  .recentActivity {
+    margin: var(--spacing-lg) var(--spacing-sm);
     padding: var(--spacing-md);
   }
 }
