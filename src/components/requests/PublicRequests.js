@@ -168,7 +168,6 @@ const PublicRequests = () => {
                   <h2 className={styles.requestTitle}>{request.title}</h2>
                   {request.estimated_budget && (
                     <div className={styles.budget}>
-                      <DollarSign className={styles.icon} />
                       <span>${request.estimated_budget.toLocaleString()}</span>
                     </div>
                   )}

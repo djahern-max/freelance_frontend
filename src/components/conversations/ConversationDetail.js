@@ -18,6 +18,9 @@ const ConversationDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const messagesEndRef = useRef(null);
+
+  // Declare hooks inside the component
+  const [isSidebarOpen, setSidebarOpen] = useState(false); // Sidebar toggle state
   const [conversation, setConversation] = useState(null);
   const [requestDetails, setRequestDetails] = useState(null);
   const [newMessage, setNewMessage] = useState("");
@@ -32,10 +35,6 @@ const ConversationDetail = () => {
       return () => clearInterval(interval);
     }
   }, [id, token]);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
 
   const fetchConversation = async () => {
     try {
@@ -57,6 +56,10 @@ const ConversationDetail = () => {
       console.error("Error fetching conversation:", err);
       setError("Failed to load conversation");
     }
+  };
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const sendMessage = async (e) => {
@@ -107,6 +110,14 @@ const ConversationDetail = () => {
             <ArrowLeft size={20} />
           </button>
           <h1 className={styles.title}>{requestDetails?.title}</h1>
+          {window.innerWidth <= 768 && (
+            <button
+              className={styles.sidebarToggle}
+              onClick={() => setSidebarOpen(!isSidebarOpen)}
+            >
+              ☰
+            </button>
+          )}
         </div>
 
         <div className={styles.messagesContainer}>
@@ -161,7 +172,7 @@ const ConversationDetail = () => {
         </div>
       </div>
 
-      <div className={styles.sidebar}>
+      <div className={`${styles.sidebar} ${isSidebarOpen ? "open" : ""}`}>
         <div className={styles.sidebarSection}>
           <h2 className={styles.sidebarTitle}>Request Details</h2>
           <div className={styles.requestDetails}>
@@ -192,7 +203,6 @@ const ConversationDetail = () => {
             </div>
           </div>
         </div>
-
         <div className={styles.sidebarSection}>
           <h2 className={styles.sidebarTitle}>Participants</h2>
           <div className={styles.participant}>
@@ -204,51 +214,6 @@ const ConversationDetail = () => {
             <span>{conversation.recipient_username}</span>
           </div>
         </div>
-
-        {/* Sidebar Participants Section */}
-        {/* <div className={styles.sidebarSection}>
-          <h2 className={styles.sidebarTitle}>Participants</h2>
-          <div className={styles.infoItem}>
-            <User size={16} />
-            <span>
-              {conversation.starter_username} */}
-        {/* TODO: Future enhancement - Add user rating/reputation score
-          Consider metrics like:
-          - Customer satisfaction score for developers
-          - Reliability score for clients
-          - Project completion rate
-          - Communication rating
-          - Payment reliability (for clients)
-          - Code quality (for developers)
-      */}
-        {/* </span>
-          </div>
-          <div className={styles.infoItem}>
-            <User size={16} />
-            <span>{conversation.recipient_username}</span>
-          </div>
-        </div> */}
-        {user.userType === "client" && conversation.status === "pending" && (
-          <div className={styles.sidebarSection}>
-            <h2 className={styles.sidebarTitle}>Actions</h2>
-            <div className={styles.actions}>
-              <button
-                onClick={() => handleProposal(true)}
-                className={styles.acceptButton}
-              >
-                <CheckCircle size={16} />
-                Accept
-              </button>
-              <button
-                onClick={() => handleProposal(false)}
-                className={styles.rejectButton}
-              >
-                <XCircle size={16} />
-                Decline
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
