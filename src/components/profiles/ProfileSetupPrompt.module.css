@@ -1,0 +1,77 @@
+/* ProfileSetupPrompt.module.css */
+
+.overlay {
+  position: fixed;
+  inset: 0; /* Covers the entire screen */
+  background-color: rgba(0, 0, 0, 0.5); /* Grey background with transparency */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensures it sits above other elements */
+}
+
+.dialog {
+  background: var(--color-background); /* White background for modal */
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  max-width: 400px;
+  width: 90%; /* Responsive width */
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+  position: relative;
+}
+
+.header {
+  margin-bottom: var(--spacing-md);
+}
+
+.title {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.description {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-lg);
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md); /* Space between buttons */
+}
+
+.buttonPrimary {
+  background-color: var(--color-primary);
+  color: white;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.buttonPrimary:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.buttonSecondary {
+  background-color: var(--color-secondary);
+  color: var(--color-text-primary);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.buttonSecondary:hover {
+  background-color: var(--color-border);
+}

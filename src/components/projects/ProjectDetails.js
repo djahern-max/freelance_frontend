@@ -1,59 +1,58 @@
 // src/components/pages/ProjectDetails.js
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
 import {
+  ArrowLeft,
+  Clock,
   FileText,
   MessageSquare,
-  Settings,
   Plus,
-  Calendar,
   Users,
-  Clock,
-  ArrowLeft,
-} from "lucide-react";
-import api from "../../utils/api";
-import Header from "../shared/Header";
-import styles from "./ProjectDetails.module.css";
-import CreateRequestModal from "./CreateRequestModal";
+} from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import api from '../../utils/api';
+import Header from '../shared/Header';
+import CreateRequestModal from './CreateRequestModal';
+import styles from './ProjectDetails.module.css';
 
 const ProjectDetails = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
-  const [activeTab, setActiveTab] = useState("requests");
+  const [activeTab, setActiveTab] = useState('requests');
   const [loading, setLoading] = useState(true);
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchProject = async () => {
+  const fetchProject = useCallback(async () => {
     try {
       const response = await api.get(`/projects/${projectId}`);
       setProject(response.data);
       setError(null);
     } catch (error) {
-      console.error("Error fetching project:", error);
-      setError("Failed to load project details");
+      console.error('Error fetching project:', error);
+      setError('Failed to load project details');
     } finally {
       setLoading(false);
     }
-  };
+  }, [projectId]);
 
   useEffect(() => {
     fetchProject();
-  }, [projectId]);
+  }, [fetchProject]);
 
   const handleCreateRequest = async (requestData) => {
     try {
-      const response = await api.post("/requests/", {
+      const response = await api.post('/requests/', {
         ...requestData,
         project_id: projectId,
       });
+      console.log('Request created:', response.data); // Use response for debugging
       setShowRequestModal(false);
-      fetchProject(); // Refresh project data
+      fetchProject();
       setError(null);
     } catch (error) {
-      console.error("Error creating request:", error);
-      setError("Failed to create request. Please try again.");
+      console.error('Error creating request:', error);
+      setError('Failed to create request. Please try again.');
     }
   };
 
@@ -72,22 +71,11 @@ const ProjectDetails = () => {
         {/* Back Button */}
         <button
           className={styles.backButton}
-          onClick={() => navigate("/client-dashboard")}
+          onClick={() => navigate('/client-dashboard')}
         >
           <ArrowLeft size={16} />
           Back to Dashboard
         </button>
-
-        {/* Project Header */}
-        <div className={styles.projectHeader}>
-          <div className={styles.titleSection}>
-            <h1>{project.name}</h1>
-            <p className={styles.description}>{project.description}</p>
-          </div>
-          <button className={styles.settingsButton}>
-            <Settings size={16} />
-          </button>
-        </div>
 
         {error && <div className={styles.error}>{error}</div>}
 
@@ -152,32 +140,32 @@ const ProjectDetails = () => {
           <div className={styles.tabsList}>
             <button
               className={`${styles.tabButton} ${
-                activeTab === "requests" ? styles.activeTab : ""
+                activeTab === 'requests' ? styles.activeTab : ''
               }`}
-              onClick={() => setActiveTab("requests")}
+              onClick={() => setActiveTab('requests')}
             >
               Requests
             </button>
             <button
               className={`${styles.tabButton} ${
-                activeTab === "conversations" ? styles.activeTab : ""
+                activeTab === 'conversations' ? styles.activeTab : ''
               }`}
-              onClick={() => setActiveTab("conversations")}
+              onClick={() => setActiveTab('conversations')}
             >
               Conversations
             </button>
             <button
               className={`${styles.tabButton} ${
-                activeTab === "timeline" ? styles.activeTab : ""
+                activeTab === 'timeline' ? styles.activeTab : ''
               }`}
-              onClick={() => setActiveTab("timeline")}
+              onClick={() => setActiveTab('timeline')}
             >
               Timeline
             </button>
           </div>
 
           <div className={styles.tabContent}>
-            {activeTab === "requests" && (
+            {activeTab === 'requests' && (
               <div className={styles.requestsTab}>
                 <div className={styles.emptyState}>
                   <FileText size={48} />

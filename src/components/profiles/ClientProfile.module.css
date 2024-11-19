@@ -1,29 +1,24 @@
-/* DeveloperProfile.module.css */
+/* ClientProfile.module.css */
 .profileContainer {
-  min-height: calc(100vh - 64px);
-  background-color: var(--color-secondary);
-  padding: var(--spacing-lg) var(--spacing-md);
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--spacing-md);
 }
 
 .card {
-  max-width: 800px;
-  margin: 0 auto;
   background-color: var(--color-background);
   border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
   box-shadow: var(--shadow-md);
   border: 1px solid var(--color-border);
-  overflow: hidden;
 }
 
 .header {
-  padding: var(--spacing-xl) var(--spacing-xl) var(--spacing-lg);
-  border-bottom: 1px solid var(--color-border);
-  text-align: center;
+  margin-bottom: var(--spacing-lg);
 }
 
 .title {
   font-size: var(--font-size-xl);
-  font-weight: 600;
   color: var(--color-text-primary);
   margin-bottom: var(--spacing-sm);
 }
@@ -45,18 +40,27 @@
 }
 
 .form {
-  padding: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--spacing-md);
 }
 
 .formGroup {
-  margin-bottom: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
 }
 
 .labelContainer {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: var(--spacing-xs);
-  margin-bottom: var(--spacing-xs);
 }
 
 .label {
@@ -65,20 +69,9 @@
   color: var(--color-text-primary);
 }
 
-.required {
-  color: var(--color-error);
-  font-size: var(--font-size-sm);
-}
-
-.helpText {
-  display: block;
-  font-size: var(--font-size-xs);
-  color: var(--color-text-secondary);
-  margin-top: var(--spacing-xs);
-}
-
-.input {
-  width: 100%;
+.input,
+.select,
+.textarea {
   padding: var(--spacing-sm);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -86,27 +79,16 @@
   transition: all 0.2s ease;
 }
 
-.input:focus {
+.input:focus,
+.select:focus,
+.textarea:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-.textarea {
-  composes: input;
-  min-height: 120px;
-  resize: vertical;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--spacing-lg);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
 }
 
 .error {
   animation: slideIn 0.3s ease-out;
-  margin-bottom: var(--spacing-lg);
 }
 
 .errorContent {
@@ -146,22 +128,21 @@
 }
 
 .formActions {
-  margin-top: var(--spacing-xl);
   display: flex;
   justify-content: flex-end;
+  margin-top: var(--spacing-lg);
 }
 
 .saveButton {
   background-color: var(--color-primary);
   color: white;
-  padding: var(--spacing-sm) var(--spacing-xl);
+  padding: var(--spacing-sm) var(--spacing-lg);
   border: none;
   border-radius: var(--radius-md);
   font-size: var(--font-size-base);
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.2s ease;
-  min-width: 120px;
 }
 
 .saveButton:hover:not(:disabled) {
@@ -203,18 +184,10 @@
 
 @media (max-width: 640px) {
   .card {
-    border-radius: 0;
+    padding: var(--spacing-md);
   }
   
   .grid {
     grid-template-columns: 1fr;
-  }
-  
-  .form {
-    padding: var(--spacing-md);
-  }
-  
-  .header {
-    padding: var(--spacing-lg) var(--spacing-md);
   }
 }

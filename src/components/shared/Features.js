@@ -1,9 +1,9 @@
 // Features.js
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { Search, FileText, Video, Grid } from "lucide-react";
-import styles from "./Features.module.css";
+import { FileText, Grid, Search, Video } from 'lucide-react';
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import styles from './Features.module.css';
 
 const Features = () => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -12,33 +12,33 @@ const Features = () => {
   const features = [
     {
       icon: Search,
-      title: "Public Requests",
-      path: "/public-requests",
+      title: 'Public Requests',
+      path: '/public-requests',
       requiresAuth: false,
     },
     {
       icon: FileText,
-      title: "My Requests",
-      path: "/requests",
+      title: 'My Requests',
+      path: '/requests',
       requiresAuth: true,
     },
     {
       icon: Video,
-      title: "Videos",
-      path: "/videos",
+      title: 'Videos',
+      path: '/videos',
       requiresAuth: true,
     },
     {
       icon: Grid,
-      title: "Applications",
-      path: "/app-dashboard",
+      title: 'Applications',
+      path: '/app-dashboard',
       requiresAuth: true,
     },
   ];
 
   const handleNavigation = (feature) => {
     if (feature.requiresAuth && !isAuthenticated) {
-      navigate("/login", { state: { from: feature.path } });
+      navigate('/login', { state: { from: feature.path } });
     } else {
       navigate(feature.path);
     }

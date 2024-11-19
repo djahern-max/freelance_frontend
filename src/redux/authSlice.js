@@ -1,12 +1,12 @@
 // src/redux/authSlice.js
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 // Helper function to safely parse JSON
 const safeJSONParse = (str, fallback = null) => {
   try {
     return str ? JSON.parse(str) : fallback;
   } catch (err) {
-    console.error("Error parsing stored user data:", err);
+    console.error('Error parsing stored user data:', err);
     return fallback;
   }
 };
@@ -28,15 +28,15 @@ const normalizeUserData = (userData) => {
 
 // Initial state with type checking and logging
 const initialState = {
-  token: localStorage.getItem("token"),
-  user: normalizeUserData(safeJSONParse(localStorage.getItem("user"))),
-  isAuthenticated: !!localStorage.getItem("token"),
+  token: localStorage.getItem('token'),
+  user: normalizeUserData(safeJSONParse(localStorage.getItem('user'))),
+  isAuthenticated: !!localStorage.getItem('token'),
   error: null,
   loading: false,
 };
 
 const authSlice = createSlice({
-  name: "auth",
+  name: 'auth',
   initialState,
   reducers: {
     loginStart: (state) => {
@@ -44,23 +44,23 @@ const authSlice = createSlice({
       state.error = null;
     },
     login: (state, action) => {
-      console.log("Login action payload:", action.payload);
+      console.log('Login action payload:', action.payload);
       const { token, user } = action.payload;
 
       // Basic validation
       if (!user || (!user.user_type && !user.userType)) {
-        console.error("Invalid user data received:", user);
-        state.error = "Invalid user data";
+        console.error('Invalid user data received:', user);
+        state.error = 'Invalid user data';
         return;
       }
 
       // Normalize user data using helper function
       const normalizedUser = normalizeUserData(user);
-      console.log("Normalized user data:", normalizedUser);
+      console.log('Normalized user data:', normalizedUser);
 
       if (!normalizedUser) {
-        console.error("Failed to normalize user data:", user);
-        state.error = "Failed to process user data";
+        console.error('Failed to normalize user data:', user);
+        state.error = 'Failed to process user data';
         return;
       }
 
@@ -73,11 +73,11 @@ const authSlice = createSlice({
 
       // Update localStorage
       try {
-        localStorage.setItem("token", token);
-        localStorage.setItem("user", JSON.stringify(normalizedUser));
-        console.log("User data stored in localStorage");
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(normalizedUser));
+        console.log('User data stored in localStorage');
       } catch (err) {
-        console.error("Error storing auth data:", err);
+        console.error('Error storing auth data:', err);
         // Continue even if localStorage fails
       }
     },
@@ -96,11 +96,11 @@ const authSlice = createSlice({
 
       // Clear localStorage
       try {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        console.log("Auth data cleared from localStorage");
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        console.log('Auth data cleared from localStorage');
       } catch (err) {
-        console.error("Error clearing auth data:", err);
+        console.error('Error clearing auth data:', err);
       }
     },
     updateUser: (state, action) => {
@@ -111,15 +111,15 @@ const authSlice = createSlice({
       });
 
       if (!updatedUser) {
-        console.error("Failed to update user data:", action.payload);
+        console.error('Failed to update user data:', action.payload);
         return;
       }
 
       state.user = updatedUser;
       try {
-        localStorage.setItem("user", JSON.stringify(updatedUser));
+        localStorage.setItem('user', JSON.stringify(updatedUser));
       } catch (err) {
-        console.error("Error updating user data in localStorage:", err);
+        console.error('Error updating user data in localStorage:', err);
       }
     },
     clearError: (state) => {

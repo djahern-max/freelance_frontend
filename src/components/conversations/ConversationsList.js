@@ -1,22 +1,23 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import axios from "axios";
+import axios from 'axios';
 import {
-  MessageSquare,
-  Clock,
-  User,
-  DollarSign,
   Briefcase,
-} from "lucide-react";
-import Header from "../shared/Header";
-import styles from "./ConversationsList.module.css";
+  Clock,
+  DollarSign,
+  MessageSquare,
+  User,
+} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import Header from '../shared/Header';
+import styles from './ConversationsList.module.css';
 
 const ConversationsList = () => {
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [activeFilter, setActiveFilter] = useState("all");
+  const [error, setError] = useState('');
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   const navigate = useNavigate();
   const { token, user } = useSelector((state) => state.auth);
@@ -46,7 +47,7 @@ const ConversationsList = () => {
             console.error(`Error fetching request details:`, err);
             return {
               ...conversation,
-              requestDetails: { title: "Unknown Request" },
+              requestDetails: { title: 'Unknown Request' },
             };
           }
         })
@@ -55,8 +56,8 @@ const ConversationsList = () => {
       setConversations(conversationsWithDetails);
       setLoading(false);
     } catch (err) {
-      console.error("Error fetching conversations:", err);
-      setError("Failed to load conversations");
+      console.error('Error fetching conversations:', err);
+      setError('Failed to load conversations');
       setLoading(false);
     }
   };
@@ -74,11 +75,11 @@ const ConversationsList = () => {
   };
 
   const getOtherUserRole = (conversation) => {
-    return user.userType === "client" ? "Developer" : "Client";
+    return user.userType === 'client' ? 'Developer' : 'Client';
   };
 
   const getFilteredConversations = () => {
-    if (activeFilter === "all") return conversations;
+    if (activeFilter === 'all') return conversations;
     return conversations.filter((conv) => conv.status === activeFilter);
   };
 
@@ -108,7 +109,7 @@ const ConversationsList = () => {
             </span>
           </div>
 
-          {user.userType === "developer" && (
+          {user.userType === 'developer' && (
             <div className={styles.budgetInfo}>
               <DollarSign className={styles.icon} />
               <span>Budget: ${requestDetails.estimated_budget}</span>
@@ -118,7 +119,7 @@ const ConversationsList = () => {
           <div className={styles.timeInfo}>
             <Clock className={styles.icon} />
             <span>
-              Last activity:{" "}
+              Last activity:{' '}
               {new Date(conversation.updated_at).toLocaleDateString()}
             </span>
           </div>
@@ -150,10 +151,10 @@ const ConversationsList = () => {
       <main className={styles.mainContent}>
         <div className={styles.header}>
           <h1 className={styles.title}>Conversations</h1>
-          {user.userType === "developer" && (
+          {user.userType === 'developer' && (
             <button
               className={styles.browseButton}
-              onClick={() => navigate("/public-requests")}
+              onClick={() => navigate('/public-requests')}
             >
               <Briefcase className={styles.icon} />
               Browse Opportunities
@@ -164,33 +165,33 @@ const ConversationsList = () => {
         <div className={styles.filters}>
           <button
             className={`${styles.filterButton} ${
-              activeFilter === "all" ? styles.active : ""
+              activeFilter === 'all' ? styles.active : ''
             }`}
-            onClick={() => setActiveFilter("all")}
+            onClick={() => setActiveFilter('all')}
           >
             All
           </button>
           <button
             className={`${styles.filterButton} ${
-              activeFilter === "active" ? styles.active : ""
+              activeFilter === 'active' ? styles.active : ''
             }`}
-            onClick={() => setActiveFilter("active")}
+            onClick={() => setActiveFilter('active')}
           >
             Active
           </button>
           <button
             className={`${styles.filterButton} ${
-              activeFilter === "pending" ? styles.active : ""
+              activeFilter === 'pending' ? styles.active : ''
             }`}
-            onClick={() => setActiveFilter("pending")}
+            onClick={() => setActiveFilter('pending')}
           >
             Pending
           </button>
           <button
             className={`${styles.filterButton} ${
-              activeFilter === "completed" ? styles.active : ""
+              activeFilter === 'completed' ? styles.active : ''
             }`}
-            onClick={() => setActiveFilter("completed")}
+            onClick={() => setActiveFilter('completed')}
           >
             Completed
           </button>
@@ -203,10 +204,10 @@ const ConversationsList = () => {
             <div className={styles.emptyState}>
               <MessageSquare className={styles.emptyIcon} />
               <p className={styles.emptyText}>No conversations found</p>
-              {user.userType === "developer" && (
+              {user.userType === 'developer' && (
                 <button
                   className={styles.browseButton}
-                  onClick={() => navigate("/public-requests")}
+                  onClick={() => navigate('/public-requests')}
                 >
                   Browse Opportunities
                 </button>

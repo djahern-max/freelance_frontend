@@ -1,50 +1,51 @@
-import React, { useEffect } from "react";
+import { useEffect } from 'react';
+import { Provider, useDispatch } from 'react-redux';
 import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
   Navigate,
-} from "react-router-dom";
-import { Provider, useDispatch } from "react-redux";
-import { store } from "./redux/store";
-import { login } from "./redux/authSlice";
-import Header from "./components/shared/Header"; // Add Header import
-import Home from "./components/pages/HomePage";
-import Login from "./components/auth/Login";
-import Logout from "./components/auth/Logout";
-import Register from "./components/auth/Register";
-import PublicRequests from "./components/requests/PublicRequests";
-import VideoUpload from "./components/videos/VideoUpload";
-import Videos from "./components/dashboards/Videos";
-import ClientDashboard from "./components/dashboards/ClientDashboard";
-import DeveloperDashboard from "./components/dashboards/DeveloperDashboard";
-import ConversationsList from "./components/conversations/ConversationsList";
-import ConversationDetail from "./components/conversations/ConversationDetail";
-import RequestDetails from "./components/conversations/RequestDetails";
-import RequestResponses from "./components/conversations/RequestResponses";
-import AppDashboard from "./components/dashboards/AppDashboard";
-import Requests from "./components/requests/Request";
-import ProtectedRoute from "./components/common/ProtectedRoute";
-import CreateProject from "./components/projects/CreateProject";
-import ProjectDetails from "./components/projects/ProjectDetails";
-import api from "./utils/api";
-import "./styles/global.css";
+  Route,
+  BrowserRouter as Router,
+  Routes,
+} from 'react-router-dom';
+import Login from './components/auth/Login';
+import Logout from './components/auth/Logout';
+import Register from './components/auth/Register';
+import ProtectedRoute from './components/common/ProtectedRoute';
+import ConversationDetail from './components/conversations/ConversationDetail';
+import ConversationsList from './components/conversations/ConversationsList';
+import RequestDetails from './components/conversations/RequestDetails';
+import RequestResponses from './components/conversations/RequestResponses';
+import AppDashboard from './components/dashboards/AppDashboard';
+import ClientDashboard from './components/dashboards/ClientDashboard';
+import DeveloperDashboard from './components/dashboards/DeveloperDashboard';
+import Videos from './components/dashboards/Videos';
+import Home from './components/pages/HomePage';
+import CreateProject from './components/projects/CreateProject';
+import ProjectDetails from './components/projects/ProjectDetails';
+import PublicRequests from './components/requests/PublicRequests';
+import Requests from './components/requests/Request';
+import Settings from './components/settings/Settings';
+import Header from './components/shared/Header';
+import VideoUpload from './components/videos/VideoUpload';
+import { login } from './redux/authSlice';
+import { store } from './redux/store';
+import './styles/global.css';
+import api from './utils/api';
 
 function AppContent() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
 
     if (token) {
-      console.log("Checking auth with token:", token);
+      console.log('Checking auth with token:', token);
 
       api
-        .get("/auth/me", {
+        .get('/auth/me', {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => {
-          console.log("User data received:", response.data);
+          console.log('User data received:', response.data);
           dispatch(
             login({
               token,
@@ -61,19 +62,17 @@ function AppContent() {
           );
         })
         .catch((error) => {
-          console.error("Auth check failed:", error);
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
+          console.error('Auth check failed:', error);
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
         });
     }
   }, [dispatch]);
 
   return (
     <>
-      <Header /> {/* Add Header component here */}
+      <Header />
       <div className="app-content">
-        {" "}
-        {/* Add wrapper for content */}
         <Routes>
           {/* Public routes */}
           <Route path="/" element={<Home />} />
@@ -157,7 +156,8 @@ function AppContent() {
             }
           />
 
-          {/* Shared protected routes */}
+          {/* Shared routes */}
+
           <Route
             path="/conversations"
             element={
@@ -191,6 +191,15 @@ function AppContent() {
             }
           />
 
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <Settings />
+              </ProtectedRoute>
+            }
+          />
+
           {/* Dashboard redirect based on user type */}
           <Route
             path="/dashboard"
@@ -199,9 +208,9 @@ function AppContent() {
                 {({ user }) => (
                   <Navigate
                     to={
-                      user.userType === "client"
-                        ? "/client-dashboard"
-                        : "/developer-dashboard"
+                      user.userType === 'client'
+                        ? '/client-dashboard'
+                        : '/developer-dashboard'
                     }
                     replace
                   />

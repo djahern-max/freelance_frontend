@@ -1,6 +1,6 @@
 // HomeHeader.js
-import React from "react";
-import styles from "./HomeHeader.module.css";
+import React from 'react';
+import styles from './HomeHeader.module.css';
 
 const HomeHeader = () => {
   return (

@@ -1,269 +1,244 @@
-import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
-import axios from "axios";
+// DeveloperProfile.js
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import {
-  User,
-  Mail,
-  GitHub,
-  LinkedIn,
-  Briefcase,
-  Star,
-  Code,
-  DollarSign,
-} from "lucide-react";
-import Header from "../shared/Header";
-import styles from "./DeveloperProfile.module.css";
+  createDeveloperProfile,
+  fetchProfile,
+  updateDeveloperProfile,
+} from '../../redux/profileSlice';
+import styles from './DeveloperProfile.module.css';
 
 const DeveloperProfile = () => {
-  const [profile, setProfile] = useState(null);
-  const [stats, setStats] = useState({
-    completedProjects: 0,
-    activeProjects: 0,
-    averageRating: 0,
-  });
-  const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState(false);
-  const [formData, setFormData] = useState(null);
+  const dispatch = useDispatch();
+  const {
+    data: profile,
+    loading,
+    error,
+  } = useSelector((state) => state.profile);
 
-  const { token, user } = useSelector((state) => state.auth);
-  const apiUrl = process.env.REACT_APP_API_URL;
+  const [formData, setFormData] = useState({
+    skills: '',
+    experience_years: '',
+    hourly_rate: '',
+    github_url: '',
+    portfolio_url: '',
+    bio: '',
+  });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    fetchProfile();
-  }, []);
+    dispatch(fetchProfile());
+  }, [dispatch]);
 
-  const fetchProfile = async () => {
-    try {
-      const response = await axios.get(
-        `${apiUrl}/developers/${user.id}/profile`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setProfile(response.data);
-      setFormData(response.data);
-      setLoading(false);
-    } catch (err) {
-      console.error("Error fetching profile:", err);
-      setLoading(false);
+  useEffect(() => {
+    if (profile) {
+      setFormData({
+        skills: profile.skills || '',
+        experience_years: profile.experience_years || '',
+        hourly_rate: profile.hourly_rate || '',
+        github_url: profile.github_url || '',
+        portfolio_url: profile.portfolio_url || '',
+        bio: profile.bio || '',
+      });
     }
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  }, [profile]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+
     try {
-      await axios.put(`${apiUrl}/developers/${user.id}/profile`, formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setProfile(formData);
-      setEditing(false);
+      const processedData = {
+        ...formData,
+        experience_years: parseInt(formData.experience_years) || 0,
+        hourly_rate: parseInt(formData.hourly_rate) || 0,
+      };
+
+      const action = profile
+        ? await dispatch(updateDeveloperProfile(processedData))
+        : await dispatch(createDeveloperProfile(processedData));
+
+      if (action.type.endsWith('/fulfilled')) {
+        toast.success(
+          profile
+            ? 'Profile updated successfully!'
+            : 'Profile created successfully!'
+        );
+      } else {
+        toast.error(action.payload || 'Failed to save profile');
+      }
     } catch (err) {
-      console.error("Error updating profile:", err);
+      toast.error('Error saving profile');
+      console.error('Profile save error:', err);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const renderProfileForm = () => (
-    <form onSubmit={handleSubmit} className={styles.profileForm}>
-      <div className={styles.formGroup}>
-        <label>Skills</label>
-        <input
-          type="text"
-          name="skills"
-          value={formData.skills}
-          onChange={handleInputChange}
-          placeholder="e.g., Python, React, AI Development"
-        />
-      </div>
-
-      <div className={styles.formGroup}>
-        <label>Experience (years)</label>
-        <input
-          type="number"
-          name="experience_years"
-          value={formData.experience_years}
-          onChange={handleInputChange}
-        />
-      </div>
-
-      <div className={styles.formGroup}>
-        <label>Hourly Rate ($)</label>
-        <input
-          type="number"
-          name="hourly_rate"
-          value={formData.hourly_rate}
-          onChange={handleInputChange}
-        />
-      </div>
-
-      <div className={styles.formGroup}>
-        <label>GitHub URL</label>
-        <input
-          type="url"
-          name="github_url"
-          value={formData.github_url}
-          onChange={handleInputChange}
-        />
-      </div>
-
-      <div className={styles.formGroup}>
-        <label>LinkedIn URL</label>
-        <input
-          type="url"
-          name="linkedin_url"
-          value={formData.linkedin_url}
-          onChange={handleInputChange}
-        />
-      </div>
-
-      <div className={styles.formGroup}>
-        <label>Bio</label>
-        <textarea
-          name="bio"
-          value={formData.bio}
-          onChange={handleInputChange}
-          rows={4}
-        />
-      </div>
-
-      <div className={styles.formActions}>
-        <button type="submit" className={styles.saveButton}>
-          Save Changes
-        </button>
-        <button
-          type="button"
-          onClick={() => setEditing(false)}
-          className={styles.cancelButton}
-        >
-          Cancel
-        </button>
-      </div>
-    </form>
-  );
-
-  const renderProfile = () => (
-    <div className={styles.profileInfo}>
-      <div className={styles.profileHeader}>
-        <div className={styles.profileAvatar}>
-          <User size={48} />
-        </div>
-        <div className={styles.profileMeta}>
-          <h2>{user.username}</h2>
-          <p className={styles.subtitle}>Developer</p>
-        </div>
-        {user.id === profile.user_id && (
-          <button
-            onClick={() => setEditing(true)}
-            className={styles.editButton}
-          >
-            Edit Profile
-          </button>
-        )}
-      </div>
-
-      <div className={styles.statsGrid}>
-        <div className={styles.statCard}>
-          <Briefcase className={styles.statIcon} />
-          <div className={styles.statInfo}>
-            <span className={styles.statValue}>{stats.completedProjects}</span>
-            <span className={styles.statLabel}>Completed Projects</span>
-          </div>
-        </div>
-        <div className={styles.statCard}>
-          <Star className={styles.statIcon} />
-          <div className={styles.statInfo}>
-            <span className={styles.statValue}>{stats.averageRating}</span>
-            <span className={styles.statLabel}>Average Rating</span>
-          </div>
-        </div>
-        <div className={styles.statCard}>
-          <Code className={styles.statIcon} />
-          <div className={styles.statInfo}>
-            <span className={styles.statValue}>{profile.experience_years}</span>
-            <span className={styles.statLabel}>Years Experience</span>
-          </div>
-        </div>
-      </div>
-
-      <div className={styles.profileSection}>
-        <h3>Skills</h3>
-        <div className={styles.skillsList}>
-          {profile.skills.split(",").map((skill, index) => (
-            <span key={index} className={styles.skillTag}>
-              {skill.trim()}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      <div className={styles.profileSection}>
-        <h3>Rate</h3>
-        <p className={styles.rate}>
-          <DollarSign className={styles.icon} />${profile.hourly_rate}/hour
-        </p>
-      </div>
-
-      {profile.bio && (
-        <div className={styles.profileSection}>
-          <h3>About</h3>
-          <p className={styles.bio}>{profile.bio}</p>
-        </div>
-      )}
-
-      <div className={styles.profileSection}>
-        <h3>Connect</h3>
-        <div className={styles.socialLinks}>
-          {profile.github_url && (
-            <a
-              href={profile.github_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.socialLink}
-            >
-              <GitHub className={styles.icon} /> GitHub
-            </a>
-          )}
-          {profile.linkedin_url && (
-            <a
-              href={profile.linkedin_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.socialLink}
-            >
-              <LinkedIn className={styles.icon} /> LinkedIn
-            </a>
-          )}
-          <a href={`mailto:${profile.email}`} className={styles.socialLink}>
-            <Mail className={styles.icon} /> Email
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-
   if (loading) {
     return (
-      <div className={styles.container}>
-        <Header />
-        <div className={styles.loadingContainer}>
-          <div className={styles.loading}>Loading profile...</div>
-        </div>
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingSpinner}>Loading profile...</div>
       </div>
     );
   }
 
   return (
-    <div className={styles.container}>
-      <Header />
-      <div className={styles.content}>
-        {editing ? renderProfileForm() : renderProfile()}
+    <div className={styles.profileContainer}>
+      <div className={styles.card}>
+        <div className={styles.header}>
+          <h2 className={styles.title}>
+            {profile ? 'Update Your Profile' : 'Create Your Profile'}
+          </h2>
+          {profile && (
+            <div className={styles.profileStatus}>
+              <span className={styles.checkmark}>✓</span>
+              Profile created on{' '}
+              {new Date(profile.created_at).toLocaleDateString()}
+            </div>
+          )}
+        </div>
+
+        <form onSubmit={handleSubmit} className={styles.form}>
+          {error && (
+            <div className={styles.error}>
+              <div className={styles.errorContent}>
+                <span className={styles.errorIcon}>⚠️</span>
+                <p className={styles.errorMessage}>{error}</p>
+                <button
+                  type="button"
+                  className={styles.dismissError}
+                  onClick={() => dispatch({ type: 'profile/clearError' })}
+                  aria-label="Dismiss error"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className={styles.formGroup}>
+            <div className={styles.labelContainer}>
+              <label className={styles.label}>Skills</label>
+              <span className={styles.required}>*</span>
+            </div>
+            <input
+              type="text"
+              className={styles.input}
+              value={formData.skills}
+              onChange={(e) =>
+                setFormData({ ...formData, skills: e.target.value })
+              }
+              placeholder="Python, React, FastAPI..."
+              required
+            />
+            <span className={styles.helpText}>Separate skills with commas</span>
+          </div>
+
+          <div className={styles.grid}>
+            <div className={styles.formGroup}>
+              <div className={styles.labelContainer}>
+                <label className={styles.label}>Experience (years)</label>
+                <span className={styles.required}>*</span>
+              </div>
+              <input
+                type="number"
+                className={styles.input}
+                value={formData.experience_years}
+                onChange={(e) =>
+                  setFormData({ ...formData, experience_years: e.target.value })
+                }
+                min="0"
+                required
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <div className={styles.labelContainer}>
+                <label className={styles.label}>Hourly Rate ($)</label>
+                <span className={styles.required}>*</span>
+              </div>
+              <input
+                type="number"
+                className={styles.input}
+                value={formData.hourly_rate}
+                onChange={(e) =>
+                  setFormData({ ...formData, hourly_rate: e.target.value })
+                }
+                min="0"
+                required
+              />
+            </div>
+          </div>
+
+          <div className={styles.formGroup}>
+            <div className={styles.labelContainer}>
+              <label className={styles.label}>GitHub URL</label>
+            </div>
+            <input
+              type="url"
+              className={styles.input}
+              value={formData.github_url}
+              onChange={(e) =>
+                setFormData({ ...formData, github_url: e.target.value })
+              }
+              placeholder="https://github.com/username"
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <div className={styles.labelContainer}>
+              <label className={styles.label}>Portfolio URL</label>
+            </div>
+            <input
+              type="url"
+              className={styles.input}
+              value={formData.portfolio_url}
+              onChange={(e) =>
+                setFormData({ ...formData, portfolio_url: e.target.value })
+              }
+              placeholder="https://portfolio.dev"
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <div className={styles.labelContainer}>
+              <label className={styles.label}>Bio</label>
+              <span className={styles.required}>*</span>
+            </div>
+            <textarea
+              className={styles.textarea}
+              value={formData.bio}
+              onChange={(e) =>
+                setFormData({ ...formData, bio: e.target.value })
+              }
+              placeholder="Tell us about yourself..."
+              rows={4}
+              required
+            />
+            <span className={styles.helpText}>
+              Brief description of your experience and expertise
+            </span>
+          </div>
+
+          <div className={styles.formActions}>
+            <button
+              type="submit"
+              className={styles.saveButton}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <span className={styles.loadingText}>
+                  {profile ? 'Updating...' : 'Creating...'}
+                </span>
+              ) : (
+                <span>{profile ? 'Update Profile' : 'Create Profile'}</span>
+              )}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

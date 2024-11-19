@@ -1,5 +1,6 @@
 @import "../../styles/variables.module.css";
 
+/* General Layout */
 .container {
   min-height: 100vh;
   display: flex;
@@ -14,6 +15,8 @@
   margin-right: 320px; /* Sidebar width */
   transition: margin-right 0.3s ease-in-out;
 }
+
+/* Header */
 .header {
   height: 64px;
   display: flex;
@@ -48,11 +51,9 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: calc(100% - 40px);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
+/* Messages */
 .messagesContainer {
   flex: 1;
   overflow-y: auto;
@@ -108,6 +109,7 @@
   word-break: break-word;
 }
 
+/* Input */
 .inputContainer {
   position: fixed;
   bottom: 0;
@@ -125,11 +127,11 @@
 }
 
 .input {
-  flex: 1;
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: var(--spacing-sm);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   font-size: var(--font-size-base);
+  transition: border-color 0.2s ease;
 }
 
 .input:focus {
@@ -158,7 +160,7 @@
   cursor: not-allowed;
 }
 
-/* These existed before but I modified them */
+/* Sidebar */
 .sidebar {
   width: 320px;
   border-left: 1px solid var(--color-border);
@@ -173,159 +175,198 @@
   padding-top: 64px;
 }
 
-.sidebarSection {
-  padding: var(--spacing-lg);
-  border-bottom: 1px solid var(--color-border);
-  background-color: white; /* Added */
-  margin: var(--spacing-md); /* Added */
-  border-radius: var(--radius-lg); /* Added */
-  box-shadow: var(--shadow-sm); /* Added */
-}
-
-.sidebarTitle {
-  font-size: var(--font-size-lg);
-  font-weight: 600;
-  margin-bottom: var(--spacing-md);
-  color: var(--color-text-primary);
-  padding-bottom: var(--spacing-sm); /* Added */
-  border-bottom: 2px solid var(--color-primary); /* Added */
-  display: inline-block; /* Added */
-}
-
-.infoItem {
-  display: flex;
+/* Agreement Section */
+/* Base button styles */
+.buttonBase {
+  display: inline-flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  color: var(--color-text-secondary);
-  margin-bottom: var(--spacing-sm);
-  padding: var(--spacing-sm); /* Added */
-  border-radius: var(--radius-md); /* Added */
-  transition: background-color 0.2s ease; /* Added */
+  justify-content: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.actions {
+/* Primary button style */
+.primaryButton {
+  composes: buttonBase;
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+}
+
+.primaryButton:hover:not(:disabled) {
+  background-color: var(--color-primary-dark);
+}
+
+.primaryButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Secondary button style */
+.secondaryButton {
+  composes: buttonBase;
+  background-color: var(--color-secondary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+}
+
+.secondaryButton:hover {
+  background-color: var(--color-border);
+}
+
+/* Agreement section styles */
+.agreementSection {
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.existingAgreement {
   display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.existingAgreement h3 {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.agreementDetails {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.agreementDetails p {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+  margin: 0;
+}
+
+.agreementDetails strong {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+/* Form styles */
+.createAgreement {
+  width: 100%;
+}
+
+.agreementForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.agreementForm h3 {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.formGroup label {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.input {
+  padding: var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  transition: border-color 0.2s ease;
+}
+
+.textarea {
+  composes: input;
+  min-height: 120px;
+  resize: vertical;
+}
+
+.input:focus,
+.textarea:focus {
+  border-color: var(--color-primary);
+  outline: none;
+}
+
+/* Button group styles */
+.buttonGroup {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+}
+
+/* Specific button implementations */
+.submitButton {
+  composes: primaryButton;
+}
+
+.cancelButton {
+  composes: secondaryButton;
+}
+
+.createButton {
+  composes: secondaryButton;
+  width: 100%;
+  padding: var(--spacing-md);
+  font-size: var(--font-size-base);
   gap: var(--spacing-sm);
 }
 
 .acceptButton {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-sm) var(--spacing-md);
-  background-color: #dcfce7;
-  color: #166534;
-  border: none;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  font-weight: 500;
+  composes: primaryButton;
+  width: fit-content;
+  margin-top: var(--spacing-md);
 }
 
-.rejectButton {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-sm) var(--spacing-md);
-  background-color: #fee2e2;
-  color: #dc2626;
-  border: none;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.loadingContainer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  background-color: var(--color-background);
-}
-
-.loading {
-  color: var(--color-text-secondary);
-}
-
-/* New styles for request details */
-.requestDetails .infoItem {
-  background-color: #f8f9fa;
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--spacing-sm);
-}
-
-/* New participant styles */
-.participant {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm);
-  background-color: #f8f9fa;
-  border-radius: var(--radius-md);
-  margin-bottom: var(--spacing-sm);
-  transition: all 0.2s ease;
-}
-
-.participant:hover {
-  transform: translateX(4px);
-  background-color: #f0f7ff;
-}
-
-.participant svg {
-  color: var(--color-primary);
-  background-color: #e6f0ff;
-  padding: 4px;
-  border-radius: 50%;
-}
-
-/* Status indicator styles */
-.statusIndicator {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-sm);
-  font-weight: 500;
-  margin-top: var(--spacing-sm);
-}
-
-.statusIndicator.active {
-  background-color: #dcfce7;
-  color: #166534;
-}
-
-.statusIndicator.pending {
-  background-color: #fef3c7;
-  color: #92400e;
-}
-
-.statusIndicator.completed {
-  background-color: #e0e7ff;
-  color: #3730a3;
-}
-
-/* Loading placeholder animation */
-.loadingPlaceholder {
-  background: linear-gradient(90deg, #f0f0f0 25%, #f8f8f8 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  animation: loading 1.5s infinite;
-  border-radius: var(--radius-md);
-  height: 20px;
-  margin-bottom: var(--spacing-sm);
-}
-
-@keyframes loading {
-  0% {
-    background-position: 200% 0;
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .agreementSection {
+    padding: var(--spacing-md);
   }
-  100% {
-    background-position: -200% 0;
+
+  .buttonGroup {
+    flex-direction: column;
+  }
+
+  .buttonGroup button {
+    width: 100%;
   }
 }
+
 
 /* Mobile sidebar toggle */
 @media (max-width: 768px) {
+
+  .agreementSection {
+    padding: var(--spacing-md);
+  }
+
+  .buttonGroup {
+    flex-direction: column;
+  }
+
+  .buttonGroup button {
+    width: 100%;
+  }
+
   .sidebarToggle {
     position: absolute;
     bottom: 20px;

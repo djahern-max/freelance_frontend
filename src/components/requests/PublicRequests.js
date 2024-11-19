@@ -1,18 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
-import { useNavigate, useLocation } from "react-router-dom";
-import {
-  MessageSquare,
-  Users,
-  Clock,
-  Tag,
-  DollarSign,
-  Loader,
-} from "lucide-react";
-import Header from "../shared/Header";
-import AuthDialog from "../auth/AuthDialog";
-import api from "../../utils/api";
-import styles from "./PublicRequests.module.css";
+import { Clock, Loader, MessageSquare, Users } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useLocation, useNavigate } from 'react-router-dom';
+import api from '../../utils/api';
+import AuthDialog from '../auth/AuthDialog';
+import Header from '../shared/Header';
+import styles from './PublicRequests.module.css';
 
 const PublicRequests = () => {
   const [publicRequests, setPublicRequests] = useState([]);
@@ -34,11 +27,11 @@ const PublicRequests = () => {
       setLoading(true);
       setError(null);
 
-      const requestsResponse = await api.get("/requests/public");
-      console.log("Public requests:", requestsResponse.data);
+      const requestsResponse = await api.get('/requests/public');
+      console.log('Public requests:', requestsResponse.data);
 
       if (isAuthenticated) {
-        const conversationsResponse = await api.get("/conversations/user/list");
+        const conversationsResponse = await api.get('/conversations/user/list');
         const conversationCounts = conversationsResponse.data.reduce(
           (acc, conv) => {
             acc[conv.request_id] = (acc[conv.request_id] || 0) + 1;
@@ -51,8 +44,8 @@ const PublicRequests = () => {
 
       setPublicRequests(requestsResponse.data);
     } catch (err) {
-      console.error("Error fetching data:", err);
-      setError(err.response?.data?.detail || "Failed to fetch requests.");
+      console.error('Error fetching data:', err);
+      setError(err.response?.data?.detail || 'Failed to fetch requests.');
     } finally {
       setLoading(false);
     }
@@ -72,22 +65,22 @@ const PublicRequests = () => {
       return;
     }
 
-    if (user?.userType !== "developer") {
-      setError("Only developers can respond to requests");
+    if (user?.userType !== 'developer') {
+      setError('Only developers can respond to requests');
       return;
     }
 
     try {
       setLoading(true);
-      const response = await api.post("/conversations/", {
+      const response = await api.post('/conversations/', {
         request_id: request.id,
         message: "I'm interested in helping with your project",
       });
 
       navigate(`/conversations/${response.data.id}`);
     } catch (err) {
-      console.error("Error starting conversation:", err);
-      setError(err.response?.data?.detail || "Failed to start conversation");
+      console.error('Error starting conversation:', err);
+      setError(err.response?.data?.detail || 'Failed to start conversation');
     } finally {
       setLoading(false);
     }
@@ -115,10 +108,8 @@ const PublicRequests = () => {
       <main className={styles.mainContent}>
         <div className={styles.headerContainer}>
           <h1 className={styles.title}>Available Projects</h1>
-          {isAuthenticated && user?.userType === "developer" && (
-            <p className={styles.subtitle}>
-              Browse and respond to client projects that match your expertise
-            </p>
+          {isAuthenticated && user?.userType === 'developer' && (
+            <p className={styles.subtitle}></p>
           )}
         </div>
 
@@ -146,10 +137,10 @@ const PublicRequests = () => {
                 Sign Up to Create a Project
               </button>
             ) : (
-              user?.userType === "client" && (
+              user?.userType === 'client' && (
                 <button
                   className={styles.buttonPrimary}
-                  onClick={() => navigate("/create-request")}
+                  onClick={() => navigate('/create-request')}
                 >
                   Create Your First Project
                 </button>
@@ -237,7 +228,7 @@ const PublicRequests = () => {
                     >
                       Sign In to Respond
                     </button>
-                  ) : user?.userType === "developer" ? (
+                  ) : user?.userType === 'developer' ? (
                     <button
                       className={styles.buttonPrimary}
                       onClick={() => handleStartConversation(request)}
@@ -249,7 +240,7 @@ const PublicRequests = () => {
                           <span>Please wait...</span>
                         </>
                       ) : (
-                        "Respond to Request"
+                        'Respond to Request'
                       )}
                     </button>
                   ) : (
@@ -273,7 +264,7 @@ const PublicRequests = () => {
             setSelectedRequest(null);
           }}
           onLogin={() =>
-            navigate("/login", {
+            navigate('/login', {
               state: {
                 from: location.pathname,
                 requestId: selectedRequest?.id,
@@ -281,7 +272,7 @@ const PublicRequests = () => {
             })
           }
           onRegister={() =>
-            navigate("/register", {
+            navigate('/register', {
               state: {
                 from: location.pathname,
                 requestId: selectedRequest?.id,

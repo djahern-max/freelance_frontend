@@ -1,20 +1,30 @@
-import React from "react";
-import HomeHeader from "../../../src/components/shared/HomeHeader";
+import { useSelector } from 'react-redux';
+import { selectIsAuthenticated, selectUser } from '../../redux/authSlice';
+import ClientDashboard from '../dashboards/ClientDashboard';
+import DeveloperDashboard from '../dashboards/DeveloperDashboard';
+import Features from '../shared/Features';
 
-import Features from "../../../src/components/shared/Features";
+function HomePage() {
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const user = useSelector(selectUser);
+  const userType = user?.user_type;
 
-import "../../../src/global.css";
+  // Only show dashboard content if user is authenticated
+  if (isAuthenticated) {
+    return (
+      <div className="authenticated-container">
+        {userType === 'developer' && <DeveloperDashboard />}
+        {userType === 'client' && <ClientDashboard />}
+      </div>
+    );
+  }
 
-const Homepage = () => {
+  // Public landing page without profile prompt
   return (
-    <div>
-      <HomeHeader />
-      {/* <Hero /> */}
+    <main className="landing-container" style={{ marginTop: '0' }}>
       <Features />
-      {/* <EmailSignup />
-      <Footer /> */}
-    </div>
+    </main>
   );
-};
+}
 
-export default Homepage;
+export default HomePage;

@@ -231,3 +231,9 @@
   border-radius: 4px;
   margin-bottom: 1rem;
 }
+
+@media (max-width: 640px) {
+  .browseButton {
+    display: none !important;
+  }
+}
