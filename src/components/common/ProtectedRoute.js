@@ -1,27 +1,28 @@
 // src/components/common/ProtectedRoute.js
-import React, { useEffect } from "react"; // Added React and useEffect
-import { useSelector } from "react-redux"; // Added useSelector
-import { useNavigate } from "react-router-dom"; // Added useNavigate
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 const ProtectedRoute = ({ userType, children }) => {
   const auth = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
-  console.log("Protected Route - User Type Required:", userType);
-  console.log("Protected Route - Current User:", auth.user);
-
   useEffect(() => {
     if (!auth.token) {
-      navigate("/login");
-    } else if (userType && auth.user?.userType !== userType) {
-      console.log("User type mismatch:", {
-        required: userType,
-        current: auth.user?.userType,
-      });
+      navigate('/login');
+      return;
+    }
+
+    // Only redirect for dashboard-specific routes
+    if (
+      userType &&
+      (userType === 'client' || userType === 'developer') &&
+      auth.user?.userType !== userType
+    ) {
       navigate(
-        auth.user?.userType === "client"
-          ? "/client-dashboard"
-          : "/developer-dashboard"
+        auth.user?.userType === 'client'
+          ? '/client-dashboard'
+          : '/developer-dashboard'
       );
     }
   }, [auth, userType, navigate]);

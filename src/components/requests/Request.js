@@ -1,17 +1,17 @@
-import React, { useState, useEffect, useCallback } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { login, logout } from "../../redux/authSlice";
-import RequestSharing from "./RequestSharing";
-import CommandDisplay from "../shared/CommandDisplay";
-import styles from "./Request.module.css";
-import Header from "../shared/Header";
-import ConversationNotifications from "../conversations/ConversationNotification";
+import axios from 'axios';
+import { useCallback, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { login, logout } from '../../redux/authSlice';
+import ConversationNotifications from '../conversations/ConversationNotification';
+import CommandDisplay from '../shared/CommandDisplay';
+import Header from '../shared/Header';
+import styles from './Request.module.css';
+import RequestSharing from './RequestSharing';
 
 // Import images
-import edit from "../../images/Notes.png";
-import del from "../../images/Delete.png";
+import del from '../../images/Delete.png';
+import edit from '../../images/Notes.png';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -26,31 +26,31 @@ const Request = () => {
   const [selectedProject, setSelectedProject] = useState(null);
   const [projectId, setProjectId] = useState(null);
 
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
   const [isPublic, setIsPublic] = useState(false);
 
   const [editMode, setEditMode] = useState(false);
   const [editRequestId, setEditRequestId] = useState(null);
 
-  const [estimatedBudget, setEstimatedBudget] = useState("");
+  const [estimatedBudget, setEstimatedBudget] = useState('');
 
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogout = useCallback(() => {
-    localStorage.removeItem("authToken");
+    localStorage.removeItem('authToken');
     dispatch(logout());
-    navigate("/");
+    navigate('/');
   }, [dispatch, navigate]);
 
   const handleError = useCallback(
     (error) => {
       if (error.response?.status === 401) {
-        setError("Unauthorized. Please log in again.");
+        setError('Unauthorized. Please log in again.');
         handleLogout();
       } else {
-        setError("An error occurred. Please try again.");
+        setError('An error occurred. Please try again.');
       }
     },
     [handleLogout]
@@ -67,7 +67,7 @@ const Request = () => {
         });
         setRequests(response.data);
       } catch (error) {
-        console.error("Error fetching requests:", error);
+        console.error('Error fetching requests:', error);
         handleError(error);
       } finally {
         setIsLoading(false);
@@ -85,7 +85,7 @@ const Request = () => {
           });
           dispatch(login({ username: response.data.username, token }));
         } catch (error) {
-          console.error("Token validation failed", error);
+          console.error('Token validation failed', error);
           dispatch(logout());
         }
       }
@@ -105,7 +105,7 @@ const Request = () => {
           );
           setSharedRequests(response.data);
         } catch (error) {
-          console.error("Failed to fetch shared requests:", error);
+          console.error('Failed to fetch shared requests:', error);
         }
       }
     };
@@ -121,7 +121,7 @@ const Request = () => {
           });
           setProjects(response.data);
         } catch (error) {
-          console.error("Failed to fetch projects");
+          console.error('Failed to fetch projects');
         }
       }
     };
@@ -141,7 +141,7 @@ const Request = () => {
     setContent(request.content);
     setProjectId(request.project_id);
     setIsPublic(request.is_public);
-    setEstimatedBudget(request.estimated_budget || "");
+    setEstimatedBudget(request.estimated_budget || '');
   };
 
   const selectProject = (project) => {
@@ -164,13 +164,13 @@ const Request = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
         }
       );
-      setTitle("");
-      setContent("");
-      setEstimatedBudget("");
+      setTitle('');
+      setContent('');
+      setEstimatedBudget('');
       fetchRequests(projectId);
     } catch (error) {
       handleError(error);
@@ -191,15 +191,15 @@ const Request = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
         }
       );
       setEditMode(false);
       setEditRequestId(null);
-      setTitle("");
-      setContent("");
-      setEstimatedBudget("");
+      setTitle('');
+      setContent('');
+      setEstimatedBudget('');
       fetchRequests(projectId);
     } catch (error) {
       handleError(error);
@@ -234,7 +234,7 @@ const Request = () => {
     } catch (error) {
       if (error.response?.status === 400) {
         setError(
-          "This project contains requests. Please delete all requests within the project before deleting the project."
+          'This project contains requests. Please delete all requests within the project before deleting the project.'
         );
       } else {
         handleError(error);
@@ -254,7 +254,7 @@ const Request = () => {
       );
       fetchRequests(projectId); // Refresh the requests list if needed
     } catch (error) {
-      console.error("Error toggling request privacy:", error);
+      console.error('Error toggling request privacy:', error);
     }
   };
 
@@ -262,7 +262,7 @@ const Request = () => {
     <div className={styles.sidebar}>
       <button
         className={styles.createProjectButton}
-        onClick={() => navigate("/create-project")}
+        onClick={() => navigate('/create-project')}
       >
         Create Project
       </button>
@@ -318,7 +318,7 @@ const Request = () => {
               >
                 <span className={styles.requestTitle}>{request.title}</span>
                 <div className={styles.sharedByText}>
-                  Shared by: {request.owner_username || "Unknown"}
+                  Shared by: {request.owner_username || 'Unknown'}
                 </div>
               </a>
             </li>
@@ -361,10 +361,10 @@ const Request = () => {
       ) : (
         <p>
           {selectedProject
-            ? "Add a request"
+            ? 'Add a request'
             : projects.length > 0
-            ? "Please make your selection from the menu or create a new project."
-            : "No requests available yet."}
+            ? 'Please make your selection from the menu or create a new project.'
+            : 'No requests available yet.'}
         </p>
       )}
     </ul>
@@ -381,7 +381,7 @@ const Request = () => {
           <div className={styles.dropdown}>
             <select
               className={styles.selectField}
-              value={projectId || ""}
+              value={projectId || ''}
               onChange={(e) =>
                 selectProject(
                   projects.find((p) => p.id === parseInt(e.target.value))
@@ -398,7 +398,7 @@ const Request = () => {
             {/* Place the button here */}
             <button
               className={styles.createProjectButton}
-              onClick={() => navigate("/create-project")}
+              onClick={() => navigate('/create-project')}
             >
               Create Project
             </button>
@@ -433,7 +433,7 @@ const Request = () => {
               placeholder="Estimated Budget ($)"
             />
             <button type="submit" className={styles.addRequestButton}>
-              {editMode ? "Update Request" : "Add Request"}
+              {editMode ? 'Update Request' : 'Add Request'}
             </button>
           </form>
 

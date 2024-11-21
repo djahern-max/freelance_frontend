@@ -1,5 +1,11 @@
-// src/components/shared/Header.js
-import { FileText, Grid, LogOut, Search, Settings, Video } from 'lucide-react';
+import {
+  Layers,
+  LayoutDashboard,
+  LogOut,
+  Search,
+  Settings,
+  Video,
+} from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { logout } from '../../redux/authSlice';
@@ -8,45 +14,49 @@ import styles from './Header.module.css';
 const Header = () => {
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const userType = useSelector((state) => state.auth.userType);
   const navigate = useNavigate();
   const location = useLocation();
 
-  const pages = [
-    {
-      path: '/public-requests',
-      icon: Search,
-      title: 'Open Requests',
-    },
-    {
-      path: '/requests',
-      icon: FileText,
-      title: 'Create Request',
-    },
-    {
-      path: '/videos',
-      icon: Video,
-      title: 'Videos',
-    },
-    {
-      path: '/app-dashboard',
-      icon: Grid,
-      title: 'Applications',
-    },
-    // Add Settings as part of the pages array
-    {
-      path: '/settings',
-      icon: Settings,
-      title: 'Settings',
-      authRequired: true, // Only show for authenticated users
-    },
-  ];
+  const getPages = () => {
+    const pages = [
+      {
+        path: '/public-requests',
+        icon: Search,
+        title: 'Public Requests',
+      },
+      {
+        path: userType === 'client' ? '/requests' : '/developer-dashboard',
+        icon: LayoutDashboard,
+        title: 'Dashboard',
+      },
+      {
+        path: '/videos',
+        icon: Video,
+        title: 'Videos',
+      },
+      {
+        path: '/app-dashboard',
+        icon: Layers,
+        title: 'Applications',
+      },
+      {
+        path: '/settings',
+        icon: Settings,
+        title: 'Settings',
+        authRequired: true,
+      },
+    ];
+
+    return pages;
+  };
 
   const handleNavigation = (path) => {
     if (!isAuthenticated && path !== '/public-requests') {
       navigate('/login', { state: { from: path } });
-    } else {
-      navigate(path);
+      return;
     }
+    navigate(path);
   };
 
   const handleLogout = () => {
@@ -63,9 +73,8 @@ const Header = () => {
           <h1 className={styles.headerTitle}>RYZE.ai</h1>
         ) : (
           <>
-            {pages.map(
+            {getPages().map(
               (page) =>
-                // Only show settings icon if user is authenticated and page requires auth
                 (!page.authRequired ||
                   (page.authRequired && isAuthenticated)) && (
                   <div

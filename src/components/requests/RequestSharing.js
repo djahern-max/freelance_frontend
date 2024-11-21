@@ -1,6 +1,4 @@
-// RequestSharing.js
-import { Globe, Lock, Search, UserPlus, Users, X } from 'lucide-react';
-
+import { XCircle } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import styles from './RequestSharing.module.css';
 
@@ -10,7 +8,7 @@ const RequestSharing = ({
   apiUrl,
   onShareComplete,
   request,
-  toggleRequestPrivacy,
+  toggleRequestPrivacy, // Ensure this is only used as a prop
 }) => {
   const [shareUsername, setShareUsername] = useState('');
   const [suggestions, setSuggestions] = useState([]);
@@ -62,7 +60,6 @@ const RequestSharing = ({
   const handleInputChange = (e) => {
     const value = e.target.value;
     setShareUsername(value);
-    setError('');
 
     if (value.includes('@')) {
       searchUsers(value);
@@ -181,40 +178,17 @@ const RequestSharing = ({
 
   return (
     <div className={styles.shareContainer}>
-      <div className={styles.shareHeader}>
-        <div className={styles.shareTitle}>
-          <Users size={16} className={styles.titleIcon} />
-          <span>Share Request</span>
-        </div>
-        <button
-          className={styles.privacyToggle}
-          onClick={() => toggleRequestPrivacy(request.id, request.is_public)}
-        >
-          {request.is_public ? (
-            <>
-              <Globe size={16} />
-              <span>Public</span>
-            </>
-          ) : (
-            <>
-              <Lock size={16} />
-              <span>Private</span>
-            </>
-          )}
-        </button>
-      </div>
-
       <div className={styles.shareControls}>
         <div className={styles.inputWrapper}>
-          <Search size={16} className={styles.searchIcon} />
           <input
             ref={inputRef}
             type="text"
             className={styles.shareInput}
             value={shareUsername}
             onChange={handleInputChange}
-            placeholder="Type @ to search users..."
+            placeholder="@username to share with"
           />
+
           {showSuggestions && suggestions.length > 0 && (
             <div ref={suggestionsRef} className={styles.suggestionsDropdown}>
               {suggestions.map((user) => (
@@ -223,8 +197,7 @@ const RequestSharing = ({
                   className={styles.suggestionItem}
                   onClick={() => handleSuggestionClick(user.username)}
                 >
-                  <Users size={14} />
-                  <span>@{user.username}</span>
+                  @{user.username}
                 </div>
               ))}
             </div>
@@ -234,38 +207,38 @@ const RequestSharing = ({
         <button
           className={styles.shareButton}
           onClick={handleShare}
-          disabled={isLoading || !shareUsername.trim()}
+          disabled={isLoading}
         >
-          <UserPlus size={16} />
-          <span>{isLoading ? 'Sharing...' : 'Share'}</span>
+          {isLoading ? 'Sharing...' : 'Share'}
         </button>
+
+        <label className={styles.toggleSwitch}>
+          <input
+            type="checkbox"
+            checked={request.is_public}
+            onChange={() => toggleRequestPrivacy(request.id, request.is_public)}
+          />
+          <span className={styles.slider}></span>
+        </label>
+        <span className={styles.privacyStatus}>
+          {request.is_public ? 'Public' : 'Not Public'}
+        </span>
       </div>
 
-      {error && (
-        <div className={styles.error}>
-          <X size={14} />
-          <span>{error}</span>
-        </div>
-      )}
+      {error && <div className={styles.error}>{error}</div>}
 
-      {sharedUsers.length > 0 && (
+      {sharedUsers && sharedUsers.length > 0 && (
         <div className={styles.sharedWithSection}>
-          <div className={styles.sharedWithTitle}>
-            <Users size={14} />
-            <span>Shared with</span>
-          </div>
+          <div className={styles.sharedWithTitle}>Shared with:</div>
           <div className={styles.sharedUsersList}>
             {sharedUsers.map((user) => (
-              <div key={user.id} className={styles.sharedUser}>
+              <span key={user.id} className={styles.sharedUser}>
                 <span className={styles.username}>@{user.username}</span>
-                <button
-                  className={styles.removeButton}
+                <XCircle
+                  className={styles.removeIcon}
                   onClick={() => removeShare(user.id)}
-                  title="Remove share"
-                >
-                  <X size={14} />
-                </button>
-              </div>
+                />
+              </span>
             ))}
           </div>
         </div>

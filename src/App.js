@@ -108,7 +108,7 @@ function AppContent() {
           <Route
             path="/requests"
             element={
-              <ProtectedRoute userType="client">
+              <ProtectedRoute>
                 <Requests />
               </ProtectedRoute>
             }
@@ -126,7 +126,7 @@ function AppContent() {
           <Route
             path="/public-requests"
             element={
-              <ProtectedRoute userType="developer">
+              <ProtectedRoute>
                 <PublicRequests />
               </ProtectedRoute>
             }
@@ -134,7 +134,7 @@ function AppContent() {
           <Route
             path="/app-dashboard"
             element={
-              <ProtectedRoute userType="developer">
+              <ProtectedRoute>
                 <AppDashboard />
               </ProtectedRoute>
             }
@@ -142,7 +142,7 @@ function AppContent() {
           <Route
             path="/videos"
             element={
-              <ProtectedRoute userType="developer">
+              <ProtectedRoute>
                 <Videos />
               </ProtectedRoute>
             }
@@ -150,7 +150,7 @@ function AppContent() {
           <Route
             path="/video-upload"
             element={
-              <ProtectedRoute userType="developer">
+              <ProtectedRoute>
                 <VideoUpload />
               </ProtectedRoute>
             }
