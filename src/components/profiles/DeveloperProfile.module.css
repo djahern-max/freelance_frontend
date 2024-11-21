@@ -1,31 +1,28 @@
-/* DeveloperProfile.module.css */
+/* DeveloperProfile.module.css and ClientProfile.module.css */
 .profileContainer {
-  min-height: calc(100vh - 64px);
-  background-color: var(--color-secondary);
-  padding: var(--spacing-lg) var(--spacing-md);
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--spacing-md);
 }
 
 .card {
-  max-width: 800px;
-  margin: 0 auto;
   background-color: var(--color-background);
   border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
   box-shadow: var(--shadow-md);
   border: 1px solid var(--color-border);
-  overflow: hidden;
 }
 
 .header {
-  padding: var(--spacing-xl) var(--spacing-xl) var(--spacing-lg);
-  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--spacing-lg);
   text-align: center;
 }
 
 .title {
   font-size: var(--font-size-xl);
-  font-weight: 600;
   color: var(--color-text-primary);
   margin-bottom: var(--spacing-sm);
+  font-weight: 600;
 }
 
 .profileStatus {
@@ -45,18 +42,28 @@
 }
 
 .form {
-  padding: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--spacing-md);
 }
 
 .formGroup {
-  margin-bottom: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
 }
 
 .labelContainer {
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
-  margin-bottom: var(--spacing-xs);
 }
 
 .label {
@@ -71,42 +78,47 @@
 }
 
 .helpText {
-  display: block;
   font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
   margin-top: var(--spacing-xs);
 }
 
-.input {
+.input,
+.select,
+.textarea {
   width: 100%;
   padding: var(--spacing-sm);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   font-size: var(--font-size-base);
   transition: all 0.2s ease;
+  background-color: var(--color-background);
 }
 
-.input:focus {
+.select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
 }
 
 .textarea {
-  composes: input;
   min-height: 120px;
   resize: vertical;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--spacing-lg);
-}
-
 .error {
   animation: slideIn 0.3s ease-out;
-  margin-bottom: var(--spacing-lg);
 }
 
 .errorContent {
@@ -130,31 +142,16 @@
   font-size: var(--font-size-sm);
 }
 
-.dismissError {
-  background: none;
-  border: none;
-  color: currentColor;
-  cursor: pointer;
-  font-size: 1.25rem;
-  padding: 0 var(--spacing-xs);
-  opacity: 0.7;
-  transition: opacity 0.2s;
-}
-
-.dismissError:hover {
-  opacity: 1;
-}
-
 .formActions {
-  margin-top: var(--spacing-xl);
   display: flex;
   justify-content: flex-end;
+  margin-top: var(--spacing-lg);
 }
 
 .saveButton {
   background-color: var(--color-primary);
   color: white;
-  padding: var(--spacing-sm) var(--spacing-xl);
+  padding: var(--spacing-sm) var(--spacing-lg);
   border: none;
   border-radius: var(--radius-md);
   font-size: var(--font-size-base);
@@ -203,18 +200,10 @@
 
 @media (max-width: 640px) {
   .card {
-    border-radius: 0;
+    padding: var(--spacing-md);
   }
   
   .grid {
     grid-template-columns: 1fr;
-  }
-  
-  .form {
-    padding: var(--spacing-md);
-  }
-  
-  .header {
-    padding: var(--spacing-lg) var(--spacing-md);
   }
 }

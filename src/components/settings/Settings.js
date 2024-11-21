@@ -1,4 +1,3 @@
-// src/components/settings/Settings.js
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { selectUserType } from '../../redux/authSlice';
@@ -30,7 +29,7 @@ const Settings = () => {
 
       <div className={styles.content}>
         {activeTab === 'profile' && (
-          <div className={styles.profileSection}>
+          <>
             {userType === 'developer' ? (
               <DeveloperProfile />
             ) : userType === 'client' ? (
@@ -40,7 +39,7 @@ const Settings = () => {
                 Please select a user type to set up your profile
               </div>
             )}
-          </div>
+          </>
         )}
       </div>
     </div>

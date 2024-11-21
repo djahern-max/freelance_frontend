@@ -1,4 +1,3 @@
-// DeveloperProfile.js
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -7,7 +6,26 @@ import {
   fetchProfile,
   updateDeveloperProfile,
 } from '../../redux/profileSlice';
+import UrlInput from '../common/UrlInput';
 import styles from './DeveloperProfile.module.css';
+
+const DEFAULT_VALUES = {
+  skills: '',
+  experience_years: '',
+  hourly_rate: '',
+  github_url: '',
+  portfolio_url: '',
+  bio: '',
+};
+
+const PLACEHOLDERS = {
+  skills: 'Python, React, FastAPI...',
+  experience_years: '0',
+  hourly_rate: '0',
+  github_url: 'https://github.com/username',
+  portfolio_url: 'https://portfolio.dev',
+  bio: 'Tell us about your experience and expertise...',
+};
 
 const DeveloperProfile = () => {
   const dispatch = useDispatch();
@@ -16,31 +34,27 @@ const DeveloperProfile = () => {
     loading,
     error,
   } = useSelector((state) => state.profile);
-
-  const [formData, setFormData] = useState({
-    skills: '',
-    experience_years: '',
-    hourly_rate: '',
-    github_url: '',
-    portfolio_url: '',
-    bio: '',
-  });
-
+  const [formData, setFormData] = useState(DEFAULT_VALUES);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGithubUrlValid, setIsGithubUrlValid] = useState(true);
+  const [isPortfolioUrlValid, setIsPortfolioUrlValid] = useState(true);
 
+  // Fetch profile data on component mount
   useEffect(() => {
     dispatch(fetchProfile());
   }, [dispatch]);
 
+  // Update form when profile data is loaded
   useEffect(() => {
-    if (profile) {
+    if (profile?.developer_profile) {
+      const profileData = profile.developer_profile;
       setFormData({
-        skills: profile.skills || '',
-        experience_years: profile.experience_years || '',
-        hourly_rate: profile.hourly_rate || '',
-        github_url: profile.github_url || '',
-        portfolio_url: profile.portfolio_url || '',
-        bio: profile.bio || '',
+        skills: profileData.skills || '',
+        experience_years: profileData.experience_years?.toString() || '',
+        hourly_rate: profileData.hourly_rate?.toString() || '',
+        github_url: profileData.github_url || '',
+        portfolio_url: profileData.portfolio_url || '',
+        bio: profileData.bio || '',
       });
     }
   }, [profile]);
@@ -50,19 +64,28 @@ const DeveloperProfile = () => {
     setIsSubmitting(true);
 
     try {
+      // Only validate URLs if they're not empty
+      if (
+        (formData.github_url && !isGithubUrlValid) ||
+        (formData.portfolio_url && !isPortfolioUrlValid)
+      ) {
+        toast.error('Please ensure all URLs are valid');
+        return;
+      }
+
       const processedData = {
         ...formData,
         experience_years: parseInt(formData.experience_years) || 0,
         hourly_rate: parseInt(formData.hourly_rate) || 0,
       };
 
-      const action = profile
+      const action = profile?.developer_profile
         ? await dispatch(updateDeveloperProfile(processedData))
         : await dispatch(createDeveloperProfile(processedData));
 
       if (action.type.endsWith('/fulfilled')) {
         toast.success(
-          profile
+          profile?.developer_profile
             ? 'Profile updated successfully!'
             : 'Profile created successfully!'
         );
@@ -85,18 +108,22 @@ const DeveloperProfile = () => {
     );
   }
 
+  const hasProfile = !!profile?.developer_profile;
+
   return (
     <div className={styles.profileContainer}>
       <div className={styles.card}>
         <div className={styles.header}>
           <h2 className={styles.title}>
-            {profile ? 'Update Your Profile' : 'Create Your Profile'}
+            {hasProfile ? 'Update Your Profile' : 'Create Your Profile'}
           </h2>
-          {profile && (
+          {hasProfile && (
             <div className={styles.profileStatus}>
               <span className={styles.checkmark}>✓</span>
               Profile created on{' '}
-              {new Date(profile.created_at).toLocaleDateString()}
+              {new Date(
+                profile.developer_profile.created_at
+              ).toLocaleDateString()}
             </div>
           )}
         </div>
@@ -107,14 +134,6 @@ const DeveloperProfile = () => {
               <div className={styles.errorContent}>
                 <span className={styles.errorIcon}>⚠️</span>
                 <p className={styles.errorMessage}>{error}</p>
-                <button
-                  type="button"
-                  className={styles.dismissError}
-                  onClick={() => dispatch({ type: 'profile/clearError' })}
-                  aria-label="Dismiss error"
-                >
-                  ×
-                </button>
               </div>
             </div>
           )}
@@ -131,7 +150,7 @@ const DeveloperProfile = () => {
               onChange={(e) =>
                 setFormData({ ...formData, skills: e.target.value })
               }
-              placeholder="Python, React, FastAPI..."
+              placeholder={PLACEHOLDERS.skills}
               required
             />
             <span className={styles.helpText}>Separate skills with commas</span>
@@ -150,6 +169,7 @@ const DeveloperProfile = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, experience_years: e.target.value })
                 }
+                placeholder={PLACEHOLDERS.experience_years}
                 min="0"
                 required
               />
@@ -167,41 +187,32 @@ const DeveloperProfile = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, hourly_rate: e.target.value })
                 }
+                placeholder={PLACEHOLDERS.hourly_rate}
                 min="0"
                 required
               />
             </div>
           </div>
 
-          <div className={styles.formGroup}>
-            <div className={styles.labelContainer}>
-              <label className={styles.label}>GitHub URL</label>
-            </div>
-            <input
-              type="url"
-              className={styles.input}
-              value={formData.github_url}
-              onChange={(e) =>
-                setFormData({ ...formData, github_url: e.target.value })
-              }
-              placeholder="https://github.com/username"
-            />
-          </div>
+          <UrlInput
+            label="GitHub URL"
+            value={formData.github_url}
+            onChange={(value) =>
+              setFormData((prev) => ({ ...prev, github_url: value }))
+            }
+            onValidation={setIsGithubUrlValid}
+            placeholder={PLACEHOLDERS.github_url}
+          />
 
-          <div className={styles.formGroup}>
-            <div className={styles.labelContainer}>
-              <label className={styles.label}>Portfolio URL</label>
-            </div>
-            <input
-              type="url"
-              className={styles.input}
-              value={formData.portfolio_url}
-              onChange={(e) =>
-                setFormData({ ...formData, portfolio_url: e.target.value })
-              }
-              placeholder="https://portfolio.dev"
-            />
-          </div>
+          <UrlInput
+            label="Portfolio URL"
+            value={formData.portfolio_url}
+            onChange={(value) =>
+              setFormData((prev) => ({ ...prev, portfolio_url: value }))
+            }
+            onValidation={setIsPortfolioUrlValid}
+            placeholder={PLACEHOLDERS.portfolio_url}
+          />
 
           <div className={styles.formGroup}>
             <div className={styles.labelContainer}>
@@ -214,13 +225,10 @@ const DeveloperProfile = () => {
               onChange={(e) =>
                 setFormData({ ...formData, bio: e.target.value })
               }
-              placeholder="Tell us about yourself..."
+              placeholder={PLACEHOLDERS.bio}
               rows={4}
               required
             />
-            <span className={styles.helpText}>
-              Brief description of your experience and expertise
-            </span>
           </div>
 
           <div className={styles.formActions}>
@@ -231,10 +239,10 @@ const DeveloperProfile = () => {
             >
               {isSubmitting ? (
                 <span className={styles.loadingText}>
-                  {profile ? 'Updating...' : 'Creating...'}
+                  {hasProfile ? 'Updating...' : 'Creating...'}
                 </span>
               ) : (
-                <span>{profile ? 'Update Profile' : 'Create Profile'}</span>
+                <span>{hasProfile ? 'Update Profile' : 'Create Profile'}</span>
               )}
             </button>
           </div>

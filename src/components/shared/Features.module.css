@@ -1,128 +1,70 @@
-/* Features.module.css */
 .container {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xl);
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .features {
-  padding: var(--spacing-lg) var(--spacing-md);
-  background-color: var(--color-background);
-  text-align: center;
-  margin-top: 60px;
+  margin-bottom: 2rem;
 }
 
 .featureCards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: var(--spacing-md);
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 var(--spacing-md);
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
 }
 
 .card {
-  background-color: white;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-  padding: var(--spacing-lg);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-md);
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  border: 1px solid var(--color-border);
+  transition: all 0.3s ease;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .card:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--color-primary);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .iconWrapper {
+  background: #f3f4f6;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 64px;
-  height: 64px;
-  border-radius: var(--radius-md);
-  background-color: var(--color-background);
-  color: var(--color-primary);
-  transition: all 0.2s ease-in-out;
+  margin: 0 auto 1rem;
 }
 
 .icon {
-  transition: all 0.2s ease-in-out;
-}
-
-.card:hover .iconWrapper {
-  background-color: var(--color-primary);
-  color: white;
+  color: #4f46e5;
 }
 
 .title {
-  font-size: var(--font-size-lg);
-  color: var(--color-text-primary);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
   margin: 0;
-  font-weight: 500;
-}
-
-/* Add to Features.module.css */
-.showcase {
-  padding: var(--spacing-xl) var(--spacing-md);
-  background-color: white;
-}
-
-.showcaseGrid {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: grid;
-  gap: var(--spacing-xl);
-}
-
-.showcaseSection {
-  background-color: var(--color-background);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
-  box-shadow: var(--shadow-sm);
 }
 
 .comingSoon {
   text-align: center;
-  color: var(--color-text-secondary);
-  padding: var(--spacing-lg);
-  font-size: var(--font-size-sm);
+  color: #6b7280;
+  margin-top: 2rem;
 }
 
-/* Add more specific styling for each section */
-
-@media (max-width: 1200px) {
+@media (max-width: 640px) {
+  .container {
+    padding: 1rem;
+  }
+  
   .featureCards {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  }
-}
-
-@media (max-width: 768px) {
-  .features {
-    padding: var(--spacing-md) var(--spacing-sm);
-  }
-
-  .featureCards {
-    gap: var(--spacing-sm);
-  }
-
-  .card {
-    padding: var(--spacing-md);
-  }
-
-  .iconWrapper {
-    width: 48px;
-    height: 48px;
-  }
-
-  .title {
-    font-size: var(--font-size-base);
+    grid-template-columns: 1fr;
   }
 }

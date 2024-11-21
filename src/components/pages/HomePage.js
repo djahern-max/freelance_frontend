@@ -7,10 +7,10 @@ import Features from '../shared/Features';
 function HomePage() {
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const user = useSelector(selectUser);
-  const userType = user?.user_type;
+  const userType = user?.userType; // Changed from user_type to userType
 
   // Only show dashboard content if user is authenticated
-  if (isAuthenticated) {
+  if (isAuthenticated && userType) {
     return (
       <div className="authenticated-container">
         {userType === 'developer' && <DeveloperDashboard />}
@@ -19,7 +19,7 @@ function HomePage() {
     );
   }
 
-  // Public landing page without profile prompt
+  // Public landing page with Features
   return (
     <main className="landing-container" style={{ marginTop: '0' }}>
       <Features />

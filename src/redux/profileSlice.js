@@ -1,13 +1,30 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import api from '../utils/api';
 
-// Async thunks
 export const fetchProfile = createAsyncThunk(
   'profile/fetchProfile',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get('/profile/me');
-      return response.data;
+      // First get user profile with type info
+      const userProfile = await api.helpers.profile.fetchUserProfile();
+
+      if (userProfile) {
+        try {
+          // Then get specific profile
+          const specificProfile =
+            await api.helpers.profile.fetchSpecificProfile(
+              userProfile.user_type
+            );
+          return {
+            ...userProfile,
+            [`${userProfile.user_type}_profile`]: specificProfile,
+          };
+        } catch (profileError) {
+          // Return just user profile if specific profile doesn't exist yet
+          return userProfile;
+        }
+      }
+      return null;
     } catch (error) {
       return rejectWithValue(api.helpers.handleError(error));
     }
@@ -18,8 +35,7 @@ export const createDeveloperProfile = createAsyncThunk(
   'profile/createDeveloper',
   async (profileData, { rejectWithValue }) => {
     try {
-      const response = await api.post('/profile/developer', profileData);
-      return response.data;
+      return await api.helpers.profile.createProfile('developer', profileData);
     } catch (error) {
       return rejectWithValue(api.helpers.handleError(error));
     }
@@ -30,8 +46,7 @@ export const updateDeveloperProfile = createAsyncThunk(
   'profile/updateDeveloper',
   async (profileData, { rejectWithValue }) => {
     try {
-      const response = await api.put('/profile/developer', profileData);
-      return response.data;
+      return await api.helpers.profile.updateProfile('developer', profileData);
     } catch (error) {
       return rejectWithValue(api.helpers.handleError(error));
     }
@@ -42,8 +57,7 @@ export const createClientProfile = createAsyncThunk(
   'profile/createClient',
   async (profileData, { rejectWithValue }) => {
     try {
-      const response = await api.post('/profile/client', profileData);
-      return response.data;
+      return await api.helpers.profile.createProfile('client', profileData);
     } catch (error) {
       return rejectWithValue(api.helpers.handleError(error));
     }
@@ -54,8 +68,7 @@ export const updateClientProfile = createAsyncThunk(
   'profile/updateClient',
   async (profileData, { rejectWithValue }) => {
     try {
-      const response = await api.put('/profile/client', profileData);
-      return response.data;
+      return await api.helpers.profile.updateProfile('client', profileData);
     } catch (error) {
       return rejectWithValue(api.helpers.handleError(error));
     }
@@ -74,6 +87,9 @@ const profileSlice = createSlice({
       state.data = null;
       state.error = null;
     },
+    clearError: (state) => {
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -90,22 +106,72 @@ const profileSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      // Create/Update Developer Profile
+      // Create Developer Profile
       .addCase(createDeveloperProfile.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(createDeveloperProfile.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload;
+        state.data = {
+          ...state.data,
+          developer_profile: action.payload,
+        };
       })
       .addCase(createDeveloperProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      // Update Developer Profile
+      .addCase(updateDeveloperProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateDeveloperProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = {
+          ...state.data,
+          developer_profile: action.payload,
+        };
+      })
+      .addCase(updateDeveloperProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Create Client Profile
+      .addCase(createClientProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createClientProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = {
+          ...state.data,
+          client_profile: action.payload,
+        };
+      })
+      .addCase(createClientProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Update Client Profile
+      .addCase(updateClientProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateClientProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = {
+          ...state.data,
+          client_profile: action.payload,
+        };
+      })
+      .addCase(updateClientProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
-    // Handle other cases similarly...
   },
 });
 
-export const { clearProfile } = profileSlice.actions;
+export const { clearProfile, clearError } = profileSlice.actions;
 export default profileSlice.reducer;

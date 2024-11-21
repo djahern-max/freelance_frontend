@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { login, loginFailure, loginStart } from '../../redux/authSlice';
-import api from '../../utils/api'; // Use your API client instead of axios directly
+import api from '../../utils/api';
 import { clearAuthData } from '../../utils/authCleanup';
 import styles from './Login.module.css';
 
@@ -19,10 +19,36 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Clear any existing auth data on mount
   useEffect(() => {
     clearAuthData();
   }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value.trim(),
+    }));
+    if (error) {
+      setError('');
+      setErrorType('');
+    }
+  };
+
+  // Helper function to get dashboard path
+  const getDashboardPath = (userType) => {
+    console.log('Getting dashboard path for user type:', userType);
+    const type = userType?.toLowerCase();
+    switch (type) {
+      case 'client':
+        return '/client-dashboard';
+      case 'developer':
+        return '/developer-dashboard';
+      default:
+        console.warn('Unknown user type:', userType);
+        return '/dashboard'; // Fallback to a generic dashboard
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,7 +57,7 @@ const Login = () => {
     dispatch(loginStart());
 
     try {
-      // First, check if we can reach the server at all
+      // Login request
       const response = await fetch(
         `${process.env.REACT_APP_API_URL}/auth/login`,
         {
@@ -63,36 +89,48 @@ const Login = () => {
         throw new Error('No token received from server');
       }
 
-      // Store token immediately
+      // Store token and update API headers
       localStorage.setItem('token', token);
-
-      // Update API client headers
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-      // Step 2: Get user info
+      // Get user data
       const userResponse = await api.get('/auth/me');
       const userData = userResponse.data;
 
-      // Dispatch login success with complete user data
+      console.log('Raw user data from API:', userData);
+
+      // Normalize the user data
+      const normalizedUser = {
+        id: userData.id,
+        username: userData.username,
+        email: userData.email,
+        fullName: userData.full_name,
+        isActive: userData.is_active,
+        userType: userData.user_type, // Ensure we're using user_type consistently
+        createdAt: userData.created_at,
+      };
+
+      console.log('Normalized user data:', normalizedUser);
+
+      // Dispatch login with normalized user data
       dispatch(
         login({
           token,
-          user: userData,
+          user: normalizedUser,
         })
       );
 
-      // Determine redirect path
+      // Get the redirect path
       const redirectTo =
-        location.state?.from ||
-        (userData.user_type === 'client'
-          ? '/client-dashboard'
-          : '/developer-dashboard');
+        location.state?.from || getDashboardPath(normalizedUser.userType);
+      console.log('Redirecting to:', redirectTo);
 
-      // Navigate to appropriate dashboard
-      navigate(redirectTo, { replace: true });
+      // Navigate after a short delay to ensure state is updated
+      setTimeout(() => {
+        navigate(redirectTo, { replace: true });
+      }, 100);
     } catch (err) {
       console.error('Login error:', err);
-
       clearAuthData();
 
       if (err.message === 'Failed to fetch' || !window.navigator.onLine) {
@@ -114,19 +152,6 @@ const Login = () => {
       dispatch(loginFailure(err.message));
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value.trim(),
-    }));
-    // Clear both error and errorType when user starts typing
-    if (error) {
-      setError('');
-      setErrorType('');
     }
   };
 

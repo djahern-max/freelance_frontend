@@ -1,4 +1,4 @@
-/* ClientProfile.module.css */
+/* DeveloperProfile.module.css and ClientProfile.module.css */
 .profileContainer {
   max-width: 800px;
   margin: 0 auto;
@@ -15,12 +15,14 @@
 
 .header {
   margin-bottom: var(--spacing-lg);
+  text-align: center;
 }
 
 .title {
   font-size: var(--font-size-xl);
   color: var(--color-text-primary);
   margin-bottom: var(--spacing-sm);
+  font-weight: 600;
 }
 
 .profileStatus {
@@ -55,12 +57,13 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
 }
 
 .labelContainer {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: var(--spacing-xs);
 }
 
 .label {
@@ -69,14 +72,36 @@
   color: var(--color-text-primary);
 }
 
+.required {
+  color: var(--color-error);
+  font-size: var(--font-size-sm);
+}
+
+.helpText {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-xs);
+}
+
 .input,
 .select,
 .textarea {
+  width: 100%;
   padding: var(--spacing-sm);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   font-size: var(--font-size-base);
   transition: all 0.2s ease;
+  background-color: var(--color-background);
+}
+
+.select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
 }
 
 .input:focus,
@@ -85,6 +110,11 @@
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+.textarea {
+  min-height: 120px;
+  resize: vertical;
 }
 
 .error {
@@ -112,21 +142,6 @@
   font-size: var(--font-size-sm);
 }
 
-.dismissError {
-  background: none;
-  border: none;
-  color: currentColor;
-  cursor: pointer;
-  font-size: 1.25rem;
-  padding: 0 var(--spacing-xs);
-  opacity: 0.7;
-  transition: opacity 0.2s;
-}
-
-.dismissError:hover {
-  opacity: 1;
-}
-
 .formActions {
   display: flex;
   justify-content: flex-end;
@@ -143,6 +158,7 @@
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  min-width: 120px;
 }
 
 .saveButton:hover:not(:disabled) {

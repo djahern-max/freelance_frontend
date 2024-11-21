@@ -1,12 +1,11 @@
-// Features.js
 import { FileText, Grid, Search, Video } from 'lucide-react';
-import React from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { selectIsAuthenticated } from '../../redux/authSlice';
 import styles from './Features.module.css';
 
 const Features = () => {
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
   const navigate = useNavigate();
 
   const features = [

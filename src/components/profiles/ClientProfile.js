@@ -1,73 +1,91 @@
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import api from '../../utils/api';
-import styles from './ClientProfile.module.css';
+import UrlInput from '../../components/common/UrlInput'; // Update the import path
+import {
+  createClientProfile,
+  fetchProfile,
+  updateClientProfile,
+} from '../../redux/profileSlice';
+import styles from './DeveloperProfile.module.css';
+
+const DEFAULT_VALUES = {
+  company_name: '',
+  industry: '',
+  company_size: '',
+  website: '',
+};
+
+const PLACEHOLDERS = {
+  company_name: 'Your Company Name',
+  industry: 'e.g., Technology, Healthcare',
+  company_size: '',
+  website: 'https://your-company.com',
+};
+
+const COMPANY_SIZES = [
+  { value: 'Small', label: '1-50 employees' },
+  { value: 'Medium', label: '51-200 employees' },
+  { value: 'Large', label: '201-1000 employees' },
+  { value: 'Enterprise', label: '1000+ employees' },
+];
 
 const ClientProfile = () => {
-  const [formData, setFormData] = useState({
-    company_name: '',
-    industry: '',
-    company_size: '',
-    website: '',
-  });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [profileExists, setProfileExists] = useState(false);
-  const { token } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const {
+    data: profile,
+    loading,
+    error,
+  } = useSelector((state) => state.profile);
+  const [formData, setFormData] = useState(DEFAULT_VALUES);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isWebsiteValid, setIsWebsiteValid] = useState(true);
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await api.get('/profile/client', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+    dispatch(fetchProfile());
+  }, [dispatch]);
 
-        if (response.data) {
-          setFormData(response.data);
-          setProfileExists(true);
-        }
-      } catch (err) {
-        if (err.response?.status !== 404) {
-          setError('Failed to load profile data');
-          toast.error('Failed to load profile data');
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, [token]);
+  useEffect(() => {
+    if (profile?.client_profile) {
+      const profileData = profile.client_profile;
+      setFormData({
+        company_name: profileData.company_name || '',
+        industry: profileData.industry || '',
+        company_size: profileData.company_size || '',
+        website: profileData.website || '',
+      });
+    }
+  }, [profile]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
+
+    if (!isWebsiteValid && formData.website) {
+      toast.error('Please enter a valid website URL');
+      return;
+    }
+
+    setIsSubmitting(true);
 
     try {
-      const endpoint = profileExists
-        ? '/profile/client/update'
-        : '/profile/client';
-      const response = await api.post(endpoint, formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const action = profile?.client_profile
+        ? await dispatch(updateClientProfile(formData))
+        : await dispatch(createClientProfile(formData));
 
-      if (response.data) {
-        setProfileExists(true);
+      if (action.type.endsWith('/fulfilled')) {
         toast.success(
-          profileExists
+          profile?.client_profile
             ? 'Profile updated successfully!'
             : 'Profile created successfully!'
         );
+      } else {
+        toast.error(action.payload || 'Failed to save profile');
       }
     } catch (err) {
-      const errorMessage =
-        err.response?.data?.detail || 'Failed to save profile';
-      setError(errorMessage);
-      toast.error(errorMessage);
+      toast.error('Error saving profile');
+      console.error('Profile save error:', err);
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -79,18 +97,20 @@ const ClientProfile = () => {
     );
   }
 
+  const hasProfile = !!profile?.client_profile;
+
   return (
     <div className={styles.profileContainer}>
       <div className={styles.card}>
         <div className={styles.header}>
           <h2 className={styles.title}>
-            {profileExists ? 'Update Your Profile' : 'Create Your Profile'}
+            {hasProfile ? 'Update Your Profile' : 'Create Your Profile'}
           </h2>
-          {profileExists && (
+          {hasProfile && (
             <div className={styles.profileStatus}>
               <span className={styles.checkmark}>✓</span>
               Profile created on{' '}
-              {new Date(formData.created_at).toLocaleDateString()}
+              {new Date(profile.client_profile.created_at).toLocaleDateString()}
             </div>
           )}
         </div>
@@ -101,14 +121,6 @@ const ClientProfile = () => {
               <div className={styles.errorContent}>
                 <span className={styles.errorIcon}>⚠️</span>
                 <p className={styles.errorMessage}>{error}</p>
-                <button
-                  type="button"
-                  className={styles.dismissError}
-                  onClick={() => setError('')}
-                  aria-label="Dismiss error"
-                >
-                  ×
-                </button>
               </div>
             </div>
           )}
@@ -116,6 +128,7 @@ const ClientProfile = () => {
           <div className={styles.formGroup}>
             <div className={styles.labelContainer}>
               <label className={styles.label}>Company Name</label>
+              <span className={styles.required}>*</span>
             </div>
             <input
               type="text"
@@ -124,7 +137,7 @@ const ClientProfile = () => {
               onChange={(e) =>
                 setFormData({ ...formData, company_name: e.target.value })
               }
-              placeholder="Your Company Name"
+              placeholder={PLACEHOLDERS.company_name}
               required
             />
           </div>
@@ -133,6 +146,7 @@ const ClientProfile = () => {
             <div className={styles.formGroup}>
               <div className={styles.labelContainer}>
                 <label className={styles.label}>Industry</label>
+                <span className={styles.required}>*</span>
               </div>
               <input
                 type="text"
@@ -141,7 +155,7 @@ const ClientProfile = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, industry: e.target.value })
                 }
-                placeholder="e.g., Technology, Healthcare"
+                placeholder={PLACEHOLDERS.industry}
                 required
               />
             </div>
@@ -149,6 +163,7 @@ const ClientProfile = () => {
             <div className={styles.formGroup}>
               <div className={styles.labelContainer}>
                 <label className={styles.label}>Company Size</label>
+                <span className={styles.required}>*</span>
               </div>
               <select
                 className={styles.select}
@@ -159,44 +174,37 @@ const ClientProfile = () => {
                 required
               >
                 <option value="">Select size</option>
-                <option value="1-10">1-10 employees</option>
-                <option value="11-50">11-50 employees</option>
-                <option value="51-200">51-200 employees</option>
-                <option value="201-500">201-500 employees</option>
-                <option value="501+">501+ employees</option>
+                {COMPANY_SIZES.map(({ value, label }) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
 
-          <div className={styles.formGroup}>
-            <div className={styles.labelContainer}>
-              <label className={styles.label}>Website</label>
-            </div>
-            <input
-              type="url"
-              className={styles.input}
-              value={formData.website}
-              onChange={(e) =>
-                setFormData({ ...formData, website: e.target.value })
-              }
-              placeholder="https://your-company.com"
-            />
-          </div>
+          <UrlInput
+            label="Website"
+            value={formData.website}
+            onChange={(value) =>
+              setFormData((prev) => ({ ...prev, website: value }))
+            }
+            onValidation={setIsWebsiteValid}
+            placeholder={PLACEHOLDERS.website}
+          />
 
           <div className={styles.formActions}>
             <button
               type="submit"
               className={styles.saveButton}
-              disabled={loading}
+              disabled={isSubmitting}
             >
-              {loading ? (
+              {isSubmitting ? (
                 <span className={styles.loadingText}>
-                  {profileExists ? 'Updating...' : 'Creating...'}
+                  {hasProfile ? 'Updating...' : 'Creating...'}
                 </span>
               ) : (
-                <span>
-                  {profileExists ? 'Update Profile' : 'Create Profile'}
-                </span>
+                <span>{hasProfile ? 'Update Profile' : 'Create Profile'}</span>
               )}
             </button>
           </div>
