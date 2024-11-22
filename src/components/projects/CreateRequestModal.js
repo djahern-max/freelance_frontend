@@ -1,12 +1,11 @@
-import React, { useState } from "react";
-import { Info } from "lucide-react";
-import styles from "./CreateRequestModal.module.css";
+import { useState } from 'react';
+import styles from './CreateRequestModal.module.css';
 
 const CreateRequestModal = ({ projectId, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
-    title: "",
-    content: "",
-    estimated_budget: "",
+    title: '',
+    content: '',
+    estimated_budget: '',
     is_public: false,
   });
 
@@ -25,7 +24,7 @@ const CreateRequestModal = ({ projectId, onClose, onSubmit }) => {
       });
       onClose();
     } catch (err) {
-      setError(err.response?.data?.detail || "Failed to create request");
+      setError(err.response?.data?.detail || 'Failed to create request');
     } finally {
       setIsSubmitting(false);
     }
@@ -36,9 +35,6 @@ const CreateRequestModal = ({ projectId, onClose, onSubmit }) => {
       <div className={styles.modal}>
         <div className={styles.header}>
           <h1 className={styles.title}>Create New Request</h1>
-          <p className={styles.subtitle}>
-            Create a new request for developers to work on
-          </p>
         </div>
 
         {error && <div className={styles.error}>{error}</div>}
@@ -83,12 +79,7 @@ const CreateRequestModal = ({ projectId, onClose, onSubmit }) => {
           <div className={styles.formGroup}>
             <label className={styles.label} htmlFor="budget">
               Estimated Budget ($)
-              <div className={styles.tooltip}>
-                <Info size={16} />
-                <span className={styles.tooltipText}>
-                  Enter your estimated budget for this request
-                </span>
-              </div>
+              <div className={styles.tooltip}></div>
             </label>
             <input
               type="number"
@@ -139,11 +130,11 @@ const CreateRequestModal = ({ projectId, onClose, onSubmit }) => {
             <button
               type="submit"
               className={`${styles.submitButton} ${
-                isSubmitting ? styles.loading : ""
+                isSubmitting ? styles.loading : ''
               }`}
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Creating..." : "Create Request"}
+              {isSubmitting ? 'Creating...' : 'Create Request'}
             </button>
             <button
               type="button"

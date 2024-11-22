@@ -20,25 +20,29 @@
   box-shadow: var(--shadow-lg);
 }
 
-.modal h2 {
+.header {
+  margin-bottom: var(--spacing-xl); /* Increased spacing after header */
+}
+
+.title {
   color: var(--color-text-primary);
-  margin-bottom: var(--spacing-lg);
   font-size: var(--font-size-xl);
+  font-weight: 600;
 }
 
 .formGroup {
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-lg); /* Increased spacing between form groups */
 }
 
-.formGroup label {
+.label {
   display: block;
-  margin-bottom: var(--spacing-xs);
+  margin-bottom: var(--spacing-sm); /* Added spacing below labels */
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
+  font-weight: 500;
 }
 
-.formGroup input,
-.formGroup textarea {
+.input {
   width: 100%;
   padding: var(--spacing-sm);
   border: 1px solid var(--color-border);
@@ -46,9 +50,13 @@
   font-size: var(--font-size-base);
 }
 
-.formGroup textarea {
+textarea.input {
   min-height: 120px;
   resize: vertical;
+}
+
+.checkboxContainer {
+  margin-top: var(--spacing-sm);
 }
 
 .checkboxLabel {
@@ -56,17 +64,30 @@
   align-items: center;
   gap: var(--spacing-sm);
   cursor: pointer;
+  margin-bottom: var(--spacing-xs);
 }
 
-.checkboxLabel input {
-  width: auto !important;
+.checkbox {
+  width: 16px !important;
+  height: 16px;
 }
 
-.buttonGroup {
+.checkboxText {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+}
+
+.helpText {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-xs);
+}
+
+.buttonContainer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center; /* Changed from flex-end to center */
   gap: var(--spacing-md);
-  margin-top: var(--spacing-lg);
+  margin-top: var(--spacing-xl);
 }
 
 .submitButton,
@@ -77,6 +98,8 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  min-width: 120px;
+  max-width: 200px;
 }
 
 .submitButton {
@@ -87,6 +110,11 @@
 
 .submitButton:hover {
   background-color: var(--color-primary-dark);
+  transform: translateY(-1px);
+}
+
+.submitButton:active {
+  transform: translateY(0);
 }
 
 .cancelButton {
@@ -97,4 +125,44 @@
 
 .cancelButton:hover {
   background-color: var(--color-background-hover);
+}
+
+.error {
+  background-color: var(--color-error-bg);
+  color: var(--color-error);
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-sm);
+}
+
+/* Disabled state styles */
+.submitButton:disabled,
+.cancelButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.loading {
+  position: relative;
+  opacity: 0.8;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .modal {
+    width: 95%;
+    padding: var(--spacing-md);
+  }
+
+  .buttonContainer {
+    flex-direction: column;
+    align-items: center; /* Added to ensure buttons stay centered when stacked */
+  }
+  
+  .submitButton,
+  .cancelButton {
+    width: 100%;
+    max-width: 200px; /* Maintain max-width even on mobile */
+  }
 }

@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import api from "../../utils/api";
-import Header from "../shared/Header";
 import {
   Activity,
+  ChevronRight,
+  FileText,
   MessageSquare,
   Plus,
-  FileText,
-  ChevronRight,
-} from "lucide-react";
-import styles from "./ClientDashboard.module.css";
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import api from '../../utils/api';
+import Header from '../shared/Header';
+import styles from './ClientDashboard.module.css';
 
 const ClientDashboard = () => {
   const [dashboardData, setDashboardData] = useState({
@@ -49,20 +49,20 @@ const ClientDashboard = () => {
 
   const fetchProjects = async () => {
     try {
-      const projectsRes = await api.get("/projects/");
+      const projectsRes = await api.get('/projects/');
       setDashboardData((prev) => ({
         ...prev,
         projects: Array.isArray(projectsRes.data) ? projectsRes.data : [],
       }));
     } catch (error) {
-      console.error("Projects fetch failed:", {
+      console.error('Projects fetch failed:', {
         message: error.message,
         status: error.response?.status,
         data: error.response?.data,
       });
       setErrors((prev) => ({
         ...prev,
-        projects: "Unable to load projects. Please try again later.",
+        projects: 'Unable to load projects. Please try again later.',
       }));
     } finally {
       setLoadingStates((prev) => ({ ...prev, projects: false }));
@@ -71,20 +71,20 @@ const ClientDashboard = () => {
 
   const fetchRequests = async () => {
     try {
-      const requestsRes = await api.get("/requests/");
+      const requestsRes = await api.get('/requests/');
       setDashboardData((prev) => ({
         ...prev,
         requests: Array.isArray(requestsRes.data) ? requestsRes.data : [],
       }));
     } catch (error) {
-      console.error("Requests fetch failed:", {
+      console.error('Requests fetch failed:', {
         message: error.message,
         status: error.response?.status,
         data: error.response?.data,
       });
       setErrors((prev) => ({
         ...prev,
-        requests: "Unable to load requests. Please try again later.",
+        requests: 'Unable to load requests. Please try again later.',
       }));
     } finally {
       setLoadingStates((prev) => ({ ...prev, requests: false }));
@@ -93,7 +93,7 @@ const ClientDashboard = () => {
 
   const fetchConversations = async () => {
     try {
-      const conversationsRes = await api.get("/conversations/user/list");
+      const conversationsRes = await api.get('/conversations/user/list');
       setDashboardData((prev) => ({
         ...prev,
         conversations: Array.isArray(conversationsRes.data)
@@ -101,14 +101,14 @@ const ClientDashboard = () => {
           : [],
       }));
     } catch (error) {
-      console.error("Conversations fetch failed:", {
+      console.error('Conversations fetch failed:', {
         message: error.message,
         status: error.response?.status,
         data: error.response?.data,
       });
       setErrors((prev) => ({
         ...prev,
-        conversations: "Unable to load conversations. Please try again later.",
+        conversations: 'Unable to load conversations. Please try again later.',
       }));
     } finally {
       setLoadingStates((prev) => ({ ...prev, conversations: false }));
@@ -133,7 +133,7 @@ const ClientDashboard = () => {
       <Header />
       <div className={styles.content}>
         <h1 className={styles.dashboardTitle}>
-          {user?.fullName ? `${user.fullName}'s Dashboard` : "Dashboard"}
+          {user?.fullName ? `${user.fullName}'s Dashboard` : 'Dashboard'}
         </h1>
 
         {Object.entries(errors).map(
@@ -144,9 +144,13 @@ const ClientDashboard = () => {
               </div>
             )
         )}
-
         <div className={styles.statsGrid}>
-          <div className={styles.statCard}>
+          <div
+            className={styles.statCard}
+            onClick={() =>
+              navigate(`/projects/${dashboardData.projects[0]?.id || ''}`)
+            }
+          >
             <Activity className={styles.icon} />
             <div className={styles.statInfo}>
               <h3>Active Projects</h3>
@@ -174,21 +178,21 @@ const ClientDashboard = () => {
         <div className={styles.actionsGrid}>
           <button
             className={styles.actionButton}
-            onClick={() => navigate("/create-project")}
+            onClick={() => navigate('/create-project')}
           >
             <Plus className={styles.buttonIcon} />
             New Project
           </button>
           <button
             className={styles.actionButton}
-            onClick={() => navigate("/requests")}
+            onClick={() => navigate('/requests')}
           >
             <FileText className={styles.buttonIcon} />
             View Requests
           </button>
           <button
             className={styles.actionButton}
-            onClick={() => navigate("/conversations")}
+            onClick={() => navigate('/conversations')}
           >
             <MessageSquare className={styles.buttonIcon} />
             View Conversations
@@ -199,8 +203,8 @@ const ClientDashboard = () => {
           {!errors.projects && dashboardData.projects.length > 0 ? (
             dashboardData.projects.map((project) => (
               <div key={project.id} className={styles.projectCard}>
-                <h3>{project.name || "Unnamed Project"}</h3>
-                <p>{project.description || "No description"}</p>
+                <h3>{project.name || 'Unnamed Project'}</h3>
+                <p>{project.description || 'No description'}</p>
                 <button
                   onClick={() => navigate(`/projects/${project.id}`)}
                   className={styles.viewButton}
@@ -217,7 +221,7 @@ const ClientDashboard = () => {
                   Retry Loading Projects
                 </button>
               ) : (
-                "No projects found. Create your first project to get started!"
+                'No projects found. Create your first project to get started!'
               )}
             </div>
           )}

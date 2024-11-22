@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { Search, MessageSquare, Briefcase, Star } from "lucide-react";
-import Header from "../shared/Header";
-import api from "../../utils/api";
-import styles from "./DeveloperDashboard.module.css";
+import { Briefcase, MessageSquare, Star } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import api from '../../utils/api';
+import Header from '../shared/Header';
+import styles from './DeveloperDashboard.module.css';
 
 // New RequestCard component
 const RequestCard = ({ request, navigate }) => {
@@ -24,7 +24,7 @@ const RequestCard = ({ request, navigate }) => {
             className={styles.viewMoreButton}
             onClick={() => setIsExpanded(!isExpanded)}
           >
-            {isExpanded ? "View less" : "View more"}
+            {isExpanded ? 'View less' : 'View more'}
           </button>
         )}
       </p>
@@ -56,20 +56,20 @@ const DeveloperDashboard = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const requestsRes = await api.get("/requests/public");
+        const requestsRes = await api.get('/requests/public');
         setActiveRequests(requestsRes.data || []);
 
-        const conversationsRes = await api.get("/conversations/user/list");
+        const conversationsRes = await api.get('/conversations/user/list');
         setConversations(conversationsRes.data || []);
 
         setError(null);
       } catch (err) {
-        console.error("API Error:", err);
+        console.error('API Error:', err);
         if (err.response?.status === 401) {
-          setError("Session expired. Please log in again.");
-          navigate("/login");
+          setError('Session expired. Please log in again.');
+          navigate('/login');
         } else {
-          setError("Unable to load dashboard data. Please try again later.");
+          setError('Unable to load dashboard data. Please try again later.');
         }
       } finally {
         setLoading(false);
@@ -79,7 +79,7 @@ const DeveloperDashboard = () => {
     if (auth.token) {
       fetchDashboardData();
     } else {
-      setError("Authentication required");
+      setError('Authentication required');
       setLoading(false);
     }
   }, [auth, navigate]);
@@ -119,52 +119,45 @@ const DeveloperDashboard = () => {
       <Header />
       <div className={styles.content}>
         <h1 className={styles.dashboardTitle}>
-          {user?.fullName ? `${user.fullName}'s Dashboard` : "Dashboard"}
+          {user?.fullName ? `${user.fullName}'s Dashboard` : 'Dashboard'}
         </h1>
-
         <div className={styles.statsGrid}>
-          <div className={styles.statCard}>
+          <div
+            className={styles.statCard}
+            onClick={() => navigate('/public-requests')}
+            style={{ cursor: 'pointer' }}
+          >
             <Briefcase className={styles.icon} />
             <div className={styles.statInfo}>
               <h3>Available Opportunities</h3>
               <p>{activeRequests.length}</p>
             </div>
           </div>
-          <div className={styles.statCard}>
+          <div
+            className={styles.statCard}
+            onClick={() => navigate('/conversations')}
+            style={{ cursor: 'pointer' }}
+          >
             <MessageSquare className={styles.icon} />
             <div className={styles.statInfo}>
               <h3>Active Conversations</h3>
               <p>{conversations.length}</p>
             </div>
           </div>
-          <div className={styles.statCard}>
+          <div
+            className={styles.statCard}
+            onClick={() => navigate('/projects')}
+            style={{ cursor: 'pointer' }}
+          >
             <Star className={styles.icon} />
             <div className={styles.statInfo}>
               <h3>Active Projects</h3>
               <p>
-                {conversations.filter((c) => c.status === "accepted").length}
+                {conversations.filter((c) => c.status === 'accepted').length}
               </p>
             </div>
           </div>
         </div>
-
-        <div className={styles.actionsGrid}>
-          <button
-            className={styles.actionButton}
-            onClick={() => navigate("/public-requests")}
-          >
-            <Search className={styles.buttonIcon} />
-            Browse Opportunities
-          </button>
-          <button
-            className={styles.actionButton}
-            onClick={() => navigate("/conversations")}
-          >
-            <MessageSquare className={styles.buttonIcon} />
-            View Conversations
-          </button>
-        </div>
-
         <div className={styles.recentActivity}>
           <h2>Recent Opportunities</h2>
           {activeRequests.length === 0 ? (
@@ -175,7 +168,7 @@ const DeveloperDashboard = () => {
           ) : (
             <div className={styles.requestsList}>
               {activeRequests.slice(0, 5).map((request) => {
-                console.log("Request data:", request);
+                console.log('Request data:', request);
                 return (
                   <RequestCard
                     key={request.id}

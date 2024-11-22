@@ -1,70 +1,93 @@
-@import "../../styles/variables.module.css";
-
-/* General Layout */
 .container {
-  min-height: 100vh;
-  display: flex;
-  background-color: var(--color-background);
-}
-
-.mainContent {
-  flex: 1;
   display: flex;
   flex-direction: column;
   height: 100vh;
-  margin-right: 320px; /* Sidebar width */
-  transition: margin-right 0.3s ease-in-out;
+  overflow: hidden;
 }
 
-/* Header */
+
 .header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 64px;
+  background-color: white;
+  border-bottom: 1px solid #e9ecef;
+  z-index: 20;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 var(--spacing-md);
-  background-color: var(--color-background);
-  border-bottom: 1px solid var(--color-border);
-  z-index: 10;
+  padding: 1rem;
 }
-
 .backButton {
-  margin-right: var(--spacing-md);
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--color-text-secondary);
-  padding: var(--spacing-sm);
-  border-radius: var(--radius-md);
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
 }
 
 .backButton:hover {
-  background-color: var(--color-secondary);
+  background-color: #f8f9fa;
+}
+
+.backButton:focus {
+  outline: 2px solid #0066cc;
+  outline-offset: 2px;
 }
 
 .title {
-  font-size: var(--font-size-lg);
-  font-weight: 600;
-  color: var(--color-text-primary);
   margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  flex: 1;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: calc(100% - 40px);
 }
 
-/* Messages */
+.content {
+  display: flex;
+  height: calc(100vh - 64px);
+  margin-top: 64px; /* Offset for fixed header */
+}
+
+.mainSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  overflow: hidden; /* Hide overflow so input stays in view */
+}
+
 .messagesContainer {
   flex: 1;
   overflow-y: auto;
-  padding: var(--spacing-md);
-  margin-top: 64px;
-  margin-bottom: 80px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
-
 .messageWrapper {
   display: flex;
-  margin-bottom: var(--spacing-md);
+  margin-bottom: 1rem;
+  animation: messageAppear 0.3s ease-out;
+}
+
+@keyframes messageAppear {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .messageWrapper.sent {
@@ -73,351 +96,697 @@
 
 .message {
   max-width: 70%;
-  padding: var(--spacing-md);
-  border-radius: var(--radius-lg);
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.message:hover {
+  transform: translateY(-1px);
 }
 
 .sent .message {
-  background-color: var(--color-primary);
+  background-color: #0066cc;
   color: white;
 }
 
 .received .message {
-  background-color: var(--color-background);
-  border: 1px solid var(--color-border);
-  color: var(--color-text-primary);
+  background-color: #f8f9fa;
 }
 
 .messageHeader {
   display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-xs);
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.sent .messageHeader {
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .username {
-  font-size: var(--font-size-sm);
   font-weight: 500;
 }
 
 .timestamp {
-  font-size: var(--font-size-xs);
-  opacity: 0.75;
+  font-size: 0.75rem;
+  color: #6c757d;
+}
+
+.sent .timestamp {
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .messageContent {
-  word-break: break-word;
+  margin: 0;
+  word-wrap: break-word;
+  line-height: 1.4;
 }
 
-/* Input */
 .inputContainer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 320px;
-  padding: var(--spacing-md);
-  background-color: var(--color-background);
-  border-top: 1px solid var(--color-border);
-  transition: right 0.3s ease-in-out;
+  flex: 0 0 auto; /* Don't allow shrinking */
+  padding: 1rem;
+  background-color: white;
+  border-top: 1px solid #e9ecef;
+  margin-top: auto; /* Push to bottom */
 }
 
 .inputForm {
   display: flex;
-  gap: var(--spacing-sm);
+  gap: 0.75rem;
 }
 
-.input {
-  padding: var(--spacing-sm);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-base);
-  transition: border-color 0.2s ease;
+.messageInput {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  background-color: #f8f9fa;
 }
 
-.input:focus {
-  outline: none;
-  border-color: var(--color-primary);
+.messageInput:focus {
+  border-color: #0066cc;
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+.messageInput::placeholder {
+  color: #adb5bd;
 }
 
 .sendButton {
-  padding: var(--spacing-sm);
-  background-color: var(--color-primary);
+  padding: 0.75rem;
+  background-color: #0066cc;
   color: white;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: 0.5rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.2s ease;
+  min-width: 44px;
+  height: 44px;
 }
 
 .sendButton:hover {
-  background-color: var(--color-primary-dark);
+  background-color: #0052a3;
+  transform: translateY(-1px);
+}
+
+.sendButton:active {
+  transform: translateY(0);
 }
 
 .sendButton:disabled {
-  opacity: 0.5;
+  background-color: #cccccc;
   cursor: not-allowed;
 }
 
-/* Sidebar */
 .sidebar {
-  width: 320px;
-  border-left: 1px solid var(--color-border);
-  background-color: #f8f9fa;
-  position: fixed;
-  right: 0;
-  top: 0;
-  bottom: 0;
+  width: 280px;
+  min-width: 280px; /* Prevent shrinking */
+  background-color: #f5f5f5;
+  border-right: 1px solid #e9ecef;
   overflow-y: auto;
-  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.05);
-  z-index: 100;
-  padding-top: 64px;
+  padding: 1rem;
 }
 
-/* Agreement Section */
-/* Base button styles */
-.buttonBase {
-  display: inline-flex;
-  align-items: center;
+.sidebarSection {
+  padding: 1.5rem 1rem; /* Adjusted padding to be equal on top and bottom */
+  background-color: white;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #e9ecef;
+  display: flex; /* Added to help with centering */
+  flex-direction: column; /* Added to maintain column layout */
+  justify-content: center; /* Added to center content vertically */
+}
+
+.sidebarSection:last-child {
+  border-bottom: none;
+}
+
+.sectionHeader {
+  display: flex;
   justify-content: center;
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-sm);
-  font-weight: 500;
+  align-items: center;
+  margin: 0; /* Changed from margin-bottom: 1rem to 0 */
+}
+
+.sidebarTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 0.5rem;
+}
+
+.infoItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  color: #495057;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s;
+}
+
+.infoItem:hover {
+  background-color: #f8f9fa;
+}
+
+.participant {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-radius: 0.375rem;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-/* Primary button style */
-.primaryButton {
-  composes: buttonBase;
-  background-color: var(--color-primary);
-  color: white;
-  border: none;
+.participant:hover {
+  background-color: #f0f0f0;
+  transform: translateY(-1px);
 }
 
-.primaryButton:hover:not(:disabled) {
-  background-color: var(--color-primary-dark);
+.participant:focus {
+  outline: 2px solid #0066cc;
+  outline-offset: 2px;
 }
 
-.primaryButton:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.statusIndicator {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-top: 0.75rem;
 }
 
-/* Secondary button style */
-.secondaryButton {
-  composes: buttonBase;
-  background-color: var(--color-secondary);
-  color: var(--color-text-primary);
-  border: 1px solid var(--color-border);
+.statusIndicator.pending {
+  background-color: #fff3cd;
+  color: #856404;
 }
 
-.secondaryButton:hover {
-  background-color: var(--color-border);
+.statusIndicator.active {
+  background-color: #d4edda;
+  color: #155724;
 }
 
-/* Agreement section styles */
-.agreementSection {
-  background-color: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
-  margin-bottom: var(--spacing-lg);
-  box-shadow: var(--shadow-md);
+.statusIndicator.completed {
+  background-color: #cce5ff;
+  color: #004085;
+}
+
+/* Agreement Section Styles */
+.agreementContent {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background-color: #f8f9fa;
 }
 
 .existingAgreement {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
+  cursor: pointer;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
 }
 
-.existingAgreement h3 {
-  font-size: var(--font-size-lg);
-  color: var(--color-text-primary);
-  margin-bottom: var(--spacing-sm);
+.existingAgreement:hover {
+  background-color: #f0f0f0;
+  transform: translateY(-1px);
+}
+
+.existingAgreement:focus {
+  outline: 2px solid #0066cc;
+  outline-offset: 2px;
+}
+
+.agreementPreview {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.agreementActions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
 }
 
 .agreementDetails {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-sm);
+  gap: 0.75rem;
 }
 
 .agreementDetails p {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-base);
   margin: 0;
+  font-size: 0.875rem;
+  color: #495057;
 }
 
 .agreementDetails strong {
-  color: var(--color-text-primary);
-  font-weight: 600;
-}
-
-/* Form styles */
-.createAgreement {
-  width: 100%;
+  color: #343a40;
 }
 
 .agreementForm {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
-}
-
-.agreementForm h3 {
-  font-size: var(--font-size-lg);
-  color: var(--color-text-primary);
-  margin-bottom: var(--spacing-sm);
+  gap: 1rem;
 }
 
 .formGroup {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xs);
+  gap: 0.5rem;
 }
 
 .formGroup label {
-  font-size: var(--font-size-sm);
+  font-size: 0.875rem;
   font-weight: 500;
-  color: var(--color-text-primary);
-}
-
-.input {
-  padding: var(--spacing-sm);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-base);
-  transition: border-color 0.2s ease;
+  color: #495057;
 }
 
 .textarea {
-  composes: input;
-  min-height: 120px;
+  min-height: 100px;
+  padding: 0.75rem;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
   resize: vertical;
+  transition: all 0.2s ease;
 }
 
-.input:focus,
 .textarea:focus {
-  border-color: var(--color-primary);
+  border-color: #0066cc;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
   outline: none;
 }
 
-/* Button group styles */
 .buttonGroup {
   display: flex;
-  gap: var(--spacing-md);
-  margin-top: var(--spacing-md);
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+.createAgreementButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: white;
+  background-color: #0066cc;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  gap: 0.5rem;
+  margin: 0 auto; /* Changed to remove top margin */
+  width: fit-content;
+}
+.createAgreementButton:hover {
+  background-color: #0052a3;
+  transform: translateY(-2px);
 }
 
-/* Specific button implementations */
+.createAgreementButton:active {
+  transform: translateY(0);
+}
+
+.createAgreementButton:focus {
+  outline: 2px solid #0052a3;
+  outline-offset: 2px;
+}
+
+.createAgreementButton:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.submitButton, .cancelButton {
+  flex: 1;
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
 .submitButton {
-  composes: primaryButton;
+  background-color: #0066cc;
+  color: white;
+  border: none;
+}
+
+.submitButton:hover {
+  background-color: #0052a3;
+}
+
+.submitButton:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
 }
 
 .cancelButton {
-  composes: secondaryButton;
+  background-color: white;
+  color: #dc3545;
+  border: 1px solid #dc3545;
 }
 
-.createButton {
-  composes: secondaryButton;
-  width: 100%;
-  padding: var(--spacing-md);
-  font-size: var(--font-size-base);
-  gap: var(--spacing-sm);
+.cancelButton:hover {
+  background-color: #dc3545;
+  color: white;
+}
+
+/* Loading States */
+.loadingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.loading {
+  padding: 2rem;
+  text-align: center;
+  color: #6c757d;
+  font-size: 1.125rem;
+}
+
+/* Action Buttons */
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.acceptButton, .rejectButton {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
 }
 
 .acceptButton {
-  composes: primaryButton;
-  width: fit-content;
-  margin-top: var(--spacing-md);
+  background-color: #28a745;
+  color: white;
 }
 
-/* Mobile responsiveness */
-@media (max-width: 768px) {
-  .agreementSection {
-    padding: var(--spacing-md);
-  }
+.acceptButton:hover {
+  background-color: #218838;
+  transform: translateY(-1px);
+}
 
-  .buttonGroup {
-    flex-direction: column;
-  }
+.acceptButton:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
 
-  .buttonGroup button {
-    width: 100%;
-  }
+.rejectButton {
+  background-color: #dc3545;
+  color: white;
+}
+
+.rejectButton:hover {
+  background-color: #c82333;
+  transform: translateY(-1px);
+}
+
+/* Toast Notification Styles */
+:global(.Toastify__toast) {
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+:global(.Toastify__toast-body) {
+  font-family: inherit;
+  font-size: 0.875rem;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background-color: white;
+  border-radius: 0.5rem;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #1a1a1a;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  color: #666;
+  transition: color 0.2s;
+}
+
+.closeButton:hover {
+  color: #333;
+}
+
+.modalBody {
+  padding: 1.5rem;
+}
+
+.agreementFullDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.termsContent {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 0.375rem;
+  white-space: pre-wrap;
+}
+
+.modalActions {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.modifyButton {
+  padding: 0.75rem 1.5rem;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  color: #495057;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.modifyButton:hover {
+  background-color: #e9ecef;
+  border-color: #ced4da;
+}
+
+.modalActions {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.chat-input-container {
+  position: fixed; /* or 'sticky' */
+  bottom: 0;
+  width: 100%; /* Adjust based on your design */
+  background-color: white; /* Optional: Match the app's background */
+  z-index: 10; /* Ensures it stays on top */
+}
+
+.chat-messages-container {
+  padding-bottom: 60px; /* Adjust based on input container height */
+}
+/* Add this class for empty state */
+.emptyMessages {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6c757d;
+  font-size: 0.9rem;
+  padding: 2rem;
+}
+
+/* Adjust input container to feel more connected */
+.inputContainer {
+  position: sticky;
+  bottom: 0;
+  padding: 1rem;
+  background-color: white;
+  border-top: 1px solid #e9ecef;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05); /* Subtle shadow to connect it */
 }
 
 
-/* Mobile sidebar toggle */
+/* Responsive Design */
 @media (max-width: 768px) {
-
-  .agreementSection {
-    padding: var(--spacing-md);
-  }
-
-  .buttonGroup {
-    flex-direction: column;
-  }
-
-  .buttonGroup button {
+  .chat-input-container {
+    position: fixed;
+    bottom: 0;
     width: 100%;
-  }
+}
 
-  .sidebarToggle {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background-color: var(--color-primary);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: var(--shadow-lg);
-    cursor: pointer;
-    z-index: 100;
-    transform: translateX(100%);
-    transition: transform 0.3s ease-in-out;
-  }
-
-  .mainContent {
-    margin-right: 0;
-  }
-
-  .header {
-    right: 0;
+  .content {
+    flex-direction: column;
+    height: calc(100vh - 64px);
   }
 
   .sidebar {
-    display: none;
+    position: fixed;
+    top: 64px;
+    left: 0;
+    width: 100%;
+    height: auto;
+    max-height: 40vh;
+    z-index: 15;
+  }
+  .mainSection {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    position: relative;
   }
 
-  .inputContainer {
-    right: 0;
-  }
-  .sidebar.open {
-    transform: translateX(0);
-  }
-}
-
-@media (max-width: 420px) {
-  .title {
-    white-space: normal;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+  .messageInput {
+    font-size: 16px; /* Prevents zoom on mobile */
   }
 
+  .sidebar {
+    width: 100%;
+    max-height: 40vh;
+    height: auto;
+    border-bottom: 1px solid #e9ecef;
+  }
   .messagesContainer {
     flex: 1;
     overflow-y: auto;
-    padding: var(--spacing-md);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 80px; /* Space for input */
+  }
+
+  .message {
+    max-width: 85%;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 0.75rem;
+  }
+
+  .title {
+    font-size: 1rem;
+  }
+
+  .messageWrapper {
+    margin-bottom: 0.75rem;
+  }
+
+  .message {
+    max-width: 90%;
+  }
+  .inputContainer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: white;
+    border-top: 1px solid #e9ecef;
+    padding: 1rem;
+  }
+
+  .buttonGroup {
+    flex-direction: column;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+}
+
+/* Accessibility Improvements */
+@media (prefers-reduced-motion: reduce) {
+  .messageWrapper {
+    animation: none;
+  }
+
+  .message:hover {
+    transform: none;
+  }
+
+  .sendButton:hover,
+  .acceptButton:hover,
+  .rejectButton:hover,
+  .createAgreementButton:hover {
+    transform: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .sent .message {
+    background-color: #004085;
+  }
+
+  .statusIndicator {
+    border: 1px solid currentColor;
   }
 }
