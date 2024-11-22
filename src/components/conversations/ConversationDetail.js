@@ -410,7 +410,7 @@ const ConversationDetail = () => {
         <div className={styles.mainSection}>
           <div className={styles.messagesContainer}>
             <div className={styles.emptyMessages}>
-              No messages yet. Start the conversation!
+              No messages yet. Scroll Down for Message Input Box.
             </div>
             {conversation.messages?.map((message) => (
               <div
