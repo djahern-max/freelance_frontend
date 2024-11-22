@@ -1,8 +1,7 @@
 .container {
+  height: calc(100vh - 64px); /* Subtract the height of the header */
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  background-color: #f8f9fa;
 }
 
 .header {
@@ -717,6 +716,7 @@
     flex-direction: column;
     align-items: center; /* Center the empty state message */
     justify-content: center; /* Center the empty state message */
+    padding-bottom: 70px;
   }
 
   .message {
@@ -741,9 +741,15 @@
     max-width: 90%;
   }
   .inputContainer {
-    padding: 1rem;
-    background: white;
+    position: fixed; /* Fix it to the bottom */
+    bottom: 0; /* Align it to the bottom */
+    left: 0;
+    width: 100%; /* Full width of the screen */
+    z-index: 10; /* Ensure it stays above other elements */
+    background: white; /* Match the page background */
     border-top: 1px solid #e9ecef;
+    padding: 1rem;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1); /* Optional shadow */
   }
 
   .buttonGroup {
