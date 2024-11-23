@@ -10,6 +10,7 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../../utils/api';
+import RequestCard from '../requests/RequestCard';
 import Header from '../shared/Header';
 import CreateRequestModal from './CreateRequestModal';
 import styles from './ProjectDetails.module.css';
@@ -22,15 +23,22 @@ const ProjectDetails = () => {
   const [loading, setLoading] = useState(true);
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [error, setError] = useState(null);
+  const [requests, setRequests] = useState([]);
 
   const fetchProject = useCallback(async () => {
     try {
-      const response = await api.get(`/projects/${projectId}`);
-      setProject(response.data);
+      const projectResponse = await api.get(`/projects/${projectId}`);
+      setProject(projectResponse.data);
+
+      const requestsResponse = await api.get(
+        `/requests/?project_id=${projectId}&include_shared=true&skip=0&limit=10`
+      );
+      setRequests(requestsResponse.data);
+
       setError(null);
     } catch (error) {
-      console.error('Error fetching project:', error);
-      setError('Failed to load project details');
+      console.error('Error fetching project or requests:', error);
+      setError('Failed to load project details or requests');
     } finally {
       setLoading(false);
     }
@@ -85,7 +93,7 @@ const ProjectDetails = () => {
             <FileText className={styles.icon} />
             <div className={styles.statInfo}>
               <h3>Active Requests</h3>
-              <p>0</p>
+              <p>{requests.filter((req) => req.status === 'open').length}</p>
             </div>
           </div>
           <div className={styles.statCard}>
@@ -99,14 +107,18 @@ const ProjectDetails = () => {
             <Users className={styles.icon} />
             <div className={styles.statInfo}>
               <h3>Team Members</h3>
-              <p>1</p>
+              <p>{project?.team_members?.length || 1}</p>
             </div>
           </div>
           <div className={styles.statCard}>
             <Clock className={styles.icon} />
             <div className={styles.statInfo}>
               <h3>Last Activity</h3>
-              <p>Today</p>
+              <p>
+                {project?.last_activity
+                  ? new Date(project.last_activity).toLocaleDateString()
+                  : 'Today'}
+              </p>
             </div>
           </div>
         </div>
@@ -167,21 +179,52 @@ const ProjectDetails = () => {
           <div className={styles.tabContent}>
             {activeTab === 'requests' && (
               <div className={styles.requestsTab}>
+                {requests.length > 0 ? (
+                  <div className={styles.requestsList}>
+                    {requests.map((request) => (
+                      <RequestCard
+                        key={request.id}
+                        request={request}
+                        onUpdate={fetchProject}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className={styles.emptyState}>
+                    <FileText size={48} />
+                    <h3>No Requests Yet</h3>
+                    <p>Create your first request to get started</p>
+                    <button
+                      className={styles.primaryButton}
+                      onClick={() => setShowRequestModal(true)}
+                    >
+                      <Plus size={16} />
+                      New Request
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+            {activeTab === 'conversations' && (
+              <div className={styles.conversationsTab}>
+                {/* Conversations content */}
                 <div className={styles.emptyState}>
-                  <FileText size={48} />
-                  <h3>No Requests Yet</h3>
-                  <p>Create your first request to get started</p>
-                  <button
-                    className={styles.primaryButton}
-                    onClick={() => setShowRequestModal(true)}
-                  >
-                    <Plus size={16} />
-                    New Request
-                  </button>
+                  <MessageSquare size={48} />
+                  <h3>No Conversations Yet</h3>
+                  <p>Conversations will appear here once started</p>
                 </div>
               </div>
             )}
-            {/* Add other tab contents similarly */}
+            {activeTab === 'timeline' && (
+              <div className={styles.timelineTab}>
+                {/* Timeline content */}
+                <div className={styles.emptyState}>
+                  <Clock size={48} />
+                  <h3>Timeline Coming Soon</h3>
+                  <p>Project timeline will be available here</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

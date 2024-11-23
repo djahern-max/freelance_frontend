@@ -1,0 +1,78 @@
+/* DashboardCard.module.css */
+.card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .statsSection {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .iconContainer {
+    padding: 0.75rem;
+    background-color: #EBF5FF;
+    border-radius: 8px;
+  }
+  
+  .icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: #2563EB;
+  }
+  
+  .textContainer {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0;
+  }
+  
+  .count {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #2563EB;
+    margin: 0;
+  }
+  
+  .description {
+    color: #666;
+    font-size: 0.875rem;
+    margin: 0;
+  }
+  
+  .viewButton {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: #EBF5FF;
+    color: #2563EB;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .viewButton:hover {
+    background-color: #DBEAFE;
+  }
+  
+  .arrowIcon {
+    width: 1rem;
+    height: 1rem;
+  }

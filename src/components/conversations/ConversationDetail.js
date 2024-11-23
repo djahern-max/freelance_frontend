@@ -69,14 +69,9 @@ const ConversationDetail = () => {
       );
       setAgreement(response.data);
     } catch (err) {
-      if (err.response?.status === 404) {
-        setAgreement(null);
-        return;
-      }
-
-      console.error('Error fetching agreement:', err);
+      // Only log non-404 errors
       if (err.response?.status !== 404) {
-        toast.error('Failed to load agreement details.');
+        console.error('Error fetching agreement:', err);
       }
     }
   }, [conversation?.request_id, token, apiUrl]);
@@ -108,15 +103,18 @@ const ConversationDetail = () => {
   }, [conversation?.messages]);
 
   // 3. Agreement polling
+  // 3. Agreement polling
   useEffect(() => {
     let intervalId;
 
-    if (conversation?.request_id && token && !agreement) {
+    if (conversation?.request_id && token) {
       // Initial fetch
       fetchAgreement();
 
-      // Set up polling only if no agreement exists
-      intervalId = setInterval(fetchAgreement, 5000);
+      // Only set up polling if no agreement exists and conversation is active
+      if (!agreement && conversation.status === 'active') {
+        intervalId = setInterval(fetchAgreement, 5000);
+      }
     }
 
     return () => {
@@ -124,7 +122,13 @@ const ConversationDetail = () => {
         clearInterval(intervalId);
       }
     };
-  }, [conversation?.request_id, token, agreement, fetchAgreement]); // More specific dependency
+  }, [
+    conversation?.request_id,
+    token,
+    agreement,
+    conversation?.status,
+    fetchAgreement,
+  ]);
 
   const sendMessage = async (e, systemMessage = null) => {
     e.preventDefault();
@@ -194,7 +198,7 @@ const ConversationDetail = () => {
     if (agreement) {
       // Changed from setShowAgreement to setShowAgreementModal
       setShowAgreementModal(true);
-    } else if (user.userType === 'developer') {
+    } else if (user.userType === 'developer' || user.userType === 'client') {
       setShowAgreementForm(true);
     }
   };
@@ -203,6 +207,16 @@ const ConversationDetail = () => {
     e.preventDefault();
     setIsSubmittingAgreement(true);
     try {
+      console.log('Creating agreement with:', {
+        request_id: conversation.request_id,
+        client_id:
+          user.userType === 'client' ? user.id : conversation.recipient_user_id,
+        developer_id:
+          user.userType === 'developer'
+            ? user.id
+            : conversation.starter_user_id,
+      });
+
       const response = await axios.post(
         `${apiUrl}/agreements/`,
         {
@@ -227,11 +241,6 @@ const ConversationDetail = () => {
       setAgreement(response.data);
       setShowAgreement(false);
       toast.success('Agreement proposed successfully!');
-      // Send a system message about the agreement
-      await sendMessage({
-        preventDefault: () => {},
-        systemMessage: `${user.username} has proposed a work agreement for $${price}.`,
-      });
     } catch (err) {
       console.error('Failed to create agreement:', err);
       toast.error('Failed to create agreement.');
@@ -296,7 +305,7 @@ const ConversationDetail = () => {
           </div>
         </div>
       ) : (
-        user.userType === 'developer' &&
+        (user.userType === 'developer' || user.userType === 'client') &&
         showAgreementForm && (
           <form onSubmit={createAgreement} className={styles.agreementForm}>
             <h3>Propose Work Agreement</h3>
@@ -408,32 +417,37 @@ const ConversationDetail = () => {
 
       <div className={styles.content}>
         <div className={styles.mainSection}>
-          <div className={styles.messagesContainer}>
-            <div className={styles.emptyMessages}>
-              No messages yet. Scroll Down for Message Input Box.
+        <div className={styles.messagesContainer}>
+  {!conversation.messages?.length ? (
+    <div className={styles.emptyMessages}>
+      No messages yet. Start a conversation!
+    </div>
+  ) : (
+    <>
+      {conversation.messages.map((message) => (
+        <div
+          key={message.id}
+          className={`${styles.messageWrapper} ${
+            message.user_id === user.id ? styles.sent : styles.received
+          }`}
+        >
+          <div className={styles.message}>
+            <div className={styles.messageHeader}>
+              <span className={styles.username}>
+                {message.user_id === user.id ? 'You' : message.username}
+              </span>
+              <span className={styles.timestamp}>
+                {new Date(message.created_at).toLocaleTimeString()}
+              </span>
             </div>
-            {conversation.messages?.map((message) => (
-              <div
-                key={message.id}
-                className={`${styles.messageWrapper} ${
-                  message.user_id === user.id ? styles.sent : styles.received
-                }`}
-              >
-                <div className={styles.message}>
-                  <div className={styles.messageHeader}>
-                    <span className={styles.username}>
-                      {message.user_id === user.id ? 'You' : message.username}
-                    </span>
-                    <span className={styles.timestamp}>
-                      {new Date(message.created_at).toLocaleTimeString()}
-                    </span>
-                  </div>
-                  <p className={styles.messageContent}>{message.content}</p>
-                </div>
-              </div>
-            ))}
-            <div ref={messagesEndRef} />
+            <p className={styles.messageContent}>{message.content}</p>
           </div>
+        </div>
+      ))}
+      <div ref={messagesEndRef} />
+    </>
+  )}
+</div>
 
           <div className={styles.inputContainer}>
             <form onSubmit={sendMessage} className={styles.inputForm}>
@@ -513,11 +527,18 @@ const ConversationDetail = () => {
           </div>
           <div className={styles.sidebarSection}>
             <div className={styles.sectionHeader}>
-              {user.userType === 'developer' &&
+              {(user.userType === 'developer' || user.userType === 'client') &&
                 !agreement &&
                 !showAgreementForm && (
                   <button
-                    onClick={() => setShowAgreementForm(true)}
+                    onClick={() => {
+                      console.log(
+                        'Current showAgreementForm:',
+                        showAgreementForm
+                      );
+                      setShowAgreementForm(true);
+                      console.log('Clicked Create Agreement button');
+                    }}
                     className={styles.createAgreementButton}
                   >
                     <FileText size={16} />
