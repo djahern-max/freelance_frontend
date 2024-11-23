@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import axios from "axios";
+import axios from 'axios';
 import {
-  MessageSquare,
   ArrowLeft,
   Clock,
-  User,
   ExternalLink,
-} from "lucide-react";
-import Header from "../shared/Header";
-import styles from "./RequestDetails.module.css";
+  MessageSquare,
+  User,
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import Header from '../shared/Header';
+import styles from './RequestDetails.module.css';
 
 const RequestDetails = () => {
   const { requestId } = useParams();
@@ -19,6 +19,7 @@ const RequestDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const apiUrl = process.env.REACT_APP_API_URL;
   const token = useSelector((state) => state.auth.token);
   const user = useSelector((state) => state.auth.user);
@@ -43,8 +44,8 @@ const RequestDetails = () => {
         setConversations(relevantConversations);
         setLoading(false);
       } catch (err) {
-        console.error("Error fetching request details:", err);
-        setError("Failed to load request details");
+        console.error('Error fetching request details:', err);
+        setError('Failed to load request details');
         setLoading(false);
       }
     };
@@ -74,18 +75,18 @@ const RequestDetails = () => {
 
       navigate(`/conversations/${response.data.id}`);
     } catch (err) {
-      console.error("Error starting conversation:", err);
-      setError("Failed to start conversation");
+      console.error('Error starting conversation:', err);
+      setError('Failed to start conversation');
     }
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
     });
   };
 
@@ -102,21 +103,28 @@ const RequestDetails = () => {
     return (
       <div className={styles.container}>
         <Header />
-        <div className={styles.error}>{error || "Request not found"}</div>
+        <div className={styles.error}>{error || 'Request not found'}</div>
       </div>
     );
   }
+
+  const handleBack = () => {
+    // If we know where the user came from, we can use that
+    if (location.state?.from) {
+      navigate(location.state.from);
+    } else {
+      // Otherwise, just go back to the previous page
+      navigate(-1);
+    }
+  };
 
   return (
     <div className={styles.container}>
       <Header />
       <main className={styles.content}>
-        <button
-          className={styles.backButton}
-          onClick={() => navigate("/requests/public")}
-        >
+        <button className={styles.backButton} onClick={handleBack}>
           <ArrowLeft className={styles.backIcon} />
-          Back to Requests
+          Back
         </button>
 
         <div className={styles.requestCard}>
@@ -186,7 +194,7 @@ const RequestDetails = () => {
                 >
                   <div className={styles.responseHeader}>
                     <span className={styles.responder}>
-                      From{" "}
+                      From{' '}
                       {conv.starter_user_id === request.user_id
                         ? conv.recipient_username
                         : conv.starter_username}
@@ -198,7 +206,7 @@ const RequestDetails = () => {
                   {conv.last_message && (
                     <p className={styles.messagePreview}>
                       {conv.last_message.substring(0, 100)}
-                      {conv.last_message.length > 100 ? "..." : ""}
+                      {conv.last_message.length > 100 ? '...' : ''}
                     </p>
                   )}
                 </div>

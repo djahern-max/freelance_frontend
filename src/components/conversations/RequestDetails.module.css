@@ -87,6 +87,7 @@
 .viewConversationButton {
   display: flex;
   align-items: center;
+  justify-content: center; /* Center the content */
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
   border-radius: 6px;
@@ -94,6 +95,8 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
+  min-width: 180px; /* Set a fixed minimum width for both buttons */
+  width: auto; /* Allow growing if content is larger */
 }
 
 .startConversationButton {

@@ -92,12 +92,17 @@
   position: relative;
   overflow: hidden;
   transition: all 0.2s ease;
+  cursor: pointer;
 }
 
 .statCard:hover {
-  border-color: var(--color-primary);
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
+  border-color: var(--color-primary);
+}
+
+.statCard:active {
+  transform: translateY(0);
 }
 
 .icon {
@@ -189,6 +194,18 @@
   display: flex;
   flex-direction: column;
   margin-bottom: var(--spacing-md);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.requestCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Make sure buttons don't inherit the hover effect */
+.requestCard:hover .button {
+  transform: none;
 }
 
 .requestContent {
@@ -265,17 +282,30 @@
 /* Empty State */
 .emptyState {
   text-align: center;
-  padding: var(--spacing-xl);
+  padding: 3rem 2rem;
   background: white;
   border-radius: var(--radius-lg);
   border: 2px dashed var(--color-border);
   color: var(--color-text-secondary);
-  font-size: var(--font-size-base);
+}
+
+.emptyStateIcon {
+  width: 48px;
+  height: 48px;
+  color: var(--color-text-secondary);
+  opacity: 0.5;
+  margin-bottom: 1rem;
 }
 
 .emptyState p {
-  margin: var(--spacing-sm) 0;
+  margin: 0.5rem 0;
   color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+}
+
+.emptyState p:first-of-type {
+  font-weight: 500;
+  color: var(--color-text-primary);
 }
 
 /* Loading Container */
@@ -284,6 +314,105 @@
   justify-content: center;
   align-items: center;
   min-height: calc(100vh - 60px); /* Adjust based on your header height */
+}
+
+/* Add these to your existing DeveloperDashboard.module.css */
+
+.newBadge {
+  background: #4f46e5;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-left: 0.5rem;
+}
+
+.requestCard.newRequest {
+  border-left: 4px solid #4f46e5;
+  background: #f9fafb;
+}
+
+.requestHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.newIcon {
+  color: #4f46e5;
+}
+
+.requestActions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.startChatButton {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #4f46e5;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.startChatButton:hover {
+  background: #4338ca;
+}
+
+.sharedRequests {
+  margin: 2rem 0;
+}
+
+.sharedRequests h2 {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.buttonContainer {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  justify-content: flex-start;  /* Align buttons to the left */
+}
+
+.button {
+  min-width: 120px;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  background-color: var(--color-primary);  /* Blue button by default */
+  border: none;
+  color: white;
+}
+
+.button:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.startChatButton {  /* For the Start Conversation button */
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.startChatButton:hover {
+  background-color: #e5e7eb;
 }
 
 /* Tablet and smaller screens */
@@ -329,6 +458,8 @@
   .requestCard {
     padding: var(--spacing-md);
     margin: var(--spacing-sm) var(--spacing-sm);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
   /* Request Meta Info */

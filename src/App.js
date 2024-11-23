@@ -25,6 +25,7 @@ import ProjectsList from './components/projects/ProjectsList';
 import PublicRequests from './components/requests/PublicRequests';
 import Requests from './components/requests/Request';
 import Settings from './components/settings/Settings';
+import Header from './components/shared/Header';
 import VideoUpload from './components/videos/VideoUpload';
 import { login } from './redux/authSlice';
 import { store } from './redux/store';
@@ -71,6 +72,7 @@ function AppContent() {
 
   return (
     <>
+      <Header />
       <div className="app-content">
         <Routes>
           {/* Public routes */}

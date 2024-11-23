@@ -20,7 +20,10 @@ const ConversationDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const messagesEndRef = useRef(null);
+  const { token, user } = useSelector((state) => state.auth);
+  const apiUrl = process.env.REACT_APP_API_URL;
 
+  // State declarations
   const [conversation, setConversation] = useState(null);
   const [requestDetails, setRequestDetails] = useState(null);
   const [newMessage, setNewMessage] = useState('');
@@ -34,8 +37,7 @@ const ConversationDetail = () => {
   const [terms, setTerms] = useState('');
   const [showAgreementModal, setShowAgreementModal] = useState(false);
 
-  const { token, user } = useSelector((state) => state.auth);
-  const apiUrl = process.env.REACT_APP_API_URL;
+  // Fetch conversation data
   const fetchConversation = useCallback(async () => {
     try {
       const conversationRes = await axios.get(`${apiUrl}/conversations/${id}`, {
@@ -59,68 +61,54 @@ const ConversationDetail = () => {
     }
   }, [id, token, apiUrl]);
 
+  // Fetch agreement data
   const fetchAgreement = useCallback(async () => {
+    if (!conversation?.request_id) return;
+
     try {
       const response = await axios.get(
-        `${apiUrl}/agreements/request/${conversation?.request_id}`,
+        `${apiUrl}/agreements/request/${conversation.request_id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
       setAgreement(response.data);
     } catch (err) {
-      // Only log non-404 errors
       if (err.response?.status !== 404) {
         console.error('Error fetching agreement:', err);
       }
     }
   }, [conversation?.request_id, token, apiUrl]);
 
-  // 1. Conversation data fetching
+  // Effect for auto-scrolling messages
   useEffect(() => {
-    let intervalId;
-
-    if (id && token) {
-      // Initial fetch
-      fetchConversation();
-
-      // Set up polling
-      intervalId = setInterval(fetchConversation, 5000);
-    }
-
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-    };
-  }, [id, token, fetchConversation]); // Added fetchConversation to dependencies
-
-  // 2. Messages effect - we can probably remove this if it's not doing anything
-  // If you need to do something when messages change, add it here
-  useEffect(() => {
-    if (conversation?.messages) {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [conversation?.messages]);
 
-  // 3. Agreement polling
-  // 3. Agreement polling
+  // Effect for polling conversation updates
   useEffect(() => {
-    let intervalId;
+    if (!id || !token) return;
 
-    if (conversation?.request_id && token) {
-      // Initial fetch
-      fetchAgreement();
+    fetchConversation();
+    const intervalId = setInterval(fetchConversation, 5000);
 
-      // Only set up polling if no agreement exists and conversation is active
-      if (!agreement && conversation.status === 'active') {
-        intervalId = setInterval(fetchAgreement, 5000);
-      }
-    }
+    return () => clearInterval(intervalId);
+  }, [id, token, fetchConversation]);
+
+  // Effect for polling agreement updates
+  useEffect(() => {
+    if (!conversation?.request_id || !token) return;
+
+    fetchAgreement();
+    const intervalId =
+      !agreement && conversation.status === 'active'
+        ? setInterval(fetchAgreement, 5000)
+        : null;
 
     return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
+      if (intervalId) clearInterval(intervalId);
     };
   }, [
     conversation?.request_id,
@@ -130,73 +118,38 @@ const ConversationDetail = () => {
     fetchAgreement,
   ]);
 
-  const sendMessage = async (e, systemMessage = null) => {
-    e.preventDefault();
-    const messageContent = systemMessage || newMessage.trim();
-    if (!messageContent) return;
-
-    try {
-      await axios.post(
-        `${apiUrl}/conversations/${id}/messages`,
-        { content: messageContent },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setNewMessage('');
-      await fetchConversation();
-    } catch (err) {
-      console.error('Failed to send message:', err);
-      toast.error('Failed to send message.');
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <div className={styles.loadingContainer}>
-        <div className={styles.loading}>Loading conversation...</div>
-        <ToastContainer />
-      </div>
-    );
-  }
-
-  if (!conversation) {
-    return (
-      <div className={styles.loadingContainer}>
-        <div className={styles.loading}>Conversation not found</div>
-        <ToastContainer />
-      </div>
-    );
-  }
-
+  // Utility functions
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
   };
 
-  const handleProfileClick = (userId, userType) => {
-    // Prevent click on current user
-    if (userId === user.id) return;
-
-    // Navigate to the appropriate profile page based on user type
+  const sendSystemMessage = async (content) => {
     try {
-      navigate(`/profile/${userId}`);
+      await axios.post(
+        `${apiUrl}/conversations/${id}/messages`,
+        { content },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      await fetchConversation();
     } catch (err) {
-      console.error('Error navigating to profile:', err);
-      toast.error('Unable to view profile at this time.');
+      console.error('Failed to send system message:', err);
     }
   };
 
+  // Handler functions
   const handleAgreementClick = (e) => {
-    // Don't trigger if clicking accept/reject buttons
     if (e.target.tagName.toLowerCase() === 'button') {
       return;
     }
 
     if (agreement) {
-      // Changed from setShowAgreement to setShowAgreementModal
       setShowAgreementModal(true);
     } else if (user.userType === 'developer' || user.userType === 'client') {
       setShowAgreementForm(true);
@@ -207,16 +160,6 @@ const ConversationDetail = () => {
     e.preventDefault();
     setIsSubmittingAgreement(true);
     try {
-      console.log('Creating agreement with:', {
-        request_id: conversation.request_id,
-        client_id:
-          user.userType === 'client' ? user.id : conversation.recipient_user_id,
-        developer_id:
-          user.userType === 'developer'
-            ? user.id
-            : conversation.starter_user_id,
-      });
-
       const response = await axios.post(
         `${apiUrl}/agreements/`,
         {
@@ -262,13 +205,11 @@ const ConversationDetail = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      fetchAgreement();
+      await fetchAgreement();
       toast.success('Agreement accepted!');
-      // Send a system message about the acceptance
-      await sendMessage({
-        preventDefault: () => {},
-        systemMessage: `${user.username} has accepted the work agreement.`,
-      });
+      await sendSystemMessage(
+        `${user.username} has accepted the work agreement.`
+      );
     } catch (err) {
       console.error('Failed to accept agreement:', err);
       toast.error('Failed to accept agreement.');
@@ -277,79 +218,59 @@ const ConversationDetail = () => {
     }
   };
 
-  const renderAgreementSection = () => (
-    <div className={styles.agreementContent}>
-      {agreement ? (
-        <div className={styles.existingAgreement}>
-          <h3>Work Agreement</h3>
-          <div className={styles.agreementDetails}>
-            <p>
-              <strong>Price:</strong> ${agreement.price}
-            </p>
-            <p>
-              <strong>Status:</strong> {agreement.status}
-            </p>
-            <p>
-              <strong>Terms:</strong> {agreement.terms}
-            </p>
-            {agreement.status === 'proposed' &&
-              user.id !== agreement.proposed_by && (
-                <button
-                  onClick={acceptAgreement}
-                  className={styles.acceptButton}
-                  disabled={isAcceptingAgreement}
-                >
-                  {isAcceptingAgreement ? 'Accepting...' : 'Accept Agreement'}
-                </button>
-              )}
-          </div>
-        </div>
-      ) : (
-        (user.userType === 'developer' || user.userType === 'client') &&
-        showAgreementForm && (
-          <form onSubmit={createAgreement} className={styles.agreementForm}>
-            <h3>Propose Work Agreement</h3>
-            <div className={styles.formGroup}>
-              <label>Price (USD)</label>
-              <input
-                type="number"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                required
-                className={styles.input}
-              />
-            </div>
-            <div className={styles.formGroup}>
-              <label>Terms and Conditions</label>
-              <textarea
-                value={terms}
-                onChange={(e) => setTerms(e.target.value)}
-                required
-                className={styles.textarea}
-                placeholder="Describe the work terms, timeline, and payment schedule..."
-              />
-            </div>
-            <div className={styles.buttonGroup}>
-              <button
-                type="submit"
-                className={styles.submitButton}
-                disabled={isSubmittingAgreement}
-              >
-                {isSubmittingAgreement ? 'Creating...' : 'Propose Agreement'}
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowAgreementForm(false)}
-                className={styles.cancelButton}
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        )
-      )}
-    </div>
-  );
+  const handleProposal = async (accept) => {
+    try {
+      await axios.put(
+        `${apiUrl}/conversations/${id}`,
+        {
+          status: accept ? 'active' : 'declined',
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      setConversation((prev) => ({
+        ...prev,
+        status: accept ? 'active' : 'declined',
+      }));
+
+      await sendSystemMessage(
+        `${user.username} has ${
+          accept ? 'accepted' : 'declined'
+        } the conversation.`
+      );
+
+      toast.success(
+        `Conversation ${accept ? 'accepted' : 'declined'} successfully`
+      );
+    } catch (err) {
+      console.error('Error updating conversation:', err);
+      toast.error(`Failed to ${accept ? 'accept' : 'decline'} conversation`);
+    }
+  };
+
+  const sendMessage = async (e) => {
+    e.preventDefault();
+    if (!newMessage.trim()) return;
+
+    try {
+      await axios.post(
+        `${apiUrl}/conversations/${id}/messages`,
+        { content: newMessage.trim() },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setNewMessage('');
+      await fetchConversation();
+    } catch (err) {
+      console.error('Failed to send message:', err);
+      toast.error('Failed to send message.');
+    }
+  };
+
+  // Loading states
   if (isLoading) {
     return (
       <div className={styles.loadingContainer}>
@@ -368,46 +289,10 @@ const ConversationDetail = () => {
     );
   }
 
-  const handleProposal = async (accept) => {
-    try {
-      // Update the conversation status
-      const response = await axios.put(
-        `${apiUrl}/conversations/${id}`,
-        {
-          status: accept ? 'active' : 'declined',
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      // Update local state
-      setConversation((prev) => ({
-        ...prev,
-        status: accept ? 'active' : 'declined',
-      }));
-
-      // Send system message
-      await sendMessage({
-        preventDefault: () => {},
-        systemMessage: `${user.username} has ${
-          accept ? 'accepted' : 'declined'
-        } the conversation.`,
-      });
-
-      // Show success message
-      toast.success(
-        `Conversation ${accept ? 'accepted' : 'declined'} successfully`
-      );
-    } catch (err) {
-      console.error('Error updating conversation:', err);
-      toast.error(`Failed to ${accept ? 'accept' : 'decline'} conversation`);
-    }
-  };
-
   return (
     <div className={styles.container}>
       <ToastContainer />
+
       <div className={styles.header}>
         <button className={styles.backButton} onClick={() => navigate(-1)}>
           <ArrowLeft size={20} />
@@ -416,38 +301,43 @@ const ConversationDetail = () => {
       </div>
 
       <div className={styles.content}>
+        {/* Main Messages Section */}
         <div className={styles.mainSection}>
-        <div className={styles.messagesContainer}>
-  {!conversation.messages?.length ? (
-    <div className={styles.emptyMessages}>
-      No messages yet. Start a conversation!
-    </div>
-  ) : (
-    <>
-      {conversation.messages.map((message) => (
-        <div
-          key={message.id}
-          className={`${styles.messageWrapper} ${
-            message.user_id === user.id ? styles.sent : styles.received
-          }`}
-        >
-          <div className={styles.message}>
-            <div className={styles.messageHeader}>
-              <span className={styles.username}>
-                {message.user_id === user.id ? 'You' : message.username}
-              </span>
-              <span className={styles.timestamp}>
-                {new Date(message.created_at).toLocaleTimeString()}
-              </span>
-            </div>
-            <p className={styles.messageContent}>{message.content}</p>
+          <div className={styles.messagesContainer}>
+            {!conversation.messages?.length ? (
+              <div className={styles.emptyMessages}>
+                No messages yet. Start a conversation!
+              </div>
+            ) : (
+              <>
+                {conversation.messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`${styles.messageWrapper} ${
+                      message.user_id === user.id
+                        ? styles.sent
+                        : styles.received
+                    }`}
+                  >
+                    <div className={styles.message}>
+                      <div className={styles.messageHeader}>
+                        <span className={styles.username}>
+                          {message.user_id === user.id
+                            ? 'You'
+                            : message.username}
+                        </span>
+                        <span className={styles.timestamp}>
+                          {new Date(message.created_at).toLocaleTimeString()}
+                        </span>
+                      </div>
+                      <p className={styles.messageContent}>{message.content}</p>
+                    </div>
+                  </div>
+                ))}
+                <div ref={messagesEndRef} />
+              </>
+            )}
           </div>
-        </div>
-      ))}
-      <div ref={messagesEndRef} />
-    </>
-  )}
-</div>
 
           <div className={styles.inputContainer}>
             <form onSubmit={sendMessage} className={styles.inputForm}>
@@ -465,7 +355,9 @@ const ConversationDetail = () => {
           </div>
         </div>
 
+        {/* Sidebar */}
         <div className={styles.sidebar}>
+          {/* Request Details Section */}
           <div className={styles.sidebarSection}>
             <h2 className={styles.sidebarTitle}>Request Details</h2>
             <div className={styles.requestDetails}>
@@ -499,46 +391,14 @@ const ConversationDetail = () => {
             </div>
           </div>
 
-          <div className={styles.sidebarSection}>
-            <h2 className={styles.sidebarTitle}>Participants</h2>
-            {[
-              {
-                id: conversation.starter_user_id,
-                name: conversation.starter_username,
-              },
-              {
-                id: conversation.recipient_user_id,
-                name: conversation.recipient_username,
-              },
-            ].map((participant) => (
-              <div
-                key={participant.id}
-                className={`${styles.participant} ${
-                  participant.id === user.id ? styles.currentUser : ''
-                }`}
-              >
-                <User size={16} />
-                <span>{participant.name}</span>
-                {participant.id === user.id && (
-                  <span className={styles.youLabel}>(You)</span>
-                )}
-              </div>
-            ))}
-          </div>
+          {/* Agreement Section */}
           <div className={styles.sidebarSection}>
             <div className={styles.sectionHeader}>
               {(user.userType === 'developer' || user.userType === 'client') &&
                 !agreement &&
                 !showAgreementForm && (
                   <button
-                    onClick={() => {
-                      console.log(
-                        'Current showAgreementForm:',
-                        showAgreementForm
-                      );
-                      setShowAgreementForm(true);
-                      console.log('Clicked Create Agreement button');
-                    }}
+                    onClick={() => setShowAgreementForm(true)}
                     className={styles.createAgreementButton}
                   >
                     <FileText size={16} />
@@ -585,10 +445,86 @@ const ConversationDetail = () => {
                 </div>
               </div>
             ) : (
-              showAgreementForm && renderAgreementSection()
+              showAgreementForm && (
+                <div className={styles.agreementContent}>
+                  <form
+                    onSubmit={createAgreement}
+                    className={styles.agreementForm}
+                  >
+                    <h3>Propose Work Agreement</h3>
+                    <div className={styles.formGroup}>
+                      <label>Price (USD)</label>
+                      <input
+                        type="number"
+                        value={price}
+                        onChange={(e) => setPrice(e.target.value)}
+                        required
+                        className={styles.input}
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label>Terms and Conditions</label>
+                      <textarea
+                        value={terms}
+                        onChange={(e) => setTerms(e.target.value)}
+                        required
+                        className={styles.textarea}
+                        placeholder="Describe the work terms, timeline, and payment schedule..."
+                      />
+                    </div>
+                    <div className={styles.buttonGroup}>
+                      <button
+                        type="submit"
+                        className={styles.submitButton}
+                        disabled={isSubmittingAgreement}
+                      >
+                        {isSubmittingAgreement
+                          ? 'Creating...'
+                          : 'Propose Agreement'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowAgreementForm(false)}
+                        className={styles.cancelButton}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )
             )}
           </div>
 
+          {/* Participants Section */}
+          <div className={styles.sidebarSection}>
+            <h2 className={styles.sidebarTitle}>Participants</h2>
+            {[
+              {
+                id: conversation.starter_user_id,
+                name: conversation.starter_username,
+              },
+              {
+                id: conversation.recipient_user_id,
+                name: conversation.recipient_username,
+              },
+            ].map((participant) => (
+              <div
+                key={participant.id}
+                className={`${styles.participant} ${
+                  participant.id === user.id ? styles.currentUser : ''
+                }`}
+              >
+                <User size={16} />
+                <span>{participant.name}</span>
+                {participant.id === user.id && (
+                  <span className={styles.youLabel}>(You)</span>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Actions Section */}
           {user.userType === 'client' && conversation.status === 'pending' && (
             <div className={styles.sidebarSection}>
               <h2 className={styles.sidebarTitle}>Actions</h2>
@@ -612,6 +548,8 @@ const ConversationDetail = () => {
           )}
         </div>
       </div>
+
+      {/* Agreement Modal */}
       {showAgreementModal && agreement && (
         <div
           className={styles.modalOverlay}
