@@ -1,449 +1,299 @@
 import axios from 'axios';
+import { FileEdit, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { login, logout } from '../../redux/authSlice';
-import ConversationNotifications from '../conversations/ConversationNotification';
+import { useSelector } from 'react-redux';
 import CommandDisplay from '../shared/CommandDisplay';
 import Header from '../shared/Header';
 import styles from './Request.module.css';
 import RequestSharing from './RequestSharing';
 
-// Import images
-import del from '../../images/Delete.png';
-import edit from '../../images/Notes.png';
-
-const apiUrl = process.env.REACT_APP_API_URL;
-
 const Request = () => {
-  const dispatch = useDispatch();
   const { token } = useSelector((state) => state.auth);
-  const navigate = useNavigate();
+  const apiUrl = process.env.REACT_APP_API_URL;
 
+  // State Management
   const [requests, setRequests] = useState([]);
-  const [sharedRequests, setSharedRequests] = useState([]);
   const [projects, setProjects] = useState([]);
-  const [selectedProject, setSelectedProject] = useState(null);
-  const [projectId, setProjectId] = useState(null);
-
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [isPublic, setIsPublic] = useState(false);
-
+  const [formData, setFormData] = useState({
+    title: '',
+    content: '',
+    project_id: '',
+    is_public: false,
+    estimated_budget: '',
+  });
   const [editMode, setEditMode] = useState(false);
   const [editRequestId, setEditRequestId] = useState(null);
-
-  const [estimatedBudget, setEstimatedBudget] = useState('');
-
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogout = useCallback(() => {
-    localStorage.removeItem('authToken');
-    dispatch(logout());
-    navigate('/');
-  }, [dispatch, navigate]);
-
-  const handleError = useCallback(
-    (error) => {
-      if (error.response?.status === 401) {
-        setError('Unauthorized. Please log in again.');
-        handleLogout();
-      } else {
-        setError('An error occurred. Please try again.');
-      }
-    },
-    [handleLogout]
-  );
-
-  const fetchRequests = useCallback(
-    async (projectId = null) => {
-      setIsLoading(true);
-      try {
-        const params = projectId ? { project_id: projectId } : undefined;
-        const response = await axios.get(`${apiUrl}/requests/`, {
-          headers: { Authorization: `Bearer ${token}` },
-          params,
-        });
-        setRequests(response.data);
-      } catch (error) {
-        console.error('Error fetching requests:', error);
-        handleError(error);
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [token, handleError]
-  );
-
-  useEffect(() => {
-    const validateToken = async () => {
-      if (token) {
-        try {
-          const response = await axios.get(`${apiUrl}/auth/me`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          dispatch(login({ username: response.data.username, token }));
-        } catch (error) {
-          console.error('Token validation failed', error);
-          dispatch(logout());
-        }
-      }
-    };
-    validateToken();
-  }, [token, dispatch]);
-
-  useEffect(() => {
-    const fetchSharedRequests = async () => {
-      if (token) {
-        try {
-          const response = await axios.get(
-            `${apiUrl}/requests/shared-with-me`,
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
-          setSharedRequests(response.data);
-        } catch (error) {
-          console.error('Failed to fetch shared requests:', error);
-        }
-      }
-    };
-    fetchSharedRequests();
-  }, [token]);
-
-  useEffect(() => {
-    const fetchProjects = async () => {
-      if (token) {
-        try {
-          const response = await axios.get(`${apiUrl}/projects/`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          setProjects(response.data);
-        } catch (error) {
-          console.error('Failed to fetch projects');
-        }
-      }
-    };
-    fetchProjects();
-  }, [token]);
-
-  useEffect(() => {
-    if (token && projectId !== null) {
-      fetchRequests(projectId);
-    }
-  }, [token, projectId, fetchRequests]);
-
-  const editRequest = (request) => {
-    setEditMode(true);
-    setEditRequestId(request.id);
-    setTitle(request.title);
-    setContent(request.content);
-    setProjectId(request.project_id);
-    setIsPublic(request.is_public);
-    setEstimatedBudget(request.estimated_budget || '');
-  };
-
-  const selectProject = (project) => {
-    setProjectId(project.id);
-    setSelectedProject(project);
-  };
-
-  const createRequest = async (e) => {
-    e.preventDefault();
+  // Fetch Requests and Projects
+  const fetchRequests = useCallback(async () => {
+    setIsLoading(true);
     try {
-      await axios.post(
-        `${apiUrl}/requests/`,
-        {
-          title,
-          content,
-          project_id: projectId,
-          is_public: isPublic,
-          estimated_budget: estimatedBudget ? Number(estimatedBudget) : null,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-      setTitle('');
-      setContent('');
-      setEstimatedBudget('');
-      fetchRequests(projectId);
-    } catch (error) {
-      handleError(error);
-    }
-  };
-
-  const updateRequest = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.put(
-        `${apiUrl}/requests/${editRequestId}`,
-        {
-          title,
-          content,
-          project_id: projectId,
-          estimated_budget: estimatedBudget ? Number(estimatedBudget) : null,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-      setEditMode(false);
-      setEditRequestId(null);
-      setTitle('');
-      setContent('');
-      setEstimatedBudget('');
-      fetchRequests(projectId);
-    } catch (error) {
-      handleError(error);
-    }
-  };
-  const deleteRequest = async (id) => {
-    try {
-      await axios.delete(`${apiUrl}/requests/${id}`, {
+      const response = await axios.get(`${apiUrl}/requests/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      fetchRequests(projectId);
+      console.log('Fetched requests:', response.data); // Add this debug log
+      setRequests(response.data);
     } catch (error) {
-      handleError(error);
+      console.error('Error fetching requests:', error); // Change this to see more details
+      setError('Failed to fetch requests');
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, [apiUrl, token]);
 
-  const deleteProject = async (projectId) => {
+  const fetchProjects = useCallback(async () => {
     try {
-      await axios.delete(`${apiUrl}/projects/${projectId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      setSelectedProject(null);
-      setProjectId(null);
-      setRequests([]);
-      setError(null);
-
       const response = await axios.get(`${apiUrl}/projects/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setProjects(response.data);
     } catch (error) {
-      if (error.response?.status === 400) {
-        setError(
-          'This project contains requests. Please delete all requests within the project before deleting the project.'
-        );
-      } else {
-        handleError(error);
-      }
+      console.error('Failed to fetch projects');
     }
+  }, [apiUrl, token]);
+
+  useEffect(() => {
+    fetchRequests();
+    fetchProjects();
+  }, [fetchRequests, fetchProjects]);
+
+  // Form Handlers
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
   };
 
-  const toggleRequestPrivacy = async (requestId, currentIsPublic) => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
+
+    const payload = {
+      ...formData,
+      project_id: formData.project_id || null,
+      estimated_budget: formData.estimated_budget
+        ? Number(formData.estimated_budget)
+        : null,
+    };
+
     try {
-      await axios.put(
-        `${apiUrl}/requests/${requestId}/privacy`,
-        null, // No data in the body
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          params: { is_public: !currentIsPublic }, // Pass is_public as a query parameter
-        }
-      );
-      fetchRequests(projectId); // Refresh the requests list if needed
+      if (editMode) {
+        await axios.put(`${apiUrl}/requests/${editRequestId}`, payload, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+      } else {
+        await axios.post(`${apiUrl}/requests/`, payload, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+      }
+
+      setFormData({
+        title: '',
+        content: '',
+        project_id: '',
+        is_public: false,
+        estimated_budget: '',
+      });
+      setEditMode(false);
+      setEditRequestId(null);
+      fetchRequests();
     } catch (error) {
-      console.error('Error toggling request privacy:', error);
+      setError(error.response?.data?.detail || 'Failed to save request');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const renderSidebar = () => (
-    <div className={styles.sidebar}>
-      <button
-        className={styles.createProjectButton}
-        onClick={() => navigate('/create-project')}
-      >
-        Create Project
-      </button>
+  const handleEdit = (request) => {
+    setEditMode(true);
+    setEditRequestId(request.id);
+    setFormData({
+      title: request.title,
+      content: request.content,
+      project_id: request.project_id || '',
+      is_public: request.is_public,
+      estimated_budget: request.estimated_budget || '',
+    });
+  };
 
-      <h2>Projects</h2>
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this request?'))
+      return;
 
-      <ul>
-        {projects.map((project) => (
-          <li key={project.id} className={styles.projectItem}>
-            <div className={styles.projectRow}>
-              <a href="#" onClick={() => selectProject(project)}>
-                {project.name}
-              </a>
-              <span
-                className={styles.deleteX}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (
-                    window.confirm(
-                      `Are you sure you want to delete ${project.name}?`
-                    )
-                  ) {
-                    deleteProject(project.id);
-                  }
-                }}
-              >
-                ×
-              </span>
-            </div>
-          </li>
-        ))}
-      </ul>
-      <ConversationNotifications apiUrl={apiUrl} />
-
-      <h2 className={styles.sharedRequestsTitle}>Shared Requests</h2>
-      <ul className={styles.sharedRequestsList}>
-        {sharedRequests
-          ?.sort(
-            (a, b) =>
-              new Date(b.updated_at || b.created_at) -
-              new Date(a.updated_at || a.created_at)
-          )
-          .map((request) => (
-            <li key={request.id} className={styles.sharedRequestItem}>
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setRequests([request]);
-                  setSelectedProject(null);
-                  setProjectId(null);
-                }}
-              >
-                <span className={styles.requestTitle}>{request.title}</span>
-                <div className={styles.sharedByText}>
-                  Shared by: {request.owner_username || 'Unknown'}
-                </div>
-              </a>
-            </li>
-          ))}
-      </ul>
-    </div>
-  );
-
-  const renderRequestsList = () => (
-    <ul className={styles.requestsList}>
-      {Array.isArray(requests) && requests.length > 0 ? (
-        requests.map((request) => (
-          <li key={request.id} className={styles.requestItem}>
-            <h2>{request.title}</h2>
-            <CommandDisplay text={request.content} />
-            <div className={styles.requestActions}>
-              <img
-                src={edit}
-                alt="Edit Request"
-                className={styles.iconButton}
-                onClick={() => editRequest(request)}
-              />
-              <img
-                src={del}
-                alt="Delete Request"
-                className={styles.iconButton}
-                onClick={() => deleteRequest(request.id)}
-              />
-            </div>
-            <RequestSharing
-              requestId={request.id}
-              token={token}
-              apiUrl={apiUrl}
-              onShareComplete={() => fetchRequests(projectId)}
-              request={request}
-              toggleRequestPrivacy={toggleRequestPrivacy}
-            />
-          </li>
-        ))
-      ) : (
-        <p>
-          {selectedProject
-            ? 'Add a request'
-            : projects.length > 0
-            ? 'Please make your selection from the menu or create a new project.'
-            : 'No requests available yet.'}
-        </p>
-      )}
-    </ul>
-  );
+    try {
+      await axios.delete(`${apiUrl}/requests/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchRequests();
+    } catch (error) {
+      setError('Failed to delete request');
+    }
+  };
 
   return (
-    <div className={styles.requestsContainer}>
+    <div className={styles.container}>
       <Header />
-      <div className={styles.mainContent}>
-        {renderSidebar()}
-        <div className={styles.requestsContent}>
-          {selectedProject && <h2>{selectedProject.name}</h2>}
+      <div className={styles.content}>
+        <div className={styles.formCard}>
+          <h2 className={styles.formTitle}>
+            {editMode ? 'Edit Request' : 'Create New Request'}
+          </h2>
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Title</label>
+              <input
+                type="text"
+                name="title"
+                value={formData.title}
+                onChange={handleInputChange}
+                className={styles.input}
+                required
+              />
+            </div>
 
-          <div className={styles.dropdown}>
-            <select
-              className={styles.selectField}
-              value={projectId || ''}
-              onChange={(e) =>
-                selectProject(
-                  projects.find((p) => p.id === parseInt(e.target.value))
-                )
-              }
-            >
-              <option value="">All Projects</option>
-              {projects.map((project) => (
-                <option key={project.id} value={project.id}>
-                  {project.name}
-                </option>
-              ))}
-            </select>
-            {/* Place the button here */}
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Description</label>
+              <textarea
+                name="content"
+                value={formData.content}
+                onChange={handleInputChange}
+                className={styles.textarea}
+                rows={4}
+                required
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Project (Optional)</label>
+              <select
+                name="project_id"
+                value={formData.project_id}
+                onChange={handleInputChange}
+                className={styles.select}
+              >
+                <option value="">No Project</option>
+                {projects.map((project) => (
+                  <option key={project.id} value={project.id}>
+                    {project.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Estimated Budget ($)</label>
+              <input
+                type="number"
+                name="estimated_budget"
+                value={formData.estimated_budget}
+                onChange={handleInputChange}
+                className={styles.input}
+                min="0"
+                step="0.01"
+              />
+            </div>
+
+            <div className={styles.checkboxGroup}>
+              <input
+                type="checkbox"
+                name="is_public"
+                id="is_public"
+                checked={formData.is_public}
+                onChange={handleInputChange}
+                className={styles.checkbox}
+              />
+              <label htmlFor="is_public" className={styles.label}>
+                Make this request public
+              </label>
+            </div>
+
+            {error && <div className={styles.error}>{error}</div>}
+
             <button
-              className={styles.createProjectButton}
-              onClick={() => navigate('/create-project')}
+              type="submit"
+              disabled={isLoading}
+              className={styles.submitButton}
             >
-              Create Project
-            </button>
-          </div>
-
-          {error && <p className={styles.error}>{error}</p>}
-
-          <form
-            className={styles.requestForm}
-            onSubmit={editMode ? updateRequest : createRequest}
-          >
-            <input
-              type="text"
-              className={styles.inputField}
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Title"
-              required
-            />
-            <textarea
-              className={`${styles.inputField} ${styles.commandDisplay}`}
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Content"
-              required
-            />
-            <input
-              type="number"
-              className={styles.inputField}
-              value={estimatedBudget}
-              onChange={(e) => setEstimatedBudget(e.target.value)}
-              placeholder="Estimated Budget ($)"
-            />
-            <button type="submit" className={styles.addRequestButton}>
-              {editMode ? 'Update Request' : 'Add Request'}
+              {isLoading
+                ? 'Saving...'
+                : editMode
+                ? 'Update Request'
+                : 'Create Request'}
             </button>
           </form>
+        </div>
 
-          {isLoading ? (
-            <div className={styles.loadingContainer}>
-              <p>Loading requests...</p>
+        <div className={styles.requestsList}>
+          <h2 className={styles.formTitle}>Your Requests</h2>
+          {requests.map((request) => (
+            <div key={request.id} className={styles.requestCard}>
+              <div className={styles.requestHeader}>
+                <div>
+                  <h3 className={styles.requestTitle}>{request.title}</h3>
+                  {request.project_id && (
+                    <span className={styles.projectTag}>
+                      Project:{' '}
+                      {projects.find((p) => p.id === request.project_id)?.name}
+                    </span>
+                  )}
+                </div>
+                <div className={styles.actions}>
+                  <button
+                    onClick={() => handleEdit(request)}
+                    className={styles.iconButton}
+                  >
+                    <FileEdit size={20} />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(request.id)}
+                    className={styles.deleteButton}
+                  >
+                    <Trash2 size={20} />
+                  </button>
+                </div>
+              </div>
+
+              <CommandDisplay text={request.content} />
+
+              <RequestSharing
+                requestId={request.id}
+                token={token}
+                apiUrl={apiUrl}
+                onShareComplete={fetchRequests}
+                request={request}
+                toggleRequestPrivacy={(id, isPublic) => {
+                  // Implementation for toggling privacy
+                  const togglePrivacy = async () => {
+                    try {
+                      await axios.put(
+                        `${apiUrl}/requests/${id}/privacy`,
+                        null,
+                        {
+                          headers: { Authorization: `Bearer ${token}` },
+                          params: { is_public: !isPublic },
+                        }
+                      );
+                      fetchRequests();
+                    } catch (error) {
+                      console.error('Error toggling privacy:', error);
+                    }
+                  };
+                  togglePrivacy();
+                }}
+              />
             </div>
-          ) : (
-            renderRequestsList()
-          )}
+          ))}
         </div>
       </div>
     </div>

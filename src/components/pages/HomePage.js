@@ -3,6 +3,7 @@ import { selectIsAuthenticated, selectUser } from '../../redux/authSlice';
 import ClientDashboard from '../dashboards/ClientDashboard';
 import DeveloperDashboard from '../dashboards/DeveloperDashboard';
 import Features from '../shared/Features';
+import Header from '../shared/Header';
 
 function HomePage() {
   const isAuthenticated = useSelector(selectIsAuthenticated);
@@ -22,6 +23,7 @@ function HomePage() {
   // Public landing page with Features
   return (
     <main className="landing-container" style={{ marginTop: '0' }}>
+      <Header />
       <Features />
     </main>
   );

@@ -8,7 +8,7 @@ const RequestSharing = ({
   apiUrl,
   onShareComplete,
   request,
-  toggleRequestPrivacy, // Ensure this is only used as a prop
+  toggleRequestPrivacy,
 }) => {
   const [shareUsername, setShareUsername] = useState('');
   const [suggestions, setSuggestions] = useState([]);
@@ -20,9 +20,15 @@ const RequestSharing = ({
   const suggestionsRef = useRef(null);
 
   useEffect(() => {
-    if (request && request.shared_with) {
+    console.log('Request data (full):', JSON.stringify(request, null, 2));
+    console.log('Shared with:', request?.shared_with);
+    console.log('Shared with info:', request?.shared_with_info);
+
+    const sharedWithData = request?.shared_with || request?.shared_with_info;
+
+    if (sharedWithData) {
       setSharedUsers(
-        request.shared_with.map((share) => ({
+        sharedWithData.map((share) => ({
           id: share.user_id,
           username: share.username,
           can_edit: share.can_edit,
@@ -33,9 +39,30 @@ const RequestSharing = ({
     }
   }, [request]);
 
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(event.target) &&
+        !inputRef.current.contains(event.target)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const searchUsers = async (query) => {
-    if (!query.startsWith('@')) return;
-    const searchTerm = query.slice(1);
+    if (!query.trim()) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    const searchTerm = query.startsWith('@') ? query.slice(1) : query;
 
     try {
       const response = await fetch(
@@ -48,12 +75,11 @@ const RequestSharing = ({
         const users = await response.json();
         setSuggestions(users || []);
         setShowSuggestions(true);
-      } else {
-        setSuggestions([]);
       }
     } catch (error) {
       console.error('Error searching users:', error);
       setSuggestions([]);
+      setShowSuggestions(false);
     }
   };
 
@@ -61,7 +87,8 @@ const RequestSharing = ({
     const value = e.target.value;
     setShareUsername(value);
 
-    if (value.includes('@')) {
+    // Start searching as soon as user types
+    if (value.trim()) {
       searchUsers(value);
     } else {
       setSuggestions([]);
@@ -70,20 +97,23 @@ const RequestSharing = ({
   };
 
   const handleSuggestionClick = (username) => {
-    setShareUsername(`@${username}`);
+    setShareUsername(username);
     setSuggestions([]);
     setShowSuggestions(false);
     inputRef.current?.focus();
   };
 
   const handleShare = async () => {
+    if (!shareUsername.trim()) {
+      setError('Please enter a username');
+      return;
+    }
+
     setIsLoading(true);
     setError('');
 
     try {
-      const username = shareUsername.startsWith('@')
-        ? shareUsername.slice(1)
-        : shareUsername;
+      const username = shareUsername.replace('@', '');
 
       const userSearchResponse = await fetch(
         `${apiUrl}/requests/users/search?q=${username}`,
@@ -97,10 +127,18 @@ const RequestSharing = ({
       }
 
       const users = await userSearchResponse.json();
-      const userToShare = users.find((u) => u.username === username);
+      const userToShare = users.find(
+        (u) => u.username.toLowerCase() === username.toLowerCase()
+      );
 
       if (!userToShare) {
         throw new Error('User not found');
+      }
+
+      // Check if already shared
+      if (sharedUsers.some((user) => user.username === userToShare.username)) {
+        setError('Request is already shared with this user');
+        return;
       }
 
       const response = await fetch(`${apiUrl}/requests/${requestId}/share`, {
@@ -115,19 +153,9 @@ const RequestSharing = ({
         }),
       });
 
-      const responseData = await response.json();
-      console.log('Share response:', response.status, responseData);
-
       if (!response.ok) {
-        if (
-          response.status === 400 &&
-          responseData.detail?.includes('already shared')
-        ) {
-          setError('Request is already shared with this user');
-        } else {
-          throw new Error(responseData.detail || 'Failed to share request');
-        }
-        return;
+        const responseData = await response.json();
+        throw new Error(responseData.detail || 'Failed to share request');
       }
 
       setSharedUsers((prev) => [
@@ -140,15 +168,9 @@ const RequestSharing = ({
       ]);
 
       setShareUsername('');
-      setSuggestions([]);
-      setShowSuggestions(false);
       if (onShareComplete) onShareComplete();
     } catch (error) {
-      console.error('Share error:', error);
-      setError(
-        error.message ||
-          'Failed to share request. Please check the username and try again.'
-      );
+      setError(error.message || 'Failed to share request');
     } finally {
       setIsLoading(false);
     }
@@ -167,17 +189,15 @@ const RequestSharing = ({
       if (response.ok) {
         setSharedUsers((prev) => prev.filter((user) => user.id !== userId));
         if (onShareComplete) onShareComplete();
-      } else {
-        const errorText = await response.text();
-        console.error('Error details:', errorText);
       }
     } catch (error) {
       console.error('Error removing share:', error);
+      setError('Failed to remove share');
     }
   };
 
   return (
-    <div className={styles.shareContainer}>
+    <div className={styles.sharingSection}>
       <div className={styles.shareControls}>
         <div className={styles.inputWrapper}>
           <input
@@ -186,7 +206,7 @@ const RequestSharing = ({
             className={styles.shareInput}
             value={shareUsername}
             onChange={handleInputChange}
-            placeholder="@username to share with"
+            placeholder="@Type username to share"
           />
 
           {showSuggestions && suggestions.length > 0 && (
@@ -194,7 +214,7 @@ const RequestSharing = ({
               {suggestions.map((user) => (
                 <div
                   key={user.id}
-                  className={styles.suggestionItem}
+                  className={styles.suggestion}
                   onClick={() => handleSuggestionClick(user.username)}
                 >
                   @{user.username}
@@ -212,34 +232,47 @@ const RequestSharing = ({
           {isLoading ? 'Sharing...' : 'Share'}
         </button>
 
-        <label className={styles.toggleSwitch}>
-          <input
-            type="checkbox"
-            checked={request.is_public}
-            onChange={() => toggleRequestPrivacy(request.id, request.is_public)}
-          />
-          <span className={styles.slider}></span>
-        </label>
-        <span className={styles.privacyStatus}>
-          {request.is_public ? 'Public' : 'Not Public'}
-        </span>
+        <div className={styles.toggleGroup}>
+          <label className={styles.toggleSwitch}>
+            <input
+              type="checkbox"
+              className={styles.toggleInput}
+              checked={request.is_public}
+              onChange={() =>
+                toggleRequestPrivacy(request.id, request.is_public)
+              }
+            />
+            <span className={styles.slider}></span>
+          </label>
+          <span className={styles.toggleLabel}>
+            {request.is_public ? 'Public' : 'Private'}
+          </span>
+        </div>
       </div>
 
       {error && <div className={styles.error}>{error}</div>}
 
-      {sharedUsers && sharedUsers.length > 0 && (
-        <div className={styles.sharedWithSection}>
+      {/* Add this section to display shared users */}
+      {(sharedUsers?.length > 0 || request?.shared_with?.length > 0) && (
+        <div className={styles.sharedWithList}>
           <div className={styles.sharedWithTitle}>Shared with:</div>
           <div className={styles.sharedUsersList}>
-            {sharedUsers.map((user) => (
-              <span key={user.id} className={styles.sharedUser}>
-                <span className={styles.username}>@{user.username}</span>
-                <XCircle
-                  className={styles.removeIcon}
-                  onClick={() => removeShare(user.id)}
-                />
-              </span>
-            ))}
+            {(sharedUsers.length > 0 ? sharedUsers : request.shared_with).map(
+              (share) => (
+                <div
+                  key={share.user_id || share.id}
+                  className={styles.sharedUser}
+                >
+                  <span className={styles.username}>@{share.username}</span>
+                  <button
+                    className={styles.removeUserButton}
+                    onClick={() => removeShare(share.user_id || share.id)}
+                  >
+                    <XCircle size={16} />
+                  </button>
+                </div>
+              )
+            )}
           </div>
         </div>
       )}
