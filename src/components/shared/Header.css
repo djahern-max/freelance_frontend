@@ -17,20 +17,19 @@
 
 .iconBar {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-evenly;
   align-items: center;
   width: 100%;
-  max-width: 1000px;
-  padding: 0 var(--spacing-sm);
+  max-width: 1200px;
+  padding: 0 20px;
   box-sizing: border-box;
-  gap: var(--spacing-sm);
 }
 
 .icon {
   cursor: pointer;
-  width: 40px; /* Reduced from 45px */
-  height: 40px; /* Reduced from 45px */
-  padding: 4px; /* Reduced from 6px */
+  width: 40px;
+  height: 40px;
+  padding: 8px;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
@@ -50,19 +49,11 @@
   transition: all 0.2s ease;
 }
 
-.icon.active {
-  background-color: var(--color-background-hover);
-  color: var(--color-primary);
-}
-
-.icon.active .iconImage {
-  color: var(--color-primary);
-}
+/* Removed .icon.active styles since we're no longer showing the current page */
 
 .profileSection {
   display: flex;
   gap: var(--spacing-sm);
-  margin-left: auto;
 }
 
 .profileIcon {
@@ -83,28 +74,12 @@
   }
 
   .iconBar {
-    padding: 0 var(--spacing-sm);
-    gap: var(--spacing-sm);
+    padding: 0 10px;
   }
 
   .icon {
-    width: 40px;
-    height: 40px;
-  }
-}
-
-@media (max-width: 768px) {
-  .header {
-    height: 60px;
-  }
-
-  .iconBar {
-    padding: 0 var(--spacing-sm);
-    gap: var(--spacing-sm);
-  }
-
-  .icon {
-    width: 40px; /* Slightly smaller on mobile but still larger than before */
-    height: 40px;
+    width: 36px;
+    height: 36px;
+    padding: 6px;
   }
 }

@@ -20,6 +20,7 @@ const Login = () => {
   const location = useLocation();
 
   useEffect(() => {
+    // Clear any existing auth data on component mount
     clearAuthData();
   }, []);
 
@@ -29,24 +30,28 @@ const Login = () => {
       ...prev,
       [name]: value.trim(),
     }));
+    // Clear any existing errors when user starts typing
     if (error) {
       setError('');
       setErrorType('');
     }
   };
 
-  // Helper function to get dashboard path
   const getDashboardPath = (userType) => {
-    console.log('Getting dashboard path for user type:', userType);
-    const type = userType?.toLowerCase();
+    if (!userType) {
+      console.error('User type is undefined or null');
+      return '/login';
+    }
+
+    const type = userType.toLowerCase();
     switch (type) {
       case 'client':
         return '/client-dashboard';
       case 'developer':
         return '/developer-dashboard';
       default:
-        console.warn('Unknown user type:', userType);
-        return '/dashboard'; // Fallback to a generic dashboard
+        console.error('Invalid user type:', userType);
+        return '/login';
     }
   };
 
@@ -58,30 +63,23 @@ const Login = () => {
 
     try {
       // Login request
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/auth/login`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            username: formData.username,
-            password: formData.password,
-          }),
-        }
-      );
+      const loginUrl = `${process.env.REACT_APP_API_URL}/auth/login`;
+      const response = await fetch(loginUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: formData.username,
+          password: formData.password,
+        }),
+        credentials: 'include', // Add this if you're using cookies
+      });
 
       const data = await response.json();
 
       if (!response.ok) {
-        if (response.status === 401) {
-          throw new Error('Invalid username or password');
-        } else if (response.status === 422) {
-          throw new Error('Invalid input format');
-        } else {
-          throw new Error(data.detail || 'Server error');
-        }
+        throw new Error(data.detail || 'Login failed');
       }
 
       const token = data.access_token;
@@ -97,7 +95,9 @@ const Login = () => {
       const userResponse = await api.get('/auth/me');
       const userData = userResponse.data;
 
-      console.log('Raw user data from API:', userData);
+      if (!userData || !userData.user_type) {
+        throw new Error('Invalid user data received');
+      }
 
       // Normalize the user data
       const normalizedUser = {
@@ -106,13 +106,11 @@ const Login = () => {
         email: userData.email,
         fullName: userData.full_name,
         isActive: userData.is_active,
-        userType: userData.user_type, // Ensure we're using user_type consistently
+        userType: userData.user_type,
         createdAt: userData.created_at,
       };
 
-      console.log('Normalized user data:', normalizedUser);
-
-      // Dispatch login with normalized user data
+      // Update auth state
       dispatch(
         login({
           token,
@@ -120,39 +118,54 @@ const Login = () => {
         })
       );
 
-      // Get the redirect path
-      const redirectTo =
-        location.state?.from || getDashboardPath(normalizedUser.userType);
-      console.log('Redirecting to:', redirectTo);
+      // Determine redirect path - prioritize stored path or use dashboard
+      const dashboardPath = getDashboardPath(normalizedUser.userType);
+      const redirectTo = location.state?.from || dashboardPath;
 
-      // Navigate after a short delay to ensure state is updated
-      setTimeout(() => {
-        navigate(redirectTo, { replace: true });
-      }, 100);
+      // Navigate immediately - no need for setTimeout
+      navigate(redirectTo, { replace: true });
     } catch (err) {
       console.error('Login error:', err);
       clearAuthData();
 
-      if (err.message === 'Failed to fetch' || !window.navigator.onLine) {
-        setError(
-          'Unable to connect to server. Please check your internet connection.'
-        );
-        setErrorType('connection');
-      } else if (err.message === 'Invalid username or password') {
-        setError('Invalid username or password');
-        setErrorType('auth');
-      } else if (err.message === 'Invalid input format') {
-        setError('Please check your input and try again');
-        setErrorType('validation');
-      } else {
-        setError('An unexpected error occurred. Please try again.');
-        setErrorType('general');
-      }
-
-      dispatch(loginFailure(err.message));
+      // Handle specific error cases
+      const errorMessage = getErrorMessage(err);
+      setError(errorMessage.message);
+      setErrorType(errorMessage.type);
+      dispatch(loginFailure(errorMessage.message));
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Helper function to get error message and type
+  const getErrorMessage = (error) => {
+    if (!navigator.onLine) {
+      return {
+        message:
+          'No internet connection. Please check your connection and try again.',
+        type: 'connection',
+      };
+    }
+
+    if (error.message === 'Failed to fetch') {
+      return {
+        message: 'Unable to connect to server. Please try again later.',
+        type: 'connection',
+      };
+    }
+
+    if (error.message.includes('Invalid user')) {
+      return {
+        message: 'Invalid username or password',
+        type: 'auth',
+      };
+    }
+
+    return {
+      message: 'An unexpected error occurred. Please try again.',
+      type: 'general',
+    };
   };
 
   return (
