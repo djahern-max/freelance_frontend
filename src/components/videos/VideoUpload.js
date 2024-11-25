@@ -1,151 +1,244 @@
-import React, { useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Upload, Image, FileVideo } from "lucide-react";
-import Header from "../shared/Header";
-import styles from "./VideoUpload.module.css";
+// VideoUpload.js
+import { Image as ImageIcon, Loader, Upload, Video } from 'lucide-react';
+import { useRef, useState } from 'react';
+import styles from './VideoUpload.module.css';
 
-const VideoUpload = () => {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [file, setFile] = useState(null);
-  const [thumbnail, setThumbnail] = useState(null);
-  const [uploadStatus, setUploadStatus] = useState(null);
-  const apiUrl = process.env.REACT_APP_API_URL;
-  const navigate = useNavigate();
+const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [videoFile, setVideoFile] = useState(null);
+  const [thumbnailFile, setThumbnailFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [message, setMessage] = useState(null);
+  const [messageType, setMessageType] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState(null);
 
-  const handleFileChange = (e, type) => {
-    const selectedFile = e.target.files[0];
-    if (type === "video") {
-      setFile(selectedFile);
-    } else {
-      setThumbnail(selectedFile);
+  const videoInputRef = useRef(null);
+  const thumbnailInputRef = useRef(null);
+
+  const showMessage = (text, type) => {
+    setMessage(text);
+    setMessageType(type);
+    if (type === 'success') {
+      setTimeout(() => {
+        setMessage(null);
+        setMessageType(null);
+      }, 5000);
+    }
+  };
+
+  const handleVideoSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      if (file.type.startsWith('video/')) {
+        setVideoFile(file);
+        setPreview(URL.createObjectURL(file));
+        showMessage(null);
+      } else {
+        showMessage('Please select a valid video file', 'error');
+      }
+    }
+  };
+
+  const handleThumbnailSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      if (file.type.startsWith('image/')) {
+        setThumbnailFile(file);
+        setThumbnailPreview(URL.createObjectURL(file));
+        showMessage(null);
+      } else {
+        showMessage('Please select a valid image file for thumbnail', 'error');
+      }
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!videoFile) {
+      showMessage('Please select a video file', 'error');
+      return;
+    }
+
+    if (!title.trim()) {
+      showMessage('Please enter a title', 'error');
+      return;
+    }
+
+    setUploading(true);
+    showMessage('Upload in progress... Please wait', 'loading');
+
     const formData = new FormData();
-    formData.append("title", title);
-    formData.append("description", description);
-    formData.append("file", file);
-    formData.append("thumbnail", thumbnail);
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('file', videoFile);
+
+    if (thumbnailFile) {
+      formData.append('thumbnail', thumbnailFile);
+    }
+
+    if (projectId) {
+      formData.append('project_id', projectId);
+    }
+
+    if (requestId) {
+      formData.append('request_id', requestId);
+    }
 
     try {
-      const token = localStorage.getItem("authToken");
-      await axios.post(`${apiUrl}/videos/`, formData, {
+      const apiUrl =
+        process.env.NODE_ENV === 'production'
+          ? 'https://www.ryze.ai/api/videos/'
+          : 'http://localhost:8000/videos/';
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
         headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Accept: 'application/json',
         },
+        body: formData,
       });
-      setUploadStatus("success");
-      setTimeout(() => navigate("/videos"), 2000);
-    } catch (error) {
-      setUploadStatus("error");
+
+      if (!response.ok) {
+        throw new Error(`Upload failed: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      setTitle('');
+      setDescription('');
+      setVideoFile(null);
+      setThumbnailFile(null);
+      setPreview(null);
+      setThumbnailPreview(null);
+
+      showMessage('Video uploaded successfully!', 'success');
+
+      if (onUploadSuccess) {
+        onUploadSuccess(data);
+      }
+    } catch (err) {
+      showMessage(`Upload failed: ${err.message}`, 'error');
+    } finally {
+      setUploading(false);
     }
   };
 
   return (
-    <div className={styles.videoUploadContainer}>
-      <Header />
-      <div className={styles.formContainer}>
-        <form className={styles.videoUploadForm} onSubmit={handleSubmit}>
-          <div className={styles.formHeader}>
-            <h1 className={styles.title}>Upload Video</h1>
-            <button
-              type="button"
-              className={styles.navigateButton}
-              onClick={() => navigate("/videos")}
-            >
-              <ArrowLeft size={20} />
-              Back to Videos
-            </button>
-          </div>
+    <div className={styles.pageContainer}>
+      <div className={styles.uploadContainer}>
+        <h1 className={styles.title}>Upload Video</h1>
 
-          {uploadStatus && (
-            <div
-              className={
-                uploadStatus === "success"
-                  ? styles.successMessage
-                  : styles.errorMessage
-              }
-            >
-              {uploadStatus === "success"
-                ? "Upload successful! Redirecting..."
-                : "Error uploading video. Please try again."}
-            </div>
-          )}
-
-          <div className={styles.formGroup}>
-            <label htmlFor="title">Title</label>
+        <form onSubmit={handleSubmit} className={styles.uploadForm}>
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>Title</label>
             <input
-              id="title"
               type="text"
               className={styles.input}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              required
+              placeholder="Enter video title"
+              disabled={uploading}
             />
           </div>
 
-          <div className={styles.formGroup}>
-            <label htmlFor="description">Description</label>
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>Description</label>
             <textarea
-              id="description"
-              className={styles.input}
+              className={styles.textarea}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              placeholder="Enter video description"
+              disabled={uploading}
             />
           </div>
 
-          <div className={styles.formGroup}>
-            <label>Video File</label>
-            <div className={styles.fileUploadWrapper}>
-              <input
-                type="file"
-                onChange={(e) => handleFileChange(e, "video")}
-                accept="video/*"
-                className={styles.hiddenInput}
-                id="videoFile"
-                required
-              />
-              <label htmlFor="videoFile" className={styles.fileUploadButton}>
-                <FileVideo size={20} />
-                Choose Video File
-              </label>
-              {file && <span className={styles.fileName}>{file.name}</span>}
-            </div>
+          <div className={styles.uploadButtons}>
+            <button
+              type="button"
+              className={styles.uploadButton}
+              onClick={() => videoInputRef.current?.click()}
+              disabled={uploading}
+            >
+              <Video size={24} />
+              <span>{videoFile ? 'Change Video' : 'Select Video'}</span>
+            </button>
+
+            <button
+              type="button"
+              className={styles.uploadButton}
+              onClick={() => thumbnailInputRef.current?.click()}
+              disabled={uploading}
+            >
+              <ImageIcon size={24} />
+              <span>
+                {thumbnailFile ? 'Change Thumbnail' : 'Select Thumbnail'}
+              </span>
+            </button>
+
+            <input
+              ref={videoInputRef}
+              type="file"
+              accept="video/*"
+              onChange={handleVideoSelect}
+              style={{ display: 'none' }}
+              disabled={uploading}
+            />
+
+            <input
+              ref={thumbnailInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleThumbnailSelect}
+              style={{ display: 'none' }}
+              disabled={uploading}
+            />
           </div>
 
-          <div className={styles.formGroup}>
-            <label>Thumbnail</label>
-            <div className={styles.fileUploadWrapper}>
-              <input
-                type="file"
-                onChange={(e) => handleFileChange(e, "thumbnail")}
-                accept="image/*"
-                className={styles.hiddenInput}
-                id="thumbnailFile"
-                required
+          {preview && (
+            <div className={styles.preview}>
+              <video src={preview} className={styles.videoPreview} controls />
+            </div>
+          )}
+
+          {thumbnailPreview && (
+            <div className={styles.preview}>
+              <img
+                src={thumbnailPreview}
+                alt="Thumbnail preview"
+                className={styles.thumbnailPreview}
               />
-              <label
-                htmlFor="thumbnailFile"
-                className={styles.fileUploadButton}
-              >
-                <Image size={20} />
-                Choose Thumbnail
-              </label>
-              {thumbnail && (
-                <span className={styles.fileName}>{thumbnail.name}</span>
+            </div>
+          )}
+
+          {message && (
+            <div className={styles[messageType]}>
+              {uploading && <Loader className="animate-spin mr-2" />}
+              {message}
+            </div>
+          )}
+
+          <div className={styles.submitButtonContainer}>
+            <button
+              type="submit"
+              className={styles.submitButton}
+              disabled={uploading}
+            >
+              {uploading ? (
+                <>
+                  <Loader className="animate-spin mr-2" />
+                  Uploading...
+                </>
+              ) : (
+                <>
+                  <Upload className="mr-2" />
+                  Upload Video
+                </>
               )}
-            </div>
+            </button>
           </div>
-
-          <button type="submit" className={styles.uploadButton}>
-            <Upload size={20} />
-            Upload Video
-          </button>
         </form>
       </div>
     </div>
