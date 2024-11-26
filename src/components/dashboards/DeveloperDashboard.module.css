@@ -93,16 +93,42 @@
   overflow: hidden;
   transition: all 0.2s ease;
   cursor: pointer;
+  position: relative;
+  cursor: pointer;
+
 }
 
 .statCard:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
   border-color: var(--color-primary);
+  background-color: var(--color-background-hover, #f8fafc);
+}
+
+.statCard:hover::after {
+  opacity: 1;
 }
 
 .statCard:active {
   transform: translateY(0);
+}
+
+.statCard::before {
+  content: "";
+  position: absolute;
+  bottom: var(--spacing-sm);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 3px;
+  background-color: var(--color-primary);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  border-radius: 2px;
+}
+
+.statCard:hover::before {
+  opacity: 0.2;
 }
 
 .icon {
@@ -415,6 +441,112 @@
   background-color: #e5e7eb;
 }
 
+
+.statCard.active {
+  border-color: var(--color-primary);
+  background-color: var(--color-background-active, #f0f7ff);
+}
+
+.statCard.active::before {
+  opacity: 0.4;
+}
+
+/* Animation for expanding/collapsing sections */
+.sharedRequests, .recentActivity, .conversations, .projects {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Conversation Card styles */
+.conversationCard {
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: white;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: var(--spacing-md);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.conversationCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.conversationMeta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin: var(--spacing-sm) 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.conversations, .projects {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
+  margin-bottom: var(--spacing-lg);
+}
+
+.conversations h2, .projects h2 {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-lg);
+}
+
+.conversationsList, .projectsList {
+  display: grid;
+  gap: var(--spacing-md);
+}
+
+.tutorialHint {
+  background-color: var(--color-primary);
+  color: white;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-md);
+  text-align: center;
+  animation: fadeIn 0.3s ease-in-out;
+  position: relative;
+  font-size: var(--font-size-sm);
+}
+
+.tutorialHint::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid var(--color-primary);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Tablet and smaller screens */
 @media (max-width: 768px) {
   /* Layout & Container styles */
@@ -439,6 +571,44 @@
     margin: var(--spacing-xs) 0;
     height: 72px;
     padding: var(--spacing-md);
+    position: relative;
+  }
+
+  .statCard::after {
+    content: "";
+    position: absolute;
+    right: var(--spacing-md);
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid var(--color-primary);
+    border-bottom: 2px solid var(--color-primary);
+    transform: translateY(-50%) rotate(45deg);
+    transition: transform 0.2s ease;
+    opacity: 0.6;
+  }
+
+  .statCard.active::after {
+    transform: translateY(-50%) rotate(-135deg);
+  }
+
+  .statCard .clickHint {
+    position: absolute;
+    right: var(--spacing-md);
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  
+  .statCard:hover .clickHint {
+    opacity: 1;
+  }
+
+  .statCard.active::after {
+    transform: translateY(-50%) rotate(-135deg);
   }
 
   /* Actions Grid */

@@ -1,5 +1,5 @@
 import { Clock, Loader, MessageSquare, Users } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
@@ -107,7 +107,7 @@ const PublicRequests = () => {
       <Header />
       <main className={styles.mainContent}>
         <div className={styles.headerContainer}>
-          <h1 className={styles.title}>Available Projects</h1>
+          <h1 className={styles.title}>Open Requests</h1>
           {isAuthenticated && user?.userType === 'developer' && (
             <p className={styles.subtitle}></p>
           )}

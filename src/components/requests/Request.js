@@ -1,7 +1,8 @@
 import axios from 'axios';
-import { FileEdit, Trash2 } from 'lucide-react';
+import { ArrowLeft, FileEdit, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import CommandDisplay from '../shared/CommandDisplay';
 import Header from '../shared/Header';
 import styles from './Request.module.css';
@@ -10,6 +11,8 @@ import RequestSharing from './RequestSharing';
 const Request = () => {
   const { token } = useSelector((state) => state.auth);
   const apiUrl = process.env.REACT_APP_API_URL;
+
+  const navigate = useNavigate();
 
   // State Management
   const [requests, setRequests] = useState([]);
@@ -145,6 +148,14 @@ const Request = () => {
     <div className={styles.container}>
       <Header />
       <div className={styles.content}>
+        <button
+          className={styles.backButton}
+          onClick={() => navigate('/client-dashboard')}
+        >
+          <ArrowLeft size={16} />
+          Back to Dashboard
+        </button>
+
         <div className={styles.formCard}>
           <h2 className={styles.formTitle}>
             {editMode ? 'Edit Request' : 'Create New Request'}
@@ -273,7 +284,6 @@ const Request = () => {
                 onShareComplete={fetchRequests}
                 request={request}
                 toggleRequestPrivacy={(id, isPublic) => {
-                  // Implementation for toggling privacy
                   const togglePrivacy = async () => {
                     try {
                       await axios.put(
