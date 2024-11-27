@@ -1,14 +1,13 @@
 import {
-  Layers,
   LayoutDashboard,
   LogOut,
   Search,
   Settings,
+  UsersRound,
   Video,
 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { logout } from '../../redux/authSlice';
 import styles from './Header.module.css';
 
 const Header = () => {
@@ -27,28 +26,32 @@ const Header = () => {
       {
         path: '/public-requests',
         icon: Search,
-        title: 'Public Requests',
+        title: 'Opportunities', // Updated title to match homepage
+        requiresAuth: false,
       },
       {
-        path: getDashboardPath(),
-        icon: LayoutDashboard,
-        title: 'Dashboard',
+        path: '/developers', // Changed from app-dashboard
+        icon: UsersRound, // Import UsersRound from lucide-react
+        title: 'Developers',
+        requiresAuth: false,
       },
       {
         path: '/videos',
         icon: Video,
         title: 'Videos',
+        requiresAuth: false,
       },
       {
-        path: '/app-dashboard',
-        icon: Layers,
-        title: 'Applications',
+        path: getDashboardPath(),
+        icon: LayoutDashboard,
+        title: 'Dashboard',
+        requiresAuth: true, // Only show when authenticated
       },
       {
         path: '/settings',
         icon: Settings,
         title: 'Settings',
-        authRequired: true,
+        requiresAuth: true,
       },
     ];
 
@@ -56,7 +59,11 @@ const Header = () => {
   };
 
   const handleNavigation = (path) => {
-    if (!isAuthenticated && path !== '/public-requests') {
+    // Find the page configuration
+    const page = getPages().find((p) => p.path === path);
+
+    // Only check authentication for pages that require it
+    if (page.requiresAuth && !isAuthenticated) {
       navigate('/login', { state: { from: path } });
       return;
     }
@@ -64,10 +71,8 @@ const Header = () => {
   };
 
   const handleLogout = () => {
-    if (isAuthenticated) {
-      dispatch(logout());
-      navigate('/login');
-    }
+    dispatch({ type: 'LOGOUT' }); // Replace with the actual action for logout if different
+    navigate('/login'); // Redirect the user to the login page after logout
   };
 
   // Filter out the current page from navigation items

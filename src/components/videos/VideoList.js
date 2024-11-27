@@ -1,6 +1,7 @@
 import { Calendar, Clock, Play, Upload, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom'; // Add useNavigate here
+import AuthDialog from '../auth/AuthDialog';
 import styles from './VideoList.module.css';
 
 const VideoList = () => {
@@ -8,6 +9,10 @@ const VideoList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedVideo, setSelectedVideo] = useState(null);
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const token = localStorage.getItem('token');
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchVideos();
@@ -20,24 +25,17 @@ const VideoList = () => {
           ? 'https://www.ryze.ai/api/video_display/'
           : 'http://localhost:8000/video_display/';
 
-      const response = await fetch(apiUrl, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
+      // Remove auth header for public access
+      const response = await fetch(apiUrl);
 
       if (!response.ok) {
         throw new Error('Failed to fetch videos');
       }
 
       const data = await response.json();
-      console.log('API Response:', data);
 
-      // Combine user_videos and other_videos arrays
-      const allVideos = [
-        ...(data.user_videos || []),
-        ...(data.other_videos || []),
-      ];
+      // Just use the other_videos array since we're not authenticating
+      const allVideos = data.other_videos || [];
 
       setVideos(allVideos);
     } catch (err) {
@@ -96,14 +94,25 @@ const VideoList = () => {
     );
   }
 
+  const handleVideoClick = (video) => {
+    if (!token) {
+      setSelectedVideo(video);
+      setShowAuthDialog(true);
+      return;
+    }
+    setSelectedVideo(video);
+  };
+
   return (
     <div className={styles.pageContainer}>
       <div className={styles.headerContainer}>
         <h1 className={styles.title}>Videos</h1>
-        <Link to="/video-upload" className={styles.uploadButton}>
-          <Upload size={20} />
-          Upload Video
-        </Link>
+        {token && (
+          <Link to="/video-upload" className={styles.uploadButton}>
+            <Upload size={20} />
+            Upload Video
+          </Link>
+        )}
       </div>
 
       <div className={styles.grid}>
@@ -111,7 +120,7 @@ const VideoList = () => {
           <div key={video.id || Math.random()} className={styles.videoCard}>
             <div
               className={styles.thumbnailContainer}
-              onClick={() => setSelectedVideo(video)}
+              onClick={() => handleVideoClick(video)}
             >
               {video.thumbnail_path ? (
                 <img
@@ -145,7 +154,7 @@ const VideoList = () => {
         ))}
       </div>
 
-      {selectedVideo && (
+      {selectedVideo && token && (
         <div className={styles.modal} onClick={() => setSelectedVideo(null)}>
           <div
             className={styles.modalContent}
@@ -176,6 +185,25 @@ const VideoList = () => {
           </div>
         </div>
       )}
+
+      {/* Auth Dialog */}
+      <AuthDialog
+        isOpen={showAuthDialog}
+        onClose={() => {
+          setShowAuthDialog(false);
+          setSelectedVideo(null);
+        }}
+        onLogin={() =>
+          navigate('/login', {
+            state: { from: location.pathname },
+          })
+        }
+        onRegister={() =>
+          navigate('/register', {
+            state: { from: location.pathname },
+          })
+        }
+      />
     </div>
   );
 };

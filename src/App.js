@@ -80,6 +80,8 @@ function AppContent() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
+          <Route path="/public-requests" element={<PublicRequests />} />
+          <Route path="/videos" element={<VideoList />} />
 
           {/* Client-specific routes */}
           <Route
@@ -124,14 +126,7 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/public-requests"
-            element={
-              <ProtectedRoute>
-                <PublicRequests />
-              </ProtectedRoute>
-            }
-          />
+
           <Route
             path="/app-dashboard"
             element={
@@ -140,14 +135,7 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/videos"
-            element={
-              <ProtectedRoute>
-                <VideoList />
-              </ProtectedRoute>
-            }
-          />
+
           <Route
             path="/video-upload"
             element={

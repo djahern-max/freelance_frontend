@@ -1,4 +1,4 @@
-import { FileText, Grid, Search, Video } from 'lucide-react';
+import { Search, Users2, Video } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { selectIsAuthenticated } from '../../redux/authSlice';
@@ -11,36 +11,30 @@ const Features = () => {
   const features = [
     {
       icon: Search,
-      title: 'Public Requests',
+      title: 'Opportunities',
       path: '/public-requests',
+
       requiresAuth: false,
-    },
-    {
-      icon: FileText,
-      title: 'My Requests',
-      path: '/requests',
-      requiresAuth: true,
     },
     {
       icon: Video,
       title: 'Videos',
       path: '/videos',
-      requiresAuth: true,
+
+      requiresAuth: false,
     },
     {
-      icon: Grid,
-      title: 'Applications',
-      path: '/app-dashboard',
-      requiresAuth: true,
+      icon: Users2,
+      title: 'Creators',
+      path: '/creators',
+
+      requiresAuth: false,
     },
   ];
 
   const handleNavigation = (feature) => {
-    if (feature.requiresAuth && !isAuthenticated) {
-      navigate('/login', { state: { from: feature.path } });
-    } else {
-      navigate(feature.path);
-    }
+    // Simply navigate to the path - authentication will be handled at the component level
+    navigate(feature.path);
   };
 
   return (
@@ -61,6 +55,7 @@ const Features = () => {
                 />
               </div>
               <h3 className={styles.title}>{feature.title}</h3>
+              <p className={styles.description}>{feature.description}</p>
             </div>
           ))}
         </div>

@@ -13,24 +13,21 @@ export const API_ROUTES = {
     LOGOUT: '/auth/logout',
     REGISTER: '/auth/register',
   },
+  PUBLIC: {
+    REQUESTS: '/requests/public',
+    DEVELOPERS: '/profile/developers/public',
+    VIDEOS: '/video_display',
+  },
 };
 
 const getBaseURL = () => {
-  // Always use the environment variable first
   if (process.env.REACT_APP_API_URL) {
     return process.env.REACT_APP_API_URL;
   }
-
-  // Fallback for production
-  if (process.env.NODE_ENV === 'production') {
-    return '/api';
-  }
-
-  // Development fallback
-  return 'http://localhost:8000';
+  return process.env.NODE_ENV === 'production'
+    ? '/api'
+    : 'http://localhost:8000';
 };
-
-console.log('API Base URL:', getBaseURL());
 
 const api = axios.create({
   baseURL: getBaseURL(),
@@ -41,10 +38,24 @@ const api = axios.create({
   withCredentials: true,
 });
 
-// Add request interceptor for debugging
+// Request interceptor
 api.interceptors.request.use(
   (config) => {
     console.log('Full Request URL:', `${config.baseURL}${config.url}`);
+
+    // Check if the route is public
+    const isPublicRoute = Object.values(API_ROUTES.PUBLIC).some((route) =>
+      config.url.startsWith(route)
+    );
+
+    // Only add auth header for non-public routes
+    if (!isPublicRoute) {
+      const token = localStorage.getItem('token');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+
     return config;
   },
   (error) => {
@@ -55,7 +66,6 @@ api.interceptors.request.use(
 // Response interceptor
 api.interceptors.response.use(
   (response) => {
-    // Log successful responses in development
     if (process.env.NODE_ENV === 'development') {
       console.log('API Response:', {
         url: response.config.url,
@@ -79,12 +89,16 @@ api.interceptors.response.use(
 
     console.error('API Error Details:', errorDetails);
 
-    // Handle auth errors
-    if (error.response?.status === 401) {
+    // Check if the route is public
+    const isPublicRoute = Object.values(API_ROUTES.PUBLIC).some((route) =>
+      error.config?.url?.startsWith(route)
+    );
+
+    // Only handle auth errors for non-public routes
+    if (!isPublicRoute && error.response?.status === 401) {
       console.log('Authentication error - token might be invalid or expired');
       clearAuthData();
 
-      // Only redirect if not already on login page
       if (!window.location.pathname.includes('/login')) {
         window.location.href = '/login';
       }
@@ -100,7 +114,6 @@ api.interceptors.response.use(
       );
     }
 
-    // Handle CORS errors
     if (error.message.includes('Network Error')) {
       console.error('Possible CORS or network error:', error);
       return Promise.reject(
@@ -204,6 +217,41 @@ api.helpers = {
         return response.data;
       } catch (error) {
         console.error(`Error updating ${userType} profile:`, error);
+        throw error;
+      }
+    },
+  },
+
+  // Public route helpers
+  public: {
+    async getPublicRequests(params = {}) {
+      try {
+        const response = await api.get(API_ROUTES.PUBLIC.REQUESTS, { params });
+        return response.data;
+      } catch (error) {
+        console.error('Error fetching public requests:', error);
+        throw error;
+      }
+    },
+
+    async getPublicDevelopers(params = {}) {
+      try {
+        const response = await api.get(API_ROUTES.PUBLIC.DEVELOPERS, {
+          params,
+        });
+        return response.data;
+      } catch (error) {
+        console.error('Error fetching public developers:', error);
+        throw error;
+      }
+    },
+
+    async getPublicVideos(params = {}) {
+      try {
+        const response = await api.get(API_ROUTES.PUBLIC.VIDEOS, { params });
+        return response.data;
+      } catch (error) {
+        console.error('Error fetching public videos:', error);
         throw error;
       }
     },

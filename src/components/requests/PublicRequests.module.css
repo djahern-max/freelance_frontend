@@ -289,6 +289,36 @@
   box-shadow: var(--shadow-lg);
 }
 
+/* Add these new button styles to your existing CSS */
+.buttonSecondary {
+  background: white;
+  color: #2563eb;
+  border: 1px solid #2563eb;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  width: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.buttonSecondary:hover {
+  background: #f0f9ff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.1);
+}
+
+.buttonSecondary:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(37, 99, 235, 0.1);
+}
+
 /* Media Queries for Responsiveness */
 @media (max-width: 768px) {
   .mainContent {

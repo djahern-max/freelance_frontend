@@ -6,24 +6,18 @@ import {
   fetchProfile,
   updateDeveloperProfile,
 } from '../../redux/profileSlice';
-import UrlInput from '../common/UrlInput';
 import styles from './DeveloperProfile.module.css';
 
 const DEFAULT_VALUES = {
   skills: '',
   experience_years: '',
-  hourly_rate: '',
-  github_url: '',
-  portfolio_url: '',
   bio: '',
+  is_public: false,
 };
 
 const PLACEHOLDERS = {
   skills: 'Python, React, FastAPI...',
   experience_years: '0',
-  hourly_rate: '0',
-  github_url: 'https://github.com/username',
-  portfolio_url: 'https://portfolio.dev',
   bio: 'Tell us about your experience and expertise...',
 };
 
@@ -36,8 +30,6 @@ const DeveloperProfile = () => {
   } = useSelector((state) => state.profile);
   const [formData, setFormData] = useState(DEFAULT_VALUES);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isGithubUrlValid, setIsGithubUrlValid] = useState(true);
-  const [isPortfolioUrlValid, setIsPortfolioUrlValid] = useState(true);
 
   // Fetch profile data on component mount
   useEffect(() => {
@@ -51,10 +43,8 @@ const DeveloperProfile = () => {
       setFormData({
         skills: profileData.skills || '',
         experience_years: profileData.experience_years?.toString() || '',
-        hourly_rate: profileData.hourly_rate?.toString() || '',
-        github_url: profileData.github_url || '',
-        portfolio_url: profileData.portfolio_url || '',
         bio: profileData.bio || '',
+        is_public: profileData.is_public || false,
       });
     }
   }, [profile]);
@@ -64,19 +54,9 @@ const DeveloperProfile = () => {
     setIsSubmitting(true);
 
     try {
-      // Only validate URLs if they're not empty
-      if (
-        (formData.github_url && !isGithubUrlValid) ||
-        (formData.portfolio_url && !isPortfolioUrlValid)
-      ) {
-        toast.error('Please ensure all URLs are valid');
-        return;
-      }
-
       const processedData = {
         ...formData,
         experience_years: parseInt(formData.experience_years) || 0,
-        hourly_rate: parseInt(formData.hourly_rate) || 0,
       };
 
       const action = profile?.developer_profile
@@ -156,63 +136,23 @@ const DeveloperProfile = () => {
             <span className={styles.helpText}>Separate skills with commas</span>
           </div>
 
-          <div className={styles.grid}>
-            <div className={styles.formGroup}>
-              <div className={styles.labelContainer}>
-                <label className={styles.label}>Experience (years)</label>
-                <span className={styles.required}>*</span>
-              </div>
-              <input
-                type="number"
-                className={styles.input}
-                value={formData.experience_years}
-                onChange={(e) =>
-                  setFormData({ ...formData, experience_years: e.target.value })
-                }
-                placeholder={PLACEHOLDERS.experience_years}
-                min="0"
-                required
-              />
+          <div className={styles.formGroup}>
+            <div className={styles.labelContainer}>
+              <label className={styles.label}>Experience (years)</label>
+              <span className={styles.required}>*</span>
             </div>
-
-            <div className={styles.formGroup}>
-              <div className={styles.labelContainer}>
-                <label className={styles.label}>Hourly Rate ($)</label>
-                <span className={styles.required}>*</span>
-              </div>
-              <input
-                type="number"
-                className={styles.input}
-                value={formData.hourly_rate}
-                onChange={(e) =>
-                  setFormData({ ...formData, hourly_rate: e.target.value })
-                }
-                placeholder={PLACEHOLDERS.hourly_rate}
-                min="0"
-                required
-              />
-            </div>
+            <input
+              type="number"
+              className={styles.input}
+              value={formData.experience_years}
+              onChange={(e) =>
+                setFormData({ ...formData, experience_years: e.target.value })
+              }
+              placeholder={PLACEHOLDERS.experience_years}
+              min="0"
+              required
+            />
           </div>
-
-          <UrlInput
-            label="GitHub URL"
-            value={formData.github_url}
-            onChange={(value) =>
-              setFormData((prev) => ({ ...prev, github_url: value }))
-            }
-            onValidation={setIsGithubUrlValid}
-            placeholder={PLACEHOLDERS.github_url}
-          />
-
-          <UrlInput
-            label="Portfolio URL"
-            value={formData.portfolio_url}
-            onChange={(value) =>
-              setFormData((prev) => ({ ...prev, portfolio_url: value }))
-            }
-            onValidation={setIsPortfolioUrlValid}
-            placeholder={PLACEHOLDERS.portfolio_url}
-          />
 
           <div className={styles.formGroup}>
             <div className={styles.labelContainer}>
@@ -229,6 +169,24 @@ const DeveloperProfile = () => {
               rows={4}
               required
             />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                checked={formData.is_public}
+                onChange={(e) =>
+                  setFormData({ ...formData, is_public: e.target.checked })
+                }
+                className={styles.checkbox}
+              />
+              Make my profile public
+            </label>
+            <span className={styles.helpText}>
+              Public profiles are visible to all users and can help you get more
+              projects
+            </span>
           </div>
 
           <div className={styles.formActions}>

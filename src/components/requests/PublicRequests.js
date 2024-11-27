@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { Clock, Loader, MessageSquare, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -19,7 +20,6 @@ const PublicRequests = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const user = useSelector((state) => state.auth.user);
-  const token = useSelector((state) => state.auth.token);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
   const fetchData = async () => {
@@ -27,10 +27,23 @@ const PublicRequests = () => {
       setLoading(true);
       setError(null);
 
-      const requestsResponse = await api.get('/requests/public');
-      console.log('Public requests:', requestsResponse.data);
+      // Create a new axios instance without auth headers for this specific request
+      const publicResponse = await axios.get(
+        `${
+          process.env.REACT_APP_API_URL || 'http://localhost:8000'
+        }/requests/public`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+        }
+      );
 
-      if (isAuthenticated) {
+      setPublicRequests(publicResponse.data);
+
+      // Only fetch conversations if user is authenticated
+      if (isAuthenticated && user) {
         const conversationsResponse = await api.get('/conversations/user/list');
         const conversationCounts = conversationsResponse.data.reduce(
           (acc, conv) => {
@@ -41,8 +54,6 @@ const PublicRequests = () => {
         );
         setConversations(conversationCounts);
       }
-
-      setPublicRequests(requestsResponse.data);
     } catch (err) {
       console.error('Error fetching data:', err);
       setError(err.response?.data?.detail || 'Failed to fetch requests.');
@@ -53,10 +64,22 @@ const PublicRequests = () => {
 
   useEffect(() => {
     fetchData();
-    // Refresh data every 30 seconds
-    const interval = setInterval(fetchData, 30000);
-    return () => clearInterval(interval);
+    // Refresh data every 30 seconds only if authenticated
+    let interval;
+    if (isAuthenticated) {
+      interval = setInterval(fetchData, 30000);
+    }
+    return () => interval && clearInterval(interval);
   }, [isAuthenticated]);
+
+  const handleRequestClick = (request) => {
+    if (!isAuthenticated) {
+      setSelectedRequest(request);
+      setShowAuthDialog(true);
+      return;
+    }
+    navigate(`/requests/${request.id}`);
+  };
 
   const handleStartConversation = async (request) => {
     if (!isAuthenticated) {
@@ -108,9 +131,7 @@ const PublicRequests = () => {
       <main className={styles.mainContent}>
         <div className={styles.headerContainer}>
           <h1 className={styles.title}>Open Requests</h1>
-          {isAuthenticated && user?.userType === 'developer' && (
-            <p className={styles.subtitle}></p>
-          )}
+          {!isAuthenticated && <p className={styles.subtitle}></p>}
         </div>
 
         {error && (
@@ -153,6 +174,7 @@ const PublicRequests = () => {
               <div
                 key={request.id}
                 className={styles.requestCard}
+                onClick={() => handleRequestClick(request)}
                 data-expanded={expandedCards[request.id]}
               >
                 <div className={styles.cardHeader}>
@@ -220,34 +242,28 @@ const PublicRequests = () => {
                 <div className={styles.cardActions}>
                   {!isAuthenticated ? (
                     <button
-                      className={styles.buttonPrimary}
-                      onClick={() => {
+                      className={styles.buttonSecondary}
+                      onClick={(e) => {
+                        e.stopPropagation();
                         setSelectedRequest(request);
                         setShowAuthDialog(true);
                       }}
                     >
-                      Sign In to Respond
+                      Sign In to View Details
                     </button>
                   ) : user?.userType === 'developer' ? (
                     <button
                       className={styles.buttonPrimary}
-                      onClick={() => handleStartConversation(request)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleStartConversation(request);
+                      }}
                       disabled={loading}
                     >
-                      {loading ? (
-                        <>
-                          <Loader className={styles.spinnerIcon} size={16} />
-                          <span>Please wait...</span>
-                        </>
-                      ) : (
-                        'Respond to Request'
-                      )}
+                      Respond to Request
                     </button>
                   ) : (
-                    <button
-                      className={styles.buttonOutline}
-                      onClick={() => navigate(`/requests/${request.id}`)}
-                    >
+                    <button className={styles.buttonOutline}>
                       View Details
                     </button>
                   )}
