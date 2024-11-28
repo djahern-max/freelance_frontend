@@ -63,7 +63,12 @@ const ConversationDetail = () => {
 
   // Fetch agreement data
   const fetchAgreement = useCallback(async () => {
-    if (!conversation?.request_id) return;
+    if (!conversation?.request_id || !conversation?.status) return;
+    if (
+      conversation.status !== 'negotiating' &&
+      conversation.status !== 'agreed'
+    )
+      return;
 
     try {
       const response = await axios.get(
@@ -77,8 +82,9 @@ const ConversationDetail = () => {
       if (err.response?.status !== 404) {
         console.error('Error fetching agreement:', err);
       }
+      setAgreement(null);
     }
-  }, [conversation?.request_id, token, apiUrl]);
+  }, [conversation?.request_id, conversation?.status, token, apiUrl]);
 
   // Effect for auto-scrolling messages
   useEffect(() => {
@@ -102,21 +108,15 @@ const ConversationDetail = () => {
     if (!conversation?.request_id || !token) return;
 
     fetchAgreement();
-    const intervalId =
-      !agreement && conversation.status === 'active'
-        ? setInterval(fetchAgreement, 5000)
-        : null;
+    // Only set up polling if we're in a state where agreements are relevant
+    const shouldPoll =
+      conversation.status === 'negotiating' || conversation.status === 'agreed';
+    const intervalId = shouldPoll ? setInterval(fetchAgreement, 5000) : null;
 
     return () => {
       if (intervalId) clearInterval(intervalId);
     };
-  }, [
-    conversation?.request_id,
-    token,
-    agreement,
-    conversation?.status,
-    fetchAgreement,
-  ]);
+  }, [conversation?.request_id, conversation?.status, token, fetchAgreement]);
 
   // Utility functions
   const formatCurrency = (amount) => {
@@ -160,6 +160,15 @@ const ConversationDetail = () => {
     e.preventDefault();
     setIsSubmittingAgreement(true);
     try {
+      // Update conversation status first
+      await axios.patch(
+        `${apiUrl}/conversations/${id}`,
+        { status: 'negotiating' },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
       const response = await axios.post(
         `${apiUrl}/agreements/`,
         {
@@ -181,12 +190,15 @@ const ConversationDetail = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+
       setAgreement(response.data);
       setShowAgreement(false);
+      setShowAgreementForm(false);
       toast.success('Agreement proposed successfully!');
+      await fetchConversation(); // Refresh conversation to get updated status
     } catch (err) {
       console.error('Failed to create agreement:', err);
-      toast.error('Failed to create agreement.');
+      toast.error(err.response?.data?.detail || 'Failed to create agreement.');
     } finally {
       setIsSubmittingAgreement(false);
     }

@@ -1,6 +1,6 @@
 import { Calendar, Clock, Play, Upload, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom'; // Add useNavigate here
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import AuthDialog from '../auth/AuthDialog';
 import styles from './VideoList.module.css';
 
@@ -25,7 +25,6 @@ const VideoList = () => {
           ? 'https://www.ryze.ai/api/video_display/'
           : 'http://localhost:8000/video_display/';
 
-      // Remove auth header for public access
       const response = await fetch(apiUrl);
 
       if (!response.ok) {
@@ -33,10 +32,7 @@ const VideoList = () => {
       }
 
       const data = await response.json();
-
-      // Just use the other_videos array since we're not authenticating
       const allVideos = data.other_videos || [];
-
       setVideos(allVideos);
     } catch (err) {
       console.error('Error fetching videos:', err);
@@ -62,10 +58,8 @@ const VideoList = () => {
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
-        <div className="animate-spin mr-2">
-          <Clock size={24} />
-        </div>
-        Loading videos...
+        <Clock className={styles.loadingIcon} size={24} />
+        <span className={styles.loadingText}>Loading videos...</span>
       </div>
     );
   }
@@ -73,23 +67,7 @@ const VideoList = () => {
   if (error) {
     return (
       <div className={styles.errorContainer}>
-        <p>Error: {error}</p>
-      </div>
-    );
-  }
-
-  // Add check for empty videos array
-  if (!videos || videos.length === 0) {
-    return (
-      <div className={styles.pageContainer}>
-        <div className={styles.headerContainer}>
-          <h1 className={styles.title}>Videos</h1>
-          <Link to="/video-upload" className={styles.uploadButton}>
-            <Upload size={20} />
-            Upload Video
-          </Link>
-        </div>
-        <div className={styles.emptyState}>No videos available</div>
+        <p className={styles.errorMessage}>Error: {error}</p>
       </div>
     );
   }
@@ -104,7 +82,7 @@ const VideoList = () => {
   };
 
   return (
-    <div className={styles.pageContainer}>
+    <div className={styles.container}>
       <div className={styles.headerContainer}>
         <h1 className={styles.title}>Videos</h1>
         {token && (
@@ -115,44 +93,60 @@ const VideoList = () => {
         )}
       </div>
 
-      <div className={styles.grid}>
-        {videos.map((video) => (
-          <div key={video.id || Math.random()} className={styles.videoCard}>
-            <div
-              className={styles.thumbnailContainer}
-              onClick={() => handleVideoClick(video)}
+      {!videos || videos.length === 0 ? (
+        <div className={styles.emptyState}>
+          <Play className={styles.emptyIcon} size={48} />
+          <h2 className={styles.emptyTitle}>No Videos Available</h2>
+          <p className={styles.emptyText}>
+            There are currently no videos to display.
+          </p>
+          {!token && (
+            <button
+              onClick={() => setShowAuthDialog(true)}
+              className={styles.buttonPrimary}
             >
-              {video.thumbnail_path ? (
-                <img
-                  src={video.thumbnail_path}
-                  alt={video.title}
-                  className={styles.thumbnail}
-                />
-              ) : (
-                <div className={styles.thumbnail} />
-              )}
-              <div className={styles.playButton}>
-                <Play size={24} />
+              Sign Up to Upload Videos
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className={styles.grid}>
+          {videos.map((video) => (
+            <div key={video.id || Math.random()} className={styles.videoCard}>
+              <div
+                className={styles.thumbnailContainer}
+                onClick={() => handleVideoClick(video)}
+              >
+                {video.thumbnail_path ? (
+                  <img
+                    src={video.thumbnail_path}
+                    alt={video.title}
+                    className={styles.thumbnail}
+                  />
+                ) : (
+                  <div className={styles.thumbnailPlaceholder} />
+                )}
+                <div className={styles.playButton}>
+                  <Play size={24} />
+                </div>
               </div>
-            </div>
 
-            <div className={styles.contentContainer}>
-              <h2 className={styles.videoTitle}>{video.title || 'Untitled'}</h2>
-              {video.description && (
-                <p className={styles.description}>{video.description}</p>
-              )}
-              <div className={styles.metadata}>
-                <Calendar size={16} />
-                <span>
-                  {video.created_at
-                    ? formatDate(video.created_at)
-                    : 'Date unavailable'}
-                </span>
+              <div className={styles.contentContainer}>
+                <h2 className={styles.videoTitle}>
+                  {video.title || 'Untitled'}
+                </h2>
+                {video.description && (
+                  <p className={styles.description}>{video.description}</p>
+                )}
+                <div className={styles.metadata}>
+                  <Calendar size={16} className={styles.icon} />
+                  <span>{formatDate(video.created_at)}</span>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {selectedVideo && token && (
         <div className={styles.modal} onClick={() => setSelectedVideo(null)}>
@@ -186,7 +180,6 @@ const VideoList = () => {
         </div>
       )}
 
-      {/* Auth Dialog */}
       <AuthDialog
         isOpen={showAuthDialog}
         onClose={() => {

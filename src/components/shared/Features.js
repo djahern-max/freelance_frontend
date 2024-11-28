@@ -12,7 +12,7 @@ const Features = () => {
     {
       icon: Search,
       title: 'Opportunities',
-      path: '/public-requests',
+      path: '/opportunities',
 
       requiresAuth: false,
     },

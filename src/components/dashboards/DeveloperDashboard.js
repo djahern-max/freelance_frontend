@@ -167,16 +167,23 @@ const DeveloperDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
+      // Only fetch shared requests if user is a developer
+      const promises = [
+        api.get('/requests/public'),
+        api.get('/conversations/user/list'),
+        user.userType === 'developer'
+          ? api.get('/requests/shared-with-me')
+          : Promise.resolve({ data: [] }),
+      ];
+
       const [requestsRes, conversationsRes, sharedRequestsRes] =
-        await Promise.all([
-          api.get('/requests/public'),
-          api.get('/conversations/user/list'),
-          api.get('/requests/shared-with-me'),
-        ]);
+        await Promise.all(promises);
 
       setActiveRequests(requestsRes.data || []);
       setConversations(conversationsRes.data || []);
-      setSharedRequests(sharedRequestsRes.data || []);
+      setSharedRequests(
+        user.userType === 'developer' ? sharedRequestsRes.data || [] : []
+      );
       setError(null);
     } catch (err) {
       console.error('API Error:', err);

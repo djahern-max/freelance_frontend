@@ -187,6 +187,13 @@
   gap: var(--spacing-sm);
 }
 
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Adjust the spacing as needed */
+}
+
+
 @keyframes slideIn {
   from {
     transform: translateY(-10px);

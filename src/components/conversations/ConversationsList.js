@@ -6,7 +6,7 @@ import {
   MessageSquare,
   User,
 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Header from '../shared/Header';
@@ -154,7 +154,7 @@ const ConversationsList = () => {
           {user.userType === 'developer' && (
             <button
               className={styles.browseButton}
-              onClick={() => navigate('/public-requests')}
+              onClick={() => navigate('/opportunities')}
             >
               <Briefcase className={styles.icon} />
               Browse Opportunities
@@ -207,7 +207,7 @@ const ConversationsList = () => {
               {user.userType === 'developer' && (
                 <button
                   className={styles.browseButton}
-                  onClick={() => navigate('/public-requests')}
+                  onClick={() => navigate('/opportunities')}
                 >
                   Browse Opportunities
                 </button>

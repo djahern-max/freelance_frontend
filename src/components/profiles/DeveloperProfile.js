@@ -7,6 +7,7 @@ import {
   updateDeveloperProfile,
 } from '../../redux/profileSlice';
 import styles from './DeveloperProfile.module.css';
+import ImageUpload from './ImageUpload';
 
 const DEFAULT_VALUES = {
   skills: '',
@@ -30,10 +31,18 @@ const DeveloperProfile = () => {
   } = useSelector((state) => state.profile);
   const [formData, setFormData] = useState(DEFAULT_VALUES);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
 
   // Fetch profile data on component mount
   useEffect(() => {
-    dispatch(fetchProfile());
+    dispatch(fetchProfile())
+      .unwrap()
+      .catch((err) => {
+        // Only show error toast if it's not a 404
+        if (err.status !== 404) {
+          toast.error('Error loading profile');
+        }
+      });
   }, [dispatch]);
 
   // Update form when profile data is loaded
@@ -54,21 +63,36 @@ const DeveloperProfile = () => {
     setIsSubmitting(true);
 
     try {
-      const processedData = {
-        ...formData,
-        experience_years: parseInt(formData.experience_years) || 0,
-      };
+      let processedData;
 
-      const action = profile?.developer_profile
+      if (imageFile) {
+        processedData = new FormData();
+        processedData.append('file', imageFile);
+        processedData.append('skills', formData.skills);
+        processedData.append(
+          'experience_years',
+          parseInt(formData.experience_years) || 0
+        );
+        processedData.append('bio', formData.bio);
+        processedData.append('is_public', formData.is_public);
+      } else {
+        processedData = {
+          ...formData,
+          experience_years: parseInt(formData.experience_years) || 0,
+        };
+      }
+
+      const action = hasProfile
         ? await dispatch(updateDeveloperProfile(processedData))
         : await dispatch(createDeveloperProfile(processedData));
 
       if (action.type.endsWith('/fulfilled')) {
         toast.success(
-          profile?.developer_profile
+          hasProfile
             ? 'Profile updated successfully!'
             : 'Profile created successfully!'
         );
+        setImageFile(null);
       } else {
         toast.error(action.payload || 'Failed to save profile');
       }
@@ -107,6 +131,21 @@ const DeveloperProfile = () => {
             </div>
           )}
         </div>
+
+        <ImageUpload
+          mode={hasProfile ? 'upload' : 'select'}
+          onUploadSuccess={(url) => {
+            // For existing profile updates
+            dispatch(
+              updateDeveloperProfile({ ...formData, profile_image_url: url })
+            );
+          }}
+          onFileSelect={(file) => {
+            // For new profile creation
+            setImageFile(file);
+          }}
+          currentImageUrl={profile?.developer_profile?.profile_image_url}
+        />
 
         <form onSubmit={handleSubmit} className={styles.form}>
           {error && (

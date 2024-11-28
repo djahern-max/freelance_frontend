@@ -1,6 +1,5 @@
-// RequestAgreement.js
 import { DollarSign, MessageCircle, X } from 'lucide-react';
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './RequestAgreement.module.css';
 
 const RequestAgreement = ({
@@ -10,20 +9,30 @@ const RequestAgreement = ({
   isLoading,
   onCancel,
   currentUser,
+  existingAgreement = null, // Add this prop to handle existing agreements
 }) => {
-  // Initialize price with request's budget if available
+  // Initialize state with existing agreement data if available
   const [price, setPrice] = useState(
-    request?.estimated_budget?.toString() || ''
+    existingAgreement?.price?.toString() ||
+      request?.estimated_budget?.toString() ||
+      ''
   );
-  const [terms, setTerms] = useState('');
+  const [terms, setTerms] = useState(existingAgreement?.terms || '');
   const [showProposal, setShowProposal] = useState(false);
   const [proposedChanges, setProposedChanges] = useState('');
 
-  // Safely check for existing proposal
-  const proposedAgreement = request?.proposedAgreement || null;
-  const isExistingProposal = proposedAgreement !== null;
+  // Track if there's an existing proposal
+  const isExistingProposal = Boolean(existingAgreement);
   const isProposer =
-    isExistingProposal && proposedAgreement?.proposedBy === currentUser?.id;
+    isExistingProposal && existingAgreement?.proposedBy === currentUser?.id;
+
+  // Update state when existingAgreement changes
+  useEffect(() => {
+    if (existingAgreement) {
+      setPrice(existingAgreement.price.toString());
+      setTerms(existingAgreement.terms);
+    }
+  }, [existingAgreement]);
 
   const handlePriceChange = (e) => {
     const value = e.target.value.replace(/[^0-9.]/g, '');
@@ -34,7 +43,7 @@ const RequestAgreement = ({
     if (!currentUser) return;
 
     onPropose({
-      price,
+      price: parseFloat(price),
       terms,
       proposedBy: currentUser.id,
       proposedAt: new Date().toISOString(),
@@ -76,7 +85,7 @@ const RequestAgreement = ({
                   <DollarSign className={styles.dollarIcon} />
                   <input
                     type="text"
-                    value={isExistingProposal ? proposedAgreement.price : price}
+                    value={price}
                     onChange={handlePriceChange}
                     placeholder="Enter proposed price"
                     className={styles.priceInput}
@@ -93,7 +102,7 @@ const RequestAgreement = ({
               <div className={styles.inputGroup}>
                 <label className={styles.label}>Terms & Deliverables</label>
                 <textarea
-                  value={isExistingProposal ? proposedAgreement.terms : terms}
+                  value={terms}
                   onChange={(e) => setTerms(e.target.value)}
                   placeholder="Define what will be delivered, timeline, requirements..."
                   className={styles.termsInput}
@@ -137,7 +146,7 @@ const RequestAgreement = ({
                       <button
                         onClick={() =>
                           onPropose({
-                            price,
+                            price: parseFloat(price),
                             terms,
                             proposedChanges,
                             proposedBy: currentUser.id,
@@ -145,13 +154,13 @@ const RequestAgreement = ({
                           })
                         }
                         className={styles.proposeButton}
-                        disabled={!proposedChanges.trim()}
+                        disabled={!proposedChanges.trim() || isLoading}
                       >
                         Propose Changes
                       </button>
                     ) : (
                       <button
-                        onClick={() => onAccept(proposedAgreement)}
+                        onClick={() => onAccept(existingAgreement)}
                         className={styles.acceptButton}
                         disabled={isLoading}
                       >
@@ -182,3 +191,4 @@ const RequestAgreement = ({
 };
 
 export default RequestAgreement;
+t;

@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
+import SharedRequestNotification from '../requests/SharedRequestNotification';
 import styles from './Header.module.css';
 
 const Header = () => {
@@ -24,9 +25,21 @@ const Header = () => {
   const getPages = () => {
     const pages = [
       {
-        path: '/public-requests',
+        path: getDashboardPath(),
+        icon: LayoutDashboard,
+        title: 'Dashboard',
+        requiresAuth: true,
+      },
+      {
+        path: '/opportunities',
         icon: Search,
-        title: 'Opportunities', // Updated title to match homepage
+        title: 'Opportunities',
+        requiresAuth: false,
+      },
+      {
+        path: '/creators',
+        icon: UsersRound,
+        title: 'Creators',
         requiresAuth: false,
       },
       {
@@ -34,19 +47,6 @@ const Header = () => {
         icon: Video,
         title: 'Videos',
         requiresAuth: false,
-      },
-      {
-        path: '/creators', // Changed from app-dashboard
-        icon: UsersRound, // Import UsersRound from lucide-react
-        title: 'Creators',
-        requiresAuth: false,
-      },
-
-      {
-        path: getDashboardPath(),
-        icon: LayoutDashboard,
-        title: 'Dashboard',
-        requiresAuth: true, // Only show when authenticated
       },
       {
         path: '/settings',
@@ -118,6 +118,11 @@ const Header = () => {
             />
           </div>
         ))}
+        {isAuthenticated && userType === 'developer' && (
+          <div className={styles.notificationContainer}>
+            <SharedRequestNotification />
+          </div>
+        )}
         {isAuthenticated && (
           <div className={styles.icon} onClick={handleLogout} title="Logout">
             <LogOut className={styles.iconImage} size={24} strokeWidth={1.5} />

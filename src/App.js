@@ -81,7 +81,7 @@ function AppContent() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
-          <Route path="/public-requests" element={<PublicRequests />} />
+          <Route path="/opportunities" element={<PublicRequests />} />
           <Route path="/videos" element={<VideoList />} />
           <Route path="/creators" element={<PublicDevelopers />} />
 

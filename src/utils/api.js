@@ -186,6 +186,12 @@ api.helpers = {
         console.log(`${userType} profile fetched:`, response.data);
         return response.data;
       } catch (error) {
+        // If it's a 404, return null instead of throwing
+        if (error.response?.status === 404) {
+          console.log(`No ${userType} profile found`);
+          return null;
+        }
+        // For other errors, throw as usual
         console.error(`Error fetching ${userType} profile:`, error);
         throw error;
       }

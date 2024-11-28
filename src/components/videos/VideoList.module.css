@@ -1,39 +1,56 @@
-
-.pageContainer {
-  padding: var(--spacing-lg);
-  min-height: calc(100vh - 60px);
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
 }
 
-.header {
+.headerContainer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: 2rem;
 }
 
 .title {
-  font-size: var(--font-size-xl);
-  color: var(--color-text-primary);
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.uploadButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #2563eb;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.uploadButton:hover {
+  background-color: #1d4ed8;
 }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: var(--spacing-lg);
-  margin-top: var(--spacing-lg);
+  gap: 1.5rem;
 }
 
 .videoCard {
-  background: var(--color-background);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   transition: transform 0.2s ease;
 }
 
 .videoCard:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .thumbnailContainer {
@@ -48,6 +65,12 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.thumbnailPlaceholder {
+  width: 100%;
+  height: 100%;
+  background-color: #f3f4f6;
 }
 
 .playButton {
@@ -72,20 +95,21 @@
 }
 
 .contentContainer {
-  padding: var(--spacing-md);
+  padding: 1.5rem;
 }
 
 .videoTitle {
-  font-size: var(--font-size-lg);
+  font-size: 1.25rem;
   font-weight: 600;
-  color: var(--color-text-primary);
-  margin-bottom: var(--spacing-sm);
+  color: #333;
+  margin: 0 0 0.5rem 0;
 }
 
 .description {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
-  margin-bottom: var(--spacing-md);
+  color: #666;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
@@ -95,9 +119,86 @@
 .metadata {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
+  gap: 0.5rem;
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.icon {
+  color: #666;
+}
+
+.loadingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: 0.5rem;
+}
+
+.loadingIcon {
+  animation: spin 1s linear infinite;
+  color: #666;
+}
+
+.loadingText {
+  font-size: 1.125rem;
+  color: #666;
+}
+
+.errorContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+}
+
+.errorMessage {
+  color: #dc2626;
+  font-size: 1.125rem;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 3rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.emptyIcon {
+  color: #9ca3af;
+}
+
+.emptyTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.emptyText {
+  color: #666;
+  margin: 0;
+}
+
+.buttonPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #2563eb;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.buttonPrimary:hover {
+  background-color: #1d4ed8;
 }
 
 .modal {
@@ -110,15 +211,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 2rem;
   z-index: 1000;
-  padding: var(--spacing-lg);
 }
 
 .modalContent {
+  position: relative;
   width: 100%;
   max-width: 1200px;
-  background: var(--color-background);
-  border-radius: var(--radius-lg);
+  background: white;
+  border-radius: 8px;
   overflow: hidden;
 }
 
@@ -128,13 +230,13 @@
 }
 
 .modalInfo {
-  padding: var(--spacing-lg);
+  padding: 1.5rem;
 }
 
 .closeButton {
   position: absolute;
-  top: var(--spacing-md);
-  right: var(--spacing-md);
+  top: 1rem;
+  right: 1rem;
   background: rgba(0, 0, 0, 0.7);
   border: none;
   border-radius: 50%;
@@ -145,79 +247,43 @@
   justify-content: center;
   color: white;
   cursor: pointer;
-}
-
-.errorContainer {
-  text-align: center;
-  padding: var(--spacing-xl);
-  color: var(--color-error);
-}
-
-.loadingContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 400px;
-  color: var(--color-text-secondary);
-}
-
-.emptyState {
-  text-align: center;
-  padding: var(--spacing-xl);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-lg);
-}
-
-.headerContainer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-lg);
-  padding: 0 var(--spacing-md);
-}
-
-.uploadButton {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  background-color: var(--color-primary);
-  color: white;
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--radius-md);
-  text-decoration: none;
-  font-weight: 500;
   transition: background-color 0.2s ease;
 }
 
-.uploadButton:hover {
-  background-color: var(--color-primary-dark);
-  text-decoration: none;
+.closeButton:hover {
+  background-color: rgba(0, 0, 0, 0.8);
 }
 
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 @media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
   .headerContainer {
     flex-direction: column;
-    gap: var(--spacing-md);
-    align-items: stretch;
+    gap: 1rem;
+    align-items: flex-start;
   }
 
-  .uploadButton {
-    text-align: center;
-    justify-content: center;
-  }
-
-  .pageContainer {
-    padding: var(--spacing-md);
+  .title {
+    font-size: 1.5rem;
   }
 
   .grid {
     grid-template-columns: 1fr;
   }
 
-  .header {
-    flex-direction: column;
-    gap: var(--spacing-md);
-    align-items: flex-start;
+  .uploadButton {
+    width: 100%;
+    justify-content: center;
   }
 }

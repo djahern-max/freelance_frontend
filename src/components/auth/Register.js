@@ -1,29 +1,29 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation, Link } from "react-router-dom";
-import styles from "./Register.module.css";
-import { clearAuthData } from "../../utils/authCleanup";
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { clearAuthData } from '../../utils/authCleanup';
+import styles from './Register.module.css';
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    userType: "client",
-    full_name: "",
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    userType: 'client',
+    full_name: '',
   });
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from || "/";
+  const from = location.state?.from || '/';
 
   // Correctly placed useEffect for auth cleanup
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
     if (token) {
-      console.log("Found stale auth data, clearing...");
+      console.log('Found stale auth data, clearing...');
       clearAuthData();
     }
   }, []);
@@ -39,12 +39,12 @@ const Register = () => {
   // Fixed handleRegister function - removed incorrect useEffect
   const handleRegister = async (e) => {
     e.preventDefault();
-    console.log("Form Data:", formData);
-    setError("");
+    console.log('Form Data:', formData);
+    setError('');
     setIsLoading(true);
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
+      setError('Passwords do not match');
       setIsLoading(false);
       return;
     }
@@ -58,14 +58,14 @@ const Register = () => {
         full_name: formData.full_name,
       };
 
-      console.log("Request Payload:", requestBody);
+      console.log('Request Payload:', requestBody);
 
       const response = await fetch(
         `${process.env.REACT_APP_API_URL}/auth/register`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify(requestBody),
         }
@@ -73,21 +73,21 @@ const Register = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.log("Error Response:", errorData);
-        throw new Error(errorData.detail || "Registration failed");
+        console.log('Error Response:', errorData);
+        throw new Error(errorData.detail || 'Registration failed');
       }
 
       // Redirect to login with success message
-      navigate("/login", {
+      navigate('/login', {
         state: {
           from,
           registrationSuccess: true,
           message:
-            "Account created successfully! You can complete your profile after logging in.",
+            'Account created successfully! You can complete your profile after logging in.',
         },
       });
     } catch (err) {
-      setError(err.message || "Registration failed. Please try again.");
+      setError(err.message || 'Registration failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -98,9 +98,7 @@ const Register = () => {
       <div className={styles.formWrapper}>
         <div className={styles.header}>
           <h1 className={styles.title}>Create Account</h1>
-          <p className={styles.subtitle}>
-            Join RYZE.AI to connect with AI solutions
-          </p>
+          <p className={styles.subtitle}></p>
         </div>
 
         {error && <div className={styles.error}>{error}</div>}
@@ -115,8 +113,8 @@ const Register = () => {
               onChange={handleInputChange}
               className={styles.select}
             >
-              <option value="client">Client seeking AI solutions</option>
-              <option value="developer">AI Developer</option>
+              <option value="client">CLIENT seeking solutions</option>
+              <option value="developer">CREATOR providing answers</option>
             </select>
           </div>
 
@@ -195,7 +193,7 @@ const Register = () => {
             className={styles.submitButton}
             disabled={isLoading}
           >
-            {isLoading ? "Creating Account..." : "Create Account"}
+            {isLoading ? 'Creating Account...' : 'Create Account'}
           </button>
 
           <p className={styles.hint}>
@@ -205,7 +203,7 @@ const Register = () => {
 
         <div className={styles.footer}>
           <p>
-            Already have an account?{" "}
+            Already have an account?{' '}
             <Link to="/login" className={styles.link} state={{ from }}>
               Sign in
             </Link>

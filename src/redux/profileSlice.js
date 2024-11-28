@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import api from '../utils/api';
+import api, { API_ROUTES } from '../utils/api';
 
 export const fetchProfile = createAsyncThunk(
   'profile/fetchProfile',
@@ -35,7 +35,22 @@ export const createDeveloperProfile = createAsyncThunk(
   'profile/createDeveloper',
   async (profileData, { rejectWithValue }) => {
     try {
-      return await api.helpers.profile.createProfile('developer', profileData);
+      // Check if profileData is FormData or regular object
+      const isFormData = profileData instanceof FormData;
+      const config = isFormData
+        ? {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        : {};
+
+      const response = await api.post(
+        API_ROUTES.PROFILE.DEVELOPER,
+        profileData,
+        config
+      );
+      return response.data;
     } catch (error) {
       return rejectWithValue(api.helpers.handleError(error));
     }

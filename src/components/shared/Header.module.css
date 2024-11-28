@@ -82,6 +82,11 @@
   background-color: rgba(0, 0, 0, 0.05);
 }
 
+.notificationContainer {
+  position: relative;
+  margin: 0 8px;
+}
+
 @media (max-width: 768px) {
   .header {
     height: 60px;
@@ -111,5 +116,22 @@
   .icon {
     width: 40px; /* Slightly smaller on mobile but still larger than before */
     height: 40px;
+  }
+}
+
+
+
+@media (max-width: 640px) {
+  .iconBar {
+    gap: 8px;
+    padding: 0 8px;
+  }
+  
+  .icon {
+    padding: 8px;
+  }
+  
+  .notificationContainer {
+    margin: 0 4px;
   }
 }

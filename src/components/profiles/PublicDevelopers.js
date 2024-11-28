@@ -48,7 +48,7 @@ const PublicDevelopers = () => {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>AI Solution Creators</h1>
+      <h1 className={styles.title}>Creators</h1>
 
       <div className={styles.grid}>
         {developers.map((developer) => (
