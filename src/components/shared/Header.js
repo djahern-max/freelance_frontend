@@ -30,17 +30,18 @@ const Header = () => {
         requiresAuth: false,
       },
       {
-        path: '/developers', // Changed from app-dashboard
-        icon: UsersRound, // Import UsersRound from lucide-react
-        title: 'Developers',
-        requiresAuth: false,
-      },
-      {
         path: '/videos',
         icon: Video,
         title: 'Videos',
         requiresAuth: false,
       },
+      {
+        path: '/creators', // Changed from app-dashboard
+        icon: UsersRound, // Import UsersRound from lucide-react
+        title: 'Creators',
+        requiresAuth: false,
+      },
+
       {
         path: getDashboardPath(),
         icon: LayoutDashboard,

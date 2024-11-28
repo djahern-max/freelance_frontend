@@ -18,6 +18,7 @@ import AppDashboard from './components/dashboards/AppDashboard';
 import ClientDashboard from './components/dashboards/ClientDashboard';
 import DeveloperDashboard from './components/dashboards/DeveloperDashboard';
 import Home from './components/pages/HomePage';
+import PublicDevelopers from './components/profiles/PublicDevelopers';
 import CreateProject from './components/projects/CreateProject';
 import ProjectDetails from './components/projects/ProjectDetails';
 import ProjectsList from './components/projects/ProjectsList';
@@ -82,6 +83,7 @@ function AppContent() {
           <Route path="/logout" element={<Logout />} />
           <Route path="/public-requests" element={<PublicRequests />} />
           <Route path="/videos" element={<VideoList />} />
+          <Route path="/creators" element={<PublicDevelopers />} />
 
           {/* Client-specific routes */}
           <Route
