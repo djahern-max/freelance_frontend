@@ -36,6 +36,7 @@ const ConversationDetail = () => {
   const [terms, setTerms] = useState('');
   const [showAgreementModal, setShowAgreementModal] = useState(false);
   const [error, setError] = useState(null);
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
 
   // Utility functions
   const formatCurrency = (amount) => {
@@ -282,6 +283,12 @@ const ConversationDetail = () => {
           <ArrowLeft size={20} />
         </button>
         <h1 className={styles.title}>{requestDetails?.title}</h1>
+        <button
+          className={styles.mobileInfoButton}
+          onClick={() => setShowMobileSidebar(true)}
+        >
+          <Info size={20} />
+        </button>
       </div>
 
       <div className={styles.content}>
@@ -339,198 +346,29 @@ const ConversationDetail = () => {
           </div>
         </div>
 
-        {/* Sidebar */}
+        {/* Regular Sidebar */}
         <div className={styles.sidebar}>
-          {/* Request Details Section */}
-          <div className={styles.sidebarSection}>
-            <h2 className={styles.sidebarTitle}>Request Details</h2>
-            <div className={styles.requestDetails}>
-              <div className={styles.infoItem}>
-                <FileText size={16} />
-                <span>{requestDetails?.title}</span>
-              </div>
-              <div className={styles.infoItem}>
-                <DollarSign size={16} />
-                <span>
-                  Budget: {formatCurrency(requestDetails?.estimated_budget)}
-                </span>
-              </div>
-              <div className={styles.infoItem}>
-                <Clock size={16} />
-                <span>
-                  Posted:{' '}
-                  {new Date(requestDetails?.created_at).toLocaleDateString()}
-                </span>
-              </div>
-              <div
-                className={`${styles.statusIndicator} ${
-                  styles[conversation.status]
-                }`}
-              >
-                <span>
-                  {conversation.status.charAt(0).toUpperCase() +
-                    conversation.status.slice(1)}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Agreement Section */}
-          <div className={styles.sidebarSection}>
-            <div className={styles.sectionHeader}>
-              {(user.userType === 'developer' || user.userType === 'client') &&
-                !agreement &&
-                !showAgreementForm && (
-                  <button
-                    onClick={() => setShowAgreementForm(true)}
-                    className={styles.createAgreementButton}
-                  >
-                    <FileText size={16} />
-                    Create Agreement
-                  </button>
-                )}
-            </div>
-            {agreement ? (
-              <div
-                className={`${styles.existingAgreement} ${styles.clickable}`}
-                onClick={handleAgreementClick}
-                role="button"
-                tabIndex={0}
-              >
-                <h3>Work Agreement</h3>
-                <div className={styles.agreementDetails}>
-                  <p>
-                    <strong>Price:</strong> {formatCurrency(agreement.price)}
-                  </p>
-                  <p>
-                    <strong>Status:</strong> {agreement.status}
-                  </p>
-                  <p className={styles.agreementPreview}>
-                    <strong>Terms:</strong> {agreement.terms.substring(0, 100)}
-                    {agreement.terms.length > 100 && '...'}
-                  </p>
-                  {agreement.status === 'proposed' &&
-                    user.id !== agreement.proposed_by && (
-                      <div className={styles.agreementActions}>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            acceptAgreement();
-                          }}
-                          className={styles.acceptButton}
-                          disabled={isAcceptingAgreement}
-                        >
-                          {isAcceptingAgreement
-                            ? 'Accepting...'
-                            : 'Accept Agreement'}
-                        </button>
-                      </div>
-                    )}
-                </div>
-              </div>
-            ) : (
-              showAgreementForm && (
-                <div className={styles.agreementContent}>
-                  <form
-                    onSubmit={createAgreement}
-                    className={styles.agreementForm}
-                  >
-                    <h3>Propose Work Agreement</h3>
-                    <div className={styles.formGroup}>
-                      <label>Price (USD)</label>
-                      <input
-                        type="number"
-                        value={price}
-                        onChange={(e) => setPrice(e.target.value)}
-                        required
-                        className={styles.input}
-                      />
-                    </div>
-                    <div className={styles.formGroup}>
-                      <label>Terms and Conditions</label>
-                      <textarea
-                        value={terms}
-                        onChange={(e) => setTerms(e.target.value)}
-                        required
-                        className={styles.textarea}
-                        placeholder="Describe the work terms, timeline, and payment schedule..."
-                      />
-                    </div>
-                    <div className={styles.buttonGroup}>
-                      <button
-                        type="submit"
-                        className={styles.submitButton}
-                        disabled={isSubmittingAgreement}
-                      >
-                        {isSubmittingAgreement
-                          ? 'Creating...'
-                          : 'Propose Agreement'}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setShowAgreementForm(false)}
-                        className={styles.cancelButton}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              )
-            )}
-          </div>
-
-          {/* Participants Section */}
-          <div className={styles.sidebarSection}>
-            <h2 className={styles.sidebarTitle}>Participants</h2>
-            {[
-              {
-                id: conversation.starter_user_id,
-                name: conversation.starter_username,
-              },
-              {
-                id: conversation.recipient_user_id,
-                name: conversation.recipient_username,
-              },
-            ].map((participant) => (
-              <div
-                key={participant.id}
-                className={`${styles.participant} ${
-                  participant.id === user.id ? styles.currentUser : ''
-                }`}
-              >
-                <User size={16} />
-                <span>{participant.name}</span>
-                {participant.id === user.id && (
-                  <span className={styles.youLabel}>(You)</span>
-                )}
-              </div>
-            ))}
-          </div>
-
-          {/* Actions Section */}
-          {user.userType === 'client' && conversation.status === 'pending' && (
-            <div className={styles.sidebarSection}>
-              <h2 className={styles.sidebarTitle}>Actions</h2>
-              <div className={styles.actions}>
-                <button
-                  onClick={() => handleProposal(true)}
-                  className={styles.acceptButton}
-                >
-                  <CheckCircle size={16} />
-                  Accept
-                </button>
-                <button
-                  onClick={() => handleProposal(false)}
-                  className={styles.rejectButton}
-                >
-                  <XCircle size={16} />
-                  Decline
-                </button>
-              </div>
-            </div>
-          )}
+          {/* Your existing sidebar content */}
+          <SidebarContent />
         </div>
+      </div>
+
+      {/* Mobile Sidebar */}
+      <div
+        className={`${styles.mobileSidebarContainer} ${
+          showMobileSidebar ? styles.visible : ''
+        }`}
+      >
+        <div className={styles.mobileSidebarHeader}>
+          <h2 className={styles.sidebarTitle}>Request Details</h2>
+          <button
+            className={styles.closeButton}
+            onClick={() => setShowMobileSidebar(false)}
+          >
+            <X size={24} />
+          </button>
+        </div>
+        <SidebarContent />
       </div>
 
       {/* Agreement Modal */}
@@ -543,83 +381,204 @@ const ConversationDetail = () => {
             className={styles.modalContent}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className={styles.modalHeader}>
-              <h2>Work Agreement Details</h2>
-              <button
-                className={styles.closeButton}
-                onClick={() => setShowAgreementModal(false)}
-              >
-                ×
-              </button>
-            </div>
-
-            <div className={styles.modalBody}>
-              <div className={styles.agreementFullDetails}>
-                <p>
-                  <strong>Price:</strong> {formatCurrency(agreement.price)}
-                </p>
-                <p>
-                  <strong>Status:</strong> {agreement.status}
-                </p>
-                <p>
-                  <strong>Terms:</strong>
-                </p>
-                <div className={styles.termsContent}>{agreement.terms}</div>
-                <p>
-                  <strong>Created:</strong>{' '}
-                  {new Date(agreement.created_at).toLocaleDateString()}
-                </p>
-                {agreement.accepted_at && (
-                  <p>
-                    <strong>Accepted:</strong>{' '}
-                    {new Date(agreement.accepted_at).toLocaleDateString()}
-                  </p>
-                )}
-                <div className={styles.modalActions}>
-                  {agreement.status === 'accepted' ? (
-                    <button
-                      onClick={() => {
-                        setShowAgreementModal(false);
-                        setShowAgreementForm(true);
-                        setPrice(agreement.price.toString());
-                        setTerms(agreement.terms);
-                      }}
-                      className={styles.modifyButton}
-                    >
-                      Request Change Order
-                    </button>
-                  ) : agreement.status === 'proposed' &&
-                    user.id !== agreement.proposed_by ? (
-                    <>
-                      <button
-                        onClick={acceptAgreement}
-                        className={styles.acceptButton}
-                        disabled={isAcceptingAgreement}
-                      >
-                        {isAcceptingAgreement
-                          ? 'Accepting...'
-                          : 'Accept Agreement'}
-                      </button>
-                      <button
-                        onClick={() => {
-                          setShowAgreementModal(false);
-                          setShowAgreementForm(true);
-                          setPrice(agreement.price.toString());
-                          setTerms(agreement.terms);
-                        }}
-                        className={styles.modifyButton}
-                      >
-                        Counter Proposal
-                      </button>
-                    </>
-                  ) : null}
-                </div>
-              </div>
-            </div>
+            {/* Your existing modal content */}
+            {/* ... */}
           </div>
         </div>
       )}
     </div>
+  );
+
+  // Create a SidebarContent component to avoid duplicating code
+  const SidebarContent = () => (
+    <>
+      {/* Request Details Section */}
+      <div className={styles.sidebarSection}>
+        <h2 className={styles.sidebarTitle}>Request Details</h2>
+        <div className={styles.requestDetails}>
+          <div className={styles.infoItem}>
+            <FileText size={16} />
+            <span>{requestDetails?.title}</span>
+          </div>
+          <div className={styles.infoItem}>
+            <DollarSign size={16} />
+            <span>
+              Budget: {formatCurrency(requestDetails?.estimated_budget)}
+            </span>
+          </div>
+          <div className={styles.infoItem}>
+            <Clock size={16} />
+            <span>
+              Posted:{' '}
+              {new Date(requestDetails?.created_at).toLocaleDateString()}
+            </span>
+          </div>
+          <div
+            className={`${styles.statusIndicator} ${
+              styles[conversation.status]
+            }`}
+          >
+            <span>
+              {conversation.status.charAt(0).toUpperCase() +
+                conversation.status.slice(1)}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Agreement Section */}
+      <div className={styles.sidebarSection}>
+        <div className={styles.sectionHeader}>
+          {(user.userType === 'developer' || user.userType === 'client') &&
+            !agreement &&
+            !showAgreementForm && (
+              <button
+                onClick={() => setShowAgreementForm(true)}
+                className={styles.createAgreementButton}
+              >
+                <FileText size={16} />
+                Create Agreement
+              </button>
+            )}
+        </div>
+        {agreement ? (
+          <div
+            className={`${styles.existingAgreement} ${styles.clickable}`}
+            onClick={handleAgreementClick}
+            role="button"
+            tabIndex={0}
+          >
+            <h3>Work Agreement</h3>
+            <div className={styles.agreementDetails}>
+              <p>
+                <strong>Price:</strong> {formatCurrency(agreement.price)}
+              </p>
+              <p>
+                <strong>Status:</strong> {agreement.status}
+              </p>
+              <p className={styles.agreementPreview}>
+                <strong>Terms:</strong> {agreement.terms.substring(0, 100)}
+                {agreement.terms.length > 100 && '...'}
+              </p>
+              {agreement.status === 'proposed' &&
+                user.id !== agreement.proposed_by && (
+                  <div className={styles.agreementActions}>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        acceptAgreement();
+                      }}
+                      className={styles.acceptButton}
+                      disabled={isAcceptingAgreement}
+                    >
+                      {isAcceptingAgreement
+                        ? 'Accepting...'
+                        : 'Accept Agreement'}
+                    </button>
+                  </div>
+                )}
+            </div>
+          </div>
+        ) : (
+          showAgreementForm && (
+            <div className={styles.agreementContent}>
+              <form onSubmit={createAgreement} className={styles.agreementForm}>
+                <h3>Propose Work Agreement</h3>
+                <div className={styles.formGroup}>
+                  <label>Price (USD)</label>
+                  <input
+                    type="number"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    required
+                    className={styles.input}
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>Terms and Conditions</label>
+                  <textarea
+                    value={terms}
+                    onChange={(e) => setTerms(e.target.value)}
+                    required
+                    className={styles.textarea}
+                    placeholder="Describe the work terms, timeline, and payment schedule..."
+                  />
+                </div>
+                <div className={styles.buttonGroup}>
+                  <button
+                    type="submit"
+                    className={styles.submitButton}
+                    disabled={isSubmittingAgreement}
+                  >
+                    {isSubmittingAgreement
+                      ? 'Creating...'
+                      : 'Propose Agreement'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowAgreementForm(false)}
+                    className={styles.cancelButton}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          )
+        )}
+      </div>
+
+      {/* Participants Section */}
+      <div className={styles.sidebarSection}>
+        <h2 className={styles.sidebarTitle}>Participants</h2>
+        {[
+          {
+            id: conversation.starter_user_id,
+            name: conversation.starter_username,
+          },
+          {
+            id: conversation.recipient_user_id,
+            name: conversation.recipient_username,
+          },
+        ].map((participant) => (
+          <div
+            key={participant.id}
+            className={`${styles.participant} ${
+              participant.id === user.id ? styles.currentUser : ''
+            }`}
+          >
+            <User size={16} />
+            <span>{participant.name}</span>
+            {participant.id === user.id && (
+              <span className={styles.youLabel}>(You)</span>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Actions Section */}
+      {user.userType === 'client' && conversation.status === 'pending' && (
+        <div className={styles.sidebarSection}>
+          <h2 className={styles.sidebarTitle}>Actions</h2>
+          <div className={styles.actions}>
+            <button
+              onClick={() => handleProposal(true)}
+              className={styles.acceptButton}
+            >
+              <CheckCircle size={16} />
+              Accept
+            </button>
+            <button
+              onClick={() => handleProposal(false)}
+              className={styles.rejectButton}
+            >
+              <XCircle size={16} />
+              Decline
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
