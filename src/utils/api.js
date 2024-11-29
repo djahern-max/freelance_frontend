@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { clearAuthData } from './authCleanup';
 
-// API Routes constants
+// API Routes constants with corrected endpoints
 export const API_ROUTES = {
   PROFILE: {
     ME: '/profile/me',
@@ -22,12 +22,16 @@ export const API_ROUTES = {
     LIST: '/conversations/user/list',
     DETAIL: (id) => `/conversations/${id}`,
     MESSAGES: (id) => `/conversations/${id}/messages`,
+    CREATE: '/conversations/',
   },
   REQUESTS: {
+    LIST: '/requests/',
     DETAIL: (id) => `/requests/${id}`,
+    PUBLIC: '/requests/public',
+    SHARED: '/requests/shared-with-me',
   },
   AGREEMENTS: {
-    CREATE: '/agreements',
+    CREATE: '/agreements/', // Added trailing slash to match backend
     ACCEPT: (id) => `/agreements/${id}/accept`,
     BY_REQUEST: (requestId) => `/agreements/request/${requestId}`,
   },
@@ -51,11 +55,16 @@ const api = axios.create({
   withCredentials: true,
 });
 
-// Request interceptor
+// Enhanced request interceptor with better logging
 api.interceptors.request.use(
   (config) => {
     if (process.env.NODE_ENV === 'development') {
-      console.log('Request:', `${config.baseURL}${config.url}`, config);
+      console.log('API Request:', {
+        url: `${config.baseURL}${config.url}`,
+        method: config.method,
+        headers: config.headers,
+        data: config.data,
+      });
     }
 
     const isPublicRoute = Object.values(API_ROUTES.PUBLIC).some((route) =>
@@ -72,21 +81,24 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
-    console.error('Request error:', error);
+    console.error('Request interceptor error:', error);
     return Promise.reject(error);
   }
 );
 
-// Response interceptor
+// Enhanced response interceptor with better error handling
 api.interceptors.response.use(
   (response) => {
     if (process.env.NODE_ENV === 'development') {
-      console.log('Response:', response.config.url, response.status);
+      console.log('API Response:', {
+        url: response.config.url,
+        status: response.status,
+        data: response.data,
+      });
     }
     return response;
   },
   async (error) => {
-    // Enhanced error logging with structured details
     const errorDetails = {
       url: error.config?.url,
       method: error.config?.method,
@@ -132,7 +144,6 @@ api.interceptors.response.use(
       );
     }
 
-    // If we have a response with error details, include them in the error
     if (error.response?.data?.detail) {
       return Promise.reject(new Error(error.response.data.detail));
     }
@@ -141,12 +152,15 @@ api.interceptors.response.use(
   }
 );
 
-// Helper methods
+// Enhanced helper methods with better error handling
 api.helpers = {
   handleError: (error) => {
     console.error('API Error:', error);
 
-    if (error.message.includes('Authentication failed')) {
+    if (
+      error.message.includes('Authentication failed') ||
+      error.message.includes('Session expired')
+    ) {
       return 'Your session has expired. Please log in again.';
     }
 
@@ -155,12 +169,19 @@ api.helpers = {
     }
 
     switch (error.response.status) {
+      case 400:
+        return (
+          error.response.data?.detail ||
+          'Invalid request. Please check your input.'
+        );
       case 401:
         return 'Please log in to continue';
       case 403:
         return "You don't have permission to perform this action";
       case 404:
         return 'The requested resource was not found';
+      case 422:
+        return 'Validation error. Please check your input.';
       case 500:
         return 'Server error: Please try again later';
       default:
@@ -179,7 +200,7 @@ api.helpers = {
     return !!token;
   },
 
-  // Profile-specific helpers
+  // Enhanced profile helpers with better error handling
   profile: {
     async fetchUserProfile() {
       try {
@@ -202,12 +223,10 @@ api.helpers = {
         console.log(`${userType} profile fetched:`, response.data);
         return response.data;
       } catch (error) {
-        // If it's a 404, return null instead of throwing
         if (error.response?.status === 404) {
           console.log(`No ${userType} profile found`);
           return null;
         }
-        // For other errors, throw as usual
         console.error(`Error fetching ${userType} profile:`, error);
         throw error;
       }
@@ -244,7 +263,7 @@ api.helpers = {
     },
   },
 
-  // Public route helpers
+  // Enhanced public route helpers
   public: {
     async getPublicRequests(params = {}) {
       try {
@@ -280,37 +299,108 @@ api.helpers = {
   },
 };
 
-// Conversation-specific helpers
+// Enhanced conversation helpers
 api.conversations = {
+  async list() {
+    try {
+      const response = await api.get(API_ROUTES.CONVERSATIONS.LIST);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching conversations:', error);
+      throw error;
+    }
+  },
+
   async getDetail(id) {
-    return await api.get(API_ROUTES.CONVERSATIONS.DETAIL(id));
+    try {
+      const response = await api.get(API_ROUTES.CONVERSATIONS.DETAIL(id));
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching conversation details:', error);
+      throw error;
+    }
+  },
+
+  async create(data) {
+    try {
+      const response = await api.post(API_ROUTES.CONVERSATIONS.CREATE, data);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating conversation:', error);
+      throw error;
+    }
   },
 
   async sendMessage(id, content) {
-    return await api.post(API_ROUTES.CONVERSATIONS.MESSAGES(id), { content });
+    try {
+      const response = await api.post(API_ROUTES.CONVERSATIONS.MESSAGES(id), {
+        content,
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error sending message:', error);
+      throw error;
+    }
   },
 
   async updateStatus(id, status) {
-    return await api.patch(API_ROUTES.CONVERSATIONS.DETAIL(id), { status });
+    try {
+      const response = await api.patch(API_ROUTES.CONVERSATIONS.DETAIL(id), {
+        status,
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error updating conversation status:', error);
+      throw error;
+    }
   },
 };
 
-// Agreement-specific helpers
+// Enhanced agreement helpers with better error handling
 api.agreements = {
   async getByRequest(requestId) {
-    return await api.get(API_ROUTES.AGREEMENTS.BY_REQUEST(requestId));
+    try {
+      const response = await api.get(
+        API_ROUTES.AGREEMENTS.BY_REQUEST(requestId)
+      );
+      console.log('Agreement fetched:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching agreement:', error);
+      throw error;
+    }
   },
 
   async create(agreementData) {
-    return await api.post(API_ROUTES.AGREEMENTS.CREATE, agreementData);
+    try {
+      const response = await api.post(
+        API_ROUTES.AGREEMENTS.CREATE,
+        agreementData
+      );
+      console.log('Agreement created:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating agreement:', error);
+      throw error;
+    }
   },
 
   async accept(id, acceptData) {
-    return await api.post(API_ROUTES.AGREEMENTS.ACCEPT(id), acceptData);
+    try {
+      const response = await api.post(
+        API_ROUTES.AGREEMENTS.ACCEPT(id),
+        acceptData
+      );
+      console.log('Agreement accepted:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error accepting agreement:', error);
+      throw error;
+    }
   },
 };
 
-// Token management
+// Enhanced token management
 api.setToken = (token) => {
   if (token) {
     localStorage.setItem('token', token);
