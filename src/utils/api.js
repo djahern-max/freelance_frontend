@@ -18,6 +18,19 @@ export const API_ROUTES = {
     DEVELOPERS: '/profile/developers/public',
     VIDEOS: '/video_display',
   },
+  CONVERSATIONS: {
+    LIST: '/conversations/user/list',
+    DETAIL: (id) => `/conversations/${id}`,
+    MESSAGES: (id) => `/conversations/${id}/messages`,
+  },
+  REQUESTS: {
+    DETAIL: (id) => `/requests/${id}`,
+  },
+  AGREEMENTS: {
+    CREATE: '/agreements',
+    ACCEPT: (id) => `/agreements/${id}/accept`,
+    BY_REQUEST: (requestId) => `/agreements/request/${requestId}`,
+  },
 };
 
 const getBaseURL = () => {
@@ -41,14 +54,14 @@ const api = axios.create({
 // Request interceptor
 api.interceptors.request.use(
   (config) => {
-    console.log('Full Request URL:', `${config.baseURL}${config.url}`);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Request:', `${config.baseURL}${config.url}`, config);
+    }
 
-    // Check if the route is public
     const isPublicRoute = Object.values(API_ROUTES.PUBLIC).some((route) =>
       config.url.startsWith(route)
     );
 
-    // Only add auth header for non-public routes
     if (!isPublicRoute) {
       const token = localStorage.getItem('token');
       if (token) {
@@ -59,6 +72,7 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
+    console.error('Request error:', error);
     return Promise.reject(error);
   }
 );
@@ -67,58 +81,60 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => {
     if (process.env.NODE_ENV === 'development') {
-      console.log('API Response:', {
-        url: response.config.url,
-        status: response.status,
-        headers: response.headers,
-        contentType: response.headers['content-type'],
-      });
+      console.log('Response:', response.config.url, response.status);
     }
     return response;
   },
   async (error) => {
-    // Log detailed error information
+    // Enhanced error logging with structured details
     const errorDetails = {
       url: error.config?.url,
+      method: error.config?.method,
       status: error.response?.status,
-      statusText: error.response?.statusText,
       data: error.response?.data,
+      message: error.message,
       headers: error.config?.headers,
       authHeader: error.config?.headers?.Authorization ? 'Present' : 'Missing',
     };
 
     console.error('API Error Details:', errorDetails);
 
-    // Check if the route is public
     const isPublicRoute = Object.values(API_ROUTES.PUBLIC).some((route) =>
       error.config?.url?.startsWith(route)
     );
 
-    // Only handle auth errors for non-public routes
-    if (!isPublicRoute && error.response?.status === 401) {
-      console.log('Authentication error - token might be invalid or expired');
-      clearAuthData();
-
-      if (!window.location.pathname.includes('/login')) {
-        window.location.href = '/login';
+    if (!isPublicRoute) {
+      if (error.response?.status === 401) {
+        clearAuthData();
+        if (!window.location.pathname.includes('/login')) {
+          window.location.href = '/login';
+        }
+        return Promise.reject(
+          new Error('Session expired. Please log in again.')
+        );
       }
-      return Promise.reject(
-        new Error('Authentication failed - please log in again')
-      );
-    }
 
-    if (error.response?.status === 403) {
-      console.log('Authorization error - insufficient permissions');
-      return Promise.reject(
-        new Error("You don't have permission to perform this action")
-      );
+      if (error.response?.status === 403) {
+        return Promise.reject(
+          new Error('You do not have permission to perform this action.')
+        );
+      }
     }
 
     if (error.message.includes('Network Error')) {
-      console.error('Possible CORS or network error:', error);
+      console.error('Network Error Details:', {
+        url: error.config?.url,
+        method: error.config?.method,
+        headers: error.config?.headers,
+      });
       return Promise.reject(
         new Error('Unable to connect to server. Please check your connection.')
       );
+    }
+
+    // If we have a response with error details, include them in the error
+    if (error.response?.data?.detail) {
+      return Promise.reject(new Error(error.response.data.detail));
     }
 
     return Promise.reject(error);
@@ -264,11 +280,43 @@ api.helpers = {
   },
 };
 
-// Token management methods
+// Conversation-specific helpers
+api.conversations = {
+  async getDetail(id) {
+    return await api.get(API_ROUTES.CONVERSATIONS.DETAIL(id));
+  },
+
+  async sendMessage(id, content) {
+    return await api.post(API_ROUTES.CONVERSATIONS.MESSAGES(id), { content });
+  },
+
+  async updateStatus(id, status) {
+    return await api.patch(API_ROUTES.CONVERSATIONS.DETAIL(id), { status });
+  },
+};
+
+// Agreement-specific helpers
+api.agreements = {
+  async getByRequest(requestId) {
+    return await api.get(API_ROUTES.AGREEMENTS.BY_REQUEST(requestId));
+  },
+
+  async create(agreementData) {
+    return await api.post(API_ROUTES.AGREEMENTS.CREATE, agreementData);
+  },
+
+  async accept(id, acceptData) {
+    return await api.post(API_ROUTES.AGREEMENTS.ACCEPT(id), acceptData);
+  },
+};
+
+// Token management
 api.setToken = (token) => {
   if (token) {
+    localStorage.setItem('token', token);
     api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   } else {
+    localStorage.removeItem('token');
     delete api.defaults.headers.common['Authorization'];
   }
 };

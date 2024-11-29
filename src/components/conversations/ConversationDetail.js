@@ -1,4 +1,3 @@
-import axios from 'axios';
 import {
   ArrowLeft,
   CheckCircle,
@@ -14,6 +13,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import api from '../../utils/api'; // Add this import
 import styles from './ConversationDetail.module.css';
 
 const ConversationDetail = () => {
@@ -21,9 +21,8 @@ const ConversationDetail = () => {
   const navigate = useNavigate();
   const messagesEndRef = useRef(null);
   const { token, user } = useSelector((state) => state.auth);
-  const apiUrl = process.env.REACT_APP_API_URL;
 
-  // State declarations
+  // State declarations - removed duplicate loading state
   const [conversation, setConversation] = useState(null);
   const [requestDetails, setRequestDetails] = useState(null);
   const [newMessage, setNewMessage] = useState('');
@@ -36,30 +35,61 @@ const ConversationDetail = () => {
   const [price, setPrice] = useState('');
   const [terms, setTerms] = useState('');
   const [showAgreementModal, setShowAgreementModal] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Utility functions
+  const formatCurrency = (amount) => {
+    if (!amount) return '$0';
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  // Handler functions
+  const handleAgreementClick = (e) => {
+    if (e.target.tagName.toLowerCase() === 'button') {
+      return;
+    }
+
+    if (agreement) {
+      setShowAgreementModal(true);
+    } else if (user.userType === 'developer' || user.userType === 'client') {
+      setShowAgreementForm(true);
+    }
+  };
 
   // Fetch conversation data
-  const fetchConversation = useCallback(async () => {
+  const fetchConversationData = useCallback(async () => {
     try {
-      const conversationRes = await axios.get(`${apiUrl}/conversations/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      // Fetch conversation details
+      const conversationRes = await api.get(`/conversations/${id}`);
 
-      const requestRes = await axios.get(
-        `${apiUrl}/requests/${conversationRes.data.request_id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+      // Fetch associated request details
+      const requestRes = await api.get(
+        `/requests/${conversationRes.data.request_id}`
       );
 
       setConversation(conversationRes.data);
       setRequestDetails(requestRes.data);
-      setIsLoading(false);
+      setError(null);
     } catch (err) {
       console.error('Error fetching conversation:', err);
-      toast.error('Failed to load conversation.');
+      if (err.response?.status === 401) {
+        setError('Your session has expired. Please log in again.');
+        navigate('/login');
+      } else if (err.response?.status === 403) {
+        setError('You do not have permission to view this conversation.');
+        navigate('/conversations');
+      } else {
+        setError('Failed to load conversation data. Please try again.');
+      }
+    } finally {
       setIsLoading(false);
     }
-  }, [id, token, apiUrl]);
+  }, [id, navigate]);
 
   // Fetch agreement data
   const fetchAgreement = useCallback(async () => {
@@ -71,11 +101,8 @@ const ConversationDetail = () => {
       return;
 
     try {
-      const response = await axios.get(
-        `${apiUrl}/agreements/request/${conversation.request_id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+      const response = await api.get(
+        `/agreements/request/${conversation.request_id}`
       );
       setAgreement(response.data);
     } catch (err) {
@@ -84,7 +111,7 @@ const ConversationDetail = () => {
       }
       setAgreement(null);
     }
-  }, [conversation?.request_id, conversation?.status, token, apiUrl]);
+  }, [conversation?.request_id, conversation?.status]);
 
   // Effect for auto-scrolling messages
   useEffect(() => {
@@ -95,13 +122,16 @@ const ConversationDetail = () => {
 
   // Effect for polling conversation updates
   useEffect(() => {
-    if (!id || !token) return;
+    if (!token) {
+      navigate('/login');
+      return;
+    }
 
-    fetchConversation();
-    const intervalId = setInterval(fetchConversation, 5000);
+    fetchConversationData();
+    const intervalId = setInterval(fetchConversationData, 5000);
 
     return () => clearInterval(intervalId);
-  }, [id, token, fetchConversation]);
+  }, [token, fetchConversationData, navigate]);
 
   // Effect for polling agreement updates
   useEffect(() => {
@@ -118,41 +148,13 @@ const ConversationDetail = () => {
     };
   }, [conversation?.request_id, conversation?.status, token, fetchAgreement]);
 
-  // Utility functions
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
+  // Update other axios calls to use api instance
   const sendSystemMessage = async (content) => {
     try {
-      await axios.post(
-        `${apiUrl}/conversations/${id}/messages`,
-        { content },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      await fetchConversation();
+      await api.post(`/conversations/${id}/messages`, { content });
+      await fetchConversationData();
     } catch (err) {
       console.error('Failed to send system message:', err);
-    }
-  };
-
-  // Handler functions
-  const handleAgreementClick = (e) => {
-    if (e.target.tagName.toLowerCase() === 'button') {
-      return;
-    }
-
-    if (agreement) {
-      setShowAgreementModal(true);
-    } else if (user.userType === 'developer' || user.userType === 'client') {
-      setShowAgreementForm(true);
     }
   };
 
@@ -161,41 +163,27 @@ const ConversationDetail = () => {
     setIsSubmittingAgreement(true);
     try {
       // Update conversation status first
-      await axios.patch(
-        `${apiUrl}/conversations/${id}`,
-        { status: 'negotiating' },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      await api.patch(`/conversations/${id}`, { status: 'negotiating' });
 
-      const response = await axios.post(
-        `${apiUrl}/agreements/`,
-        {
-          request_id: conversation.request_id,
-          price: Number(price),
-          terms,
-          developer_id:
-            user.userType === 'developer'
-              ? user.id
-              : conversation.starter_user_id,
-          client_id:
-            user.userType === 'client'
-              ? user.id
-              : conversation.recipient_user_id,
-          status: 'proposed',
-          proposed_by: user.id,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await api.post('/agreements/', {
+        request_id: conversation.request_id,
+        price: Number(price),
+        terms,
+        developer_id:
+          user.userType === 'developer'
+            ? user.id
+            : conversation.starter_user_id,
+        client_id:
+          user.userType === 'client' ? user.id : conversation.recipient_user_id,
+        status: 'proposed',
+        proposed_by: user.id,
+      });
 
       setAgreement(response.data);
       setShowAgreement(false);
       setShowAgreementForm(false);
       toast.success('Agreement proposed successfully!');
-      await fetchConversation(); // Refresh conversation to get updated status
+      await fetchConversationData();
     } catch (err) {
       console.error('Failed to create agreement:', err);
       toast.error(err.response?.data?.detail || 'Failed to create agreement.');
@@ -207,16 +195,10 @@ const ConversationDetail = () => {
   const acceptAgreement = async () => {
     setIsAcceptingAgreement(true);
     try {
-      await axios.post(
-        `${apiUrl}/agreements/${agreement.id}/accept`,
-        {
-          accepted_by: user.id,
-          accepted_at: new Date().toISOString(),
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      await api.post(`/agreements/${agreement.id}/accept`, {
+        accepted_by: user.id,
+        accepted_at: new Date().toISOString(),
+      });
       await fetchAgreement();
       toast.success('Agreement accepted!');
       await sendSystemMessage(
@@ -232,15 +214,9 @@ const ConversationDetail = () => {
 
   const handleProposal = async (accept) => {
     try {
-      await axios.put(
-        `${apiUrl}/conversations/${id}`,
-        {
-          status: accept ? 'active' : 'declined',
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      await api.put(`/conversations/${id}`, {
+        status: accept ? 'active' : 'declined',
+      });
 
       setConversation((prev) => ({
         ...prev,
@@ -267,15 +243,11 @@ const ConversationDetail = () => {
     if (!newMessage.trim()) return;
 
     try {
-      await axios.post(
-        `${apiUrl}/conversations/${id}/messages`,
-        { content: newMessage.trim() },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      await api.post(`/conversations/${id}/messages`, {
+        content: newMessage.trim(),
+      });
       setNewMessage('');
-      await fetchConversation();
+      await fetchConversationData();
     } catch (err) {
       console.error('Failed to send message:', err);
       toast.error('Failed to send message.');
