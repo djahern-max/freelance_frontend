@@ -1,8 +1,9 @@
-// PublicDevelopers.js
 import { Award, Briefcase, MessageSquare, Star } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api, { API_ROUTES } from '../../utils/api'; // Import API_ROUTES as well
+import { toast } from 'react-toastify';
+import api, { API_ROUTES } from '../../utils/api';
+import CreateRequestModal from '../requests/CreateRequestModal';
 import styles from './PublicDevelopers.module.css';
 
 const PublicDevelopers = () => {
@@ -11,6 +12,7 @@ const PublicDevelopers = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const [selectedBio, setSelectedBio] = useState(null);
+  const [selectedCreator, setSelectedCreator] = useState(null);
 
   const TRUNCATE_LENGTH = 150;
 
@@ -18,7 +20,7 @@ const PublicDevelopers = () => {
     const fetchDevelopers = async () => {
       try {
         const response = await api.get(API_ROUTES.PUBLIC.DEVELOPERS);
-        console.log('Developer data:', response.data); // Add this to see the actual data structure
+        console.log('Developer data:', response.data);
         setDevelopers(response.data);
       } catch (err) {
         console.error('Error details:', err);
@@ -30,6 +32,12 @@ const PublicDevelopers = () => {
 
     fetchDevelopers();
   }, []);
+
+  const handleRequestSent = (creatorUsername) => {
+    toast.success(`Request sent to ${creatorUsername}`);
+    setSelectedCreator(null);
+  };
+
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
@@ -114,11 +122,16 @@ const PublicDevelopers = () => {
                 </div>
               </div>
               <button
-                onClick={() => navigate(`/developers/${developer.user_id}`)}
+                onClick={() =>
+                  setSelectedCreator({
+                    id: developer.user_id,
+                    username: developer.user.username,
+                  })
+                }
                 className={styles.contactButton}
               >
                 <MessageSquare size={16} />
-                <span>Contact Creator</span>
+                <span>Send Request to Creator</span>
               </button>
             </div>
           </div>
@@ -131,7 +144,7 @@ const PublicDevelopers = () => {
         </div>
       )}
 
-      {/* Modal moved outside of the mapping */}
+      {/* Bio Modal */}
       {selectedBio && (
         <div
           className={styles.modalOverlay}
@@ -151,6 +164,16 @@ const PublicDevelopers = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Create Request Modal */}
+      {selectedCreator && (
+        <CreateRequestModal
+          creatorId={selectedCreator.id}
+          creatorUsername={selectedCreator.username}
+          onClose={() => setSelectedCreator(null)}
+          onRequestSent={() => handleRequestSent(selectedCreator.username)}
+        />
       )}
     </div>
   );
