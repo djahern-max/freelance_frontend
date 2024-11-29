@@ -4,8 +4,10 @@ import {
   Clock,
   DollarSign,
   FileText,
+  Info,
   Send,
   User,
+  X,
   XCircle,
 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -255,141 +257,6 @@ const ConversationDetail = () => {
     }
   };
 
-  // Loading states
-  if (isLoading) {
-    return (
-      <div className={styles.loadingContainer}>
-        <div className={styles.loading}>Loading conversation...</div>
-        <ToastContainer />
-      </div>
-    );
-  }
-
-  if (!conversation) {
-    return (
-      <div className={styles.loadingContainer}>
-        <div className={styles.loading}>Conversation not found</div>
-        <ToastContainer />
-      </div>
-    );
-  }
-
-  return (
-    <div className={styles.container}>
-      <ToastContainer />
-
-      <div className={styles.header}>
-        <button className={styles.backButton} onClick={() => navigate(-1)}>
-          <ArrowLeft size={20} />
-        </button>
-        <h1 className={styles.title}>{requestDetails?.title}</h1>
-        <button
-          className={styles.mobileInfoButton}
-          onClick={() => setShowMobileSidebar(true)}
-        >
-          <Info size={20} />
-        </button>
-      </div>
-
-      <div className={styles.content}>
-        {/* Main Messages Section */}
-        <div className={styles.mainSection}>
-          <div className={styles.messagesContainer}>
-            {!conversation.messages?.length ? (
-              <div className={styles.emptyMessages}>
-                No messages yet. Start a conversation!
-              </div>
-            ) : (
-              <>
-                {conversation.messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`${styles.messageWrapper} ${
-                      message.user_id === user.id
-                        ? styles.sent
-                        : styles.received
-                    }`}
-                  >
-                    <div className={styles.message}>
-                      <div className={styles.messageHeader}>
-                        <span className={styles.username}>
-                          {message.user_id === user.id
-                            ? 'You'
-                            : message.username}
-                        </span>
-                        <span className={styles.timestamp}>
-                          {new Date(message.created_at).toLocaleTimeString()}
-                        </span>
-                      </div>
-                      <p className={styles.messageContent}>{message.content}</p>
-                    </div>
-                  </div>
-                ))}
-                <div ref={messagesEndRef} />
-              </>
-            )}
-          </div>
-
-          <div className={styles.inputContainer}>
-            <form onSubmit={sendMessage} className={styles.inputForm}>
-              <input
-                type="text"
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="Type your message..."
-                className={styles.messageInput}
-              />
-              <button type="submit" className={styles.sendButton}>
-                <Send size={20} />
-              </button>
-            </form>
-          </div>
-        </div>
-
-        {/* Regular Sidebar */}
-        <div className={styles.sidebar}>
-          {/* Your existing sidebar content */}
-          <SidebarContent />
-        </div>
-      </div>
-
-      {/* Mobile Sidebar */}
-      <div
-        className={`${styles.mobileSidebarContainer} ${
-          showMobileSidebar ? styles.visible : ''
-        }`}
-      >
-        <div className={styles.mobileSidebarHeader}>
-          <h2 className={styles.sidebarTitle}>Request Details</h2>
-          <button
-            className={styles.closeButton}
-            onClick={() => setShowMobileSidebar(false)}
-          >
-            <X size={24} />
-          </button>
-        </div>
-        <SidebarContent />
-      </div>
-
-      {/* Agreement Modal */}
-      {showAgreementModal && agreement && (
-        <div
-          className={styles.modalOverlay}
-          onClick={() => setShowAgreementModal(false)}
-        >
-          <div
-            className={styles.modalContent}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Your existing modal content */}
-            {/* ... */}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-
-  // Create a SidebarContent component to avoid duplicating code
   const SidebarContent = () => (
     <>
       {/* Request Details Section */}
@@ -581,5 +448,205 @@ const ConversationDetail = () => {
     </>
   );
 };
+
+// Loading states
+if (isLoading) {
+  return (
+    <div className={styles.loadingContainer}>
+      <div className={styles.loading}>Loading conversation...</div>
+      <ToastContainer />
+    </div>
+  );
+}
+
+if (!conversation) {
+  return (
+    <div className={styles.loadingContainer}>
+      <div className={styles.loading}>Conversation not found</div>
+      <ToastContainer />
+    </div>
+  );
+}
+
+return (
+  <div className={styles.container}>
+    <ToastContainer />
+
+    <div className={styles.header}>
+      <button className={styles.backButton} onClick={() => navigate(-1)}>
+        <ArrowLeft size={20} />
+      </button>
+      <h1 className={styles.title}>{requestDetails?.title}</h1>
+      <button
+        className={styles.mobileInfoButton}
+        onClick={() => setShowMobileSidebar(true)}
+      >
+        <Info size={20} />
+      </button>
+    </div>
+
+    <div className={styles.content}>
+      {/* Main Messages Section */}
+      <div className={styles.mainSection}>
+        <div className={styles.messagesContainer}>
+          {!conversation.messages?.length ? (
+            <div className={styles.emptyMessages}>
+              No messages yet. Start a conversation!
+            </div>
+          ) : (
+            <>
+              {conversation.messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`${styles.messageWrapper} ${
+                    message.user_id === user.id ? styles.sent : styles.received
+                  }`}
+                >
+                  <div className={styles.message}>
+                    <div className={styles.messageHeader}>
+                      <span className={styles.username}>
+                        {message.user_id === user.id ? 'You' : message.username}
+                      </span>
+                      <span className={styles.timestamp}>
+                        {new Date(message.created_at).toLocaleTimeString()}
+                      </span>
+                    </div>
+                    <p className={styles.messageContent}>{message.content}</p>
+                  </div>
+                </div>
+              ))}
+              <div ref={messagesEndRef} />
+            </>
+          )}
+        </div>
+
+        <div className={styles.inputContainer}>
+          <form onSubmit={sendMessage} className={styles.inputForm}>
+            <input
+              type="text"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="Type your message..."
+              className={styles.messageInput}
+            />
+            <button type="submit" className={styles.sendButton}>
+              <Send size={20} />
+            </button>
+          </form>
+        </div>
+      </div>
+
+      {/* Regular Sidebar */}
+      <div className={styles.sidebar}>
+        <SidebarContent />
+      </div>
+    </div>
+
+    {/* Mobile Sidebar */}
+    <div
+      className={`${styles.mobileSidebarContainer} ${
+        showMobileSidebar ? styles.visible : ''
+      }`}
+    >
+      <div className={styles.mobileSidebarHeader}>
+        <h2 className={styles.sidebarTitle}>Request Details</h2>
+        <button
+          className={styles.closeButton}
+          onClick={() => setShowMobileSidebar(false)}
+        >
+          <X size={24} />
+        </button>
+      </div>
+      <SidebarContent />
+    </div>
+
+    {/* Agreement Modal */}
+    {showAgreementModal && agreement && (
+      <div
+        className={styles.modalOverlay}
+        onClick={() => setShowAgreementModal(false)}
+      >
+        <div
+          className={styles.modalContent}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className={styles.modalHeader}>
+            <h2>Work Agreement Details</h2>
+            <button
+              className={styles.closeButton}
+              onClick={() => setShowAgreementModal(false)}
+            >
+              ×
+            </button>
+          </div>
+
+          <div className={styles.modalBody}>
+            <div className={styles.agreementFullDetails}>
+              <p>
+                <strong>Price:</strong> {formatCurrency(agreement.price)}
+              </p>
+              <p>
+                <strong>Status:</strong> {agreement.status}
+              </p>
+              <p>
+                <strong>Terms:</strong>
+              </p>
+              <div className={styles.termsContent}>{agreement.terms}</div>
+              <p>
+                <strong>Created:</strong>{' '}
+                {new Date(agreement.created_at).toLocaleDateString()}
+              </p>
+              {agreement.accepted_at && (
+                <p>
+                  <strong>Accepted:</strong>{' '}
+                  {new Date(agreement.accepted_at).toLocaleDateString()}
+                </p>
+              )}
+              <div className={styles.modalActions}>
+                {agreement.status === 'accepted' ? (
+                  <button
+                    onClick={() => {
+                      setShowAgreementModal(false);
+                      setShowAgreementForm(true);
+                      setPrice(agreement.price.toString());
+                      setTerms(agreement.terms);
+                    }}
+                    className={styles.modifyButton}
+                  >
+                    Request Change Order
+                  </button>
+                ) : agreement.status === 'proposed' &&
+                  user.id !== agreement.proposed_by ? (
+                  <>
+                    <button
+                      onClick={acceptAgreement}
+                      className={styles.acceptButton}
+                      disabled={isAcceptingAgreement}
+                    >
+                      {isAcceptingAgreement
+                        ? 'Accepting...'
+                        : 'Accept Agreement'}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowAgreementModal(false);
+                        setShowAgreementForm(true);
+                        setPrice(agreement.price.toString());
+                        setTerms(agreement.terms);
+                      }}
+                      className={styles.modifyButton}
+                    >
+                      Counter Proposal
+                    </button>
+                  </>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+);
 
 export default ConversationDetail;
