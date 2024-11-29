@@ -168,7 +168,7 @@ const RequestDetails = () => {
                     )
                   }
                 >
-                  View Your Conversation
+                  Go to Conversation
                   <ExternalLink className={styles.linkIcon} />
                 </button>
               ) : (

@@ -124,6 +124,8 @@
     align-items: center;
     color: #2563EB;
     font-size: 0.875rem;
+    margin-top: 1rem; /* Increase space above */
+    margin-bottom: 0.25rem; /* Decrease space below */
   }
   
   .createProjectButton:hover {

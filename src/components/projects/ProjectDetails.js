@@ -1,4 +1,3 @@
-// src/components/pages/ProjectDetails.js
 import {
   ArrowLeft,
   Clock,
@@ -24,6 +23,8 @@ const ProjectDetails = () => {
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [error, setError] = useState(null);
   const [requests, setRequests] = useState([]);
+  const [conversations, setConversations] = useState([]);
+  const [agreements, setAgreements] = useState([]);
 
   const fetchProject = useCallback(async () => {
     try {
@@ -35,10 +36,29 @@ const ProjectDetails = () => {
       );
       setRequests(requestsResponse.data);
 
+      // Fetch conversations related to the project
+      const conversationsResponse = await api.get(
+        `/conversations/user/list?project_id=${projectId}`
+      );
+      setConversations(conversationsResponse.data);
+
+      // Fetch agreements related to the project's requests
+      const agreementsPromises = requestsResponse.data.map(
+        (request) =>
+          api
+            .get(`/agreements/request/${request.id}`)
+            .then((response) => response.data)
+            .catch(() => null) // If no agreement exists, return null
+      );
+      const agreementsResults = await Promise.all(agreementsPromises);
+      setAgreements(
+        agreementsResults.filter((agreement) => agreement !== null)
+      );
+
       setError(null);
     } catch (error) {
-      console.error('Error fetching project or requests:', error);
-      setError('Failed to load project details or requests');
+      console.error('Error fetching project data:', error);
+      setError('Failed to load project details');
     } finally {
       setLoading(false);
     }
@@ -54,7 +74,6 @@ const ProjectDetails = () => {
         ...requestData,
         project_id: projectId,
       });
-      console.log('Request created:', response.data); // Use response for debugging
       setShowRequestModal(false);
       fetchProject();
       setError(null);
@@ -76,7 +95,6 @@ const ProjectDetails = () => {
     <div className={styles.container}>
       <Header />
       <div className={styles.content}>
-        {/* Back Button */}
         <button
           className={styles.backButton}
           onClick={() => navigate('/client-dashboard')}
@@ -87,7 +105,6 @@ const ProjectDetails = () => {
 
         {error && <div className={styles.error}>{error}</div>}
 
-        {/* Project Stats */}
         <div className={styles.statsGrid}>
           <div className={styles.statCard}>
             <FileText className={styles.icon} />
@@ -100,7 +117,7 @@ const ProjectDetails = () => {
             <MessageSquare className={styles.icon} />
             <div className={styles.statInfo}>
               <h3>Active Conversations</h3>
-              <p>0</p>
+              <p>{conversations.length}</p>
             </div>
           </div>
           <div className={styles.statCard}>
@@ -123,7 +140,6 @@ const ProjectDetails = () => {
           </div>
         </div>
 
-        {/* Quick Actions */}
         <div className={styles.quickActions}>
           <button
             className={styles.primaryButton}
@@ -132,13 +148,15 @@ const ProjectDetails = () => {
             <Plus size={16} />
             New Request
           </button>
-          <button className={styles.secondaryButton}>
+          <button
+            className={styles.secondaryButton}
+            onClick={() => navigate('/creators')}
+          >
             <Users size={16} />
-            Invite Team Member
+            Search for Team Members
           </button>
         </div>
 
-        {/* Create Request Modal */}
         {showRequestModal && (
           <CreateRequestModal
             projectId={projectId}
@@ -147,7 +165,6 @@ const ProjectDetails = () => {
           />
         )}
 
-        {/* Content Tabs */}
         <div className={styles.tabsContainer}>
           <div className={styles.tabsList}>
             <button
@@ -168,11 +185,11 @@ const ProjectDetails = () => {
             </button>
             <button
               className={`${styles.tabButton} ${
-                activeTab === 'timeline' ? styles.activeTab : ''
+                activeTab === 'agreements' ? styles.activeTab : ''
               }`}
-              onClick={() => setActiveTab('timeline')}
+              onClick={() => setActiveTab('agreements')}
             >
-              Timeline
+              Terms of Agreement
             </button>
           </div>
 
@@ -205,24 +222,116 @@ const ProjectDetails = () => {
                 )}
               </div>
             )}
+            {/* Replace the conversations tab content with this */}
             {activeTab === 'conversations' && (
               <div className={styles.conversationsTab}>
-                {/* Conversations content */}
-                <div className={styles.emptyState}>
-                  <MessageSquare size={48} />
-                  <h3>No Conversations Yet</h3>
-                  <p>Conversations will appear here once started</p>
-                </div>
+                {conversations.length > 0 ? (
+                  <div className={styles.conversationsList}>
+                    {conversations.map((conversation) => (
+                      <div
+                        key={conversation.id}
+                        className={styles.conversationCard}
+                      >
+                        <div className={styles.conversationHeader}>
+                          <h3 className={styles.conversationTitle}>
+                            {conversation.request_title ||
+                              `Conversation #${conversation.id}`}
+                          </h3>
+                          <button
+                            className={styles.viewButton}
+                            onClick={() =>
+                              navigate(`/conversations/${conversation.id}`)
+                            }
+                          >
+                            <MessageSquare size={14} />
+                            View Conversation
+                          </button>
+                        </div>
+                        <div className={styles.conversationMeta}>
+                          <span className={styles.metaItem}>
+                            <Clock size={14} />
+                            Last updated:{' '}
+                            {conversation.messages?.length > 0
+                              ? new Date(
+                                  conversation.messages[
+                                    conversation.messages.length - 1
+                                  ].created_at
+                                ).toLocaleDateString('en-US', {
+                                  year: 'numeric',
+                                  month: 'long',
+                                  day: 'numeric',
+                                })
+                              : 'Not yet updated'}
+                          </span>
+                          <span className={styles.metaItem}>
+                            <MessageSquare size={14} />
+                            {conversation.messages?.length || 0} messages
+                          </span>
+                        </div>
+                        {conversation.messages?.length > 0 && (
+                          <p className={styles.lastMessage}>
+                            Latest:{' '}
+                            {
+                              conversation.messages[
+                                conversation.messages.length - 1
+                              ].content
+                            }
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className={styles.emptyState}>
+                    <MessageSquare size={48} />
+                    <h3>No Conversations Yet</h3>
+                    <p>Conversations will appear here once started</p>
+                  </div>
+                )}
               </div>
             )}
-            {activeTab === 'timeline' && (
-              <div className={styles.timelineTab}>
-                {/* Timeline content */}
-                <div className={styles.emptyState}>
-                  <Clock size={48} />
-                  <h3>Timeline Coming Soon</h3>
-                  <p>Project timeline will be available here</p>
-                </div>
+
+            {/* Replace the agreements tab content with this */}
+            {activeTab === 'agreements' && (
+              <div className={styles.agreementsTab}>
+                {agreements.length > 0 ? (
+                  <div className={styles.agreementsList}>
+                    {agreements.map((agreement) => (
+                      <div key={agreement.id} className={styles.agreementCard}>
+                        <div className={styles.agreementHeader}>
+                          <h3 className={styles.agreementTitle}>
+                            {agreement.request_title || 'Untitled Request'}
+                          </h3>
+                          <span
+                            className={`${styles.status} ${
+                              styles[agreement.status]
+                            }`}
+                          >
+                            {agreement.status}
+                          </span>
+                        </div>
+                        <div className={styles.agreementMeta}>
+                          <span className={styles.metaItem}>
+                            <Clock size={14} />
+                            Due: {agreement.terms}
+                          </span>
+                          {agreement.price && (
+                            <span className={styles.metaItem}>
+                              <FileText size={14} />
+                              Price: ${agreement.price}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className={styles.emptyState}>
+                    <FileText size={48} />
+                    <h3>No Agreements Yet</h3>
+                    <p>Agreements will appear here once created</p>
+                  </div>
+                )}
               </div>
             )}
           </div>

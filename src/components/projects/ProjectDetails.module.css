@@ -252,20 +252,107 @@
 }
 
 .viewButton {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: var(--color-background-hover);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
-  background-color: var(--color-primary);
-  color: white;
-  padding: var(--spacing-sm) var(--spacing-md);
-  border: none;
+}
+
+.viewButton:hover {
+  background-color: var(--color-border);
+}
+
+.conversationsList,
+.agreementsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.conversationCard,
+.agreementCard {
+  background: white;
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  transition: box-shadow 0.2s ease;
+}
+
+.conversationCard:hover,
+.agreementCard:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.conversationHeader,
+.agreementHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+}
+
+.conversationTitle,
+.agreementTitle {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.conversationMeta,
+.agreementMeta {
+  display: flex;
+  gap: var(--spacing-xl);
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.status.accepted {
+  background-color: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.status.pending {
+  background-color: var(--color-warning-light);
+  color: var(--color-warning);
+}
+
+.viewButton {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: var(--color-background-hover);
+  color: var(--color-text-primary);
+  border: none;
+  border-radius: var(--radius-sm);
   cursor: pointer;
+  font-size: var(--font-size-sm);
   transition: background-color 0.2s ease;
 }
 
 .viewButton:hover {
-  background-color: var(--color-primary-dark);
+  background-color: var(--color-border);
 }
 
 
