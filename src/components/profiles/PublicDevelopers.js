@@ -38,6 +38,15 @@ const PublicDevelopers = () => {
     setSelectedCreator(null);
   };
 
+  const getUsername = (developer) => {
+    // Handle different possible structures of the username data
+    return (
+      developer?.username ||
+      developer?.user?.username ||
+      `Developer #${developer.id}`
+    );
+  };
+
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
@@ -66,18 +75,16 @@ const PublicDevelopers = () => {
                 {developer.profile_image_url ? (
                   <img
                     src={developer.profile_image_url}
-                    alt={developer?.user?.username || 'Developer'}
+                    alt={getUsername(developer)}
                     className={styles.profileImage}
                   />
                 ) : (
                   <div className={styles.profileImagePlaceholder}>
-                    <span>{developer?.user?.username?.[0] || 'D'}</span>
+                    <span>{getUsername(developer).charAt(0) || 'D'}</span>
                   </div>
                 )}
                 <div className={styles.profileInfo}>
-                  <h2 className={styles.username}>
-                    {developer?.user?.username || `Developer #${developer.id}`}
-                  </h2>
+                  <h2 className={styles.username}>{getUsername(developer)}</h2>
                   <div className={styles.rating}>
                     <Star className={styles.icon} size={16} />
                     <span>{developer.rating || 'New'}</span>
@@ -124,8 +131,8 @@ const PublicDevelopers = () => {
               <button
                 onClick={() =>
                   setSelectedCreator({
-                    id: developer.user_id,
-                    username: developer.user.username,
+                    id: developer.user_id || developer.id,
+                    username: getUsername(developer),
                   })
                 }
                 className={styles.contactButton}

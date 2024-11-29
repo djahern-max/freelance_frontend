@@ -1,6 +1,6 @@
 import { Loader2, Plus, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import api from '../../../utils/api';
+import api from '../../utils/api';
 import styles from './CreateRequestModal.module.css';
 
 const CreateRequestModal = ({
