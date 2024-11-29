@@ -63,7 +63,7 @@ const Features = () => {
 
       <div className={styles.comingSoon}>
         <em>
-          * Top developers, featured projects, and popular videos coming soon
+          {/* * Top developers, featured projects, and popular videos coming soon */}
         </em>
       </div>
     </div>
