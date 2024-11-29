@@ -31,21 +31,18 @@ const DeveloperProfile = () => {
   } = useSelector((state) => state.profile);
   const [formData, setFormData] = useState(DEFAULT_VALUES);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [imageFile, setImageFile] = useState(null);
+  const [showImageUpload, setShowImageUpload] = useState(false);
 
-  // Fetch profile data on component mount
   useEffect(() => {
     dispatch(fetchProfile())
       .unwrap()
       .catch((err) => {
-        // Only show error toast if it's not a 404
         if (err.status !== 404) {
           toast.error('Error loading profile');
         }
       });
   }, [dispatch]);
 
-  // Update form when profile data is loaded
   useEffect(() => {
     if (profile?.developer_profile) {
       const profileData = profile.developer_profile;
@@ -63,36 +60,26 @@ const DeveloperProfile = () => {
     setIsSubmitting(true);
 
     try {
-      let processedData;
+      const processedData = {
+        ...formData,
+        experience_years: parseInt(formData.experience_years) || 0,
+      };
 
-      if (imageFile) {
-        processedData = new FormData();
-        processedData.append('file', imageFile);
-        processedData.append('skills', formData.skills);
-        processedData.append(
-          'experience_years',
-          parseInt(formData.experience_years) || 0
-        );
-        processedData.append('bio', formData.bio);
-        processedData.append('is_public', formData.is_public);
-      } else {
-        processedData = {
-          ...formData,
-          experience_years: parseInt(formData.experience_years) || 0,
-        };
-      }
-
-      const action = hasProfile
+      const action = profile?.developer_profile
         ? await dispatch(updateDeveloperProfile(processedData))
         : await dispatch(createDeveloperProfile(processedData));
 
       if (action.type.endsWith('/fulfilled')) {
         toast.success(
-          hasProfile
+          profile?.developer_profile
             ? 'Profile updated successfully!'
             : 'Profile created successfully!'
         );
-        setImageFile(null);
+
+        // Show image upload option after successful profile creation
+        if (!profile?.developer_profile) {
+          setShowImageUpload(true);
+        }
       } else {
         toast.error(action.payload || 'Failed to save profile');
       }
@@ -102,6 +89,13 @@ const DeveloperProfile = () => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleImageUploadSuccess = (imageUrl) => {
+    toast.success('Profile picture uploaded successfully!');
+    // Refresh profile data to show new image
+    dispatch(fetchProfile());
+    setShowImageUpload(false);
   };
 
   if (loading) {
@@ -114,6 +108,27 @@ const DeveloperProfile = () => {
 
   const hasProfile = !!profile?.developer_profile;
 
+  // Show the image upload prompt after successful profile creation
+  if (showImageUpload) {
+    return (
+      <div className={styles.imageUploadPrompt}>
+        <h2>Would you like to add a profile picture?</h2>
+        <div className={styles.imageUploadContainer}>
+          <ImageUpload
+            mode="upload"
+            onUploadSuccess={handleImageUploadSuccess}
+          />
+        </div>
+        <button
+          className={styles.skipButton}
+          onClick={() => setShowImageUpload(false)}
+        >
+          Skip for now
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.profileContainer}>
       <div className={styles.card}>
@@ -122,30 +137,22 @@ const DeveloperProfile = () => {
             {hasProfile ? 'Update Your Profile' : 'Create Your Profile'}
           </h2>
           {hasProfile && (
-            <div className={styles.profileStatus}>
-              <span className={styles.checkmark}>✓</span>
-              Profile created on{' '}
-              {new Date(
-                profile.developer_profile.created_at
-              ).toLocaleDateString()}
-            </div>
+            <>
+              <div className={styles.profileStatus}>
+                <span className={styles.checkmark}>✓</span>
+                Profile created on{' '}
+                {new Date(
+                  profile.developer_profile.created_at
+                ).toLocaleDateString()}
+              </div>
+              <ImageUpload
+                mode="upload"
+                onUploadSuccess={handleImageUploadSuccess}
+                currentImageUrl={profile.developer_profile.profile_image_url}
+              />
+            </>
           )}
         </div>
-
-        <ImageUpload
-          mode={hasProfile ? 'upload' : 'select'}
-          onUploadSuccess={(url) => {
-            // For existing profile updates
-            dispatch(
-              updateDeveloperProfile({ ...formData, profile_image_url: url })
-            );
-          }}
-          onFileSelect={(file) => {
-            // For new profile creation
-            setImageFile(file);
-          }}
-          currentImageUrl={profile?.developer_profile?.profile_image_url}
-        />
 
         <form onSubmit={handleSubmit} className={styles.form}>
           {error && (

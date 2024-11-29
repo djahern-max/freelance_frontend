@@ -193,6 +193,35 @@
   gap: 8px; /* Adjust the spacing as needed */
 }
 
+.imageUploadPrompt {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--spacing-md);
+  text-align: center;
+}
+
+.imageUploadContainer {
+  margin: var(--spacing-md) 0;
+}
+
+.skipButton {
+  background-color: var(--color-primary);
+  color: white;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 120px;
+  margin-top: var(--spacing-md);
+}
+
+.skipButton:hover {
+  background-color: var(--color-primary-dark);
+}
+
 
 @keyframes slideIn {
   from {

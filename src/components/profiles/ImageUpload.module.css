@@ -1,74 +1,137 @@
 .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+}
+
+.uploadSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.imageContainer {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profileImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: filter 0.2s ease;
+}
+
+.imageContainer:hover .profileImage {
+  filter: brightness(90%);
+}
+
+.imageActions {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xs);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.imageContainer:hover .imageActions {
+  opacity: 1;
+}
+
+.uploadButton,
+.clearButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: white;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-primary);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.uploadButton:hover,
+.clearButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.uploadPlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  border: 2px dashed var(--color-border);
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  transition: all 0.2s ease;
+  background-color: var(--color-background);
+}
+
+.uploadPlaceholder:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.uploadText {
+  margin-top: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
+.fileInput {
+  display: none;
+}
+
+.ryzeSkipButtonContainer {
+  margin-top: 16px;
+}
+
+.skipContainer {
+  margin-top: var(--spacing-md);
+  text-align: center;
+}
+
+.skipLink {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  padding: 4px 8px;
+}
+
+.skipLink:hover {
+  color: var(--color-text-primary);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
   }
-  
-  .imageContainer {
-    position: relative;
-    width: 8rem;
-    height: 8rem;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  .profileImage {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-  }
-  
-  .uploadButton {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    background-color: white;
-    border-radius: 50%;
-    padding: 0.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-    color: #4b5563;
-    transition: background-color 0.2s;
-  }
-  
-  .uploadButton:hover {
-    background-color: #f9fafb;
-  }
-  
-  .uploadPlaceholder {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 8rem;
-    height: 8rem;
-    border: 2px dashed #d1d5db;
-    border-radius: 50%;
-    cursor: pointer;
-    color: #9ca3af;
-    transition: all 0.2s;
-  }
-  
-  .uploadPlaceholder:hover {
-    border-color: #9ca3af;
-  }
-  
-  .uploadText {
-    margin-top: 0.5rem;
-    font-size: 0.875rem;
-    color: #6b7280;
-  }
-  
-  .fileInput {
-    display: none;
-  }
-  
-  .uploadingText {
-    font-size: 0.875rem;
-    color: #2563eb;
-  }
-  
-  .errorText {
-    font-size: 0.875rem;
-    color: #dc2626;
-  }
+}
