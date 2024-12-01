@@ -4,10 +4,9 @@ import {
   Clock,
   DollarSign,
   FileText,
-  Info,
+  Menu,
   Send,
   User,
-  X,
   XCircle,
 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -15,7 +14,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import api from '../../utils/api'; // Add this import
+import api from '../../utils/api';
 import styles from './ConversationDetail.module.css';
 
 const ConversationDetail = () => {
@@ -24,12 +23,11 @@ const ConversationDetail = () => {
   const messagesEndRef = useRef(null);
   const { token, user } = useSelector((state) => state.auth);
 
-  // State declarations - removed duplicate loading state
+  // State declarations
   const [conversation, setConversation] = useState(null);
   const [requestDetails, setRequestDetails] = useState(null);
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [showAgreement, setShowAgreement] = useState(false);
   const [agreement, setAgreement] = useState(null);
   const [isSubmittingAgreement, setIsSubmittingAgreement] = useState(false);
   const [isAcceptingAgreement, setIsAcceptingAgreement] = useState(false);
@@ -37,8 +35,8 @@ const ConversationDetail = () => {
   const [price, setPrice] = useState('');
   const [terms, setTerms] = useState('');
   const [showAgreementModal, setShowAgreementModal] = useState(false);
-  const [error, setError] = useState(null);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
+  const [error, setError] = useState(null);
 
   // Utility functions
   const formatCurrency = (amount) => {
@@ -67,14 +65,10 @@ const ConversationDetail = () => {
   // Fetch conversation data
   const fetchConversationData = useCallback(async () => {
     try {
-      // Fetch conversation details
       const conversationRes = await api.get(`/conversations/${id}`);
-
-      // Fetch associated request details
       const requestRes = await api.get(
         `/requests/${conversationRes.data.request_id}`
       );
-
       setConversation(conversationRes.data);
       setRequestDetails(requestRes.data);
       setError(null);
@@ -141,7 +135,6 @@ const ConversationDetail = () => {
     if (!conversation?.request_id || !token) return;
 
     fetchAgreement();
-    // Only set up polling if we're in a state where agreements are relevant
     const shouldPoll =
       conversation.status === 'negotiating' || conversation.status === 'agreed';
     const intervalId = shouldPoll ? setInterval(fetchAgreement, 5000) : null;
@@ -151,7 +144,6 @@ const ConversationDetail = () => {
     };
   }, [conversation?.request_id, conversation?.status, token, fetchAgreement]);
 
-  // Update other axios calls to use api instance
   const sendSystemMessage = async (content) => {
     try {
       await api.post(`/conversations/${id}/messages`, { content });
@@ -165,7 +157,6 @@ const ConversationDetail = () => {
     e.preventDefault();
     setIsSubmittingAgreement(true);
     try {
-      // Update conversation status first
       await api.patch(`/conversations/${id}`, { status: 'negotiating' });
 
       const response = await api.post('/agreements/', {
@@ -183,7 +174,6 @@ const ConversationDetail = () => {
       });
 
       setAgreement(response.data);
-      setShowAgreement(false);
       setShowAgreementForm(false);
       toast.success('Agreement proposed successfully!');
       await fetchConversationData();
@@ -447,186 +437,175 @@ const ConversationDetail = () => {
       )}
     </>
   );
-};
 
-// Loading states
-if (isLoading) {
-  return (
-    <div className={styles.loadingContainer}>
-      <div className={styles.loading}>Loading conversation...</div>
-      <ToastContainer />
-    </div>
-  );
-}
-
-if (!conversation) {
-  return (
-    <div className={styles.loadingContainer}>
-      <div className={styles.loading}>Conversation not found</div>
-      <ToastContainer />
-    </div>
-  );
-}
-
-return (
-  <div className={styles.container}>
-    <ToastContainer />
-
-    <div className={styles.header}>
-      <button className={styles.backButton} onClick={() => navigate(-1)}>
-        <ArrowLeft size={20} />
-      </button>
-      <h1 className={styles.title}>{requestDetails?.title}</h1>
-      <button
-        className={styles.mobileInfoButton}
-        onClick={() => setShowMobileSidebar(true)}
-      >
-        <Info size={20} />
-      </button>
-    </div>
-
-    <div className={styles.content}>
-      {/* Main Messages Section */}
-      <div className={styles.mainSection}>
-        <div className={styles.messagesContainer}>
-          {!conversation.messages?.length ? (
-            <div className={styles.emptyMessages}>
-              No messages yet. Start a conversation!
-            </div>
-          ) : (
-            <>
-              {conversation.messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`${styles.messageWrapper} ${
-                    message.user_id === user.id ? styles.sent : styles.received
-                  }`}
-                >
-                  <div className={styles.message}>
-                    <div className={styles.messageHeader}>
-                      <span className={styles.username}>
-                        {message.user_id === user.id ? 'You' : message.username}
-                      </span>
-                      <span className={styles.timestamp}>
-                        {new Date(message.created_at).toLocaleTimeString()}
-                      </span>
-                    </div>
-                    <p className={styles.messageContent}>{message.content}</p>
-                  </div>
-                </div>
-              ))}
-              <div ref={messagesEndRef} />
-            </>
-          )}
-        </div>
-
-        <div className={styles.inputContainer}>
-          <form onSubmit={sendMessage} className={styles.inputForm}>
-            <input
-              type="text"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Type your message..."
-              className={styles.messageInput}
-            />
-            <button type="submit" className={styles.sendButton}>
-              <Send size={20} />
-            </button>
-          </form>
-        </div>
+  const ErrorMessage = () =>
+    error && (
+      <div className={styles.errorMessage}>
+        <XCircle size={16} />
+        <span>{error}</span>
       </div>
+    );
 
-      {/* Regular Sidebar */}
-      <div className={styles.sidebar}>
-        <SidebarContent />
+  // Loading states
+  if (isLoading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.loading}>Loading conversation...</div>
+        <ToastContainer />
       </div>
-    </div>
+    );
+  }
 
-    {/* Mobile Sidebar */}
-    <div
-      className={`${styles.mobileSidebarContainer} ${
-        showMobileSidebar ? styles.visible : ''
-      }`}
-    >
-      <div className={styles.mobileSidebarHeader}>
-        <h2 className={styles.sidebarTitle}>Request Details</h2>
+  if (!conversation) {
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.loading}>Conversation not found</div>
+        <ToastContainer />
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.container}>
+      <ToastContainer />
+      <ErrorMessage />
+
+      <div className={styles.header}>
+        <button className={styles.backButton} onClick={() => navigate(-1)}>
+          <ArrowLeft size={20} />
+        </button>
+        <h1 className={styles.title}>{requestDetails?.title}</h1>
         <button
-          className={styles.closeButton}
-          onClick={() => setShowMobileSidebar(false)}
+          className={styles.menuButton}
+          onClick={() => setShowMobileSidebar(!showMobileSidebar)}
         >
-          <X size={24} />
+          <Menu size={20} />
         </button>
       </div>
-      <SidebarContent />
-    </div>
 
-    {/* Agreement Modal */}
-    {showAgreementModal && agreement && (
-      <div
-        className={styles.modalOverlay}
-        onClick={() => setShowAgreementModal(false)}
-      >
-        <div
-          className={styles.modalContent}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className={styles.modalHeader}>
-            <h2>Work Agreement Details</h2>
-            <button
-              className={styles.closeButton}
-              onClick={() => setShowAgreementModal(false)}
-            >
-              ×
-            </button>
+      <div className={styles.content}>
+        {/* Main Messages Section */}
+        <div className={styles.mainSection}>
+          <div className={styles.messagesContainer}>
+            {!conversation.messages?.length ? (
+              <div className={styles.emptyMessages}>
+                No messages yet. Start a conversation!
+              </div>
+            ) : (
+              <>
+                {conversation.messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`${styles.messageWrapper} ${
+                      message.user_id === user.id
+                        ? styles.sent
+                        : styles.received
+                    }`}
+                  >
+                    <div className={styles.message}>
+                      <div className={styles.messageHeader}>
+                        <span className={styles.username}>
+                          {message.user_id === user.id
+                            ? 'You'
+                            : message.username}
+                        </span>
+                        <span className={styles.timestamp}>
+                          {new Date(message.created_at).toLocaleTimeString()}
+                        </span>
+                      </div>
+                      <p className={styles.messageContent}>{message.content}</p>
+                    </div>
+                  </div>
+                ))}
+                <div ref={messagesEndRef} />
+              </>
+            )}
           </div>
 
-          <div className={styles.modalBody}>
-            <div className={styles.agreementFullDetails}>
-              <p>
-                <strong>Price:</strong> {formatCurrency(agreement.price)}
-              </p>
-              <p>
-                <strong>Status:</strong> {agreement.status}
-              </p>
-              <p>
-                <strong>Terms:</strong>
-              </p>
-              <div className={styles.termsContent}>{agreement.terms}</div>
-              <p>
-                <strong>Created:</strong>{' '}
-                {new Date(agreement.created_at).toLocaleDateString()}
-              </p>
-              {agreement.accepted_at && (
+          <div className={styles.inputContainer}>
+            <form onSubmit={sendMessage} className={styles.inputForm}>
+              <input
+                type="text"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                placeholder="Type your message..."
+                className={styles.messageInput}
+              />
+              <button type="submit" className={styles.sendButton}>
+                <Send size={20} />
+              </button>
+            </form>
+          </div>
+        </div>
+
+        {/* Desktop Sidebar */}
+        <div className={`${styles.sidebar} ${styles.desktopSidebar}`}>
+          <SidebarContent />
+        </div>
+
+        {/* Mobile Sidebar */}
+        <div
+          className={`${styles.mobileSidebar} ${
+            showMobileSidebar ? styles.show : ''
+          }`}
+        >
+          <div className={styles.mobileSidebarHeader}>
+            <h2>Conversation Details</h2>
+            <button
+              onClick={() => setShowMobileSidebar(false)}
+              className={styles.closeButton}
+            >
+              <XCircle size={20} />
+            </button>
+          </div>
+          <SidebarContent />
+        </div>
+      </div>
+
+      {/* Agreement Modal */}
+      {showAgreementModal && agreement && (
+        <div
+          className={styles.modalOverlay}
+          onClick={() => setShowAgreementModal(false)}
+        >
+          <div
+            className={styles.modalContent}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={styles.modalHeader}>
+              <h2>Work Agreement Details</h2>
+              <button
+                className={styles.closeButton}
+                onClick={() => setShowAgreementModal(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className={styles.modalBody}>
+              <div className={styles.agreementFullDetails}>
                 <p>
-                  <strong>Accepted:</strong>{' '}
-                  {new Date(agreement.accepted_at).toLocaleDateString()}
+                  <strong>Price:</strong> {formatCurrency(agreement.price)}
                 </p>
-              )}
-              <div className={styles.modalActions}>
-                {agreement.status === 'accepted' ? (
-                  <button
-                    onClick={() => {
-                      setShowAgreementModal(false);
-                      setShowAgreementForm(true);
-                      setPrice(agreement.price.toString());
-                      setTerms(agreement.terms);
-                    }}
-                    className={styles.modifyButton}
-                  >
-                    Request Change Order
-                  </button>
-                ) : agreement.status === 'proposed' &&
-                  user.id !== agreement.proposed_by ? (
-                  <>
-                    <button
-                      onClick={acceptAgreement}
-                      className={styles.acceptButton}
-                      disabled={isAcceptingAgreement}
-                    >
-                      {isAcceptingAgreement
-                        ? 'Accepting...'
-                        : 'Accept Agreement'}
-                    </button>
+                <p>
+                  <strong>Status:</strong> {agreement.status}
+                </p>
+                <p>
+                  <strong>Terms:</strong>
+                </p>
+                <div className={styles.termsContent}>{agreement.terms}</div>
+                <p>
+                  <strong>Created:</strong>{' '}
+                  {new Date(agreement.created_at).toLocaleDateString()}
+                </p>
+                {agreement.accepted_at && (
+                  <p>
+                    <strong>Accepted:</strong>{' '}
+                    {new Date(agreement.accepted_at).toLocaleDateString()}
+                  </p>
+                )}
+                <div className={styles.modalActions}>
+                  {agreement.status === 'accepted' ? (
                     <button
                       onClick={() => {
                         setShowAgreementModal(false);
@@ -636,17 +615,41 @@ return (
                       }}
                       className={styles.modifyButton}
                     >
-                      Counter Proposal
+                      Request Change Order
                     </button>
-                  </>
-                ) : null}
+                  ) : agreement.status === 'proposed' &&
+                    user.id !== agreement.proposed_by ? (
+                    <>
+                      <button
+                        onClick={acceptAgreement}
+                        className={styles.acceptButton}
+                        disabled={isAcceptingAgreement}
+                      >
+                        {isAcceptingAgreement
+                          ? 'Accepting...'
+                          : 'Accept Agreement'}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowAgreementModal(false);
+                          setShowAgreementForm(true);
+                          setPrice(agreement.price.toString());
+                          setTerms(agreement.terms);
+                        }}
+                        className={styles.modifyButton}
+                      >
+                        Counter Proposal
+                      </button>
+                    </>
+                  ) : null}
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    )}
-  </div>
-);
+      )}
+    </div>
+  );
+};
 
 export default ConversationDetail;

@@ -41,7 +41,7 @@ const PublicDevelopers = () => {
   const getUsername = (developer) => {
     // Handle different possible structures of the username data
     return (
-      developer?.username ||
+      developer?.user?.full_name ||
       developer?.user?.username ||
       `Developer #${developer.id}`
     );
