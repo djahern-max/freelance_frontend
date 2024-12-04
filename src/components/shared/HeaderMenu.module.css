@@ -1,0 +1,49 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1001;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  
+  .overlayVisible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  
+  .menuPanel {
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 256px;
+    background-color: var(--color-background);
+    box-shadow: var(--shadow-lg);
+    transform: translateX(100%);
+    transition: transform 0.2s ease;
+  }
+  
+  .menuPanelVisible {
+    transform: translateX(0);
+  }
+  
+  .menuContent {
+    padding: var(--spacing-md);
+  }
+  
+  .menuButton {
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-md);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    transition: background-color 0.2s ease;
+  }
+  
+  .menuButton:hover {
+    background-color: var(--color-secondary);
+    color: var(--color-primary);
+  }

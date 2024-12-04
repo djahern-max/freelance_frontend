@@ -1,6 +1,6 @@
 import { Calendar, Clock, Play, Upload, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import AuthDialog from '../auth/AuthDialog';
 import styles from './VideoList.module.css';
 
@@ -55,6 +55,15 @@ const VideoList = () => {
     }
   };
 
+  const handleVideoClick = (video) => {
+    if (!token) {
+      setSelectedVideo(video);
+      setShowAuthDialog(true);
+      return;
+    }
+    setSelectedVideo(video);
+  };
+
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
@@ -72,25 +81,10 @@ const VideoList = () => {
     );
   }
 
-  const handleVideoClick = (video) => {
-    if (!token) {
-      setSelectedVideo(video);
-      setShowAuthDialog(true);
-      return;
-    }
-    setSelectedVideo(video);
-  };
-
   return (
     <div className={styles.container}>
       <div className={styles.headerContainer}>
         <h1 className={styles.title}>Videos</h1>
-        {token && (
-          <Link to="/video-upload" className={styles.uploadButton}>
-            <Upload size={20} />
-            Upload Video
-          </Link>
-        )}
       </div>
 
       {!videos || videos.length === 0 ? (
@@ -105,6 +99,7 @@ const VideoList = () => {
               onClick={() => setShowAuthDialog(true)}
               className={styles.buttonPrimary}
             >
+              <Upload size={20} />
               Sign Up to Upload Videos
             </button>
           )}
@@ -113,6 +108,7 @@ const VideoList = () => {
         <div className={styles.grid}>
           {videos.map((video) => (
             <div key={video.id || Math.random()} className={styles.videoCard}>
+              {/* Thumbnail Section */}
               <div
                 className={styles.thumbnailContainer}
                 onClick={() => handleVideoClick(video)}
@@ -120,28 +116,52 @@ const VideoList = () => {
                 {video.thumbnail_path ? (
                   <img
                     src={video.thumbnail_path}
-                    alt={video.title}
+                    alt={video.title || 'Video Thumbnail'}
                     className={styles.thumbnail}
                   />
                 ) : (
-                  <div className={styles.thumbnailPlaceholder} />
+                  <div className={styles.thumbnailPlaceholder}>
+                    <Play size={32} className={styles.emptyIcon} />
+                  </div>
                 )}
-                <div className={styles.playButton}>
-                  <Play size={24} />
+              </div>
+
+              {/* Content Section */}
+              <div className={styles.contentContainer}>
+                <h2 className={styles.videoTitle}>
+                  {video.title || 'Untitled Video'}
+                </h2>
+                {video.description && (
+                  <p className={styles.description}>
+                    {video.description.length > 100
+                      ? `${video.description.substring(0, 100)}...`
+                      : video.description}
+                  </p>
+                )}
+                <div className={styles.metadata}>
+                  <div className={styles.metaItem}>
+                    <Calendar size={16} className={styles.icon} />
+                    <span>{formatDate(video.created_at)}</span>
+                  </div>
                 </div>
               </div>
 
-              <div className={styles.contentContainer}>
-                <h2 className={styles.videoTitle}>
-                  {video.title || 'Untitled'}
-                </h2>
-                {video.description && (
-                  <p className={styles.description}>{video.description}</p>
+              {/* Action Buttons */}
+              <div className={styles.cardActions}>
+                <button
+                  className={styles.buttonOutline}
+                  onClick={() => handleVideoClick(video)}
+                >
+                  Watch Video
+                </button>
+                {token && (
+                  <button
+                    className={styles.buttonPrimary}
+                    onClick={() => navigate(`/edit-video/${video.id}`)}
+                  >
+                    Edit Video
+                  </button>
                 )}
-                <div className={styles.metadata}>
-                  <Calendar size={16} className={styles.icon} />
-                  <span>{formatDate(video.created_at)}</span>
-                </div>
               </div>
             </div>
           ))}

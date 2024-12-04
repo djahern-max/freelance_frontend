@@ -1,21 +1,21 @@
 import {
+  HelpCircle,
   LayoutDashboard,
   LogOut,
   MessageSquareMore,
   Search,
-  Settings,
   UsersRound,
   Video,
 } from 'lucide-react';
-import { useState } from 'react'; // Make sure this is imported
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import FeedbackModal from '../feedback/FeedbackModal';
 import SharedRequestNotification from '../requests/SharedRequestNotification';
 import styles from './Header.module.css';
+import HeaderMenu from './HeaderMenu';
 
 const Header = () => {
-  // Move all hooks to the top of the component
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -53,12 +53,6 @@ const Header = () => {
         title: 'Videos',
         requiresAuth: false,
       },
-      {
-        path: '/settings',
-        icon: Settings,
-        title: 'Settings',
-        requiresAuth: true,
-      },
     ];
 
     return pages;
@@ -77,9 +71,32 @@ const Header = () => {
   };
 
   const handleLogout = () => {
-    dispatch({ type: 'LOGOUT' }); // Replace with the actual action for logout if different
-    navigate('/login'); // Redirect the user to the login page after logout
+    dispatch({ type: 'LOGOUT' });
+    navigate('/login');
   };
+
+  // Menu items for the dropdown menu
+  const menuItems = [
+    {
+      icon: MessageSquareMore,
+      title: 'Feedback',
+      onClick: () => setShowFeedbackModal(true),
+    },
+    {
+      icon: HelpCircle,
+      title: 'Support',
+      onClick: () => navigate('/support'),
+    },
+    ...(isAuthenticated
+      ? [
+          {
+            icon: LogOut,
+            title: 'Logout',
+            onClick: handleLogout,
+          },
+        ]
+      : []),
+  ];
 
   // Filter out the current page from navigation items
   const navigationItems = getPages().filter((page) => {
@@ -109,43 +126,45 @@ const Header = () => {
   return (
     <header className={styles.header}>
       <div className={styles.iconBar}>
-        {navigationItems.map((page) => (
-          <div
-            key={page.path}
-            className={styles.icon}
-            onClick={() => handleNavigation(page.path)}
-            title={page.title}
-          >
-            <page.icon
-              className={styles.iconImage}
-              size={24}
-              strokeWidth={1.5}
-            />
-          </div>
-        ))}
-        <div className={styles.feedbackIconWrapper}>
-          <div
-            className={styles.icon}
-            onClick={() => setShowFeedbackModal(true)}
-            title="Provide Feedback"
-          >
-            <MessageSquareMore
-              className={styles.iconImage}
-              size={24}
-              strokeWidth={1.5}
-            />
+        <div className={styles.leftSection}>
+          {navigationItems.map((page) => (
+            <div
+              key={page.path}
+              className={styles.icon}
+              onClick={() => handleNavigation(page.path)}
+              title={page.title}
+            >
+              <page.icon
+                className={styles.iconImage}
+                size={24}
+                strokeWidth={1.5}
+              />
+            </div>
+          ))}
+        </div>
+
+        <div className={styles.rightSection}>
+          {isAuthenticated && userType === 'developer' && (
+            <div className={styles.notificationContainer}>
+              <SharedRequestNotification />
+            </div>
+          )}
+
+          <div className={styles.menuContainer}>
+            <HeaderMenu>
+              {menuItems.map((item, index) => (
+                <button
+                  key={index}
+                  className={styles.menuItem}
+                  onClick={item.onClick}
+                >
+                  <item.icon size={20} />
+                  <span>{item.title}</span>
+                </button>
+              ))}
+            </HeaderMenu>
           </div>
         </div>
-        {isAuthenticated && userType === 'developer' && (
-          <div className={styles.notificationContainer}>
-            <SharedRequestNotification />
-          </div>
-        )}
-        {isAuthenticated && (
-          <div className={styles.icon} onClick={handleLogout} title="Logout">
-            <LogOut className={styles.iconImage} size={24} strokeWidth={1.5} />
-          </div>
-        )}
       </div>
 
       {showFeedbackModal && (
