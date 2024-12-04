@@ -1,22 +1,27 @@
+// src/components/feedback/FeedBackButton.js
+import { MessageSquare } from 'lucide-react'; // Using MessageSquare instead of ThumbsUp
 import { useState } from 'react';
-import { Button } from '../shared/Button';
-import styles from './FeedbackButton.module.css';
-import FeedbackModal from './FeedbackModal';
+import styles from './Feedback.module.css';
+import FeedbackPrompt from './FeedbackPrompt';
 
-const FeedbackButton = ({ location, targetId }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+const FeedBackButton = ({ location, targetId }) => {
+  const [showPrompt, setShowPrompt] = useState(false);
 
   return (
-    <div className={styles.feedbackButtonContainer}>
-      <Button
-        onClick={() => setIsModalOpen(true)}
+    <div className={styles.headerFeedback}>
+      {' '}
+      {/* Changed from container to headerFeedback */}
+      <button
         className={styles.feedbackButton}
+        onClick={() => setShowPrompt(true)}
+        title="Give Feedback"
       >
-        Feedback
-      </Button>
-      {isModalOpen && (
-        <FeedbackModal
-          onClose={() => setIsModalOpen(false)}
+        <MessageSquare size={16} />
+        <span>Feedback</span>
+      </button>
+      {showPrompt && (
+        <FeedbackPrompt
+          onClose={() => setShowPrompt(false)}
           location={location}
           targetId={targetId}
         />
@@ -25,4 +30,4 @@ const FeedbackButton = ({ location, targetId }) => {
   );
 };
 
-export default FeedbackButton;
+export default FeedBackButton;

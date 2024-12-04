@@ -1,28 +1,19 @@
-import axios from 'axios';
+// src/components/feedback/FeedbackModal.js
+import { Star } from 'lucide-react';
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { selectUser } from '../../redux/authSlice';
-import styles from './FeedbackModal.module.css';
+import styles from './Feedback.module.css';
 
-const FeedbackModal = ({ onClose, location, targetId }) => {
+const FeedbackModal = ({ onClose, location, targetId, onSubmit }) => {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const user = useSelector(selectUser);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      await axios.post('/api/feedback', {
-        rating,
-        comment,
-        location,
-        targetId,
-        userId: user.id,
-      });
-
+      await onSubmit({ rating, comment, location, targetId });
       onClose();
     } catch (error) {
       console.error('Error submitting feedback:', error);
@@ -32,44 +23,54 @@ const FeedbackModal = ({ onClose, location, targetId }) => {
   };
 
   return (
-    <div className={styles.modalOverlay}>
-      <div className={styles.modalContent}>
-        <h2>Share Your Feedback</h2>
+    <div className={styles.modalOverlay} onClick={onClose}>
+      <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+        <div className={styles.modalHeader}>
+          <h2 className={styles.modalTitle}>Share Your Feedback</h2>
+          <p className={styles.modalDescription}>
+            Help us improve your experience
+          </p>
+        </div>
+
         <form onSubmit={handleSubmit}>
           <div className={styles.ratingContainer}>
             {[1, 2, 3, 4, 5].map((value) => (
               <button
                 key={value}
                 type="button"
-                className={`${styles.star} ${
+                className={`${styles.ratingButton} ${
                   value <= rating ? styles.active : ''
                 }`}
                 onClick={() => setRating(value)}
               >
-                ★
+                <Star size={16} />
               </button>
             ))}
           </div>
-          <textarea
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            placeholder="Tell us what you think..."
-            className={styles.commentInput}
-          />
-          <div className={styles.buttonGroup}>
-            <button
-              type="submit"
-              disabled={isSubmitting || !rating}
-              className={styles.submitButton}
-            >
-              {isSubmitting ? 'Submitting...' : 'Submit Feedback'}
-            </button>
+
+          <div className={styles.textareaContainer}>
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Tell us what you think..."
+              className={styles.textarea}
+            />
+          </div>
+
+          <div className={styles.buttonContainer}>
             <button
               type="button"
               onClick={onClose}
               className={styles.cancelButton}
             >
               Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting || !rating}
+              className={styles.submitButton}
+            >
+              {isSubmitting ? 'Submitting...' : 'Submit Feedback'}
             </button>
           </div>
         </form>

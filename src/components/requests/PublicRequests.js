@@ -5,7 +5,9 @@ import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
 import AuthDialog from '../auth/AuthDialog';
+import FeedBackButton from '../feedback/FeedBackButton';
 import Header from '../shared/Header';
+import EmptyState from './EmptyState';
 import styles from './PublicRequests.module.css';
 
 const PublicRequests = () => {
@@ -27,36 +29,59 @@ const PublicRequests = () => {
       setLoading(true);
       setError(null);
 
-      // Create a new axios instance without auth headers for this specific request
-      const publicResponse = await axios.get(
-        `${
-          process.env.REACT_APP_API_URL || 'http://localhost:8000'
-        }/requests/public`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
+      let retries = 3;
+      let publicResponse;
+
+      while (retries > 0) {
+        try {
+          publicResponse = await axios.get(
+            `${
+              process.env.REACT_APP_API_URL || 'http://localhost:8000'
+            }/requests/public`,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+              },
+            }
+          );
+          break; // If successful, exit the retry loop
+        } catch (err) {
+          retries--;
+          if (retries === 0) throw err; // If out of retries, throw the error
+          await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second before retrying
         }
-      );
+      }
 
       setPublicRequests(publicResponse.data);
 
       // Only fetch conversations if user is authenticated
       if (isAuthenticated && user) {
-        const conversationsResponse = await api.get('/conversations/user/list');
-        const conversationCounts = conversationsResponse.data.reduce(
-          (acc, conv) => {
-            acc[conv.request_id] = (acc[conv.request_id] || 0) + 1;
-            return acc;
-          },
-          {}
-        );
-        setConversations(conversationCounts);
+        try {
+          const conversationsResponse = await api.get(
+            '/conversations/user/list'
+          );
+          const conversationCounts = conversationsResponse.data.reduce(
+            (acc, conv) => {
+              acc[conv.request_id] = (acc[conv.request_id] || 0) + 1;
+              return acc;
+            },
+            {}
+          );
+          setConversations(conversationCounts);
+        } catch (convErr) {
+          console.warn('Failed to fetch conversations:', convErr);
+          // Don't fail the whole operation if conversations fail to load
+        }
       }
     } catch (err) {
+      const errorMessage =
+        err.code === 'ERR_NETWORK'
+          ? 'Unable to connect to server. Please check your connection and try again.'
+          : err.response?.data?.detail || 'Failed to fetch requests.';
+
+      setError(errorMessage);
       console.error('Error fetching data:', err);
-      setError(err.response?.data?.detail || 'Failed to fetch requests.');
     } finally {
       setLoading(false);
     }
@@ -132,6 +157,7 @@ const PublicRequests = () => {
         <div className={styles.headerContainer}>
           <h1 className={styles.title}>Opportunities</h1>
           {!isAuthenticated && <p className={styles.subtitle}></p>}
+          <FeedBackButton location="opportunities" targetId="public-requests" />
         </div>
 
         {error && (
@@ -144,30 +170,13 @@ const PublicRequests = () => {
             </div>
           </div>
         )}
-
         {publicRequests.length === 0 ? (
-          <div className={styles.emptyState}>
-            <MessageSquare className={styles.emptyIcon} size={48} />
-            <h2>No Projects Available</h2>
-            <p>There are currently no projects available.</p>
-            {!isAuthenticated ? (
-              <button
-                className={styles.buttonPrimary}
-                onClick={() => setShowAuthDialog(true)}
-              >
-                Sign Up to Create a Project
-              </button>
-            ) : (
-              user?.userType === 'client' && (
-                <button
-                  className={styles.buttonPrimary}
-                  onClick={() => navigate('/create-request')}
-                >
-                  Create Your First Project
-                </button>
-              )
-            )}
-          </div>
+          <EmptyState
+            isAuthenticated={isAuthenticated}
+            userType={user?.userType}
+            onCreateProject={() => navigate('/create-request')}
+            onSignUp={() => setShowAuthDialog(true)}
+          />
         ) : (
           <div className={styles.requestsGrid}>
             {publicRequests.map((request) => (
