@@ -1,17 +1,22 @@
 import {
   LayoutDashboard,
   LogOut,
+  MessageSquareMore,
   Search,
   Settings,
   UsersRound,
   Video,
 } from 'lucide-react';
+import { useState } from 'react'; // Make sure this is imported
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
+import FeedbackModal from '../feedback/FeedbackModal';
 import SharedRequestNotification from '../requests/SharedRequestNotification';
 import styles from './Header.module.css';
 
 const Header = () => {
+  // Move all hooks to the top of the component
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const userType = useSelector((state) => state.auth.userType);
@@ -118,6 +123,19 @@ const Header = () => {
             />
           </div>
         ))}
+        <div className={styles.feedbackIconWrapper}>
+          <div
+            className={styles.icon}
+            onClick={() => setShowFeedbackModal(true)}
+            title="Provide Feedback"
+          >
+            <MessageSquareMore
+              className={styles.iconImage}
+              size={24}
+              strokeWidth={1.5}
+            />
+          </div>
+        </div>
         {isAuthenticated && userType === 'developer' && (
           <div className={styles.notificationContainer}>
             <SharedRequestNotification />
@@ -129,6 +147,14 @@ const Header = () => {
           </div>
         )}
       </div>
+
+      {showFeedbackModal && (
+        <FeedbackModal
+          location="header"
+          targetId="general_feedback"
+          onClose={() => setShowFeedbackModal(false)}
+        />
+      )}
     </header>
   );
 };

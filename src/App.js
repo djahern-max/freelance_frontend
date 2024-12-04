@@ -25,6 +25,7 @@ import ProjectsList from './components/projects/ProjectsList';
 import PublicRequests from './components/requests/PublicRequests';
 import Requests from './components/requests/Request';
 import Settings from './components/settings/Settings';
+import Footer from './components/shared/Footer';
 import Header from './components/shared/Header';
 import VideoList from './components/videos/VideoList';
 import VideoUpload from './components/videos/VideoUpload';
@@ -219,6 +220,7 @@ function AppContent() {
           />
         </Routes>
       </div>
+      <Footer />
     </>
   );
 }

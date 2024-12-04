@@ -68,6 +68,10 @@
   color: var(--color-primary);
 }
 
+.feedbackIconWrapper {
+  display: none; /* Hidden by default */
+}
+
 @media (max-width: 768px) {
   .header {
     height: 60px;
@@ -81,5 +85,11 @@
     width: 36px;
     height: 36px;
     padding: 6px;
+  }
+}
+
+@media screen and (min-width: 600px) {
+  .feedbackIconWrapper {
+    display: block;
   }
 }

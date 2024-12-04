@@ -3,6 +3,7 @@ import { selectIsAuthenticated, selectUser } from '../../redux/authSlice';
 import ClientDashboard from '../dashboards/ClientDashboard';
 import DeveloperDashboard from '../dashboards/DeveloperDashboard';
 import Features from '../shared/Features';
+
 import Header from '../shared/Header';
 
 function HomePage() {

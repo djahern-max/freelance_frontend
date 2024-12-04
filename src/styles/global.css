@@ -16,16 +16,17 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  margin: 0; /* Ensure no margin on body */
+  margin: 0;
   min-height: 100vh;
+  position: relative; /* Add this */
 }
 
 #root {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  padding-bottom: 80px; /* Add this - height of footer plus some padding */
 }
-
 /* Rest of your global styles remain the same */
 a {
   color: var(--color-primary);
@@ -75,10 +76,11 @@ select {
 .app-content {
   flex: 1;
   margin-top: 60px; /* Same as header height */
-  padding: 0; /* Remove default padding */
+  padding: 20px; /* Add some padding for content */
   width: 100%;
   box-sizing: border-box;
   background-color: #f9fafb;
+  min-height: calc(100vh - 140px); /* Add this - viewport height minus header and footer */
 }
 
 

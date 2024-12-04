@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
 import AuthDialog from '../auth/AuthDialog';
-import FeedBackButton from '../feedback/FeedBackButton';
+
 import Header from '../shared/Header';
 import EmptyState from './EmptyState';
 import styles from './PublicRequests.module.css';
@@ -157,7 +157,6 @@ const PublicRequests = () => {
         <div className={styles.headerContainer}>
           <h1 className={styles.title}>Opportunities</h1>
           {!isAuthenticated && <p className={styles.subtitle}></p>}
-          <FeedBackButton location="opportunities" targetId="public-requests" />
         </div>
 
         {error && (

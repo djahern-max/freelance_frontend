@@ -87,6 +87,10 @@
   margin: 0 8px;
 }
 
+.feedbackIconWrapper {
+  display: none; /* Hidden by default */
+}
+
 @media (max-width: 768px) {
   .header {
     height: 60px;
@@ -133,5 +137,11 @@
   
   .notificationContainer {
     margin: 0 4px;
+  }
+}
+
+@media screen and (min-width: 600px) {
+  .feedbackIconWrapper {
+    display: block;
   }
 }
