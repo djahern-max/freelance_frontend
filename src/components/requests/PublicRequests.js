@@ -109,48 +109,30 @@ const PublicRequests = () => {
   };
 
   const handleStartConversation = async (request) => {
-    if (!isAuthenticated) {
-      setSelectedRequest(request);
-      setShowAuthDialog(true);
-      return;
-    }
-
-    if (user?.userType !== 'developer') {
-      setError('Only developers can respond to requests');
-      return;
-    }
-
     try {
       setLoading(true);
-      setSelectedRequest(request); // Add this line to ensure request is set for subscription dialog
+      setSelectedRequest(request);
 
-      // First check subscription status
       const subscriptionResponse = await api.get(
         '/payments/subscription-status'
       );
+      console.log('Subscription status:', subscriptionResponse.data); // Add this line
 
       if (
-        subscriptionResponse.data.status === 'none' ||
+        !subscriptionResponse.data ||
         subscriptionResponse.data.status !== 'active'
       ) {
         setShowSubscriptionDialog(true);
-        setLoading(false);
         return;
       }
 
-      // Only proceed with conversation if subscription is active
       const response = await api.post('/conversations/', {
         request_id: request.id,
       });
-
       navigate(`/conversations/${response.data.id}`);
     } catch (err) {
-      console.error('Error starting conversation:', err);
-      if (err.response?.status === 403) {
-        setShowSubscriptionDialog(true);
-      } else {
-        setError(err.response?.data?.detail || 'Failed to start conversation');
-      }
+      console.error('Subscription check error:', err); // Add this line
+      setError(err.response?.data?.detail || 'Failed to start conversation');
     } finally {
       setLoading(false);
     }
@@ -195,7 +177,7 @@ const PublicRequests = () => {
           <EmptyState
             isAuthenticated={isAuthenticated}
             userType={user?.userType}
-            onCreateProject={() => navigate('/create-request')}
+            onCreateProject={() => navigate('/create-project')}
             onSignUp={() => setShowAuthDialog(true)}
           />
         ) : (

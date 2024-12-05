@@ -19,52 +19,57 @@ const ConversationsList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
-  const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [hasSubscription, setHasSubscription] = useState(null);
   const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
 
   const navigate = useNavigate();
   const { token, user } = useSelector((state) => state.auth);
-  const apiUrl = process.env.REACT_APP_API_URL;
+
+  const checkSubscription = async () => {
+    if (user?.userType !== 'developer') return true;
+
+    try {
+      const response = await api.get('/payments/subscription-status');
+      setHasSubscription(response.data.status === 'active');
+      return response.data.status === 'active';
+    } catch (error) {
+      console.error('Subscription check failed:', error);
+      setHasSubscription(false);
+      return false;
+    }
+  };
 
   const fetchConversations = async () => {
     try {
       setLoading(true);
       setError('');
 
-      // Check subscription status for developers
-      if (user?.userType === 'developer') {
-        try {
-          await api.get('/payments/subscription-status');
-        } catch (err) {
-          if (err.response?.status === 403) {
-            setShowSubscriptionDialog(true);
-            setLoading(false);
-            return;
-          }
-          throw err;
+      if (user?.userType === 'developer' && hasSubscription === null) {
+        const subscribed = await checkSubscription();
+        if (!subscribed) {
+          setShowSubscriptionDialog(true);
+          setLoading(false);
+          return;
         }
       }
 
-      const response = await axios.get(`${apiUrl}/conversations/user/list`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/conversations/user/list`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
-      // Get the request details for each conversation
       const conversationsWithDetails = await Promise.all(
         response.data.map(async (conversation) => {
           try {
             const requestResponse = await axios.get(
-              `${apiUrl}/requests/${conversation.request_id}`,
-              {
-                headers: { Authorization: `Bearer ${token}` },
-              }
+              `${process.env.REACT_APP_API_URL}/requests/${conversation.request_id}`,
+              { headers: { Authorization: `Bearer ${token}` } }
             );
-            return {
-              ...conversation,
-              requestDetails: requestResponse.data,
-            };
+            return { ...conversation, requestDetails: requestResponse.data };
           } catch (err) {
-            console.error(`Error fetching request details:`, err);
+            console.error('Error fetching request details:', err);
             return {
               ...conversation,
               requestDetails: { title: 'Unknown Request' },
@@ -83,10 +88,11 @@ const ConversationsList = () => {
   };
 
   useEffect(() => {
+    if (user?.userType === 'developer' && hasSubscription === null) {
+      checkSubscription();
+    }
     fetchConversations();
-    const interval = setInterval(fetchConversations, 30000);
-    return () => clearInterval(interval);
-  }, [token]);
+  }, [token, hasSubscription]);
 
   const getOtherUserName = (conversation) => {
     return user.id === conversation.starter_user_id

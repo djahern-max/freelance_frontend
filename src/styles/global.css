@@ -74,6 +74,8 @@ select {
 
 /* Update app-content to remove unnecessary spacing */
 .app-content {
+  border: none;
+  outline: none;
   flex: 1;
   margin-top: 60px; /* Same as header height */
   padding: 20px; /* Add some padding for content */
@@ -83,4 +85,13 @@ select {
   min-height: calc(100vh - 140px); /* Add this - viewport height minus header and footer */
 }
 
+.container {
+  border: none;
+  outline: none;
+}
 
+body, #root {
+  margin: 0;
+  padding: 0;
+  border: none;
+}

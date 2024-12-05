@@ -404,6 +404,28 @@ api.agreements = {
   },
 };
 
+api.subscriptions = {
+  async create() {
+    try {
+      const response = await api.post(API_ROUTES.PAYMENTS.CREATE_SUBSCRIPTION);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating subscription:', error);
+      throw error;
+    }
+  },
+
+  async getStatus() {
+    try {
+      const response = await api.get(API_ROUTES.PAYMENTS.SUBSCRIPTION_STATUS);
+      return response.data;
+    } catch (error) {
+      console.error('Error getting subscription status:', error);
+      throw error;
+    }
+  },
+};
+
 // Enhanced token management
 api.setToken = (token) => {
   if (token) {

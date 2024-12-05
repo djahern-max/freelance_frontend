@@ -1,7 +1,6 @@
 import { loadStripe } from '@stripe/stripe-js';
 import { useEffect, useState } from 'react';
-import api from '../../utils/api';
-import { API_ROUTES } from '../../utils/constants';
+import api, { API_ROUTES } from '../../utils/api';
 import styles from './SubscriptionDialog.module.css';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
@@ -27,9 +26,13 @@ const SubscriptionDialog = ({ isOpen, onClose, onSuccess }) => {
       setLoading(true);
       setError(null);
       const response = await api.post(API_ROUTES.PAYMENTS.CREATE_SUBSCRIPTION);
-      window.location.href = response.data.url;
+      if (response?.data?.url) {
+        window.location.href = response.data.url;
+      } else {
+        throw new Error('Invalid response from server');
+      }
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to start subscription');
+      setError(err.message || 'Failed to start subscription');
     } finally {
       setLoading(false);
     }
@@ -40,7 +43,7 @@ const SubscriptionDialog = ({ isOpen, onClose, onSuccess }) => {
   return (
     <div className={styles.overlay}>
       <div className={styles.dialog}>
-        <h2 className={styles.title}>Developer Subscription Required</h2>
+        <h2 className={styles.title}>Creator Subscription Required</h2>
         <p className={styles.description}>
           To communicate with clients and access opportunities, a subscription
           is required. The monthly fee is $20.
