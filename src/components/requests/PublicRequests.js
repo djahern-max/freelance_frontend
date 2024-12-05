@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
 import AuthDialog from '../auth/AuthDialog';
+import SubscriptionDialog from '../payments/SubscriptionDialog';
 
 import Header from '../shared/Header';
 import EmptyState from './EmptyState';
@@ -18,6 +19,7 @@ const PublicRequests = () => {
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [expandedCards, setExpandedCards] = useState({});
+  const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -120,15 +122,35 @@ const PublicRequests = () => {
 
     try {
       setLoading(true);
+      setSelectedRequest(request); // Add this line to ensure request is set for subscription dialog
+
+      // First check subscription status
+      const subscriptionResponse = await api.get(
+        '/payments/subscription-status'
+      );
+
+      if (
+        subscriptionResponse.data.status === 'none' ||
+        subscriptionResponse.data.status !== 'active'
+      ) {
+        setShowSubscriptionDialog(true);
+        setLoading(false);
+        return;
+      }
+
+      // Only proceed with conversation if subscription is active
       const response = await api.post('/conversations/', {
         request_id: request.id,
-        message: "I'm interested in helping with your project",
       });
 
       navigate(`/conversations/${response.data.id}`);
     } catch (err) {
       console.error('Error starting conversation:', err);
-      setError(err.response?.data?.detail || 'Failed to start conversation');
+      if (err.response?.status === 403) {
+        setShowSubscriptionDialog(true);
+      } else {
+        setError(err.response?.data?.detail || 'Failed to start conversation');
+      }
     } finally {
       setLoading(false);
     }
@@ -304,9 +326,16 @@ const PublicRequests = () => {
             })
           }
         />
+        <SubscriptionDialog
+          isOpen={showSubscriptionDialog}
+          onClose={() => setShowSubscriptionDialog(false)}
+          onSuccess={() => {
+            setShowSubscriptionDialog(false);
+            handleStartConversation(selectedRequest);
+          }}
+        />
       </main>
     </div>
   );
 };
-
 export default PublicRequests;

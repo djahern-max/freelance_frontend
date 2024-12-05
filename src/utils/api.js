@@ -35,6 +35,10 @@ export const API_ROUTES = {
     ACCEPT: (id) => `/agreements/${id}/accept`,
     BY_REQUEST: (requestId) => `/agreements/request/${requestId}`,
   },
+  PAYMENTS: {
+    CREATE_SUBSCRIPTION: '/payments/create-subscription',
+    SUBSCRIPTION_STATUS: '/payments/subscription-status',
+  },
 };
 
 const getBaseURL = () => {

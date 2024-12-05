@@ -18,6 +18,7 @@ import AppDashboard from './components/dashboards/AppDashboard';
 import ClientDashboard from './components/dashboards/ClientDashboard';
 import DeveloperDashboard from './components/dashboards/DeveloperDashboard';
 import Home from './components/pages/HomePage';
+import SubscriptionSuccess from './components/payments/SubscriptionSuccess';
 import PublicDevelopers from './components/profiles/PublicDevelopers';
 import CreateProject from './components/projects/CreateProject';
 import ProjectDetails from './components/projects/ProjectDetails';
@@ -85,7 +86,10 @@ function AppContent() {
           <Route path="/opportunities" element={<PublicRequests />} />
           <Route path="/videos" element={<VideoList />} />
           <Route path="/creators" element={<PublicDevelopers />} />
-
+          <Route
+            path="/subscription/success"
+            element={<SubscriptionSuccess />}
+          />
           {/* Client-specific routes */}
           <Route
             path="/client-dashboard"

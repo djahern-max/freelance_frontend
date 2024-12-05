@@ -9,6 +9,8 @@ import {
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import api from '../../utils/api'; // Added this line
+import SubscriptionDialog from '../payments/SubscriptionDialog';
 import Header from '../shared/Header';
 import styles from './ConversationsList.module.css';
 
@@ -18,6 +20,7 @@ const ConversationsList = () => {
   const [error, setError] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
 
   const navigate = useNavigate();
   const { token, user } = useSelector((state) => state.auth);
@@ -25,6 +28,23 @@ const ConversationsList = () => {
 
   const fetchConversations = async () => {
     try {
+      setLoading(true);
+      setError('');
+
+      // Check subscription status for developers
+      if (user?.userType === 'developer') {
+        try {
+          await api.get('/payments/subscription-status');
+        } catch (err) {
+          if (err.response?.status === 403) {
+            setShowSubscriptionDialog(true);
+            setLoading(false);
+            return;
+          }
+          throw err;
+        }
+      }
+
       const response = await axios.get(`${apiUrl}/conversations/user/list`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -54,10 +74,10 @@ const ConversationsList = () => {
       );
 
       setConversations(conversationsWithDetails);
-      setLoading(false);
     } catch (err) {
       console.error('Error fetching conversations:', err);
       setError('Failed to load conversations');
+    } finally {
       setLoading(false);
     }
   };
@@ -217,6 +237,14 @@ const ConversationsList = () => {
             getFilteredConversations().map(renderConversationCard)
           )}
         </div>
+        <SubscriptionDialog
+          isOpen={showSubscriptionDialog}
+          onClose={() => setShowSubscriptionDialog(false)}
+          onSuccess={() => {
+            setShowSubscriptionDialog(false);
+            fetchConversations();
+          }}
+        />
       </main>
     </div>
   );
