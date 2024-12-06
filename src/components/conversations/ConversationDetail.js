@@ -36,6 +36,7 @@ const ConversationDetail = () => {
   const [price, setPrice] = useState('');
   const [terms, setTerms] = useState('');
   const [showAgreementModal, setShowAgreementModal] = useState(false);
+  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
 
   // Fetch conversation data
   const fetchConversation = useCallback(async () => {
@@ -86,39 +87,32 @@ const ConversationDetail = () => {
     }
   }, [conversation?.request_id, conversation?.status, token, apiUrl]);
 
-  // Effect for auto-scrolling messages
+  // Auto-scroll effect
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [conversation?.messages]);
 
-  // Effect for polling conversation updates
+  // Polling effects
   useEffect(() => {
     if (!id || !token) return;
-
     fetchConversation();
     const intervalId = setInterval(fetchConversation, 5000);
-
     return () => clearInterval(intervalId);
   }, [id, token, fetchConversation]);
 
-  // Effect for polling agreement updates
   useEffect(() => {
     if (!conversation?.request_id || !token) return;
-
     fetchAgreement();
-    // Only set up polling if we're in a state where agreements are relevant
     const shouldPoll =
       conversation.status === 'negotiating' || conversation.status === 'agreed';
     const intervalId = shouldPoll ? setInterval(fetchAgreement, 5000) : null;
-
     return () => {
       if (intervalId) clearInterval(intervalId);
     };
   }, [conversation?.request_id, conversation?.status, token, fetchAgreement]);
 
-  // Utility functions
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -143,7 +137,6 @@ const ConversationDetail = () => {
     }
   };
 
-  // Handler functions
   const handleAgreementClick = (e) => {
     if (e.target.tagName.toLowerCase() === 'button') {
       return;
@@ -160,7 +153,6 @@ const ConversationDetail = () => {
     e.preventDefault();
     setIsSubmittingAgreement(true);
     try {
-      // Update conversation status first
       await axios.patch(
         `${apiUrl}/conversations/${id}`,
         { status: 'negotiating' },
@@ -195,7 +187,7 @@ const ConversationDetail = () => {
       setShowAgreement(false);
       setShowAgreementForm(false);
       toast.success('Agreement proposed successfully!');
-      await fetchConversation(); // Refresh conversation to get updated status
+      await fetchConversation();
     } catch (err) {
       console.error('Failed to create agreement:', err);
       toast.error(err.response?.data?.detail || 'Failed to create agreement.');
@@ -282,7 +274,6 @@ const ConversationDetail = () => {
     }
   };
 
-  // Loading states
   if (isLoading) {
     return (
       <div className={styles.loadingContainer}>
@@ -368,7 +359,11 @@ const ConversationDetail = () => {
         </div>
 
         {/* Sidebar */}
-        <div className={styles.sidebar}>
+        <div
+          className={`${styles.sidebar} ${
+            isSidebarVisible ? styles.mobileVisible : ''
+          }`}
+        >
           {/* Request Details Section */}
           <div className={styles.sidebarSection}>
             <h2 className={styles.sidebarTitle}>Request Details</h2>
@@ -568,6 +563,15 @@ const ConversationDetail = () => {
             </div>
           )}
         </div>
+
+        {/* Menu Toggle Button */}
+        <button
+          className={styles.menuToggle}
+          onClick={() => setIsSidebarVisible(!isSidebarVisible)}
+          aria-label="Toggle sidebar"
+        >
+          <Menu size={24} />
+        </button>
       </div>
 
       {/* Agreement Modal */}

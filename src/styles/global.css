@@ -74,15 +74,14 @@ select {
 
 /* Update app-content to remove unnecessary spacing */
 .app-content {
-  border: none;
-  outline: none;
   flex: 1;
-  margin-top: 60px; /* Same as header height */
-  padding: 20px; /* Add some padding for content */
+  margin-top: 60px;
   width: 100%;
   box-sizing: border-box;
-  background-color: #f9fafb;
-  min-height: calc(100vh - 140px); /* Add this - viewport height minus header and footer */
+  background-color: #ffffff;
+  min-height: calc(100vh - 140px);
+  padding: 0; /* Remove padding */
+  margin-bottom: 0;
 }
 
 .container {
