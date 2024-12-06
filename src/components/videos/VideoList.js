@@ -1,4 +1,4 @@
-import { Calendar, Clock, Play, Upload, X } from 'lucide-react';
+import { Calendar, Clock, Play, Upload } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AuthDialog from '../auth/AuthDialog';
@@ -64,45 +64,34 @@ const VideoList = () => {
     setSelectedVideo(video);
   };
 
-  if (loading) {
-    return (
-      <div className={styles.loadingContainer}>
-        <Clock className={styles.loadingIcon} size={24} />
-        <span className={styles.loadingText}>Loading videos...</span>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className={styles.errorContainer}>
-        <p className={styles.errorMessage}>Error: {error}</p>
-      </div>
-    );
-  }
-
   return (
     <div className={styles.container}>
       <div className={styles.headerContainer}>
-        <h1 className={styles.title}>Videos</h1>
+        <button
+          className={styles.uploadVideoButton}
+          onClick={() => navigate('/video-upload')}
+        >
+          <Upload size={16} />
+          <span>Upload</span>
+        </button>
       </div>
 
-      {!videos || videos.length === 0 ? (
+      {loading ? (
+        <div className={styles.loadingContainer}>
+          <Clock className={styles.loadingIcon} size={24} />
+          <span className={styles.loadingText}>Loading videos...</span>
+        </div>
+      ) : error ? (
+        <div className={styles.errorContainer}>
+          <p className={styles.errorMessage}>Error: {error}</p>
+        </div>
+      ) : !videos || videos.length === 0 ? (
         <div className={styles.emptyState}>
           <Play className={styles.emptyIcon} size={48} />
           <h2 className={styles.emptyTitle}>No Videos Available</h2>
           <p className={styles.emptyText}>
             There are currently no videos to display.
           </p>
-          {!token && (
-            <button
-              onClick={() => setShowAuthDialog(true)}
-              className={styles.buttonPrimary}
-            >
-              <Upload size={20} />
-              Sign Up to Upload Videos
-            </button>
-          )}
         </div>
       ) : (
         <div className={styles.grid}>
@@ -145,58 +134,8 @@ const VideoList = () => {
                   </div>
                 </div>
               </div>
-
-              {/* Action Buttons */}
-              <div className={styles.cardActions}>
-                <button
-                  className={styles.buttonOutline}
-                  onClick={() => handleVideoClick(video)}
-                >
-                  Watch Video
-                </button>
-                {token && (
-                  <button
-                    className={styles.buttonPrimary}
-                    onClick={() => navigate(`/edit-video/${video.id}`)}
-                  >
-                    Edit Video
-                  </button>
-                )}
-              </div>
             </div>
           ))}
-        </div>
-      )}
-
-      {selectedVideo && token && (
-        <div className={styles.modal} onClick={() => setSelectedVideo(null)}>
-          <div
-            className={styles.modalContent}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <video
-              src={selectedVideo.file_path}
-              className={styles.modalVideo}
-              controls
-              autoPlay
-            />
-            <div className={styles.modalInfo}>
-              <h2 className={styles.videoTitle}>
-                {selectedVideo.title || 'Untitled'}
-              </h2>
-              {selectedVideo.description && (
-                <p className={styles.description}>
-                  {selectedVideo.description}
-                </p>
-              )}
-            </div>
-            <button
-              className={styles.closeButton}
-              onClick={() => setSelectedVideo(null)}
-            >
-              <X size={24} />
-            </button>
-          </div>
         </div>
       )}
 

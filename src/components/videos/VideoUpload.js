@@ -1,6 +1,13 @@
 // VideoUpload.js
-import { Image as ImageIcon, Loader, Upload, Video } from 'lucide-react';
+import {
+  ArrowLeft,
+  Image as ImageIcon,
+  Loader,
+  Upload,
+  Video,
+} from 'lucide-react';
 import { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './VideoUpload.module.css';
 
 const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
@@ -13,6 +20,8 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
   const [messageType, setMessageType] = useState(null);
   const [preview, setPreview] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
+
+  const navigate = useNavigate();
 
   const videoInputRef = useRef(null);
   const thumbnailInputRef = useRef(null);
@@ -129,6 +138,10 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
   return (
     <div className={styles.pageContainer}>
       <div className={styles.uploadContainer}>
+        <button className={styles.backButton} onClick={() => navigate(-1)}>
+          <ArrowLeft size={16} />
+          Back
+        </button>
         <h1 className={styles.title}>Upload Video</h1>
 
         <form onSubmit={handleSubmit} className={styles.uploadForm}>

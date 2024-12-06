@@ -46,7 +46,7 @@ const getBaseURL = () => {
     return process.env.REACT_APP_API_URL;
   }
   return process.env.NODE_ENV === 'production'
-    ? '/api'
+    ? 'https://www.ryze.ai/api' // Update this
     : 'http://localhost:8000';
 };
 
