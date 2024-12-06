@@ -5,6 +5,7 @@ import {
   Clock,
   DollarSign,
   FileText,
+  Menu,
   Send,
   User,
   XCircle,
@@ -301,8 +302,14 @@ const ConversationDetail = () => {
           <ArrowLeft size={20} />
         </button>
         <h1 className={styles.title}>{requestDetails?.title}</h1>
+        <button
+          className={styles.menuToggle}
+          onClick={() => setIsSidebarVisible(!isSidebarVisible)}
+          aria-label="Toggle sidebar"
+        >
+          <Menu size={24} />
+        </button>
       </div>
-
       <div className={styles.content}>
         {/* Main Messages Section */}
         <div className={styles.mainSection}>
@@ -563,15 +570,6 @@ const ConversationDetail = () => {
             </div>
           )}
         </div>
-
-        {/* Menu Toggle Button */}
-        <button
-          className={styles.menuToggle}
-          onClick={() => setIsSidebarVisible(!isSidebarVisible)}
-          aria-label="Toggle sidebar"
-        >
-          <Menu size={24} />
-        </button>
       </div>
 
       {/* Agreement Modal */}
