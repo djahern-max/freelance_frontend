@@ -124,20 +124,21 @@ const ClientDashboard = () => {
       <Header />
       <div className={styles.content}>
         <div className={styles.dashboardHeader}>
-          <h1 className={styles.dashboardTitle}>
-            {user?.fullName ? `${user.fullName}'s Dashboard` : 'Dashboard'}
-          </h1>
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className={styles.createButton}
-          >
-            <Plus className={styles.buttonIcon} />
-            Create New Request
-          </button>
+          <div className={styles.headerContent}>
+            <h1 className={styles.dashboardTitle}>
+              {user?.fullName ? `${user.fullName}'s Dashboard` : 'Dashboard'}
+            </h1>
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className={styles.createButton}
+            >
+              <Plus className={styles.buttonIcon} />
+              Create New Request
+            </button>
+          </div>
         </div>
 
         <div className={styles.dashboardContent}>
-          {/* Main Content Section */}
           <div className={styles.mainContent}>
             {/* Requests Section */}
             <CollapsibleDashboardCard
@@ -237,7 +238,7 @@ const ClientDashboard = () => {
 
           {/* Optional Projects Section */}
           {projects.length > 0 && (
-            <div className={styles.sideContent}>
+            <div className={styles.projectsSection}>
               {errors.projects ? (
                 <div className={styles.error}>{errors.projects}</div>
               ) : (
@@ -245,14 +246,14 @@ const ClientDashboard = () => {
               )}
             </div>
           )}
-        </div>
 
-        {showCreateModal && (
-          <CreateRequestModal
-            onClose={() => setShowCreateModal(false)}
-            onSubmit={handleCreateRequest}
-          />
-        )}
+          {showCreateModal && (
+            <CreateRequestModal
+              onClose={() => setShowCreateModal(false)}
+              onSubmit={handleCreateRequest}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

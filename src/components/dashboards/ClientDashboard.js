@@ -1,4 +1,4 @@
-import { FileText, MessageSquare, Plus } from 'lucide-react';
+import { FileText, FolderOpen, MessageSquare, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -121,15 +121,12 @@ const ClientDashboard = () => {
       <Header />
       <div className={styles.content}>
         <div className={styles.dashboardHeader}>
-          <h1 className={styles.dashboardTitle}>
-            {user?.fullName ? `${user.fullName}'s Dashboard` : 'Dashboard'}
-          </h1>
           <button
             onClick={() => setShowCreateModal(true)}
-            className={styles.primaryButton}
+            className={styles.headerCreateButton} // Changed class name to be more specific
           >
-            <Plus className={styles.buttonIcon} />
-            Create New Request
+            <Plus size={24} className={styles.buttonIcon} />
+            New Request
           </button>
         </div>
 
@@ -225,13 +222,18 @@ const ClientDashboard = () => {
 
           {/* Optional Projects Section */}
           {projects.length > 0 && (
-            <div className={styles.sideContent}>
+            <CollapsibleDashboardCard
+              title="Projects"
+              count={projects.length}
+              icon={FolderOpen}
+              defaultExpanded={true}
+            >
               {errors.projects ? (
                 <div className={styles.error}>{errors.projects}</div>
               ) : (
                 <ProjectDashboardCard projects={projects} />
               )}
-            </div>
+            </CollapsibleDashboardCard>
           )}
         </div>
 
