@@ -121,9 +121,6 @@ const ClientDashboard = () => {
       <Header />
       <div className={styles.content}>
         <div className={styles.dashboardHeader}>
-          <h1 className={styles.dashboardTitle}>
-            {user?.fullName ? `${user.fullName}'s Dashboard` : 'Dashboard'}
-          </h1>
           <button
             onClick={() => setShowCreateModal(true)}
             className={styles.primaryButton}

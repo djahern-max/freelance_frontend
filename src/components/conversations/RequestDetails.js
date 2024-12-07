@@ -1,4 +1,3 @@
-import axios from 'axios';
 import {
   ArrowLeft,
   Clock,
@@ -9,6 +8,7 @@ import {
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import api from '../../utils/api';
 import CreateRequestModal from '../requests/CreateRequestModal';
 import Header from '../shared/Header';
 import styles from './RequestDetails.module.css';
@@ -32,15 +32,10 @@ const RequestDetails = () => {
         setLoading(false);
         return;
       }
-
       try {
         const [requestResponse, conversationsResponse] = await Promise.all([
-          axios.get(`${apiUrl}/requests/${requestId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${apiUrl}/conversations/user/list`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
+          api.get(`/requests/${requestId}`),
+          api.get('/conversations/user/list'),
         ]);
 
         setRequest(requestResponse.data);
@@ -89,11 +84,9 @@ const RequestDetails = () => {
         return;
       }
 
-      const response = await axios.post(
-        `${apiUrl}/conversations/`,
-        { request_id: parseInt(requestId) },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const response = await api.post('/conversations/', {
+        request_id: parseInt(requestId),
+      });
 
       navigate(`/conversations/${response.data.id}`);
     } catch (err) {
