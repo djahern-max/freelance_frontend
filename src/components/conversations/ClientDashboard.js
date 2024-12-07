@@ -11,6 +11,7 @@ import styles from './ClientDashboard.module.css';
 import CollapsibleDashboardCard from './CollapsibleDashboardCard';
 
 const ClientDashboard = () => {
+  // State management
   const [dashboardData, setDashboardData] = useState({
     requests: [],
     conversations: [],
@@ -31,6 +32,7 @@ const ClientDashboard = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
 
+  // Data fetching
   useEffect(() => {
     fetchDashboardData();
   }, []);
@@ -39,32 +41,6 @@ const ClientDashboard = () => {
     fetchRequests();
     fetchConversations();
     fetchProjects();
-  };
-
-  const fetchProjects = async () => {
-    try {
-      const response = await api.get('/projects/');
-      setProjects(response.data);
-    } catch (error) {
-      console.error('Error fetching projects:', error);
-      setErrors((prev) => ({ ...prev, projects: 'Failed to load projects' }));
-    } finally {
-      setLoadingStates((prev) => ({ ...prev, projects: false }));
-    }
-  };
-
-  const handleCreateRequest = async (formData) => {
-    try {
-      const response = await api.post('/requests/', formData);
-      await fetchRequests();
-      setShowCreateModal(false);
-      toast.success('Request created successfully');
-      return response.data;
-    } catch (error) {
-      console.error('Error creating request:', error);
-      toast.error(error.response?.data?.detail || 'Failed to create request');
-      throw error;
-    }
   };
 
   const fetchRequests = async () => {
@@ -103,8 +79,35 @@ const ClientDashboard = () => {
     }
   };
 
-  const isLoading = Object.values(loadingStates).some((state) => state);
+  const fetchProjects = async () => {
+    try {
+      const response = await api.get('/projects/');
+      setProjects(response.data);
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+      setErrors((prev) => ({ ...prev, projects: 'Failed to load projects' }));
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, projects: false }));
+    }
+  };
 
+  // Request creation handler
+  const handleCreateRequest = async (formData) => {
+    try {
+      const response = await api.post('/requests/', formData);
+      await fetchRequests();
+      setShowCreateModal(false);
+      toast.success('Request created successfully');
+      return response.data;
+    } catch (error) {
+      console.error('Error creating request:', error);
+      toast.error(error.response?.data?.detail || 'Failed to create request');
+      throw error;
+    }
+  };
+
+  // Loading state handler
+  const isLoading = Object.values(loadingStates).some((state) => state);
   if (isLoading) {
     return (
       <div className={styles.dashboardContainer}>
@@ -126,7 +129,7 @@ const ClientDashboard = () => {
           </h1>
           <button
             onClick={() => setShowCreateModal(true)}
-            className={styles.primaryButton}
+            className={styles.createButton}
           >
             <Plus className={styles.buttonIcon} />
             Create New Request
@@ -134,7 +137,7 @@ const ClientDashboard = () => {
         </div>
 
         <div className={styles.dashboardContent}>
-          {/* Primary Content Section */}
+          {/* Main Content Section */}
           <div className={styles.mainContent}>
             {/* Requests Section */}
             <CollapsibleDashboardCard
@@ -157,6 +160,15 @@ const ClientDashboard = () => {
                       <p className={styles.itemDescription}>
                         {request.content}
                       </p>
+                      {request.project_id && (
+                        <span className={styles.projectTag}>
+                          Project:{' '}
+                          {
+                            projects.find((p) => p.id === request.project_id)
+                              ?.name
+                          }
+                        </span>
+                      )}
                     </div>
                   ))}
                   <button

@@ -9,6 +9,7 @@ import {
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import CreateRequestModal from '../requests/CreateRequestModal';
 import Header from '../shared/Header';
 import styles from './RequestDetails.module.css';
 
@@ -26,6 +27,12 @@ const RequestDetails = () => {
 
   useEffect(() => {
     const fetchRequestDetails = async () => {
+      // If we're on the "new" route, don't try to fetch request details
+      if (requestId === 'new') {
+        setLoading(false);
+        return;
+      }
+
       try {
         const [requestResponse, conversationsResponse] = await Promise.all([
           axios.get(`${apiUrl}/requests/${requestId}`, {
@@ -37,7 +44,6 @@ const RequestDetails = () => {
         ]);
 
         setRequest(requestResponse.data);
-        // Filter conversations for this specific request
         const relevantConversations = conversationsResponse.data.filter(
           (conv) => conv.request_id === parseInt(requestId)
         );
@@ -52,6 +58,22 @@ const RequestDetails = () => {
 
     fetchRequestDetails();
   }, [requestId, token, apiUrl]);
+
+  // Then update the render logic:
+
+  if (requestId === 'new') {
+    return (
+      <div className={styles.container}>
+        <Header />
+        <main className={styles.content}>
+          <CreateRequestModal
+            onClose={() => navigate('/requests')}
+            onRequestSent={() => navigate('/requests')}
+          />
+        </main>
+      </div>
+    );
+  }
 
   const handleStartConversation = async () => {
     try {

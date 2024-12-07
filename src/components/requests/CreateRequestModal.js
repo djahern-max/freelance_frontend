@@ -1,89 +1,40 @@
-import { Loader2, Plus, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import api from '../../utils/api';
+import PropTypes from 'prop-types';
+import { useState } from 'react';
 import styles from './CreateRequestModal.module.css';
 
 const CreateRequestModal = ({
-  creatorId,
-  creatorUsername,
+  initialData = null,
   onClose,
-  onRequestSent,
+  onSubmit,
+  isEditing = false,
 }) => {
   const [formData, setFormData] = useState({
-    title: '',
-    content: '',
-    estimated_budget: '',
-    is_public: false,
-    project_id: '',
+    title: initialData?.title || '',
+    content: initialData?.content || '',
+    estimated_budget: initialData?.estimated_budget || '',
+    is_public: initialData?.is_public || false,
+    project_id: initialData?.project_id || null,
   });
 
-  const [projects, setProjects] = useState([]);
-  const [isLoadingProjects, setIsLoadingProjects] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState('');
-  const [showNewProjectForm, setShowNewProjectForm] = useState(false);
-  const [newProjectName, setNewProjectName] = useState('');
-
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const response = await api.get('/projects/');
-        setProjects(response.data);
-      } catch (err) {
-        console.error('Failed to fetch projects:', err);
-        setError('Failed to load projects');
-      } finally {
-        setIsLoadingProjects(false);
-      }
-    };
-
-    fetchProjects();
-  }, []);
-
-  const handleCreateProject = async (e) => {
-    e.preventDefault();
-    if (!newProjectName.trim()) return;
-
-    try {
-      const response = await api.post('/projects/', {
-        name: newProjectName,
-        description: '',
-      });
-
-      setProjects([...projects, response.data]);
-      setFormData({ ...formData, project_id: response.data.id });
-      setShowNewProjectForm(false);
-      setNewProjectName('');
-    } catch (err) {
-      setError('Failed to create project');
-    }
-  };
+  const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (typeof onSubmit !== 'function') {
+      console.error('onSubmit prop is not a function');
+      return;
+    }
+
     setIsSubmitting(true);
-    setError('');
+    setError(null);
 
     try {
-      const requestResponse = await api.post('/requests/', {
-        ...formData,
-        project_id: formData.project_id || null,
-        estimated_budget: formData.estimated_budget
-          ? Number(formData.estimated_budget)
-          : null,
-      });
-
-      await api.post(`/requests/${requestResponse.data.id}/share`, {
-        shared_with_user_id: creatorId,
-        can_edit: true,
-      });
-
-      onRequestSent?.();
+      await onSubmit(formData);
       onClose();
     } catch (err) {
-      setError(
-        err.response?.data?.detail || 'Failed to create and share request'
-      );
+      console.error('Error submitting request:', err);
+      setError(err.response?.data?.detail || 'Failed to submit request');
     } finally {
       setIsSubmitting(false);
     }
@@ -91,141 +42,144 @@ const CreateRequestModal = ({
 
   return (
     <div className={styles.modalOverlay}>
-      <div className={styles.modalContent}>
-        <button onClick={onClose} className={styles.closeButton}>
-          <X size={24} />
-        </button>
+      <div className={styles.modal}>
+        <div className={styles.header}>
+          <h1 className={styles.title}>
+            {isEditing ? 'Edit Request' : 'Create New Request'}
+          </h1>
+        </div>
 
-        <h2 className={styles.title}>Send Request to {creatorUsername}</h2>
+        {error && <div className={styles.error}>{error}</div>}
 
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.projectSection}>
-            <label className={styles.label}>Project (Optional)</label>
-            {isLoadingProjects ? (
-              <div className={styles.loadingSpinner}>
-                <Loader2 className="animate-spin" size={16} />
-                <span>Loading projects...</span>
-              </div>
-            ) : (
-              <>
-                <select
-                  value={formData.project_id}
-                  onChange={(e) =>
-                    setFormData({ ...formData, project_id: e.target.value })
-                  }
-                  className={styles.select}
-                >
-                  <option value="">No Project</option>
-                  {projects.map((project) => (
-                    <option key={project.id} value={project.id}>
-                      {project.name}
-                    </option>
-                  ))}
-                </select>
-
-                {!showNewProjectForm ? (
-                  <button
-                    type="button"
-                    onClick={() => setShowNewProjectForm(true)}
-                    className={styles.createProjectButton}
-                  >
-                    <Plus size={16} className="mr-1" />
-                    Create New Project
-                  </button>
-                ) : (
-                  <div className={styles.newProjectForm}>
-                    <input
-                      type="text"
-                      value={newProjectName}
-                      onChange={(e) => setNewProjectName(e.target.value)}
-                      placeholder="Enter project name"
-                      className={styles.input}
-                    />
-                    <button
-                      type="button"
-                      onClick={handleCreateProject}
-                      className={styles.submitButton}
-                    >
-                      Add
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setShowNewProjectForm(false)}
-                      className={styles.cancelButton}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-
+        <form className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.formGroup}>
-            <label className={styles.label}>Request Title *</label>
+            <label className={styles.label} htmlFor="title">
+              Title
+            </label>
             <input
               type="text"
+              id="title"
               value={formData.title}
               onChange={(e) =>
-                setFormData({ ...formData, title: e.target.value })
+                setFormData((prev) => ({ ...prev, title: e.target.value }))
               }
-              className={styles.input}
               required
-              placeholder="Enter a title for your request"
+              placeholder="Enter a descriptive title"
+              className={styles.input}
+              disabled={isSubmitting}
             />
           </div>
 
           <div className={styles.formGroup}>
-            <label className={styles.label}>Description *</label>
+            <label className={styles.label} htmlFor="content">
+              Description
+            </label>
             <textarea
+              id="content"
               value={formData.content}
               onChange={(e) =>
-                setFormData({ ...formData, content: e.target.value })
+                setFormData((prev) => ({ ...prev, content: e.target.value }))
               }
-              className={styles.textarea}
-              rows={4}
               required
               placeholder="Describe what you need help with..."
+              className={styles.textarea}
+              rows="4"
+              disabled={isSubmitting}
             />
           </div>
 
           <div className={styles.formGroup}>
-            <label className={styles.label}>Estimated Budget ($)</label>
+            <label className={styles.label} htmlFor="budget">
+              Estimated Budget ($)
+              <div className={styles.tooltip}></div>
+            </label>
             <input
               type="number"
+              id="budget"
               value={formData.estimated_budget}
               onChange={(e) =>
-                setFormData({ ...formData, estimated_budget: e.target.value })
+                setFormData((prev) => ({
+                  ...prev,
+                  estimated_budget: e.target.value,
+                }))
               }
-              className={styles.input}
               min="0"
-              step="0.01"
-              placeholder="Enter estimated budget (optional)"
+              step="1"
+              placeholder="Enter budget in USD"
+              className={styles.input}
+              disabled={isSubmitting}
             />
           </div>
 
-          {error && <div className={styles.error}>{error}</div>}
+          <div className={styles.formGroup}>
+            <div className={styles.checkboxContainer}>
+              <label className={styles.checkboxLabel}>
+                <input
+                  type="checkbox"
+                  checked={formData.is_public}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      is_public: e.target.checked,
+                    }))
+                  }
+                  className={styles.checkbox}
+                  disabled={isSubmitting}
+                />
+                <span className={styles.checkboxText}>
+                  Make this request public
+                </span>
+              </label>
+              <div className={styles.helpText}>
+                Public requests will be visible to all developers on the
+                platform
+              </div>
+            </div>
+          </div>
 
-          <div className={styles.actions}>
+          <div className={styles.buttonContainer}>
+            <button
+              type="submit"
+              className={`${styles.submitButton} ${
+                isSubmitting ? styles.loading : ''
+              }`}
+              disabled={isSubmitting}
+            >
+              {isSubmitting
+                ? isEditing
+                  ? 'Updating...'
+                  : 'Creating...'
+                : isEditing
+                ? 'Update Request'
+                : 'Create Request'}
+            </button>
             <button
               type="button"
               onClick={onClose}
               className={styles.cancelButton}
+              disabled={isSubmitting}
             >
               Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className={styles.submitButton}
-            >
-              {isSubmitting ? 'Sending...' : 'Send Request'}
             </button>
           </div>
         </form>
       </div>
     </div>
   );
+};
+
+CreateRequestModal.propTypes = {
+  initialData: PropTypes.shape({
+    id: PropTypes.number,
+    title: PropTypes.string,
+    content: PropTypes.string,
+    estimated_budget: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    is_public: PropTypes.bool,
+    project_id: PropTypes.number,
+  }),
+  onClose: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  isEditing: PropTypes.bool,
 };
 
 export default CreateRequestModal;
