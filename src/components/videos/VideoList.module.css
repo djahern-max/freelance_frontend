@@ -3,7 +3,7 @@
   margin: 0 auto;
   padding: 2rem;
   min-height: 100vh;
-  background-color: #f8f9fa;
+  background-color: var(--color-background); /* Change from #f8f9fa to white */
 }
 
 .headerContainer {
@@ -239,17 +239,18 @@
   background: white;
   border-radius: 8px;
   overflow: hidden;
+  z-index: 1001;
 }
 
 .modalVideo {
   width: 100%;
   aspect-ratio: 16/9;
+  display: block; /* Prevent any spacing issues */
 }
 
 .modalInfo {
   padding: 1.5rem;
 }
-
 .closeButton {
   position: absolute;
   top: 1rem;
@@ -265,6 +266,8 @@
   color: white;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  z-index: 1002; /* Ensure it's above the video */
+  padding: 0;
 }
 
 .closeButton:hover {

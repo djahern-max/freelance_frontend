@@ -1,4 +1,4 @@
-import { Calendar, Clock, Play, Upload } from 'lucide-react';
+import { Calendar, Clock, Play, Upload, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AuthDialog from '../auth/AuthDialog';
@@ -10,6 +10,8 @@ const VideoList = () => {
   const [error, setError] = useState(null);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [showVideoModal, setShowVideoModal] = useState(false);
+
   const token = localStorage.getItem('token');
   const location = useLocation();
   const navigate = useNavigate();
@@ -61,7 +63,19 @@ const VideoList = () => {
       setShowAuthDialog(true);
       return;
     }
-    setSelectedVideo(video);
+
+    if (!video || !video.file_path) {
+      console.error('Invalid video data:', video);
+      return;
+    }
+
+    setSelectedVideo({ ...video, streamUrl: video.file_path });
+    setShowVideoModal(true);
+  };
+
+  const closeVideoModal = () => {
+    setShowVideoModal(false);
+    setSelectedVideo(null);
   };
 
   return (
@@ -97,25 +111,28 @@ const VideoList = () => {
         <div className={styles.grid}>
           {videos.map((video) => (
             <div key={video.id || Math.random()} className={styles.videoCard}>
-              {/* Thumbnail Section */}
               <div
                 className={styles.thumbnailContainer}
                 onClick={() => handleVideoClick(video)}
               >
                 {video.thumbnail_path ? (
-                  <img
-                    src={video.thumbnail_path}
-                    alt={video.title || 'Video Thumbnail'}
-                    className={styles.thumbnail}
-                  />
+                  <>
+                    <img
+                      src={video.thumbnail_path}
+                      alt={video.title || 'Video Thumbnail'}
+                      className={styles.thumbnail}
+                    />
+                    <div className={styles.playButton}>
+                      <Play size={24} />
+                    </div>
+                  </>
                 ) : (
                   <div className={styles.thumbnailPlaceholder}>
-                    <Play size={32} className={styles.emptyIcon} />
+                    <Play size={32} className={styles.playButton} />
                   </div>
                 )}
               </div>
 
-              {/* Content Section */}
               <div className={styles.contentContainer}>
                 <h2 className={styles.videoTitle}>
                   {video.title || 'Untitled Video'}
@@ -136,6 +153,40 @@ const VideoList = () => {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Video Playback Modal */}
+      {showVideoModal && selectedVideo && (
+        <div className={styles.modal}>
+          <div className={styles.modalContent}>
+            <button
+              type="button"
+              className={styles.closeButton}
+              onClick={closeVideoModal}
+              aria-label="Close modal"
+            >
+              <X size={24} />
+            </button>
+            <div className={styles.videoWrapper}>
+              <video
+                className={styles.modalVideo}
+                controls
+                autoPlay
+                src={selectedVideo.streamUrl}
+              >
+                Your browser does not support the video tag.
+              </video>
+            </div>
+            <div className={styles.modalInfo}>
+              <h2 className={styles.videoTitle}>{selectedVideo.title}</h2>
+              {selectedVideo.description && (
+                <p className={styles.description}>
+                  {selectedVideo.description}
+                </p>
+              )}
+            </div>
+          </div>
         </div>
       )}
 
