@@ -30,14 +30,6 @@ const EmptyState = ({
 
         <h2 className={styles.title}>No Projects Available</h2>
 
-        <p className={styles.description}>
-          {isAuthenticated
-            ? userType === 'client'
-              ? 'Start your journey by creating your first project.'
-              : 'Thanks for visiting'
-            : 'Thanks for visiting'}
-        </p>
-
         <div className={styles.actionWrapper}>
           {!isAuthenticated ? (
             <button className={styles.primaryButton} onClick={onSignUp}>

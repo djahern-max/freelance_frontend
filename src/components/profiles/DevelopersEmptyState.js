@@ -30,14 +30,6 @@ const DevelopersEmptyState = ({
 
         <h2 className={styles.title}>No Creators Available</h2>
 
-        <p className={styles.description}>
-          {isAuthenticated
-            ? userType === 'developer'
-              ? 'Start your journey by creating your developer profile.'
-              : "We're currently growing our creator community."
-            : 'Join our community of AI-powered developers.'}
-        </p>
-
         <div className={styles.actionWrapper}>
           {!isAuthenticated ? (
             <button className={styles.primaryButton} onClick={onSignUp}>
@@ -56,14 +48,6 @@ const DevelopersEmptyState = ({
             )
           )}
         </div>
-
-        <p className={styles.footer}>
-          {isAuthenticated
-            ? userType === 'client'
-              ? 'Check back soon as more creators join our platform.'
-              : 'Create your profile to start connecting with clients.'
-            : 'Sign up to join our network of AI-powered developers.'}
-        </p>
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import {
   LogOut,
   MessageSquareMore,
   Search,
+  UserCircle,
   UsersRound,
   Video,
 } from 'lucide-react';
@@ -59,11 +60,8 @@ const Header = () => {
   };
 
   const handleNavigation = (path) => {
-    // Find the page configuration
     const page = getPages().find((p) => p.path === path);
-
-    // Only check authentication for pages that require it
-    if (page.requiresAuth && !isAuthenticated) {
+    if (page?.requiresAuth && !isAuthenticated) {
       navigate('/login', { state: { from: path } });
       return;
     }
@@ -75,29 +73,6 @@ const Header = () => {
     navigate('/login');
   };
 
-  // Menu items for the dropdown menu
-  const menuItems = [
-    {
-      icon: MessageSquareMore,
-      title: 'Feedback',
-      onClick: () => setShowFeedbackModal(true),
-    },
-    {
-      icon: HelpCircle,
-      title: 'Support',
-      onClick: () => navigate('/support'),
-    },
-    ...(isAuthenticated
-      ? [
-          {
-            icon: LogOut,
-            title: 'Logout',
-            onClick: handleLogout,
-          },
-        ]
-      : []),
-  ];
-
   // Filter out the current page from navigation items
   const navigationItems = getPages().filter((page) => {
     // Get the base path without query parameters
@@ -105,7 +80,7 @@ const Header = () => {
 
     // Check if the page should be shown based on auth requirements and current path
     return (
-      (!page.authRequired || (page.authRequired && isAuthenticated)) &&
+      (!page.requiresAuth || (page.requiresAuth && isAuthenticated)) &&
       page.path !== currentPath &&
       // Also hide if current path is /requests and page is dashboard for clients
       !(
@@ -122,6 +97,34 @@ const Header = () => {
       )
     );
   });
+
+  // Menu items for the dropdown menu
+  const menuItems = [
+    {
+      icon: MessageSquareMore,
+      title: 'Feedback',
+      onClick: () => setShowFeedbackModal(true),
+    },
+    {
+      icon: HelpCircle,
+      title: 'Support',
+      onClick: () => navigate('/support'),
+    },
+    ...(isAuthenticated
+      ? [
+          {
+            icon: UserCircle,
+            title: 'Profile',
+            onClick: () => navigate('/profile'),
+          },
+          {
+            icon: LogOut,
+            title: 'Logout',
+            onClick: handleLogout,
+          },
+        ]
+      : []),
+  ];
 
   return (
     <header className={styles.header}>

@@ -24,7 +24,6 @@ const PublicDevelopers = () => {
 
   const TRUNCATE_LENGTH = 150;
 
-  // Move fetchDevelopers outside useEffect
   const fetchDevelopers = async () => {
     try {
       setLoading(true);
@@ -49,6 +48,27 @@ const PublicDevelopers = () => {
     setSelectedCreator(null);
   };
 
+  const handleSendRequest = (developer) => {
+    if (!isAuthenticated) {
+      setShowAuthDialog(true);
+      return;
+    }
+
+    if (user?.userType === 'developer') {
+      // For developers, implement request forwarding
+      // You can either navigate to a different view or show a different modal
+      toast.info(
+        'As a creator, you can forward requests but not create new ones.'
+      );
+      return;
+    }
+
+    setSelectedCreator({
+      id: developer.user_id || developer.id,
+      username: getUsername(developer),
+    });
+  };
+
   const getUsername = (developer) => {
     return (
       developer?.user?.full_name ||
@@ -56,10 +76,9 @@ const PublicDevelopers = () => {
       `Developer #${developer.id}`
     );
   };
+
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Creators</h1>
-
       {loading ? (
         <div className={styles.loadingContainer}>
           <Loader className={styles.spinner} />
@@ -139,16 +158,15 @@ const PublicDevelopers = () => {
                   </div>
                 </div>
                 <button
-                  onClick={() =>
-                    setSelectedCreator({
-                      id: developer.user_id || developer.id,
-                      username: getUsername(developer),
-                    })
-                  }
+                  onClick={() => handleSendRequest(developer)}
                   className={styles.contactButton}
                 >
                   <MessageSquare size={16} />
-                  <span>Send Request to Creator</span>
+                  <span>
+                    {user?.userType === 'developer'
+                      ? 'Forward Request'
+                      : 'Send Request to Creator'}
+                  </span>
                 </button>
               </div>
             </div>
@@ -159,22 +177,12 @@ const PublicDevelopers = () => {
       {/* Add AuthDialog component */}
       <AuthDialog
         isOpen={showAuthDialog}
-        onClose={() => {
-          setShowAuthDialog(false);
-        }}
+        onClose={() => setShowAuthDialog(false)}
         onLogin={() =>
-          navigate('/login', {
-            state: {
-              from: location.pathname,
-            },
-          })
+          navigate('/login', { state: { from: location.pathname } })
         }
         onRegister={() =>
-          navigate('/register', {
-            state: {
-              from: location.pathname,
-            },
-          })
+          navigate('/register', { state: { from: location.pathname } })
         }
       />
 
@@ -201,7 +209,7 @@ const PublicDevelopers = () => {
       )}
 
       {/* Create Request Modal */}
-      {selectedCreator && (
+      {selectedCreator && user?.userType !== 'developer' && (
         <CreateRequestModal
           creatorId={selectedCreator.id}
           creatorUsername={selectedCreator.username}

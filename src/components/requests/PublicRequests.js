@@ -159,7 +159,6 @@ const PublicRequests = () => {
       <Header />
       <main className={styles.mainContent}>
         <div className={styles.headerContainer}>
-          <h1 className={styles.title}>Opportunities</h1>
           {!isAuthenticated && <p className={styles.subtitle}></p>}
         </div>
 

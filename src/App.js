@@ -188,7 +188,7 @@ function AppContent() {
           />
 
           <Route
-            path="/settings"
+            path="/profile"
             element={
               <ProtectedRoute>
                 <Settings />
