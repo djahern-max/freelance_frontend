@@ -25,7 +25,7 @@ const VideoList = () => {
       setLoading(true);
       setError(null);
 
-      const response = await api.get('/video_display');
+      const response = await api.get('/video_display/');
       console.log('Video response:', response); // Add this line
 
       const allVideos = response.data.other_videos || [];
