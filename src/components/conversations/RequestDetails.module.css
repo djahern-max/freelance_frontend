@@ -32,6 +32,18 @@
   height: 20px;
 }
 
+.successMessage {
+  margin: 10px 0;
+  padding: 10px;
+  color: #155724; /* Dark green text */
+  background-color: #d4edda; /* Light green background */
+  border: 1px solid #c3e6cb; /* Green border */
+  border-radius: 4px; /* Rounded corners */
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center; /* Center align the text */
+}
+
 .requestCard {
   background: white;
   border-radius: 8px;

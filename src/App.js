@@ -233,7 +233,9 @@ function App() {
   return (
     <Provider store={store}>
       <Router>
-        <AppContent />
+        <div className="app-wrapper">
+          <AppContent />
+        </div>
       </Router>
     </Provider>
   );

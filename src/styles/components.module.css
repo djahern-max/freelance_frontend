@@ -8,8 +8,18 @@
   box-sizing: border-box;
   /* Add padding here instead */
   padding: 20px;
-  background-color: var(--color-background);
+
 }
+
+.card, 
+.dashboardCard, 
+.contentCard {
+  background-color: var(--color-background);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+
 .mainContainer {
   display: flex;
   flex-direction: column;

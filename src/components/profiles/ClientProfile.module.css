@@ -1,4 +1,8 @@
 /* DeveloperProfile.module.css and ClientProfile.module.css */
+container{
+  background-color: #f5f5f5;
+}
+
 .profileContainer {
   max-width: 800px;
   margin: 0 auto;

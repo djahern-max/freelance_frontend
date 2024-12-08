@@ -1,4 +1,7 @@
 /* DevelopersEmptyState.module.css */
+container{
+  background-color: #f5f5f5;;
+}
 .wrapper {
     width: 100%;
     display: flex;

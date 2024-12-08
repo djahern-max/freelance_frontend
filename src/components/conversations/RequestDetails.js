@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import api from '../../utils/api';
-import CreateRequestModal from '../requests/CreateRequestModal';
+import RequestSharing from '../requests/RequestSharing'; // Import RequestSharing component
 import Header from '../shared/Header';
 import styles from './RequestDetails.module.css';
 
@@ -17,6 +17,7 @@ const RequestDetails = () => {
   const { requestId } = useParams();
   const [request, setRequest] = useState(null);
   const [conversations, setConversations] = useState([]);
+  const [successMessage, setSuccessMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -27,7 +28,6 @@ const RequestDetails = () => {
 
   useEffect(() => {
     const fetchRequestDetails = async () => {
-      // If we're on the "new" route, don't try to fetch request details
       if (requestId === 'new') {
         setLoading(false);
         return;
@@ -54,25 +54,8 @@ const RequestDetails = () => {
     fetchRequestDetails();
   }, [requestId, token, apiUrl]);
 
-  // Then update the render logic:
-
-  if (requestId === 'new') {
-    return (
-      <div className={styles.container}>
-        <Header />
-        <main className={styles.content}>
-          <CreateRequestModal
-            onClose={() => navigate('/requests')}
-            onRequestSent={() => navigate('/requests')}
-          />
-        </main>
-      </div>
-    );
-  }
-
   const handleStartConversation = async () => {
     try {
-      // Check if there's already an active conversation
       const existingConversation = conversations.find(
         (conv) =>
           conv.starter_user_id === parseInt(user.id) ||
@@ -105,6 +88,25 @@ const RequestDetails = () => {
     });
   };
 
+  const handleShareComplete = () => {
+    // Fetch updated request details
+    api.get(`/requests/${requestId}`).then((response) => {
+      setRequest(response.data);
+      setSuccessMessage('Request shared successfully!'); // Set success message
+
+      // Clear the message after 5 seconds
+      setTimeout(() => setSuccessMessage(''), 5000);
+    });
+  };
+
+  const handleBack = () => {
+    if (location.state?.from) {
+      navigate(location.state.from);
+    } else {
+      navigate(-1);
+    }
+  };
+
   if (loading) {
     return (
       <div className={styles.container}>
@@ -122,16 +124,6 @@ const RequestDetails = () => {
       </div>
     );
   }
-
-  const handleBack = () => {
-    // If we know where the user came from, we can use that
-    if (location.state?.from) {
-      navigate(location.state.from);
-    } else {
-      // Otherwise, just go back to the previous page
-      navigate(-1);
-    }
-  };
 
   return (
     <div className={styles.container}>
@@ -161,6 +153,44 @@ const RequestDetails = () => {
           </div>
 
           <div className={styles.description}>{request.content}</div>
+
+          {user.id === request.user_id && (
+            <div className={styles.sharingSection}>
+              <h2>Share This Request</h2>
+
+              {/* Success Message */}
+              {successMessage && (
+                <div className={styles.successMessage}>{successMessage}</div>
+              )}
+
+              <RequestSharing
+                requestId={requestId}
+                token={token}
+                apiUrl={apiUrl}
+                request={request}
+                onShareComplete={() => {
+                  // Re-fetch request details after sharing
+                  api.get(`/requests/${requestId}`).then((response) => {
+                    setRequest(response.data);
+                    setSuccessMessage('Request shared successfully!'); // Set success message
+
+                    // Clear the message after 5 seconds
+                    setTimeout(() => setSuccessMessage(''), 5000);
+                  });
+                }}
+                toggleRequestPrivacy={(id, isPublic) => {
+                  api
+                    .put(`/requests/${id}/privacy`, { is_public: !isPublic })
+                    .then(() => {
+                      setRequest((prev) => ({
+                        ...prev,
+                        is_public: !isPublic,
+                      }));
+                    });
+                }}
+              />
+            </div>
+          )}
 
           {user.id !== request.user_id && (
             <div className={styles.actions}>
@@ -195,37 +225,6 @@ const RequestDetails = () => {
                   <MessageSquare className={styles.messageIcon} />
                 </button>
               )}
-            </div>
-          )}
-
-          {user.id === request.user_id && conversations.length > 0 && (
-            <div className={styles.responsesList}>
-              <h2 className={styles.responsesTitle}>Responses</h2>
-              {conversations.map((conv) => (
-                <div
-                  key={conv.id}
-                  className={styles.responseCard}
-                  onClick={() => navigate(`/conversations/${conv.id}`)}
-                >
-                  <div className={styles.responseHeader}>
-                    <span className={styles.responder}>
-                      From{' '}
-                      {conv.starter_user_id === request.user_id
-                        ? conv.recipient_username
-                        : conv.starter_username}
-                    </span>
-                    <span className={styles.responseDate}>
-                      {formatDate(conv.created_at)}
-                    </span>
-                  </div>
-                  {conv.last_message && (
-                    <p className={styles.messagePreview}>
-                      {conv.last_message.substring(0, 100)}
-                      {conv.last_message.length > 100 ? '...' : ''}
-                    </p>
-                  )}
-                </div>
-              ))}
             </div>
           )}
         </div>

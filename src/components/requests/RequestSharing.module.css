@@ -11,6 +11,10 @@
   margin-bottom: var(--spacing-md);
 }
 
+container{
+  background-color: #f5f5f5;
+}
+
 .inputWrapper {
   position: relative;
   flex: 1;

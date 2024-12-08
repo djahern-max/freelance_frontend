@@ -1,34 +1,34 @@
-import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
 import styles from './CollapsibleDashboardCard.module.css';
 
-const CollapsibleDashboardCard = ({ title, count, icon: Icon, children }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+const CollapsibleDashboardCard = ({
+  title,
+  count,
+  icon: Icon,
+  defaultExpanded,
+  children,
+}) => {
+  const [isExpanded, setIsExpanded] = useState(defaultExpanded);
 
   return (
-    <div className={styles.card}>
-      <button
+    <>
+      <div
+        className={`${styles.statCard} ${isExpanded ? styles.active : ''}`}
         onClick={() => setIsExpanded(!isExpanded)}
-        className={styles.cardHeader}
       >
-        <div className={styles.headerContent}>
-          <div className={styles.iconContainer}>
-            {Icon && <Icon className={styles.icon} />}
-          </div>
-          <div className={styles.titleContainer}>
-            <h3 className={styles.title}>{title}</h3>
-            <p className={styles.count}>{count} Total</p>
-          </div>
+        <Icon className={styles.icon} />
+        <div className={styles.statInfo}>
+          <h3>{title}</h3>
+          <p>{count}</p>
         </div>
-        {isExpanded ? (
-          <ChevronUp className={styles.chevron} />
-        ) : (
-          <ChevronDown className={styles.chevron} />
-        )}
-      </button>
-
-      {isExpanded && <div className={styles.cardContent}>{children}</div>}
-    </div>
+      </div>
+      {isExpanded && (
+        <div className={styles.expandedSection}>
+          <h2>{title}</h2>
+          <div className={styles.expandedContent}>{children}</div>
+        </div>
+      )}
+    </>
   );
 };
 

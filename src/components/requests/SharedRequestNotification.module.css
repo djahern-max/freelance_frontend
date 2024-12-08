@@ -4,6 +4,10 @@
     align-items: center;
     cursor: pointer;
   }
+
+  container{
+    background-color: #f5f5f5;
+  }
   
   .bellIcon {
     color: #4f46e5;

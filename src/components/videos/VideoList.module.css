@@ -3,7 +3,7 @@
   margin: 0 auto;
   padding: 2rem;
   min-height: 100vh;
-  background-color: var(--color-background); /* Change from #f8f9fa to white */
+  background-color: #f5f5f5;
 }
 
 .headerContainer {
