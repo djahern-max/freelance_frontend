@@ -22,25 +22,25 @@
   margin-bottom: 2rem;
 }
 
-.headerCreateButton {
+.headerCreateButton, .createButton {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background-color: #3b82f6;
-  color: white;
+  padding: 0.5rem 1rem; /* Adjusted padding for less vertical space */
+  background-color: #d1d5db; /* Light gray background */
+  color: #111827; /* Black text */
   border: none;
   border-radius: 0.5rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s;
-  margin-left: 1rem;
+  transition: background-color 0.2s, transform 0.2s;
 }
 
-.headerCreateButton:hover {
-  background-color: #2563eb;
+.headerCreateButton:hover, .createButton:hover {
+  background-color: #9ca3af; /* Darker gray on hover */
+  transform: translateY(-2px);
 }
-
 .buttonIcon {
   width: 20px;
   height: 20px;
@@ -67,15 +67,14 @@
   padding: 1.5rem;
   background-color: white;
   border-radius: 0.75rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Updated shadow */
   cursor: pointer;
-  transition: all 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-
 .statCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Enhanced hover shadow */
 }
 
 .statCard.active {
@@ -157,14 +156,14 @@
   border: 1px solid var(--color-border);
   border-radius: 0.5rem;
   padding: 1rem;
-  transition: all 0.2s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Updated shadow */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
 }
 
 .itemCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-color: var(--color-border-hover);
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Enhanced hover shadow */
 }
 
 .itemTitle {
