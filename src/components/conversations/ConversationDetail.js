@@ -39,6 +39,7 @@ const ConversationDetail = () => {
   const [terms, setTerms] = useState('');
   const [showAgreementModal, setShowAgreementModal] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+  const lastSeenAgreementRef = useRef(null);
 
   // Fetch conversation data
   const fetchConversation = useCallback(async () => {
@@ -58,35 +59,54 @@ const ConversationDetail = () => {
     }
   }, [id]);
 
-  // Polling effects for conversation
-  useEffect(() => {
-    if (!id || !token) return;
-    fetchConversation();
-    const intervalId = setInterval(fetchConversation, 5000);
-    return () => clearInterval(intervalId);
-  }, [id, token, fetchConversation]);
-
-  // Fetch agreement data
+  // Add this after fetchConversation
   const fetchAgreement = useCallback(async () => {
-    if (!conversation?.request_id || !conversation?.status) return;
-    if (
-      conversation.status !== 'negotiating' &&
-      conversation.status !== 'agreed'
-    )
-      return;
+    if (!conversation?.request_id) return;
 
     try {
-      const response = await api.agreements.getByRequest(
-        conversation.request_id
+      console.log('Fetching agreement for request:', conversation.request_id); // Debug log
+      const response = await api.get(
+        `/agreements/request/${conversation.request_id}`
       );
+      console.log('Fetched agreement:', response.data); // Debug log
       setAgreement(response.data);
+
+      // If we find an agreement and conversation isn't in negotiating state, update it
+      if (response.data && conversation.status !== 'negotiating') {
+        await api.patch(`/conversations/${id}`, {
+          status: 'negotiating',
+        });
+        fetchConversation(); // Refresh conversation data
+      }
     } catch (err) {
       if (err.response?.status !== 404) {
         console.error('Error fetching agreement:', err);
       }
       setAgreement(null);
     }
-  }, [conversation?.request_id, conversation?.status]);
+  }, [conversation?.request_id, id, conversation?.status, fetchConversation]);
+
+  // Polling effects for conversation
+  useEffect(() => {
+    // Add debug logs
+    console.log('Agreement state changed:', {
+      hasAgreement: !!agreement,
+      showingModal: showAgreementModal,
+      currentUserId: user.id,
+      proposedBy: agreement?.proposed_by,
+      isRecipient: user.id !== agreement?.proposed_by,
+    });
+
+    if (agreement && !showAgreementModal && user.id !== agreement.proposed_by) {
+      console.log('Showing agreement notification'); // Debug log
+      toast.info('A new agreement has been proposed!', {
+        autoClose: false,
+        onClick: () => setShowAgreementModal(true),
+        position: 'top-right',
+        toastId: `agreement-${agreement.id}`, // Prevent duplicate toasts
+      });
+    }
+  }, [agreement, user.id, showAgreementModal]);
 
   // Polling effects for agreement
   useEffect(() => {
@@ -94,7 +114,7 @@ const ConversationDetail = () => {
     fetchAgreement();
     const shouldPoll =
       conversation.status === 'negotiating' || conversation.status === 'agreed';
-    const intervalId = shouldPoll ? setInterval(fetchAgreement, 5000) : null;
+    const intervalId = shouldPoll ? setInterval(fetchAgreement, 3000) : null;
     return () => {
       if (intervalId) clearInterval(intervalId);
     };
@@ -118,6 +138,21 @@ const ConversationDetail = () => {
       if (intervalId) clearInterval(intervalId);
     };
   }, [conversation?.request_id, conversation?.status, token, fetchAgreement]);
+
+  useEffect(() => {
+    if (
+      agreement &&
+      user.id !== agreement.proposed_by &&
+      lastSeenAgreementRef.current !== agreement.id &&
+      agreement.status === 'proposed'
+    ) {
+      toast.info('A new agreement has been proposed!', {
+        autoClose: false,
+        onClick: () => setShowAgreementModal(true),
+      });
+      lastSeenAgreementRef.current = agreement.id;
+    }
+  }, [agreement, user.id]);
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
