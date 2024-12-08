@@ -289,7 +289,8 @@ const ClientDashboard = () => {
             onClick={() => setShowCreateModal(true)}
             className={styles.createButton}
           >
-            <Plus className={styles.buttonIcon} />
+            <Plus size={16} className={styles.buttonIcon} />{' '}
+            {/* Reduced from 24 */}
             Create Your First Request
           </button>
         </div>

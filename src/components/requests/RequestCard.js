@@ -1,7 +1,7 @@
 import { ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../../utils/api';
+import api from '../../utils/api'; // Added this import
 import styles from './RequestCard.module.css';
 
 const RequestCard = ({ request, onUpdate }) => {
@@ -13,17 +13,12 @@ const RequestCard = ({ request, onUpdate }) => {
     setIsUpdating(true);
     setError(null);
     try {
-      // Adding the proper request body structure
-      const response = await api.put(`/requests/${requestId}`, {
+      const response = await api.put(`/requests/${requestId}/privacy`, {
         is_public: !currentStatus,
-        title: request.title, // Preserve existing values
-        content: request.content, // Preserve existing values
-        status: request.status, // Preserve existing values
-        estimated_budget: request.estimated_budget, // Preserve existing values
       });
 
       if (response.status === 200) {
-        onUpdate(); // Refresh parent component's data
+        onUpdate();
       } else {
         throw new Error('Failed to update privacy settings');
       }
@@ -35,10 +30,37 @@ const RequestCard = ({ request, onUpdate }) => {
     }
   };
 
+  const getStatusClass = (status) => {
+    const statusMap = {
+      open: 'open',
+      'in-progress': 'inProgress',
+      completed: 'completed',
+    };
+    return statusMap[status.toLowerCase()] || 'open';
+  };
+
   return (
-    <div className={styles.requestCard}>
-      <div className={styles.requestHeader}>
-        <h3>{request.title}</h3>
+    <div
+      className={`${styles.requestCard} ${isUpdating ? styles.loading : ''}`}
+    >
+      <div>
+        <h3 className={styles.title}>{request.title}</h3>
+        <p className={styles.content}>{request.content}</p>
+      </div>
+
+      <div className={styles.metaContainer}>
+        <span
+          className={`${styles.statusBadge} ${
+            styles[getStatusClass(request.status)]
+          }`}
+        >
+          Status: {request.status}
+        </span>
+        {request.estimated_budget && (
+          <span className={styles.budgetBadge}>
+            Budget: ${request.estimated_budget}
+          </span>
+        )}
         <div className={styles.privacyControl}>
           <label
             className={styles.toggleSwitch}
@@ -64,25 +86,11 @@ const RequestCard = ({ request, onUpdate }) => {
         </div>
       </div>
 
-      <p>{request.content}</p>
       {error && <div className={styles.error}>{error}</div>}
 
-      <div className={styles.requestMeta}>
-        <span
-          className={`${styles.status} ${styles[request.status.toLowerCase()]}`}
-        >
-          Status: {request.status}
-        </span>
-        {request.estimated_budget && (
-          <span className={styles.budget}>
-            Budget: ${request.estimated_budget}
-          </span>
-        )}
-      </div>
-
       <button
+        className={styles.viewDetailsButton}
         onClick={() => navigate(`/requests/${request.id}`)}
-        className={styles.viewButton}
       >
         View Details <ChevronRight size={16} />
       </button>
