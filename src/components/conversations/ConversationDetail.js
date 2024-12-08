@@ -15,6 +15,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import api from '../../utils/api';
 import styles from './ConversationDetail.module.css';
 
 const ConversationDetail = () => {
@@ -42,15 +43,9 @@ const ConversationDetail = () => {
   // Fetch conversation data
   const fetchConversation = useCallback(async () => {
     try {
-      const conversationRes = await axios.get(`${apiUrl}/conversations/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      const requestRes = await axios.get(
-        `${apiUrl}/requests/${conversationRes.data.request_id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+      const conversationRes = await api.get(`/conversations/${id}`);
+      const requestRes = await api.get(
+        `/requests/${conversationRes.data.request_id}`
       );
 
       setConversation(conversationRes.data);
@@ -61,7 +56,15 @@ const ConversationDetail = () => {
       toast.error('Failed to load conversation.');
       setIsLoading(false);
     }
-  }, [id, token, apiUrl]);
+  }, [id]);
+
+  // Polling effects for conversation
+  useEffect(() => {
+    if (!id || !token) return;
+    fetchConversation();
+    const intervalId = setInterval(fetchConversation, 5000);
+    return () => clearInterval(intervalId);
+  }, [id, token, fetchConversation]);
 
   // Fetch agreement data
   const fetchAgreement = useCallback(async () => {
@@ -73,11 +76,8 @@ const ConversationDetail = () => {
       return;
 
     try {
-      const response = await axios.get(
-        `${apiUrl}/agreements/request/${conversation.request_id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+      const response = await api.agreements.getByRequest(
+        conversation.request_id
       );
       setAgreement(response.data);
     } catch (err) {
@@ -86,14 +86,19 @@ const ConversationDetail = () => {
       }
       setAgreement(null);
     }
-  }, [conversation?.request_id, conversation?.status, token, apiUrl]);
+  }, [conversation?.request_id, conversation?.status]);
 
-  // Auto-scroll effect
+  // Polling effects for agreement
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [conversation?.messages]);
+    if (!conversation?.request_id || !token) return;
+    fetchAgreement();
+    const shouldPoll =
+      conversation.status === 'negotiating' || conversation.status === 'agreed';
+    const intervalId = shouldPoll ? setInterval(fetchAgreement, 5000) : null;
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [conversation?.request_id, conversation?.status, token, fetchAgreement]);
 
   // Polling effects
   useEffect(() => {
@@ -154,36 +159,27 @@ const ConversationDetail = () => {
     e.preventDefault();
     setIsSubmittingAgreement(true);
     try {
-      await axios.patch(
-        `${apiUrl}/conversations/${id}`,
-        { status: 'negotiating' },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      // Update conversation status using api instance
+      await api.patch(`/conversations/${id}`, {
+        status: 'negotiating',
+      });
 
-      const response = await axios.post(
-        `${apiUrl}/agreements/`,
-        {
-          request_id: conversation.request_id,
-          price: Number(price),
-          terms,
-          developer_id:
-            user.userType === 'developer'
-              ? user.id
-              : conversation.starter_user_id,
-          client_id:
-            user.userType === 'client'
-              ? user.id
-              : conversation.recipient_user_id,
-          status: 'proposed',
-          proposed_by: user.id,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      // Create agreement using api.agreements helper
+      const response = await api.agreements.create({
+        request_id: conversation.request_id,
+        price: Number(price),
+        terms,
+        developer_id:
+          user.userType === 'developer'
+            ? user.id
+            : conversation.starter_user_id,
+        client_id:
+          user.userType === 'client' ? user.id : conversation.recipient_user_id,
+        status: 'proposed',
+        proposed_by: user.id,
+      });
 
+      // Maintain all your existing state updates
       setAgreement(response.data);
       setShowAgreement(false);
       setShowAgreementForm(false);

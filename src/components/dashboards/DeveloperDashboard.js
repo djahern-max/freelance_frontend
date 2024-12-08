@@ -272,10 +272,6 @@ const DeveloperDashboard = () => {
     <div className={styles.dashboardContainer}>
       <Header />
       <div className={styles.content}>
-        <h1 className={styles.dashboardTitle}>
-          {user?.fullName ? `${user.fullName}'s Dashboard` : 'Dashboard'}
-        </h1>
-
         {/* Add the tutorial hint here */}
         {!hasSeenTutorial && (
           <div className={styles.tutorialHint}>
