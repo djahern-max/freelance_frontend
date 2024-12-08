@@ -3,30 +3,30 @@ import { selectIsAuthenticated, selectUser } from '../../redux/authSlice';
 import ClientDashboard from '../dashboards/ClientDashboard';
 import DeveloperDashboard from '../dashboards/DeveloperDashboard';
 import Features from '../shared/Features';
-
 import Header from '../shared/Header';
+import styles from './HomePage.module.css';
 
 function HomePage() {
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const user = useSelector(selectUser);
-  const userType = user?.userType; // Changed from user_type to userType
+  const userType = user?.userType;
 
-  // Only show dashboard content if user is authenticated
   if (isAuthenticated && userType) {
     return (
-      <div className="authenticated-container">
+      <div className={styles.authenticatedContainer}>
         {userType === 'developer' && <DeveloperDashboard />}
         {userType === 'client' && <ClientDashboard />}
       </div>
     );
   }
 
-  // Public landing page with Features
   return (
-    <main className="landing-container" style={{ marginTop: '0' }}>
+    <div className={styles.landingContainer}>
       <Header />
-      <Features />
-    </main>
+      <div className={styles.content}>
+        <Features />
+      </div>
+    </div>
   );
 }
 
