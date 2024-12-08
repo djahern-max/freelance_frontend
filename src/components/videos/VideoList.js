@@ -25,11 +25,15 @@ const VideoList = () => {
       setLoading(true);
       setError(null);
 
-      const response = await api.get('/video_display'); // Removed trailing slash
+      const response = await api.get('/video_display');
+      console.log('Video response:', response); // Add this line
+
       const allVideos = response.data.other_videos || [];
+      console.log('Processed videos:', allVideos); // Add this line
+
       setVideos(allVideos);
     } catch (err) {
-      console.error('Error details:', err);
+      console.error('Full error object:', err); // Enhanced error logging
       const errorMessage =
         err.code === 'ERR_NETWORK'
           ? 'Unable to connect to server. Please check your connection and try again.'
