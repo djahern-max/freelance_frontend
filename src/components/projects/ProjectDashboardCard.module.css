@@ -1,259 +1,137 @@
-/* Add to your DashboardCard.module.css */
-
-container{
-  background-color: #f5f5f5;
+/* ProjectDashboardCard.module.css */
+.projectsContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
-.card {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-  
-  .cardHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-  }
-  
-  .cardTitle {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin: 0;
-    font-size: 1.25rem;
-    color: #1e293b;
-  }
-  
-  .icon {
-    color: #3b82f6;
-  }
-  
-  .addButton {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: white;
-    border: 1px solid #3b82f6;
-    color: #3b82f6;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.2s;
-  }
-  
-  .addButton:hover {
-    background-color: #eff6ff;
-  }
-  
-  .projectsList {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .projectItem {
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    overflow: hidden;
-  }
-  
-  .projectHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    cursor: pointer;
-    background-color: #f8fafc;
-    transition: background-color 0.2s;
-  }
-  
-  .projectHeader:hover {
-    background-color: #f1f5f9;
-  }
-  
-  .projectInfo {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-  
-  .projectName {
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 500;
-    color: #1e293b;
-  }
-  
-  .requestCount {
-    color: #64748b;
-    font-size: 0.875rem;
-  }
-  
-  .expandButton {
-    background: none;
-    border: none;
-    color: #64748b;
-    cursor: pointer;
-    padding: 0.25rem;
-  }
-  
-  .projectDetails {
-    padding: 1rem;
-    border-top: 1px solid #e2e8f0;
-  }
-  
-  .projectDescription {
-    color: #64748b;
-    font-size: 0.875rem;
-    margin: 0 0 1rem 0;
-  }
-  
-  .statsGrid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    margin-bottom: 1rem;
-    padding: 1rem;
-    background-color: #f8fafc;
-    border-radius: 6px;
-  }
-  
-  .statItem {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-  
-  .statLabel {
-    font-size: 0.75rem;
-    color: #64748b;
-    margin-bottom: 0.25rem;
-  }
-  
-  .statValue {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #1e293b;
-  }
-  
-  .recentRequests {
-    margin-top: 1rem;
-  }
-  
-  .recentRequests h4 {
-    font-size: 0.875rem;
-    color: #64748b;
-    margin: 0 0 0.5rem 0;
-  }
-  
-  .requestItem {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.5rem;
-    border-bottom: 1px solid #e2e8f0;
-  }
-  
-  .requestItem:last-child {
-    border-bottom: none;
-  }
-  
-  .requestTitle {
-    font-size: 0.875rem;
-    color: #1e293b;
-  }
-  
-  .requestStatus {
-    font-size: 0.75rem;
-    padding: 0.25rem 0.5rem;
-    border-radius: 9999px;
-    font-weight: 500;
-  }
-  
-  .requestStatus.open {
-    background-color: #dbeafe;
-    color: #1e40af;
-  }
-  
-  .requestStatus.in_progress {
-    background-color: #fef3c7;
-    color: #92400e;
-  }
-  
-  .requestStatus.completed {
-    background-color: #dcfce7;
-    color: #166534;
-  }
-  
-  .projectActions {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid #e2e8f0;
-  }
-  
-  .viewButton {
-    flex: 1;
-    background-color: #3b82f6;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background-color 0.2s;
-  }
-  
-  .viewButton:hover {
-    background-color: #2563eb;
-  }
-  
-  .settingsButton {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: 1px solid #e2e8f0;
-    color: #64748b;
-    padding: 0.5rem;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  
-  .settingsButton:hover {
-    background-color: #f1f5f9;
-    color: #1e293b;
-  }
-  
-  .emptyState {
-    text-align: center;
-    padding: 2rem;
-    color: #64748b;
-  }
-  
-  .emptyState p {
-    margin-bottom: 1rem;
-  }
-  
-  .createButton {
-    background-color: #3b82f6;
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background-color 0.2s;
-  }
-  
-  .createButton:hover {
-    background-color: #2563eb;
-  }
+.projectCard {
+  width: 100%;
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.projectCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.projectHeader {
+  margin-bottom: 1.5rem;
+}
+
+.projectTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #1a1a1a;
+}
+
+.projectDescription {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.metricsContainer {
+  width: 100%;
+}
+
+.metricsRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.metricItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.metricLabel {
+  font-size: 0.875rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
+.metricValue {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.bottomSection {
+  border-top: 1px solid #eee;
+  padding-top: 1rem;
+}
+
+.lastActivity {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #666;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.progressSection {
+  width: 100%;
+}
+
+.progressBar {
+  width: 100%;
+  height: 8px;
+  background-color: #e5e5e5;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background-color: #3b82f6;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progressText {
+  font-size: 0.875rem;
+  color: #666;
+  margin-top: 0.5rem;
+}
+
+/* Icon colors */
+.iconBlue {
+  width: 20px;
+  height: 20px;
+  color: #3b82f6;
+}
+
+.iconGreen {
+  width: 20px;
+  height: 20px;
+  color: #22c55e;
+}
+
+.iconPurple {
+  width: 20px;
+  height: 20px;
+  color: #8b5cf6;
+}
+
+.iconOrange {
+  width: 20px;
+  height: 20px;
+  color: #f97316;
+}
+
+.iconGray {
+  width: 20px;
+  height: 20px;
+  color: #666;
+}

@@ -7,7 +7,7 @@
   background-color: var(--color-background);
   padding: var(--spacing-md);
   padding-top: calc(60px + var(--spacing-md)); /* Account for header height */
-  background-color: #f5f5f5;
+  background-color: #ebebeb;
 }
 
 

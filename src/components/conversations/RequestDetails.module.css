@@ -14,19 +14,22 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: none;
-  border: none;
-  color: #666;
-  padding: 0.5rem;
-  margin-bottom: 1rem;
+  color: var(--color-text-primary); /* Change to primary text color */
+  background: var(--color-background-accent); /* Add subtle background */
+  border: 2px solid var(--color-border-primary); /* Add border */
   cursor: pointer;
-  transition: color 0.2s;
+  padding: calc(0.5rem + 2px);
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+  font-weight: bold;
+  transition: all 0.3s ease;
 }
 
 .backButton:hover {
-  color: #333;
+  background: var(--color-background-hover);
+  color: var(--color-text-hover);
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
-
 .backIcon {
   width: 20px;
   height: 20px;

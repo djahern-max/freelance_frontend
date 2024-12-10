@@ -1,185 +1,123 @@
-import {
-  ChevronDown,
-  ChevronUp,
-  FolderOpen,
-  Plus,
-  Settings,
-} from 'lucide-react';
-import { useState } from 'react';
+// ProjectDashboardCard.js
+import { Calendar, DollarSign, FileText, MessageSquare } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import styles from './ProjectDashboardCard.module.css';
 
 const ProjectDashboardCard = ({ projects }) => {
-  const [expandedProject, setExpandedProject] = useState(null);
   const navigate = useNavigate();
 
-  const handleProjectClick = (projectId) => {
-    setExpandedProject(expandedProject === projectId ? null : projectId);
-  };
-
-  const getProjectStats = (project) => {
-    if (!project.requests)
-      return { total: 0, open: 0, inProgress: 0, completed: 0 };
-
+  const getProjectMetrics = (project) => {
     return {
-      total: project.requests.length,
-      open: project.requests.filter((r) => r.status === 'open').length,
-      inProgress: project.requests.filter((r) => r.status === 'in_progress')
-        .length,
-      completed: project.requests.filter((r) => r.status === 'completed')
-        .length,
+      activeRequests: project.request_stats.open,
+      completedRequests: project.request_stats.completed,
+      totalRequests: project.request_stats.total,
+      activeConversations:
+        project.conversation_stats.active +
+        project.conversation_stats.negotiating,
+      totalBudget: project.request_stats.total_budget,
+      agreedAmount: project.request_stats.agreed_amount,
+      lastActivity: project.last_activity,
+      stats: {
+        negotiations: project.conversation_stats.negotiating,
+        agreements: project.conversation_stats.agreed,
+      },
     };
   };
 
-  if (!projects?.length) {
-    return (
-      <div className={styles.card}>
-        <div className={styles.cardHeader}>
-          <h2 className={styles.cardTitle}>
-            <FolderOpen className={styles.icon} />
-            Projects
-          </h2>
-          <button
-            className={styles.addButton}
-            onClick={() => navigate('/create-project')}
-          >
-            <Plus size={16} />
-            New Project
-          </button>
-        </div>
-        <div className={styles.emptyState}>
-          <p>
-            No projects yet. Group your related requests into projects for
-            better organization.
-          </p>
-          <button
-            className={styles.createButton}
-            onClick={() => navigate('/create-project')}
-          >
-            Create Your First Project
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className={styles.card}>
-      <div className={styles.cardHeader}>
-        <h2 className={styles.cardTitle}>
-          <FolderOpen className={styles.icon} />
-          Projects ({projects.length})
-        </h2>
-        <button
-          className={styles.addButton}
-          onClick={() => navigate('/create-project')}
-        >
-          <Plus size={16} />
-          New Project
-        </button>
-      </div>
+    <div className={styles.projectsContainer}>
+      {projects.map((project) => {
+        const metrics = getProjectMetrics(project);
 
-      <div className={styles.projectsList}>
-        {projects.map((project) => {
-          const stats = getProjectStats(project);
-          const isExpanded = expandedProject === project.id;
+        return (
+          <div
+            key={project.id}
+            className={styles.projectCard}
+            onClick={() => navigate(`/projects/${project.id}`)}
+          >
+            <div className={styles.projectHeader}>
+              <h3 className={styles.projectTitle}>
+                {project.name || 'Unnamed Project'}
+              </h3>
+              <p className={styles.projectDescription}>
+                {project.description || 'No description provided'}
+              </p>
+            </div>
 
-          return (
-            <div key={project.id} className={styles.projectItem}>
-              <div
-                className={styles.projectHeader}
-                onClick={() => handleProjectClick(project.id)}
-              >
-                <div className={styles.projectInfo}>
-                  <h3 className={styles.projectName}>{project.name}</h3>
-                  <span className={styles.requestCount}>
-                    {stats.total} {stats.total === 1 ? 'request' : 'requests'}
-                  </span>
+            <div className={styles.metricsContainer}>
+              <div className={styles.metricsRow}>
+                <div className={styles.metricItem}>
+                  <FileText className={styles.iconBlue} />
+                  <div>
+                    <p className={styles.metricLabel}>Active Requests</p>
+                    <p className={styles.metricValue}>
+                      {metrics.activeRequests}
+                    </p>
+                  </div>
                 </div>
-                <button className={styles.expandButton}>
-                  {isExpanded ? (
-                    <ChevronUp size={16} />
-                  ) : (
-                    <ChevronDown size={16} />
-                  )}
-                </button>
+
+                {metrics.totalBudget > 0 && (
+                  <div className={styles.metricItem}>
+                    <DollarSign className={styles.iconGreen} />
+                    <div>
+                      <p className={styles.metricLabel}>Total Budget</p>
+                      <p className={styles.metricValue}>
+                        {metrics.totalBudget.toLocaleString()}
+                      </p>
+                      {metrics.agreedAmount > 0 && (
+                        <p className={styles.metricSubtext}>
+                          ${metrics.agreedAmount.toLocaleString()} agreed
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                <div className={styles.metricItem}>
+                  <MessageSquare className={styles.iconPurple} />
+                  <div>
+                    <p className={styles.metricLabel}>Active Conversations</p>
+                    <p className={styles.metricValue}>
+                      {metrics.activeConversations}
+                    </p>
+                  </div>
+                </div>
               </div>
 
-              {isExpanded && (
-                <div className={styles.projectDetails}>
-                  {project.description && (
-                    <p className={styles.projectDescription}>
-                      {project.description}
-                    </p>
-                  )}
-
-                  <div className={styles.statsGrid}>
-                    <div className={styles.statItem}>
-                      <span className={styles.statLabel}>Open</span>
-                      <span className={styles.statValue}>{stats.open}</span>
-                    </div>
-                    <div className={styles.statItem}>
-                      <span className={styles.statLabel}>In Progress</span>
-                      <span className={styles.statValue}>
-                        {stats.inProgress}
-                      </span>
-                    </div>
-                    <div className={styles.statItem}>
-                      <span className={styles.statLabel}>Completed</span>
-                      <span className={styles.statValue}>
-                        {stats.completed}
-                      </span>
-                    </div>
-                  </div>
-
-                  {project.requests && project.requests.length > 0 && (
-                    <div className={styles.recentRequests}>
-                      <h4>Recent Requests</h4>
-                      <ul>
-                        {project.requests.slice(0, 3).map((request) => (
-                          <li key={request.id} className={styles.requestItem}>
-                            <span className={styles.requestTitle}>
-                              {request.title}
-                            </span>
-                            <span
-                              className={`${styles.requestStatus} ${
-                                styles[request.status]
-                              }`}
-                            >
-                              {request.status}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  <div className={styles.projectActions}>
-                    <button
-                      className={styles.viewButton}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/projects/${project.id}`);
-                      }}
-                    >
-                      View Details
-                    </button>
-                    <button
-                      className={styles.settingsButton}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/projects/${project.id}/settings`);
-                      }}
-                    >
-                      <Settings size={16} />
-                    </button>
-                  </div>
+              <div className={styles.bottomSection}>
+                <div className={styles.lastActivity}>
+                  <Calendar className={styles.iconGray} />
+                  <p>
+                    Last Activity:{' '}
+                    {new Date(metrics.lastActivity).toLocaleDateString()}
+                  </p>
                 </div>
-              )}
+
+                <div className={styles.progressSection}>
+                  <div className={styles.progressBar}>
+                    <div
+                      className={styles.progressFill}
+                      style={{
+                        width: `${
+                          metrics.totalRequests > 0
+                            ? (metrics.completedRequests /
+                                metrics.totalRequests) *
+                              100
+                            : 0
+                        }%`,
+                      }}
+                    />
+                  </div>
+                  <p className={styles.progressText}>
+                    Progress: {metrics.completedRequests} of{' '}
+                    {metrics.totalRequests} tasks completed
+                  </p>
+                </div>
+              </div>
             </div>
-          );
-        })}
-      </div>
+          </div>
+        );
+      })}
     </div>
   );
 };

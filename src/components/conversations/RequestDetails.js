@@ -153,7 +153,7 @@ const RequestDetails = () => {
       <main className={styles.content}>
         <button className={styles.backButton} onClick={handleBack}>
           <ArrowLeft className={styles.backIcon} />
-          Back
+          Back to Dashboard
         </button>
 
         <div className={styles.requestCard}>

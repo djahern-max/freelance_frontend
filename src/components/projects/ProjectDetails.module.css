@@ -2,7 +2,7 @@
 .container {
   min-height: 100vh;
   background-color: var(--color-background);
-  background-color: #f5f5f5;
+  background-color: #ebebeb;
 }
 
 .content {
@@ -15,17 +15,21 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
-  color: var(--color-text-secondary);
-  background: none;
-  border: none;
+  color: var(--color-text-primary); /* Change to a more prominent color */
+  background: var(--color-background-accent); /* Add a subtle background color */
+  border: 2px solid var(--color-border-primary); /* Add a border for emphasis */
   cursor: pointer;
-  padding: var(--spacing-sm);
+  padding: calc(var(--spacing-sm) + 2px); /* Slightly increase padding */
   margin-bottom: var(--spacing-lg);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md); /* Increase the border radius slightly */
+  font-weight: bold; /* Make the text bold */
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth hover effects */
 }
 
 .backButton:hover {
-  background-color: var(--color-background-hover);
+  background: var(--color-background-hover); /* Highlight the background on hover */
+  color: var(--color-text-hover); /* Change text color on hover */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Add a subtle shadow on hover */
 }
 
 .projectHeader {
@@ -66,6 +70,38 @@
   align-items: center;
   gap: var(--spacing-md);
   border: 1px solid var(--color-border);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+}
+
+.conversationCard, 
+.agreementCard {
+  /* existing styles... */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.conversationCard:hover,
+.agreementCard:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.requestCard {
+  /* existing styles... */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.requestCard:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.statCard:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
 }
 
 .icon {
