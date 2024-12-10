@@ -1,4 +1,4 @@
-import { Heart, MessageSquareMore } from 'lucide-react';
+import { MessageSquareMore } from 'lucide-react';
 import { useState } from 'react';
 import FeedbackModal from '../feedback/FeedbackModal';
 import styles from './Footer.module.css';
@@ -38,13 +38,13 @@ const Footer = () => {
           >
             <MessageSquareMore size={18} />
           </button>
-          <button
+          {/* <button
             className={styles.iconButton}
             onClick={() => window.open('/support', '_blank')}
             title="Support RYZE.ai"
           >
             <Heart size={18} />
-          </button>
+          </button> */}
         </div>
       </div>
 
