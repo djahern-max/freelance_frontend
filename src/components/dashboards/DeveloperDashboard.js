@@ -287,7 +287,7 @@ const DeveloperDashboard = () => {
           >
             <Briefcase className={styles.icon} />
             <div className={styles.statInfo}>
-              <h3>Available Opportunities</h3>
+              <h3>Opportunities</h3>
               <p>{activeRequests.length}</p>
             </div>
           </div>
@@ -300,7 +300,7 @@ const DeveloperDashboard = () => {
           >
             <MessageSquare className={styles.icon} />
             <div className={styles.statInfo}>
-              <h3>Active Conversations</h3>
+              <h3>Conversations</h3>
               <p>{conversations.length}</p>
             </div>
           </div>
@@ -362,7 +362,7 @@ const DeveloperDashboard = () => {
         {/* Active Conversations Section */}
         {expandedSections.conversations && (
           <div className={styles.conversations}>
-            <h2>Active Conversations</h2>
+            <h2>Conversations</h2>
             {conversations.length > 0 ? (
               <div className={styles.conversationsList}>
                 {conversations.map((conversation) => (
@@ -412,7 +412,7 @@ const DeveloperDashboard = () => {
         {/* Recent Opportunities Section */}
         {expandedSections.opportunities && (
           <div className={styles.recentActivity}>
-            <h2>Recent Opportunities</h2>
+            <h2>Opportunities</h2>
             {activeRequests.length === 0 ? (
               <div className={styles.emptyState}>
                 <Briefcase className={styles.emptyStateIcon} />
