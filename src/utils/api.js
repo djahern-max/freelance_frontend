@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { clearAuthData } from './authCleanup';
 
-// API Routes constants with corrected endpoints
+// API Routes constants
 export const API_ROUTES = {
   PROFILE: {
     ME: '/profile/me',
@@ -31,7 +31,7 @@ export const API_ROUTES = {
     SHARED: '/requests/shared-with-me',
   },
   AGREEMENTS: {
-    CREATE: '/agreements/', // Added trailing slash to match backend
+    CREATE: '/agreements/',
     ACCEPT: (id) => `/agreements/${id}/accept`,
     BY_REQUEST: (requestId) => `/agreements/request/${requestId}`,
   },
@@ -41,15 +41,23 @@ export const API_ROUTES = {
   },
 };
 
+// Helper function to check if a route is public
+const isPublicRoute = (url) => {
+  return Object.values(API_ROUTES.PUBLIC).some((route) =>
+    url.startsWith(route)
+  );
+};
+
 const getBaseURL = () => {
   if (process.env.REACT_APP_API_URL) {
     return process.env.REACT_APP_API_URL;
   }
   return process.env.NODE_ENV === 'production'
-    ? 'https://www.ryze.ai/api' // Update this
+    ? 'https://www.ryze.ai/api'
     : 'http://localhost:8000';
 };
 
+// Create axios instance with default config
 const api = axios.create({
   baseURL: getBaseURL(),
   headers: {
@@ -57,11 +65,17 @@ const api = axios.create({
     Accept: 'application/json',
   },
   withCredentials: true,
+  timeout: 30000, // Add timeout here
 });
 
-// Enhanced request interceptor with better logging
+// Request interceptor with enhanced error handling
 api.interceptors.request.use(
   (config) => {
+    // Add right after this line
+    config.retries = config.retries || 3;
+    config.retryCount = config.retryCount || 0;
+
+    // Log requests in development
     if (process.env.NODE_ENV === 'development') {
       console.log('API Request:', {
         url: `${config.baseURL}${config.url}`,
@@ -71,11 +85,8 @@ api.interceptors.request.use(
       });
     }
 
-    const isPublicRoute = Object.values(API_ROUTES.PUBLIC).some((route) =>
-      config.url.startsWith(route)
-    );
-
-    if (!isPublicRoute) {
+    // Add auth token for non-public routes
+    if (!isPublicRoute(config.url)) {
       const token = localStorage.getItem('token');
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -90,7 +101,7 @@ api.interceptors.request.use(
   }
 );
 
-// Enhanced response interceptor with better error handling
+// Response interceptor with comprehensive error handling
 api.interceptors.response.use(
   (response) => {
     if (process.env.NODE_ENV === 'development') {
@@ -103,75 +114,102 @@ api.interceptors.response.use(
     return response;
   },
   async (error) => {
+    const originalRequest = error.config;
+
+    // Log detailed error information
     const errorDetails = {
-      url: error.config?.url,
-      method: error.config?.method,
+      url: originalRequest?.url,
+      method: originalRequest?.method,
       status: error.response?.status,
       data: error.response?.data,
       message: error.message,
-      headers: error.config?.headers,
-      authHeader: error.config?.headers?.Authorization ? 'Present' : 'Missing',
+      retryCount: originalRequest?.retryCount || 0,
     };
-
     console.error('API Error Details:', errorDetails);
 
-    const isPublicRoute = Object.values(API_ROUTES.PUBLIC).some((route) =>
-      error.config?.url?.startsWith(route)
-    );
+    // Handle network errors
+    if (!error.response) {
+      if (error.code === 'ECONNABORTED') {
+        return Promise.reject(
+          new Error('Request timed out. Please try again.')
+        );
+      }
+      return Promise.reject(
+        new Error('Network error. Please check your connection.')
+      );
+    }
 
-    if (!isPublicRoute) {
-      if (error.response?.status === 401) {
+    // Handle retry logic for 5xx errors
+    if (
+      error.response.status >= 500 &&
+      originalRequest?.retries > originalRequest?.retryCount
+    ) {
+      originalRequest.retryCount = (originalRequest.retryCount || 0) + 1;
+      return new Promise((resolve) => setTimeout(resolve, 1000)).then(() =>
+        api(originalRequest)
+      );
+    }
+
+    // Handle specific error status codes
+    switch (error.response.status) {
+      case 401:
         clearAuthData();
-        if (!window.location.pathname.includes('/login')) {
+        if (
+          !window.location.pathname.includes('/login') &&
+          !isPublicRoute(originalRequest.url)
+        ) {
           window.location.href = '/login';
         }
         return Promise.reject(
           new Error('Session expired. Please log in again.')
         );
-      }
 
-      if (error.response?.status === 403) {
+      case 403:
+        if (error.response.data?.detail?.includes('subscription')) {
+          return Promise.reject(new Error('Subscription required or expired.'));
+        }
         return Promise.reject(
           new Error('You do not have permission to perform this action.')
         );
-      }
-    }
 
-    if (error.message.includes('Network Error')) {
-      console.error('Network Error Details:', {
-        url: error.config?.url,
-        method: error.config?.method,
-        headers: error.config?.headers,
-      });
-      return Promise.reject(
-        new Error('Unable to connect to server. Please check your connection.')
-      );
-    }
+      case 404:
+        return Promise.reject(
+          new Error('The requested resource was not found.')
+        );
 
-    if (error.response?.data?.detail) {
-      return Promise.reject(new Error(error.response.data.detail));
-    }
+      case 422:
+        return Promise.reject(
+          new Error('Validation error. Please check your input.')
+        );
 
-    return Promise.reject(error);
+      case 429:
+        return Promise.reject(
+          new Error('Too many requests. Please try again later.')
+        );
+
+      default:
+        return Promise.reject(
+          new Error(
+            error.response.data?.detail || 'An unexpected error occurred.'
+          )
+        );
+    }
   }
 );
 
-// Enhanced helper methods with better error handling
 api.helpers = {
   handleError: (error) => {
     console.error('API Error:', error);
 
-    if (
-      error.message.includes('Authentication failed') ||
-      error.message.includes('Session expired')
-    ) {
-      return 'Your session has expired. Please log in again.';
+    if (error.message.includes('Network Error')) {
+      return 'Unable to connect to server. Please check your connection.';
     }
 
     if (!error.response) {
-      return 'Network error: Unable to connect to server';
+      return error.message || 'An unexpected error occurred';
     }
 
+    // Return user-friendly error messages based on status code
     switch (error.response.status) {
       case 400:
         return (
@@ -181,13 +219,18 @@ api.helpers = {
       case 401:
         return 'Please log in to continue';
       case 403:
+        if (error.response.data?.detail?.includes('subscription')) {
+          return 'Active subscription required to perform this action';
+        }
         return "You don't have permission to perform this action";
       case 404:
         return 'The requested resource was not found';
       case 422:
         return 'Validation error. Please check your input.';
+      case 429:
+        return 'Too many requests. Please try again later.';
       case 500:
-        return 'Server error: Please try again later';
+        return 'Server error. Please try again later';
       default:
         return error.response?.data?.detail || 'An unexpected error occurred';
     }
@@ -203,107 +246,100 @@ api.helpers = {
     }
     return !!token;
   },
+};
 
-  // Enhanced profile helpers with better error handling
-  profile: {
-    async fetchUserProfile() {
-      try {
-        const response = await api.get(API_ROUTES.PROFILE.ME);
-        console.log('User profile fetched:', response.data);
-        return response.data;
-      } catch (error) {
-        console.error('Error fetching user profile:', error);
-        throw error;
-      }
-    },
-
-    async fetchSpecificProfile(userType) {
-      try {
-        const endpoint =
-          userType === 'developer'
-            ? API_ROUTES.PROFILE.DEVELOPER
-            : API_ROUTES.PROFILE.CLIENT;
-        const response = await api.get(endpoint);
-        console.log(`${userType} profile fetched:`, response.data);
-        return response.data;
-      } catch (error) {
-        if (error.response?.status === 404) {
-          console.log(`No ${userType} profile found`);
-          return null;
-        }
-        console.error(`Error fetching ${userType} profile:`, error);
-        throw error;
-      }
-    },
-
-    async createProfile(userType, profileData) {
-      try {
-        const endpoint =
-          userType === 'developer'
-            ? API_ROUTES.PROFILE.DEVELOPER
-            : API_ROUTES.PROFILE.CLIENT;
-        const response = await api.post(endpoint, profileData);
-        console.log(`${userType} profile created:`, response.data);
-        return response.data;
-      } catch (error) {
-        console.error(`Error creating ${userType} profile:`, error);
-        throw error;
-      }
-    },
-
-    async updateProfile(userType, profileData) {
-      try {
-        const endpoint =
-          userType === 'developer'
-            ? API_ROUTES.PROFILE.DEVELOPER
-            : API_ROUTES.PROFILE.CLIENT;
-        const response = await api.put(endpoint, profileData);
-        console.log(`${userType} profile updated:`, response.data);
-        return response.data;
-      } catch (error) {
-        console.error(`Error updating ${userType} profile:`, error);
-        throw error;
-      }
-    },
+// Profile-related API methods
+api.profile = {
+  async fetchUserProfile() {
+    try {
+      const response = await api.get('/profile/me');
+      return response.data;
+    } catch (error) {
+      throw new Error(api.helpers.handleError(error));
+    }
   },
 
-  // Enhanced public route helpers
-  public: {
-    async getPublicRequests(params = {}) {
-      try {
-        const response = await api.get(API_ROUTES.PUBLIC.REQUESTS, { params });
-        return response.data;
-      } catch (error) {
-        console.error('Error fetching public requests:', error);
-        throw error;
+  async fetchSpecificProfile(userType) {
+    try {
+      const endpoint =
+        userType === 'developer' ? '/profile/developer' : '/profile/client';
+      const response = await api.get(endpoint);
+      return response.data;
+    } catch (error) {
+      if (error.response?.status === 404) {
+        return null;
       }
-    },
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
 
-    async getPublicDevelopers(params = {}) {
-      try {
-        const response = await api.get(API_ROUTES.PUBLIC.DEVELOPERS, {
-          params,
-        });
-        return response.data;
-      } catch (error) {
-        console.error('Error fetching public developers:', error);
-        throw error;
-      }
-    },
-
-    async getPublicVideos(params = {}) {
-      try {
-        const response = await api.get(API_ROUTES.PUBLIC.VIDEOS, { params });
-        return response.data;
-      } catch (error) {
-        console.error('Error fetching public videos:', error);
-        throw error;
-      }
-    },
+  async updateProfile(userType, profileData) {
+    try {
+      const endpoint =
+        userType === 'developer' ? '/profile/developer' : '/profile/client';
+      const response = await api.put(endpoint, profileData);
+      return response.data;
+    } catch (error) {
+      throw new Error(api.helpers.handleError(error));
+    }
   },
 };
 
-// Enhanced conversation helpers
+// Subscription-related API methods
+api.subscriptions = {
+  async create() {
+    try {
+      const response = await api.post('/payments/create-subscription');
+      return response.data;
+    } catch (error) {
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async getStatus() {
+    try {
+      const response = await api.get('/payments/subscription-status');
+      return response.data;
+    } catch (error) {
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+};
+
+// Agreement-related API methods
+api.agreements = {
+  async getByRequest(requestId) {
+    try {
+      const response = await api.get(`/agreements/request/${requestId}`);
+      return response.data;
+    } catch (error) {
+      if (error.response?.status === 404) {
+        return null;
+      }
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async create(agreementData) {
+    try {
+      const response = await api.post('/agreements/', agreementData);
+      return response.data;
+    } catch (error) {
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async accept(id, acceptData) {
+    try {
+      const response = await api.post(`/agreements/${id}/accept`, acceptData);
+      return response.data;
+    } catch (error) {
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+};
+
+// Add conversation helpers
 api.conversations = {
   async list() {
     try {
@@ -311,7 +347,7 @@ api.conversations = {
       return response.data;
     } catch (error) {
       console.error('Error fetching conversations:', error);
-      throw error;
+      throw new Error(api.helpers.handleError(error));
     }
   },
 
@@ -321,7 +357,7 @@ api.conversations = {
       return response.data;
     } catch (error) {
       console.error('Error fetching conversation details:', error);
-      throw error;
+      throw new Error(api.helpers.handleError(error));
     }
   },
 
@@ -331,7 +367,7 @@ api.conversations = {
       return response.data;
     } catch (error) {
       console.error('Error creating conversation:', error);
-      throw error;
+      throw new Error(api.helpers.handleError(error));
     }
   },
 
@@ -343,7 +379,7 @@ api.conversations = {
       return response.data;
     } catch (error) {
       console.error('Error sending message:', error);
-      throw error;
+      throw new Error(api.helpers.handleError(error));
     }
   },
 
@@ -355,78 +391,12 @@ api.conversations = {
       return response.data;
     } catch (error) {
       console.error('Error updating conversation status:', error);
-      throw error;
+      throw new Error(api.helpers.handleError(error));
     }
   },
 };
 
-// Enhanced agreement helpers with better error handling
-api.agreements = {
-  async getByRequest(requestId) {
-    try {
-      const response = await api.get(
-        API_ROUTES.AGREEMENTS.BY_REQUEST(requestId)
-      );
-      console.log('Agreement fetched:', response.data);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching agreement:', error);
-      throw error;
-    }
-  },
-
-  async create(agreementData) {
-    try {
-      const response = await api.post(
-        API_ROUTES.AGREEMENTS.CREATE,
-        agreementData
-      );
-      console.log('Agreement created:', response.data);
-      return response.data;
-    } catch (error) {
-      console.error('Error creating agreement:', error);
-      throw error;
-    }
-  },
-
-  async accept(id, acceptData) {
-    try {
-      const response = await api.post(
-        API_ROUTES.AGREEMENTS.ACCEPT(id),
-        acceptData
-      );
-      console.log('Agreement accepted:', response.data);
-      return response.data;
-    } catch (error) {
-      console.error('Error accepting agreement:', error);
-      throw error;
-    }
-  },
-};
-
-api.subscriptions = {
-  async create() {
-    try {
-      const response = await api.post(API_ROUTES.PAYMENTS.CREATE_SUBSCRIPTION);
-      return response.data;
-    } catch (error) {
-      console.error('Error creating subscription:', error);
-      throw error;
-    }
-  },
-
-  async getStatus() {
-    try {
-      const response = await api.get(API_ROUTES.PAYMENTS.SUBSCRIPTION_STATUS);
-      return response.data;
-    } catch (error) {
-      console.error('Error getting subscription status:', error);
-      throw error;
-    }
-  },
-};
-
-// Enhanced token management
+// Token management
 api.setToken = (token) => {
   if (token) {
     localStorage.setItem('token', token);

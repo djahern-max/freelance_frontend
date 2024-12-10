@@ -1,0 +1,27 @@
+.logoWrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .logoLink {
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  .logo {
+    height: auto;
+    object-fit: contain;
+  }
+  
+  .logoText {
+    font-weight: 600;
+    font-size: 1.2em;
+    color: #0066ff;
+  }
+  
+  @media (max-width: 768px) {
+    .logoText {
+      font-size: 1em;
+    }
+  }

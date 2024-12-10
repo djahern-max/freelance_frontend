@@ -139,31 +139,61 @@ const Login = () => {
   };
 
   // Helper function to get error message and type
+  // Update the getErrorMessage function in your Login.js
+  // Update the getErrorMessage function in your Login.js
   const getErrorMessage = (error) => {
     if (!navigator.onLine) {
       return {
-        message:
-          'No internet connection. Please check your connection and try again.',
+        message: 'Unable to connect. Please check your internet connection.',
         type: 'connection',
       };
     }
 
     if (error.message === 'Failed to fetch') {
       return {
-        message: 'Unable to connect to server. Please try again later.',
+        message: 'Server connection failed. Please try again in a moment.',
         type: 'connection',
       };
     }
 
-    if (error.message.includes('Invalid user')) {
+    // Check for specific authentication errors
+    if (
+      error.message.includes('Invalid credentials') ||
+      error.message.includes('Invalid username or password')
+    ) {
       return {
-        message: 'Invalid username or password',
+        message: 'The username or password you entered is incorrect.',
         type: 'auth',
       };
     }
 
+    if (error.message.includes('User not found')) {
+      return {
+        message: 'No account found with this username. Need an account?',
+        type: 'auth',
+      };
+    }
+
+    if (
+      error.message.includes('Account disabled') ||
+      error.message.includes('Account inactive')
+    ) {
+      return {
+        message: 'This account has been deactivated. Please contact support.',
+        type: 'auth',
+      };
+    }
+
+    // For rate limiting or too many attempts
+    if (error.message.includes('Too many attempts')) {
+      return {
+        message: 'Too many login attempts. Please try again in a few minutes.',
+        type: 'validation',
+      };
+    }
+
     return {
-      message: 'An unexpected error occurred. Please try again.',
+      message: 'Sign in failed. Please check your details and try again.',
       type: 'general',
     };
   };

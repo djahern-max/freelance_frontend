@@ -27,23 +27,33 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1.25rem;
-  background-color: #f0f0f0;
-  color: #333;
-  border: 1px solid #ddd;
+  padding: 0.75rem 1.5rem;
+  background-color: white;
+  color: #111827;
+  border: 1px solid #e5e7eb;
   border-radius: 0.5rem;
   cursor: pointer;
-  transition: background-color 0.2s;
-  font-weight: normal;
+  transition: all 0.2s;
+  font-weight: 500;
+  font-size: 0.875rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .headerCreateButton:hover {
-  background-color: #e0e0e0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.headerCreateButton:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
 }
 
 .buttonIcon {
-  width: 1rem;
+  width: 1rem; /* Smaller icon */
   height: 1rem;
+  color: #6b7280; /* Secondary color for icon */
 }
 
 /* Stats Grid */
@@ -312,9 +322,28 @@
   }
 }
 
-@media (max-width: 640px) {
+/* Add this to ClientDashboard.module.css */
+@media (min-width: 900px) {
   .statsGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+/* Update the existing media query */
+@media (max-width: 899px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+/* Add to ClientDashboard.module.css */
+@media (max-width: 768px) {
+  .tutorialHint {
+    margin: var(--spacing-md) var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
   }
 
   .content {
@@ -322,12 +351,55 @@
   }
 
   .dashboardHeader {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1rem;
+    display: none;
+  }
+
+  /* Stats Grid */
+  .statsGrid {
+    grid-template-columns: 1fr;
   }
 
   .statCard {
-    min-width: 100%;
+    margin: var(--spacing-xs) 0;
+    height: 72px;
+    padding: var(--spacing-md);
+    position: relative;
+  }
+
+  .statCard::after {
+    content: "";
+    position: absolute;
+    right: var(--spacing-md);
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid var(--color-primary);
+    border-bottom: 2px solid var(--color-primary);
+    transform: translateY(-50%) rotate(45deg);
+    transition: transform 0.2s ease;
+    opacity: 0.6;
+  }
+
+  .statCard.active::after {
+    transform: translateY(-50%) rotate(-135deg);
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboardTitle {
+    font-size: var(--font-size-lg);
+  }
+
+  .statInfo h3 {
+    font-size: var(--font-size-xs);
+  }
+
+  .statInfo p {
+    font-size: var(--font-size-lg);
+  }
+
+  .statCard {
+    height: 64px;
+    padding: var(--spacing-sm);
   }
 }

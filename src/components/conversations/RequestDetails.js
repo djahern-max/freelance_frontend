@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import api from '../../utils/api';
+import SubscriptionDialog from '../payments/SubscriptionDialog';
 import RequestSharing from '../requests/RequestSharing'; // Import RequestSharing component
 import Header from '../shared/Header';
 import styles from './RequestDetails.module.css';
@@ -25,6 +26,7 @@ const RequestDetails = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
   const token = useSelector((state) => state.auth.token);
   const user = useSelector((state) => state.auth.user);
+  const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
 
   useEffect(() => {
     const fetchRequestDetails = async () => {
@@ -56,6 +58,7 @@ const RequestDetails = () => {
 
   const handleStartConversation = async () => {
     try {
+      // Check for existing conversation first
       const existingConversation = conversations.find(
         (conv) =>
           conv.starter_user_id === parseInt(user.id) ||
@@ -67,6 +70,21 @@ const RequestDetails = () => {
         return;
       }
 
+      // Check subscription status
+      const subscriptionResponse = await api.get(
+        '/payments/subscription-status'
+      );
+      console.log('Subscription status:', subscriptionResponse.data);
+
+      if (
+        !subscriptionResponse.data ||
+        subscriptionResponse.data.status !== 'active'
+      ) {
+        setShowSubscriptionDialog(true);
+        return;
+      }
+
+      // Create conversation if subscription is active
       const response = await api.post('/conversations/', {
         request_id: parseInt(requestId),
       });
@@ -74,7 +92,11 @@ const RequestDetails = () => {
       navigate(`/conversations/${response.data.id}`);
     } catch (err) {
       console.error('Error starting conversation:', err);
-      setError('Failed to start conversation');
+      if (err.response?.status === 403) {
+        setShowSubscriptionDialog(true);
+        return;
+      }
+      setError(err.message || 'Failed to start conversation');
     }
   };
 
@@ -229,6 +251,29 @@ const RequestDetails = () => {
           )}
         </div>
       </main>
+
+      <SubscriptionDialog
+        isOpen={showSubscriptionDialog}
+        onClose={() => setShowSubscriptionDialog(false)}
+        onSuccess={async () => {
+          setShowSubscriptionDialog(false);
+          // Recheck subscription and try to create conversation
+          try {
+            const subscriptionCheck = await api.get(
+              '/payments/subscription-status'
+            );
+            if (subscriptionCheck.data?.status === 'active') {
+              const response = await api.post('/conversations/', {
+                request_id: parseInt(requestId),
+              });
+              navigate(`/conversations/${response.data.id}`);
+            }
+          } catch (err) {
+            console.error('Failed to verify subscription after payment:', err);
+            setError('Failed to verify subscription. Please try again.');
+          }
+        }}
+      />
     </div>
   );
 };

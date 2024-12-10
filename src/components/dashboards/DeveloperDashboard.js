@@ -1,4 +1,13 @@
-import { Bell, Briefcase, MessageSquare, Share2, Star } from 'lucide-react';
+import {
+  Bell,
+  Briefcase,
+  FolderOpen, // Add this
+  MessageSquare,
+  Plus,
+  Share2,
+  Star, // Add this
+} from 'lucide-react';
+
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -247,32 +256,22 @@ const DeveloperDashboard = () => {
     }
   };
 
-  if (error) {
-    return (
-      <div className={styles.dashboardContainer}>
-        <Header />
-        <div className={styles.content}>
-          <div className={styles.error}>
-            <p>{error}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className={styles.retryButton}
-            >
-              Retry
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   const activeProjects = conversations.filter((c) => c.status === 'accepted');
 
   return (
     <div className={styles.dashboardContainer}>
       <Header />
       <div className={styles.content}>
-        {/* Add the tutorial hint here */}
+        <div className={styles.dashboardHeader}>
+          <button
+            onClick={() => navigate('/opportunities')}
+            className={styles.headerCreateButton}
+          >
+            <Plus size={24} className={styles.buttonIcon} />
+            Public Requests
+          </button>
+        </div>
+
         {!hasSeenTutorial && (
           <div className={styles.tutorialHint}>
             Click any card to view more details
@@ -305,6 +304,7 @@ const DeveloperDashboard = () => {
               <p>{conversations.length}</p>
             </div>
           </div>
+
           <div
             className={`${styles.statCard} ${
               expandedSections.sharedRequests ? styles.active : ''
@@ -317,13 +317,14 @@ const DeveloperDashboard = () => {
               <p>{sharedRequests.length}</p>
             </div>
           </div>
+
           <div
             className={`${styles.statCard} ${
               expandedSections.projects ? styles.active : ''
             }`}
             onClick={() => toggleSection('projects')}
           >
-            <Star className={styles.icon} />
+            <FolderOpen className={styles.icon} />
             <div className={styles.statInfo}>
               <h3>Active Projects</h3>
               <p>{activeProjects.length}</p>
@@ -348,10 +349,10 @@ const DeveloperDashboard = () => {
               </div>
             ) : (
               <div className={styles.emptyState}>
-                <Share2 className={styles.emptyStateIcon} />
-                <p>No requests have been shared with you yet.</p>
+                <FolderOpen className={styles.emptyStateIcon} />
+                <p>No active projects yet.</p>
                 <p>
-                  When clients share requests with you, they'll appear here.
+                  Projects will appear here once you've accepted an agreement!
                 </p>
               </div>
             )}

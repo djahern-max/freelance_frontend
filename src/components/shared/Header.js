@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import FeedbackModal from '../feedback/FeedbackModal';
 import SharedRequestNotification from '../requests/SharedRequestNotification';
+import Logo from '../shared/Logo';
 import styles from './Header.module.css';
 import HeaderMenu from './HeaderMenu';
 
@@ -43,15 +44,15 @@ const Header = () => {
         requiresAuth: false,
       },
       {
-        path: '/creators',
-        icon: UsersRound,
-        title: 'Creators',
-        requiresAuth: false,
-      },
-      {
         path: '/videos',
         icon: Video,
         title: 'Videos',
+        requiresAuth: false,
+      },
+      {
+        path: '/creators',
+        icon: UsersRound,
+        title: 'Creators',
         requiresAuth: false,
       },
     ];
@@ -97,6 +98,7 @@ const Header = () => {
       )
     );
   });
+  <Logo size="medium" />;
 
   // Menu items for the dropdown menu
   const menuItems = [

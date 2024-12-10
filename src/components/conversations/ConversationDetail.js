@@ -109,12 +109,27 @@ const ConversationDetail = () => {
   }, [agreement, user.id, showAgreementModal]);
 
   // Polling effects for agreement
+  // Single polling effect for agreement updates
   useEffect(() => {
     if (!conversation?.request_id || !token) return;
+
+    // Initial fetch
     fetchAgreement();
-    const shouldPoll =
-      conversation.status === 'negotiating' || conversation.status === 'agreed';
-    const intervalId = shouldPoll ? setInterval(fetchAgreement, 3000) : null;
+
+    // Set up polling only when needed
+    const shouldPoll = ['negotiating', 'agreed'].includes(conversation.status);
+    const intervalId = shouldPoll
+      ? setInterval(() => {
+          // Use a function to ensure we're working with fresh state
+          fetchAgreement().catch((err) => {
+            console.error('Polling error:', err);
+            // Optionally show user-friendly error
+            toast.error('Error updating agreement status');
+          });
+        }, 5000)
+      : null;
+
+    // Cleanup
     return () => {
       if (intervalId) clearInterval(intervalId);
     };
@@ -127,17 +142,6 @@ const ConversationDetail = () => {
     const intervalId = setInterval(fetchConversation, 5000);
     return () => clearInterval(intervalId);
   }, [id, token, fetchConversation]);
-
-  useEffect(() => {
-    if (!conversation?.request_id || !token) return;
-    fetchAgreement();
-    const shouldPoll =
-      conversation.status === 'negotiating' || conversation.status === 'agreed';
-    const intervalId = shouldPoll ? setInterval(fetchAgreement, 5000) : null;
-    return () => {
-      if (intervalId) clearInterval(intervalId);
-    };
-  }, [conversation?.request_id, conversation?.status, token, fetchAgreement]);
 
   useEffect(() => {
     if (

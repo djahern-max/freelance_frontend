@@ -26,6 +26,20 @@ const PublicRequests = () => {
   const user = useSelector((state) => state.auth.user);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
+  const createConversation = async (requestId, retries = 3) => {
+    for (let i = 0; i < retries; i++) {
+      try {
+        const response = await api.post('/conversations/', {
+          request_id: requestId,
+        });
+        return response.data;
+      } catch (err) {
+        if (i === retries - 1) throw err;
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+    }
+  };
+
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -116,7 +130,7 @@ const PublicRequests = () => {
       const subscriptionResponse = await api.get(
         '/payments/subscription-status'
       );
-      console.log('Subscription status:', subscriptionResponse.data); // Add this line
+      console.log('Subscription status:', subscriptionResponse.data);
 
       if (
         !subscriptionResponse.data ||
@@ -126,12 +140,19 @@ const PublicRequests = () => {
         return;
       }
 
-      const response = await api.post('/conversations/', {
-        request_id: request.id,
-      });
-      navigate(`/conversations/${response.data.id}`);
+      try {
+        // Use the new createConversation function here
+        const conversationData = await createConversation(request.id);
+        navigate(`/conversations/${conversationData.id}`);
+      } catch (convError) {
+        if (convError.response?.status === 403) {
+          setShowSubscriptionDialog(true);
+          return;
+        }
+        throw convError;
+      }
     } catch (err) {
-      console.error('Subscription check error:', err); // Add this line
+      console.error('Operation failed:', err);
       setError(err.response?.data?.detail || 'Failed to start conversation');
     } finally {
       setLoading(false);
@@ -309,10 +330,30 @@ const PublicRequests = () => {
         />
         <SubscriptionDialog
           isOpen={showSubscriptionDialog}
-          onClose={() => setShowSubscriptionDialog(false)}
-          onSuccess={() => {
+          onClose={() => {
             setShowSubscriptionDialog(false);
-            handleStartConversation(selectedRequest);
+            setSelectedRequest(null); // Clear selected request on close
+          }}
+          onSuccess={async () => {
+            setShowSubscriptionDialog(false);
+            // Re-check subscription status after successful subscription
+            try {
+              const subscriptionCheck = await api.get(
+                '/payments/subscription-status'
+              );
+              if (
+                subscriptionCheck.data?.status === 'active' &&
+                selectedRequest
+              ) {
+                await handleStartConversation(selectedRequest);
+              }
+            } catch (err) {
+              console.error(
+                'Failed to verify subscription after payment:',
+                err
+              );
+              setError('Failed to verify subscription. Please try again.');
+            }
           }}
         />
       </main>
