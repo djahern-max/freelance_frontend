@@ -20,35 +20,37 @@
 .headerCreateButton {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background-color: white;
-  color: #111827;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.8rem; /* Reduced padding for a skinnier button */
+  background-color: var(--color-primary); /* Primary color for background */
+  color: var(--color-background); /* White text */
+  border: 1px solid var(--color-border); /* Use global border color */
+  border-radius: 0.4rem; /* Slightly smaller radius for a compact look */
   cursor: pointer;
-  transition: all 0.2s;
+  font-size: 0.85rem;
   font-weight: 500;
-  font-size: 0.875rem;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  transition: background-color 0.3s, box-shadow 0.3s;
 }
+
 .headerCreateButton:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  transform: translateY(-1px);
+  background-color: var(--color-primary-dark); /* Darker shade on hover */
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
 }
 
 .headerCreateButton:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background-color: var(--color-primary-dark);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Slightly subdued shadow */
 }
 
 .buttonIcon {
-  width: 1rem; /* Smaller icon */
-  height: 1rem;
-  color: #6b7280; /* Secondary color for icon */
+  width: 0.9rem; /* Adjusted icon size to fit better with smaller button */
+  height: 0.9rem;
+  color: var(--color-background); /* Match icon color with text */
 }
+
+
 
 
 .dashboardTitle {

@@ -86,28 +86,6 @@ const ConversationDetail = () => {
     }
   }, [conversation?.request_id, id, conversation?.status, fetchConversation]);
 
-  // Polling effects for conversation
-  useEffect(() => {
-    // Add debug logs
-    console.log('Agreement state changed:', {
-      hasAgreement: !!agreement,
-      showingModal: showAgreementModal,
-      currentUserId: user.id,
-      proposedBy: agreement?.proposed_by,
-      isRecipient: user.id !== agreement?.proposed_by,
-    });
-
-    if (agreement && !showAgreementModal && user.id !== agreement.proposed_by) {
-      console.log('Showing agreement notification'); // Debug log
-      toast.info('A new agreement has been proposed!', {
-        autoClose: false,
-        onClick: () => setShowAgreementModal(true),
-        position: 'top-right',
-        toastId: `agreement-${agreement.id}`, // Prevent duplicate toasts
-      });
-    }
-  }, [agreement, user.id, showAgreementModal]);
-
   // Polling effects for agreement
   // Single polling effect for agreement updates
   useEffect(() => {
@@ -406,40 +384,6 @@ const ConversationDetail = () => {
             isSidebarVisible ? styles.mobileVisible : ''
           }`}
         >
-          {/* Request Details Section */}
-          <div className={styles.sidebarSection}>
-            <h2 className={styles.sidebarTitle}>Request Details</h2>
-            <div className={styles.requestDetails}>
-              <div className={styles.infoItem}>
-                <FileText size={16} />
-                <span>{requestDetails?.title}</span>
-              </div>
-              <div className={styles.infoItem}>
-                <DollarSign size={16} />
-                <span>
-                  Budget: {formatCurrency(requestDetails?.estimated_budget)}
-                </span>
-              </div>
-              <div className={styles.infoItem}>
-                <Clock size={16} />
-                <span>
-                  Posted:{' '}
-                  {new Date(requestDetails?.created_at).toLocaleDateString()}
-                </span>
-              </div>
-              <div
-                className={`${styles.statusIndicator} ${
-                  styles[conversation.status]
-                }`}
-              >
-                <span>
-                  {conversation.status.charAt(0).toUpperCase() +
-                    conversation.status.slice(1)}
-                </span>
-              </div>
-            </div>
-          </div>
-
           {/* Agreement Section */}
           <div className={styles.sidebarSection}>
             <div className={styles.sectionHeader}>
@@ -552,6 +496,30 @@ const ConversationDetail = () => {
                 </div>
               )
             )}
+          </div>
+
+          {/* Request Details Section */}
+          <div className={styles.sidebarSection}>
+            <h2 className={styles.sidebarTitle}>Request Details</h2>
+            <div className={styles.requestDetails}>
+              <div className={styles.infoItem}>
+                <FileText size={16} />
+                <span>{requestDetails?.title}</span>
+              </div>
+              <div className={styles.infoItem}>
+                <DollarSign size={16} />
+                <span>
+                  Budget: {formatCurrency(requestDetails?.estimated_budget)}
+                </span>
+              </div>
+              <div className={styles.infoItem}>
+                <Clock size={16} />
+                <span>
+                  Posted:{' '}
+                  {new Date(requestDetails?.created_at).toLocaleDateString()}
+                </span>
+              </div>
+            </div>
           </div>
 
           {/* Participants Section */}

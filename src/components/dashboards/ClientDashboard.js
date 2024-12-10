@@ -177,10 +177,43 @@ const ClientDashboard = () => {
   const fetchConversations = async () => {
     try {
       const response = await api.get('/conversations/user/list');
-      setDashboardData((prev) => ({
-        ...prev,
-        conversations: Array.isArray(response.data) ? response.data : [],
-      }));
+      const conversations = Array.isArray(response.data) ? response.data : [];
+
+      // Extract request IDs from conversations
+      const requestIds = conversations.map((conv) => conv.request_id);
+
+      if (requestIds.length > 0) {
+        // Only make the call if there are request IDs
+        // Change the parameter format
+        const agreementResponse = await api.get(`/agreements/statuses`, {
+          params: {
+            request_ids: requestIds.join(','), // Convert array to comma-separated string
+          },
+        });
+
+        // Map agreement statuses to conversations
+        const agreementStatuses = agreementResponse.data;
+        const updatedConversations = conversations.map((conversation) => {
+          const agreement = agreementStatuses.find(
+            (status) => status.request_id === conversation.request_id
+          );
+          return {
+            ...conversation,
+            agreement_status: agreement ? agreement.status : 'No Agreement',
+          };
+        });
+
+        setDashboardData((prev) => ({
+          ...prev,
+          conversations: updatedConversations,
+        }));
+      } else {
+        // If no conversations, set empty array
+        setDashboardData((prev) => ({
+          ...prev,
+          conversations: [],
+        }));
+      }
       setErrors((prev) => ({ ...prev, conversations: null }));
     } catch (error) {
       console.error('Conversations fetch failed:', error);
@@ -347,7 +380,7 @@ const ClientDashboard = () => {
           >
             <MessageSquare className={styles.icon} />
             <div className={styles.statInfo}>
-              <h3>Conversations</h3>
+              <h3>Conversations Test</h3>
               <p>{dashboardData.conversations.length}</p>
             </div>
           </div>
@@ -383,26 +416,63 @@ const ClientDashboard = () => {
 
         {expandedSections.conversations && (
           <div className={styles.expandedSection}>
-            <h2>Conversations</h2>
+            <h2>Conversations Test ZXY</h2>
             {errors.conversations ? (
               <div className={styles.error}>{errors.conversations}</div>
             ) : dashboardData.conversations.length > 0 ? (
-              <div className={styles.itemsList}>
+              <div className={styles.conversationGrid}>
                 {dashboardData.conversations.map((conversation) => (
                   <div
                     key={conversation.id}
-                    className={styles.itemCard}
+                    className={styles.conversationCard}
                     onClick={() =>
                       navigate(`/conversations/${conversation.id}`)
                     }
                   >
-                    <h4 className={styles.itemTitle}>
-                      {conversation.request?.title || 'Untitled Request'}
-                    </h4>
-                    <p className={styles.itemDate}>
-                      Last updated:{' '}
-                      {new Date(conversation.updated_at).toLocaleDateString()}
-                    </p>
+                    <div className={styles.cardContent}>
+                      {/* Title Section */}
+                      <div className={styles.cardSection}>
+                        <MessageSquare className={styles.cardIcon} />
+                        <h4 className={styles.cardTitle}>
+                          {conversation.request_title || 'Untitled Request'}
+                        </h4>
+                      </div>
+
+                      {/* Agreement Status Section */}
+                      <div className={styles.cardSection}>
+                        <Briefcase
+                          className={`${styles.cardStatusIcon} ${
+                            conversation.agreement_status === 'accepted'
+                              ? styles.statusAccepted
+                              : conversation.agreement_status === 'negotiating'
+                              ? styles.statusNegotiating
+                              : styles.statusDefault
+                          }`}
+                        />
+                        <span
+                          className={`${
+                            conversation.agreement_status === 'accepted'
+                              ? styles.statusAccepted
+                              : conversation.agreement_status === 'negotiating'
+                              ? styles.statusNegotiating
+                              : styles.statusDefault
+                          }`}
+                        >
+                          Agreement Status:{' '}
+                          {conversation.agreement_status || 'No Agreement'}
+                        </span>
+                      </div>
+
+                      {/* Date Section */}
+                      <div className={styles.cardSection}>
+                        <FolderOpen className={styles.cardDateIcon} />
+                        <span className={styles.cardDate}>
+                          {new Date(conversation.created_at).toLocaleDateString(
+                            'en-US'
+                          )}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
