@@ -162,9 +162,8 @@
 }
 
 .icon {
-  color: #0066cc;
-  width: 1.75rem;
-  height: 1.75rem;
+  color: #6b7280;
+  flex-shrink: 0;
 }
 
 .statInfo {
@@ -191,6 +190,8 @@
   padding: 1.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   margin-bottom: 2rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .expandedSection h2 {
@@ -489,8 +490,13 @@
 }
 
 /* Animation for expanding/collapsing sections */
-.sharedRequests, .recentActivity, .conversations, .projects {
+.sharedRequests, .recentActivity{
   animation: slideDown 0.3s ease-out;
+}
+
+.conversations, .projects {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 @keyframes slideDown {
@@ -508,32 +514,58 @@
 
 /* Conversation Card styles */
 .conversationGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Flexible grid layout */
-  gap: 1rem; /* Space between cards */
-  margin-top: 1rem; /* Add spacing from other sections */
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
 .conversationCard {
   background: white;
   border: 1px solid #eaeaea;
   border-radius: 0.5rem;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  padding: 1rem;
   margin-bottom: 0.5rem;
+  cursor: pointer;
+  width: 100%;
+  position: relative;
 }
 
+.projectStatus {
+  display: flex;
+  align-items: center;
+  color: #666;
+  font-size: 0.875rem;
+  margin: 0.5rem 0;
+}
+
+.messageCount {
+  display: flex;
+  align-items: center;
+  color: #666;
+  font-size: 0.875rem;
+  margin: 0.5rem 0;
+}
+
+.clientInfo {
+  display: flex;
+  align-items: center;
+  color: #666;
+  font-size: 0.875rem;
+  margin: 0.5rem 0;
+}
 
 .conversationCard:hover {
   transform: translateY(-2px);
-  box-shadow: rgba(0, 0, 0, 0.15) 0px 8px 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 .cardContent {
-  padding: 1rem;
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
 }
 
 .cardSection {
@@ -571,7 +603,9 @@
 .cardTitle {
   font-size: 1rem;
   font-weight: 600;
-  color: #111827;
+  color: #1a1a1a;
+  margin: 0;
+  line-height: 1.4;
 }
 
 .cardDate {
@@ -580,14 +614,23 @@
 }
 
 .statusAccepted {
-  color: #10b981; /* Green for accepted */
+  background-color: #dcfce7;
+  color: #166534;
 }
+
 .statusNegotiating {
-  color: #3b82f6; /* Blue for negotiating */
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.statusCompleted {
+  background-color: #e0e7ff;
+  color: #3730a3;
 }
 
 .statusDefault {
-  color: #6b7280; /* Gray for other statuses */
+  background-color: #f3f4f6;
+  color: #6b7280;
 }
 
 .conversationMeta {
@@ -614,9 +657,16 @@
   margin-bottom: var(--spacing-lg);
 }
 
-.conversationsList, .projectsList {
+.conversationsList{
   display: grid;
   gap: var(--spacing-md);
+}
+
+.projectsList {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 1rem;
 }
 
 .tutorialHint {
@@ -696,61 +746,90 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
 }
 
 .titleSection {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex: 1;
 }
 
 .statusBadge {
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 500;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  text-align: center;
+  min-width: 80px;
 }
 
 .infoRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.875rem;
-  color: #666;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
-
-.clientInfo, .budgetInfo {
+.clientInfo,
+.budgetInfo {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #4b5563;
 }
 
 .messagePreview {
+  background-color: #f9fafb;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.5rem;
+}
+
+.lastMessage {
   font-size: 0.875rem;
-  color: #666;
+  color: #6b7280;
+  line-height: 1.4;
   font-style: italic;
-  padding: 0.5rem;
-  background: #f9fafb;
-  border-radius: 0.25rem;
 }
 
 .statsRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.75rem;
-  color: #666;
-  border-top: 1px solid #eaeaea;
   padding-top: 0.75rem;
+  border-top: 1px solid #f3f4f6;
+  margin-top: 0.25rem;
 }
 
-.messageCount, .lastActivity {
+.lastActivity {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  color: #666;
+  font-size: 0.875rem;
+  margin: 0.5rem 0;
+}
+
+.accepted {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: #dcfce7;
+  color: #166534;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Make content span full width */
+.conversationGrid,
+.projectsList {
+  width: 100%;
 }
 
 /* Add this to DeveloperDashboard.module.css */
@@ -779,6 +858,10 @@
   }
 
   .content {
+    padding: 1rem;
+  }
+
+  .expandedSection {
     padding: 1rem;
   }
 
@@ -888,6 +971,86 @@
     justify-content: flex-start;
     width: 100%;
   }
+}
+
+
+@media (max-width: 640px) {
+  .cardContent {
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+
+  .infoRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .statsRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .mainRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .statusBadge {
+    align-self: flex-start;
+  }
+}
+
+/* Animation */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.conversationCard {
+  background: white;
+  border: 1px solid #eaeaea;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Empty State Styles */
+.emptyState {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #6b7280;
+  background: white;
+  border-radius: 0.75rem;
+  margin-top: 1rem;
+}
+
+.emptyStateIcon {
+  width: 3rem;
+  height: 3rem;
+  color: #9ca3af;
+  margin-bottom: 1rem;
+}
+
+.emptyState p {
+  margin: 0.5rem 0;
+  font-size: 0.875rem;
+}
+
+.emptyState p:first-of-type {
+  font-weight: 500;
+  color: #374151;
 }
 
 /* Mobile phones and smaller screens */
