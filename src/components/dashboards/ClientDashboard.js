@@ -17,6 +17,7 @@ import RequestCard from '../requests/RequestCard';
 import RequestGroupingToolbar from '../requests/RequestGroupingToolbar';
 import Header from '../shared/Header';
 import styles from './ClientDashboard.module.css';
+import DashboardSections from './DashboardSections';
 
 const ClientDashboard = () => {
   const [dashboardData, setDashboardData] = useState({
@@ -59,6 +60,190 @@ const ClientDashboard = () => {
       ...prev,
       [section]: !prev[section],
     }));
+  };
+
+  const sections = [
+    {
+      id: 'opportunities',
+      icon: Briefcase,
+      title: 'Work Requests',
+      count: dashboardData.requests.length,
+    },
+    {
+      id: 'conversations',
+      icon: MessageSquare,
+      title: 'Conversations',
+      count: dashboardData.conversations.length,
+    },
+    {
+      id: 'sharedRequests',
+      icon: Share2,
+      title: "Requests I've Shared",
+      count: dashboardData.sharedRequests.length,
+    },
+    {
+      id: 'projects',
+      icon: FolderOpen,
+      title: 'Active Projects',
+      count: projects.length,
+    },
+  ];
+
+  const renderSection = (sectionId) => {
+    switch (sectionId) {
+      case 'opportunities':
+        return renderRequests();
+
+      case 'conversations':
+        return (
+          <div className={styles.expandedSection}>
+            <h2>Conversations:</h2>
+            {errors.conversations ? (
+              <div className={styles.error}>{errors.conversations}</div>
+            ) : dashboardData.conversations.length > 0 ? (
+              <div className={styles.conversationGrid}>
+                {dashboardData.conversations.map((conversation) => (
+                  <div
+                    key={conversation.id}
+                    className={styles.conversationCard}
+                    onClick={() =>
+                      navigate(`/conversations/${conversation.id}`)
+                    }
+                  >
+                    <div className={styles.cardContent}>
+                      {/* Title Section */}
+                      <div className={styles.cardSection}>
+                        <MessageSquare className={styles.cardIcon} />
+                        <h4 className={styles.cardTitle}>
+                          {conversation.request_title || 'Untitled Request'}
+                        </h4>
+                      </div>
+
+                      {/* Agreement Status Section */}
+                      <div className={styles.cardSection}>
+                        <Briefcase
+                          className={`${styles.cardStatusIcon} ${
+                            conversation.agreement_status === 'accepted'
+                              ? styles.statusAccepted
+                              : conversation.agreement_status === 'negotiating'
+                              ? styles.statusNegotiating
+                              : styles.statusDefault
+                          }`}
+                        />
+                        <span
+                          className={`${
+                            conversation.agreement_status === 'accepted'
+                              ? styles.statusAccepted
+                              : conversation.agreement_status === 'negotiating'
+                              ? styles.statusNegotiating
+                              : styles.statusDefault
+                          }`}
+                        >
+                          Agreement Status:{' '}
+                          {conversation.agreement_status || 'No Agreement'}
+                        </span>
+                      </div>
+
+                      {/* Date Section */}
+                      <div className={styles.cardSection}>
+                        <FolderOpen className={styles.cardDateIcon} />
+                        <span className={styles.cardDate}>
+                          {new Date(conversation.created_at).toLocaleDateString(
+                            'en-US'
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className={styles.emptyState}>
+                <p className={styles.emptyText}>No active conversations</p>
+              </div>
+            )}
+          </div>
+        );
+
+      case 'sharedRequests':
+        return (
+          <div className={styles.expandedSection}>
+            <h2>Requests I've Shared</h2>
+            {errors.sharedRequests ? (
+              <div className={styles.error}>{errors.sharedRequests}</div>
+            ) : dashboardData.sharedRequests.length > 0 ? (
+              <div className={styles.itemsList}>
+                {dashboardData.sharedRequests.map((request) => (
+                  <div
+                    key={request.id}
+                    className={styles.requestCard}
+                    onClick={() => navigate(`/requests/${request.id}`)}
+                  >
+                    <div className={styles.itemTitle}>
+                      {request.title}
+                      <span className={styles.statusBadge}>
+                        {request.status || 'open'}
+                      </span>
+                    </div>
+                    <p className={styles.itemDescription}>{request.content}</p>
+                    <div className={styles.metaInfo}>
+                      <span className={styles.budget}>
+                        Budget: ${request.estimated_budget}
+                      </span>
+                      <span>
+                        Created:{' '}
+                        {new Date(request.created_at).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div className={styles.sharedWith}>
+                      <span>Shared with: </span>
+                      {request.sharedWith.map((user, index) => (
+                        <span key={user.id} className={styles.sharedUser}>
+                          @{user.username}
+                          {index < request.sharedWith.length - 1 ? ', ' : ''}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className={styles.emptyState}>
+                <Share2 className={styles.emptyStateIcon} />
+                <p>You haven't shared any requests yet</p>
+                <p>
+                  Share your requests with developers you'd like to work with
+                </p>
+              </div>
+            )}
+          </div>
+        );
+
+      case 'projects':
+        return (
+          <div className={styles.expandedSection}>
+            <h2>Active Projects</h2>
+            {errors.projects ? (
+              <div className={styles.error}>{errors.projects}</div>
+            ) : projects.length > 0 ? (
+              <ProjectDashboardCard projects={projects} />
+            ) : (
+              <div className={styles.emptyState}>
+                <p className={styles.emptyText}>No active projects</p>
+                <button
+                  onClick={() => navigate('/create-project')}
+                  className={styles.createButton}
+                >
+                  <Plus className={styles.buttonIcon} />
+                  Create Your First Project
+                </button>
+              </div>
+            )}
+          </div>
+        );
+      default:
+        return null;
+    }
   };
 
   useEffect(() => {
@@ -365,6 +550,18 @@ const ClientDashboard = () => {
     );
   }
 
+  // Replace the current return statement with this
+  if (isLoading) {
+    return (
+      <div className={styles.dashboardContainer}>
+        <Header />
+        <div className={styles.loadingContainer}>
+          <div className={styles.loading}>Loading your dashboard...</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.dashboardContainer}>
       <Header />
@@ -379,206 +576,11 @@ const ClientDashboard = () => {
           </button>
         </div>
 
-        <div className={styles.statsGrid}>
-          <div
-            className={`${styles.statCard} ${
-              expandedSections.opportunities ? styles.active : ''
-            }`}
-            onClick={() => toggleSection('opportunities')}
-          >
-            <Briefcase className={styles.icon} />
-            <div className={styles.statInfo}>
-              <h3>Work Requests</h3>
-              <p>{dashboardData.requests.length}</p>
-            </div>
-          </div>
-
-          <div
-            className={`${styles.statCard} ${
-              expandedSections.conversations ? styles.active : ''
-            }`}
-            onClick={() => toggleSection('conversations')}
-          >
-            <MessageSquare className={styles.icon} />
-            <div className={styles.statInfo}>
-              <h3>Conversations</h3>
-              <p>{dashboardData.conversations.length}</p>
-            </div>
-          </div>
-
-          <div
-            className={`${styles.statCard} ${
-              expandedSections.sharedRequests ? styles.active : ''
-            }`}
-            onClick={() => toggleSection('sharedRequests')}
-          >
-            <Share2 className={styles.icon} />
-            <div className={styles.statInfo}>
-              <h3>Requests I've Shared</h3>
-              <p>{dashboardData.sharedRequests.length}</p>
-            </div>
-          </div>
-
-          <div
-            className={`${styles.statCard} ${
-              expandedSections.projects ? styles.active : ''
-            }`}
-            onClick={() => toggleSection('projects')}
-          >
-            <FolderOpen className={styles.icon} />
-            <div className={styles.statInfo}>
-              <h3>Active Projects</h3>
-              <p>{projects.length}</p>
-            </div>
-          </div>
-        </div>
-
-        {expandedSections.opportunities && renderRequests()}
-
-        {expandedSections.conversations && (
-          <div className={styles.expandedSection}>
-            <h2>Conversations:</h2>
-            {errors.conversations ? (
-              <div className={styles.error}>{errors.conversations}</div>
-            ) : dashboardData.conversations.length > 0 ? (
-              <div className={styles.conversationGrid}>
-                {dashboardData.conversations.map((conversation) => (
-                  <div
-                    key={conversation.id}
-                    className={styles.conversationCard}
-                    onClick={() =>
-                      navigate(`/conversations/${conversation.id}`)
-                    }
-                  >
-                    <div className={styles.cardContent}>
-                      {/* Title Section */}
-                      <div className={styles.cardSection}>
-                        <MessageSquare className={styles.cardIcon} />
-                        <h4 className={styles.cardTitle}>
-                          {conversation.request_title || 'Untitled Request'}
-                        </h4>
-                      </div>
-
-                      {/* Agreement Status Section */}
-                      <div className={styles.cardSection}>
-                        <Briefcase
-                          className={`${styles.cardStatusIcon} ${
-                            conversation.agreement_status === 'accepted'
-                              ? styles.statusAccepted
-                              : conversation.agreement_status === 'negotiating'
-                              ? styles.statusNegotiating
-                              : styles.statusDefault
-                          }`}
-                        />
-                        <span
-                          className={`${
-                            conversation.agreement_status === 'accepted'
-                              ? styles.statusAccepted
-                              : conversation.agreement_status === 'negotiating'
-                              ? styles.statusNegotiating
-                              : styles.statusDefault
-                          }`}
-                        >
-                          Agreement Status:{' '}
-                          {conversation.agreement_status || 'No Agreement'}
-                        </span>
-                      </div>
-
-                      {/* Date Section */}
-                      <div className={styles.cardSection}>
-                        <FolderOpen className={styles.cardDateIcon} />
-                        <span className={styles.cardDate}>
-                          {new Date(conversation.created_at).toLocaleDateString(
-                            'en-US'
-                          )}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className={styles.emptyState}>
-                <p className={styles.emptyText}>No active conversations</p>
-              </div>
-            )}
-          </div>
-        )}
-
-        {expandedSections.sharedRequests && (
-          <div className={styles.expandedSection}>
-            <h2>Requests I've Shared</h2>
-            {errors.sharedRequests ? (
-              <div className={styles.error}>{errors.sharedRequests}</div>
-            ) : dashboardData.sharedRequests.length > 0 ? (
-              <div className={styles.itemsList}>
-                {dashboardData.sharedRequests.map((request) => (
-                  <div
-                    key={request.id}
-                    className={styles.requestCard}
-                    onClick={() => navigate(`/requests/${request.id}`)}
-                  >
-                    <div className={styles.itemTitle}>
-                      {request.title}
-                      <span className={styles.statusBadge}>
-                        {request.status || 'open'}
-                      </span>
-                    </div>
-                    <p className={styles.itemDescription}>{request.content}</p>
-                    <div className={styles.metaInfo}>
-                      <span className={styles.budget}>
-                        Budget: ${request.estimated_budget}
-                      </span>
-                      <span>
-                        Created:{' '}
-                        {new Date(request.created_at).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <div className={styles.sharedWith}>
-                      <span>Shared with: </span>
-                      {request.sharedWith.map((user, index) => (
-                        <span key={user.id} className={styles.sharedUser}>
-                          @{user.username}
-                          {index < request.sharedWith.length - 1 ? ', ' : ''}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className={styles.emptyState}>
-                <Share2 className={styles.emptyStateIcon} />
-                <p>You haven't shared any requests yet</p>
-                <p>
-                  Share your requests with developers you'd like to work with
-                </p>
-              </div>
-            )}
-          </div>
-        )}
-
-        {expandedSections.projects && (
-          <div className={styles.expandedSection}>
-            <h2>Active Projects</h2>
-            {errors.projects ? (
-              <div className={styles.error}>{errors.projects}</div>
-            ) : projects.length > 0 ? (
-              <ProjectDashboardCard projects={projects} />
-            ) : (
-              <div className={styles.emptyState}>
-                <p className={styles.emptyText}>No active projects</p>
-                <button
-                  onClick={() => navigate('/create-project')}
-                  className={styles.createButton}
-                >
-                  <Plus className={styles.buttonIcon} />
-                  Create Your First Project
-                </button>
-              </div>
-            )}
-          </div>
-        )}
+        <DashboardSections
+          sections={sections}
+          renderSection={renderSection}
+          loading={isLoading}
+        />
 
         {showCreateModal && (
           <CreateRequestModal
