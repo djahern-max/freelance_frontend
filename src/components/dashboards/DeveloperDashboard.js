@@ -240,7 +240,7 @@ const DeveloperDashboard = () => {
     {
       id: 'opportunities',
       icon: Briefcase,
-      title: 'Opportunities',
+      title: 'New Requests', // Changed from 'Opportunities'
       count: activeRequests.length,
     },
     {
@@ -269,7 +269,7 @@ const DeveloperDashboard = () => {
       case 'opportunities':
         return (
           <div className={styles.recentActivity}>
-            <h2>Opportunities</h2>
+            <h2>New Requests</h2>
             {activeRequests.length === 0 ? (
               <div className={styles.emptyState}>
                 <Briefcase className={styles.emptyStateIcon} />
@@ -278,7 +278,7 @@ const DeveloperDashboard = () => {
               </div>
             ) : (
               <div className={styles.requestsList}>
-                {activeRequests.slice(0, 5).map((request) => (
+                {activeRequests.map((request) => (
                   <RequestCard
                     key={request.id}
                     request={request}
@@ -451,6 +451,12 @@ const DeveloperDashboard = () => {
 
       // Fetch other data...
       const requestsRes = await api.get('/requests/public');
+      const sortedRequests = requestsRes.data
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        .slice(0, 10);
+
+      setActiveRequests(sortedRequests);
+
       const sharedRequestsRes =
         user.userType === 'developer'
           ? await api.get('/requests/shared-with-me')
@@ -533,9 +539,10 @@ const DeveloperDashboard = () => {
             className={styles.headerCreateButton}
           >
             <Plus size={24} className={styles.buttonIcon} />
-            Public Requests
+            View All Public Requests
           </button>
         </div>
+
         {!hasSeenTutorial && (
           <div className={styles.tutorialHint}>
             Click any card to view more details

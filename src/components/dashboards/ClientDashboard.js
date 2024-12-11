@@ -336,9 +336,16 @@ const ClientDashboard = () => {
   const fetchRequests = async () => {
     try {
       const response = await api.get('/requests/');
+      // Sort the requests by created_at in descending order (newest first)
+      const sortedRequests = Array.isArray(response.data)
+        ? [...response.data].sort(
+            (a, b) => new Date(b.created_at) - new Date(a.created_at)
+          )
+        : [];
+
       setDashboardData((prev) => ({
         ...prev,
-        requests: Array.isArray(response.data) ? response.data : [],
+        requests: sortedRequests,
       }));
       setErrors((prev) => ({ ...prev, requests: null }));
     } catch (error) {

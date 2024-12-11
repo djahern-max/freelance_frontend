@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProjectHandler from '../requests/ProjectHandler';
+import Alert from '../shared/Alert'; // Add this import
 import Header from '../shared/Header';
 import styles from './CreateProject.module.css';
 
@@ -8,7 +9,7 @@ const CreateProject = () => {
   const [projectName, setProjectName] = useState('');
   const [description, setDescription] = useState('');
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
+  const [showSuccess, setShowSuccess] = useState(false); // Changed from success state
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -25,7 +26,7 @@ const CreateProject = () => {
         throw new Error(result.error || 'Failed to create project');
       }
 
-      setSuccess('Project created successfully!');
+      setShowSuccess(true); // Changed from setSuccess
       setError(null);
 
       // Clear form
@@ -38,15 +39,34 @@ const CreateProject = () => {
       }, 1500);
     } catch (error) {
       console.error('Project creation error:', error);
-      setSuccess(null);
+      setShowSuccess(false); // Changed from setSuccess
       setError(error.message || 'Failed to create project. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
+
   return (
     <div className={styles.container}>
       <Header />
+      {/* Add Alert components here, outside the formWrapper */}
+      {error && (
+        <Alert
+          type="error"
+          message={error}
+          onClose={() => setError(null)}
+          autoClose={false}
+        />
+      )}
+      {showSuccess && (
+        <Alert
+          type="success"
+          message="Project created successfully!"
+          showRedirectMessage={true}
+          duration={1500}
+        />
+      )}
+
       <div className={styles.formWrapper}>
         <div className={styles.header}>
           <h1 className={styles.title}>Create Project</h1>
@@ -54,16 +74,6 @@ const CreateProject = () => {
             Create a new project to manage your requests
           </p>
         </div>
-
-        {error && <div className={styles.error}>{error}</div>}
-        {success && (
-          <div className={styles.success}>
-            {success}
-            <div className={styles.redirectMessage}>
-              Redirecting to dashboard...
-            </div>
-          </div>
-        )}
 
         <form className={styles.form} onSubmit={createProject}>
           <div className={styles.formGroup}>
