@@ -1,7 +1,9 @@
+// SharedRequestNotification.js
 import { Bell } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import api from '../../utils/api';
+import SharedRequestCard from './SharedRequestCard';
 import styles from './SharedRequestNotification.module.css';
 
 const SharedRequestNotification = () => {
@@ -15,7 +17,11 @@ const SharedRequestNotification = () => {
 
       try {
         const response = await api.get('/requests/shared-with-me');
-        const unviewedShares = response.data.filter((req) => !req.viewed_at);
+        // Remove duplicates based on request ID
+        const uniqueRequests = Array.from(
+          new Map(response.data.map((item) => [item.id, item])).values()
+        );
+        const unviewedShares = uniqueRequests.filter((req) => !req.viewed_at);
         setNewShares(unviewedShares);
       } catch (error) {
         console.error('Error fetching shared requests:', error);
@@ -32,11 +38,18 @@ const SharedRequestNotification = () => {
   if (loading || newShares.length === 0) return null;
 
   return (
-    <div className={styles.notificationBadge}>
-      <Bell className={styles.bellIcon} />
-      <span className={styles.count}>{newShares.length}</span>
-      <div className={styles.tooltip}>
-        You have {newShares.length} new shared requests
+    <div className={styles.container}>
+      <div className={styles.notificationBadge}>
+        <Bell className={styles.bellIcon} />
+        <span className={styles.count}>{newShares.length}</span>
+        <div className={styles.tooltip}>
+          You have {newShares.length} new shared requests
+        </div>
+      </div>
+      <div className={styles.requestsList}>
+        {newShares.map((request) => (
+          <SharedRequestCard key={request.id} request={request} />
+        ))}
       </div>
     </div>
   );

@@ -1,5 +1,7 @@
 import { FolderPlus, Info, Plus, X } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'react-toastify';
+import ProjectHandler from './ProjectHandler';
 import styles from './RequestGroupingToolbar.module.css';
 
 const RequestGroupingToolbar = ({
@@ -13,27 +15,82 @@ const RequestGroupingToolbar = ({
   const [showNewProject, setShowNewProject] = useState(false);
   const [newProjectName, setNewProjectName] = useState('');
   const [showTooltip, setShowTooltip] = useState(true);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleCreateProject = async (e) => {
-    e.preventDefault();
-    if (!newProjectName.trim()) return;
+  const handleGroup = async () => {
+    if (!selectedProjectId || isLoading) return;
 
-    const success = await onCreateProject(newProjectName);
-    if (success) {
-      setNewProjectName('');
-      setShowNewProject(false);
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      const result = await ProjectHandler.addRequestsToProject(
+        selectedProjectId,
+        selectedRequests
+      );
+
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+
+      toast.success('Requests grouped successfully!');
+      setSelectedProjectId('');
+
+      if (onGroup) {
+        await onGroup(selectedProjectId);
+      }
+      onClearSelection();
+    } catch (err) {
+      setError(err.message);
+      toast.error(err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleGroup = () => {
-    if (selectedProjectId) {
-      onGroup(selectedProjectId);
-      setSelectedProjectId('');
+  const handleCreateProject = async (e) => {
+    e.preventDefault();
+    if (isLoading) return;
+
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      const trimmedName = newProjectName.trim();
+      console.log(
+        'RequestGroupingToolbar - trimmedName type:',
+        typeof trimmedName
+      );
+      console.log('RequestGroupingToolbar - trimmedName value:', trimmedName);
+
+      if (!trimmedName) {
+        throw new Error('Project name is required');
+      }
+
+      if (trimmedName.length < 3) {
+        throw new Error('Project name must be at least 3 characters long');
+      }
+
+      // Just pass the name string, not the full project data
+      const success = await onCreateProject(trimmedName);
+
+      if (success) {
+        setNewProjectName('');
+        setShowNewProject(false);
+      }
+    } catch (err) {
+      console.error('Project creation error:', err);
+      setError(err.message || 'An unexpected error occurred');
+      toast.error(err.message || 'Failed to create project');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className={styles.toolbarContainer}>
+      {error && <div className={styles.errorMessage}>{error}</div>}
       {showTooltip && (
         <div className={styles.tooltip}>
           <Info size={20} className={styles.infoIcon} />
@@ -65,7 +122,11 @@ const RequestGroupingToolbar = ({
               {selectedRequests.length}{' '}
               {selectedRequests.length === 1 ? 'request' : 'requests'} selected
             </span>
-            <button className={styles.clearButton} onClick={onClearSelection}>
+            <button
+              className={styles.clearButton}
+              onClick={onClearSelection}
+              disabled={isLoading}
+            >
               <X size={16} />
               Clear selection
             </button>
@@ -79,6 +140,7 @@ const RequestGroupingToolbar = ({
                 value={selectedProjectId}
                 onChange={(e) => setSelectedProjectId(e.target.value)}
                 className={styles.select}
+                disabled={isLoading}
               >
                 <option value="">Choose a project</option>
                 {projects.map((project) => (
@@ -91,6 +153,7 @@ const RequestGroupingToolbar = ({
               <button
                 className={styles.addButton}
                 onClick={() => setShowNewProject(true)}
+                disabled={isLoading}
               >
                 <Plus size={16} />
                 Create New Project
@@ -107,16 +170,22 @@ const RequestGroupingToolbar = ({
                 onChange={(e) => setNewProjectName(e.target.value)}
                 placeholder="Enter project name"
                 className={styles.input}
+                disabled={isLoading}
                 autoFocus
               />
-              <button type="submit" className={styles.submitButton}>
+              <button
+                type="submit"
+                className={styles.submitButton}
+                disabled={isLoading}
+              >
                 <FolderPlus size={16} />
-                Create & Group
+                {isLoading ? 'Creating...' : 'Create & Group'}
               </button>
               <button
                 type="button"
                 className={styles.cancelButton}
                 onClick={() => setShowNewProject(false)}
+                disabled={isLoading}
               >
                 Cancel
               </button>
@@ -127,10 +196,12 @@ const RequestGroupingToolbar = ({
             <button
               className={styles.groupButton}
               onClick={handleGroup}
-              disabled={!selectedProjectId || selectedRequests.length === 0}
+              disabled={
+                !selectedProjectId || selectedRequests.length === 0 || isLoading
+              }
             >
               <FolderPlus size={16} />
-              Group into Project
+              {isLoading ? 'Grouping...' : 'Group into Project'}
             </button>
           )}
         </div>

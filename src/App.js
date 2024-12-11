@@ -6,6 +6,8 @@ import {
   BrowserRouter as Router,
   Routes,
 } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Login from './components/auth/Login';
 import Logout from './components/auth/Logout';
 import Register from './components/auth/Register';
@@ -75,6 +77,7 @@ function AppContent() {
 
   return (
     <>
+      <ToastContainer />
       <Header />
       <div className="app-content">
         <Routes>

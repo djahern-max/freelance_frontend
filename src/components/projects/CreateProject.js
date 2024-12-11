@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import api from "../../utils/api";
-import styles from "./CreateProject.module.css";
-import Header from "../shared/Header";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import ProjectHandler from '../requests/ProjectHandler';
+import Header from '../shared/Header';
+import styles from './CreateProject.module.css';
 
 const CreateProject = () => {
-  const [projectName, setProjectName] = useState("");
-  const [description, setDescription] = useState("");
+  const [projectName, setProjectName] = useState('');
+  const [description, setDescription] = useState('');
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -16,34 +16,34 @@ const CreateProject = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await api.post("/projects/", {
+      const result = await ProjectHandler.createProject({
         name: projectName,
         description,
       });
 
-      setSuccess("Project created successfully!");
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to create project');
+      }
+
+      setSuccess('Project created successfully!');
       setError(null);
 
       // Clear form
-      setProjectName("");
-      setDescription("");
+      setProjectName('');
+      setDescription('');
 
       // Show success message briefly before redirecting
       setTimeout(() => {
-        navigate("/client-dashboard"); // Redirect to client dashboard instead of requests
+        navigate('/client-dashboard');
       }, 1500);
     } catch (error) {
-      console.error("Project creation error:", error);
+      console.error('Project creation error:', error);
       setSuccess(null);
-      setError(
-        error.response?.data?.detail ||
-          "Failed to create project. Please try again."
-      );
+      setError(error.message || 'Failed to create project. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
-
   return (
     <div className={styles.container}>
       <Header />
@@ -99,17 +99,17 @@ const CreateProject = () => {
           <button
             type="submit"
             className={`${styles.submitButton} ${
-              isLoading ? styles.loading : ""
+              isLoading ? styles.loading : ''
             }`}
             disabled={isLoading}
           >
-            {isLoading ? "Creating Project..." : "Create Project"}
+            {isLoading ? 'Creating Project...' : 'Create Project'}
           </button>
 
           <button
             type="button"
             className={styles.cancelButton}
-            onClick={() => navigate("/client-dashboard")}
+            onClick={() => navigate('/client-dashboard')}
             disabled={isLoading}
           >
             Cancel

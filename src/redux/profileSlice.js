@@ -5,26 +5,31 @@ export const fetchProfile = createAsyncThunk(
   'profile/fetchProfile',
   async (_, { rejectWithValue }) => {
     try {
-      // First get user profile with type info
-      const userProfile = await api.helpers.profile.fetchUserProfile();
+      const userProfile = await api.profile.fetchUserProfile();
 
-      if (userProfile) {
-        try {
-          // Then get specific profile
-          const specificProfile =
-            await api.helpers.profile.fetchSpecificProfile(
-              userProfile.user_type
-            );
-          return {
-            ...userProfile,
-            [`${userProfile.user_type}_profile`]: specificProfile,
-          };
-        } catch (profileError) {
-          // Return just user profile if specific profile doesn't exist yet
-          return userProfile;
-        }
+      if (!userProfile) {
+        return null;
       }
-      return null;
+
+      return {
+        ...userProfile,
+        [`${userProfile.user_type}_profile`]: null,
+      };
+    } catch (error) {
+      if (error.response?.status === 404) {
+        return null;
+      }
+      return rejectWithValue(api.helpers.handleError(error));
+    }
+  }
+);
+
+export const createClientProfile = createAsyncThunk(
+  'profile/createClient',
+  async (profileData, { rejectWithValue }) => {
+    try {
+      const response = await api.post(API_ROUTES.PROFILE.CLIENT, profileData);
+      return response.data;
     } catch (error) {
       return rejectWithValue(api.helpers.handleError(error));
     }
@@ -35,21 +40,22 @@ export const createDeveloperProfile = createAsyncThunk(
   'profile/createDeveloper',
   async (profileData, { rejectWithValue }) => {
     try {
-      // Check if profileData is FormData or regular object
-      const isFormData = profileData instanceof FormData;
-      const config = isFormData
-        ? {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          }
-        : {};
-
       const response = await api.post(
         API_ROUTES.PROFILE.DEVELOPER,
-        profileData,
-        config
+        profileData
       );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(api.helpers.handleError(error));
+    }
+  }
+);
+
+export const updateClientProfile = createAsyncThunk(
+  'profile/updateClient',
+  async (profileData, { rejectWithValue }) => {
+    try {
+      const response = await api.put(API_ROUTES.PROFILE.CLIENT, profileData);
       return response.data;
     } catch (error) {
       return rejectWithValue(api.helpers.handleError(error));
@@ -61,29 +67,8 @@ export const updateDeveloperProfile = createAsyncThunk(
   'profile/updateDeveloper',
   async (profileData, { rejectWithValue }) => {
     try {
-      return await api.helpers.profile.updateProfile('developer', profileData);
-    } catch (error) {
-      return rejectWithValue(api.helpers.handleError(error));
-    }
-  }
-);
-
-export const createClientProfile = createAsyncThunk(
-  'profile/createClient',
-  async (profileData, { rejectWithValue }) => {
-    try {
-      return await api.helpers.profile.createProfile('client', profileData);
-    } catch (error) {
-      return rejectWithValue(api.helpers.handleError(error));
-    }
-  }
-);
-
-export const updateClientProfile = createAsyncThunk(
-  'profile/updateClient',
-  async (profileData, { rejectWithValue }) => {
-    try {
-      return await api.helpers.profile.updateProfile('client', profileData);
+      const response = await api.put(API_ROUTES.PROFILE.DEVELOPER, profileData);
+      return response.data;
     } catch (error) {
       return rejectWithValue(api.helpers.handleError(error));
     }
@@ -96,11 +81,13 @@ const profileSlice = createSlice({
     data: null,
     loading: false,
     error: null,
+    isInitialized: false,
   },
   reducers: {
     clearProfile: (state) => {
       state.data = null;
       state.error = null;
+      state.isInitialized = false;
     },
     clearError: (state) => {
       state.error = null;
@@ -116,8 +103,26 @@ const profileSlice = createSlice({
       .addCase(fetchProfile.fulfilled, (state, action) => {
         state.loading = false;
         state.data = action.payload;
+        state.isInitialized = true;
       })
       .addCase(fetchProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.isInitialized = true;
+      })
+      // Create Client Profile
+      .addCase(createClientProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createClientProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = {
+          ...state.data,
+          client_profile: action.payload,
+        };
+      })
+      .addCase(createClientProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
@@ -137,38 +142,6 @@ const profileSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      // Update Developer Profile
-      .addCase(updateDeveloperProfile.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(updateDeveloperProfile.fulfilled, (state, action) => {
-        state.loading = false;
-        state.data = {
-          ...state.data,
-          developer_profile: action.payload,
-        };
-      })
-      .addCase(updateDeveloperProfile.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      // Create Client Profile
-      .addCase(createClientProfile.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(createClientProfile.fulfilled, (state, action) => {
-        state.loading = false;
-        state.data = {
-          ...state.data,
-          client_profile: action.payload,
-        };
-      })
-      .addCase(createClientProfile.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
       // Update Client Profile
       .addCase(updateClientProfile.pending, (state) => {
         state.loading = true;
@@ -184,9 +157,32 @@ const profileSlice = createSlice({
       .addCase(updateClientProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      // Update Developer Profile
+      .addCase(updateDeveloperProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateDeveloperProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = {
+          ...state.data,
+          developer_profile: action.payload,
+        };
+      })
+      .addCase(updateDeveloperProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
 
 export const { clearProfile, clearError } = profileSlice.actions;
+
+// Selectors
+export const selectProfile = (state) => state.profile.data;
+export const selectIsInitialized = (state) => state.profile.isInitialized;
+export const selectLoading = (state) => state.profile.loading;
+export const selectError = (state) => state.profile.error;
+
 export default profileSlice.reducer;

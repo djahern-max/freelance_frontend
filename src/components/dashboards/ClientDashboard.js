@@ -12,6 +12,7 @@ import { toast } from 'react-toastify';
 import api from '../../utils/api';
 import ProjectDashboardCard from '../projects/ProjectDashboardCard';
 import CreateRequestModal from '../requests/CreateRequestModal';
+import ProjectHandler from '../requests/ProjectHandler';
 import RequestCard from '../requests/RequestCard';
 import RequestGroupingToolbar from '../requests/RequestGroupingToolbar';
 import Header from '../shared/Header';
@@ -89,10 +90,11 @@ const ClientDashboard = () => {
       setLoadingStates((prev) => ({ ...prev, sharedRequests: true }));
 
       const requestsResponse = await api.get('/requests/');
-      const clientRequests = requestsResponse.data;
+      // Create a Map with request ID as key to ensure uniqueness
+      const uniqueRequestsMap = new Map();
 
-      const sharedRequestsWithUsers = await Promise.all(
-        clientRequests.map(async (request) => {
+      await Promise.all(
+        requestsResponse.data.map(async (request) => {
           try {
             const sharesResponse = await api.get(
               `/requests/${request.id}/shares/users`
@@ -100,25 +102,21 @@ const ClientDashboard = () => {
             const sharedUsers = sharesResponse.data;
 
             if (sharedUsers && sharedUsers.length > 0) {
-              return {
+              uniqueRequestsMap.set(request.id, {
                 ...request,
                 sharedWith: sharedUsers,
-              };
+              });
             }
-            return null;
           } catch (error) {
             console.error(
               `Error fetching shares for request ${request.id}:`,
               error
             );
-            return null;
           }
         })
       );
 
-      const validSharedRequests = sharedRequestsWithUsers.filter(
-        (req) => req !== null
-      );
+      const validSharedRequests = Array.from(uniqueRequestsMap.values());
 
       setDashboardData((prev) => ({
         ...prev,
@@ -127,15 +125,10 @@ const ClientDashboard = () => {
       setErrors((prev) => ({ ...prev, sharedRequests: null }));
     } catch (error) {
       console.error('Shared requests fetch failed:', error);
-      const errorMessage =
-        error.response?.data?.detail ||
-        error.message ||
-        'Unable to load shared requests';
       setErrors((prev) => ({
         ...prev,
-        sharedRequests: errorMessage,
+        sharedRequests: 'Unable to load shared requests',
       }));
-      toast.error(errorMessage);
     } finally {
       setLoadingStates((prev) => ({ ...prev, sharedRequests: false }));
     }
@@ -238,41 +231,69 @@ const ClientDashboard = () => {
   };
 
   const handleCreateProject = async (projectName) => {
-    try {
-      const response = await api.post('/projects/', {
-        name: projectName,
-        description: `Project created from ${selectedRequests.length} requests`,
-      });
+    // If projectName is an object (which happens on the second call), it means we've already created the project
+    if (typeof projectName === 'object' && projectName.id) {
+      // Project was already created successfully, just return true
+      return true;
+    }
 
-      await Promise.all(
-        selectedRequests.map((requestId) =>
-          api.post(`/requests/${requestId}/project`, {
-            project_id: response.data.id,
-          })
-        )
+    console.log('ClientDashboard - projectName type:', typeof projectName);
+    console.log('ClientDashboard - projectName value:', projectName);
+
+    try {
+      const projectData = {
+        name: String(projectName).trim(),
+        description: `Project created from ${selectedRequests.length} requests`,
+      };
+
+      console.log('ClientDashboard - projectData:', projectData);
+
+      // Create the project
+      const projectResult = await ProjectHandler.createProject(projectData);
+
+      if (!projectResult.success) {
+        throw new Error(projectResult.error);
+      }
+
+      // Only proceed with adding requests if project creation was successful
+      await ProjectHandler.addRequestsToProject(
+        projectResult.data.id,
+        selectedRequests
       );
 
-      toast.success('Project created and requests grouped successfully');
+      toast.success(
+        `🎉 Project "${projectData.name}" created successfully with ${selectedRequests.length} requests!`,
+        {
+          position: 'top-center',
+          autoClose: 5000, // stays visible for 5 seconds
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        }
+      );
+
       setSelectedRequests([]);
       setShowGroupingToolbar(false);
       await fetchProjects();
       return true;
     } catch (error) {
       console.error('Error creating project:', error);
-      toast.error('Failed to create project');
+      toast.error(error.message || 'Failed to create project');
       return false;
     }
   };
-
   const handleGroupIntoProject = async (projectId) => {
     try {
-      await Promise.all(
-        selectedRequests.map((requestId) =>
-          api.post(`/requests/${requestId}/project`, {
-            project_id: projectId,
-          })
-        )
+      const result = await ProjectHandler.addRequestsToProject(
+        projectId,
+        selectedRequests
       );
+
+      if (!result.success) {
+        throw new Error(result.error);
+      }
 
       toast.success('Requests added to project successfully');
       setSelectedRequests([]);
@@ -280,7 +301,7 @@ const ClientDashboard = () => {
       await fetchProjects();
     } catch (error) {
       console.error('Error grouping requests:', error);
-      toast.error('Failed to group requests');
+      toast.error(error.message || 'Failed to group requests');
     }
   };
 
@@ -380,7 +401,7 @@ const ClientDashboard = () => {
           >
             <MessageSquare className={styles.icon} />
             <div className={styles.statInfo}>
-              <h3>Conversations Test</h3>
+              <h3>Conversations</h3>
               <p>{dashboardData.conversations.length}</p>
             </div>
           </div>
@@ -416,7 +437,7 @@ const ClientDashboard = () => {
 
         {expandedSections.conversations && (
           <div className={styles.expandedSection}>
-            <h2>Conversations Test ZXY</h2>
+            <h2>Conversations:</h2>
             {errors.conversations ? (
               <div className={styles.error}>{errors.conversations}</div>
             ) : dashboardData.conversations.length > 0 ? (
@@ -497,13 +518,27 @@ const ClientDashboard = () => {
                     className={styles.requestCard}
                     onClick={() => navigate(`/requests/${request.id}`)}
                   >
-                    <h4 className={styles.itemTitle}>{request.title}</h4>
+                    <div className={styles.itemTitle}>
+                      {request.title}
+                      <span className={styles.statusBadge}>
+                        {request.status || 'open'}
+                      </span>
+                    </div>
                     <p className={styles.itemDescription}>{request.content}</p>
+                    <div className={styles.metaInfo}>
+                      <span className={styles.budget}>
+                        Budget: ${request.estimated_budget}
+                      </span>
+                      <span>
+                        Created:{' '}
+                        {new Date(request.created_at).toLocaleDateString()}
+                      </span>
+                    </div>
                     <div className={styles.sharedWith}>
                       <span>Shared with: </span>
                       {request.sharedWith.map((user, index) => (
-                        <span key={user.id}>
-                          {user.username}
+                        <span key={user.id} className={styles.sharedUser}>
+                          @{user.username}
                           {index < request.sharedWith.length - 1 ? ', ' : ''}
                         </span>
                       ))}

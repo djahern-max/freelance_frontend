@@ -39,6 +39,12 @@ export const API_ROUTES = {
     CREATE_SUBSCRIPTION: '/payments/create-subscription',
     SUBSCRIPTION_STATUS: '/payments/subscription-status',
   },
+  PROJECTS: {
+    LIST: '/projects/',
+    CREATE: '/projects/',
+    DETAIL: (id) => `/projects/${id}/`,
+    ADD_REQUEST: (requestId) => `/requests/${requestId}/project`,
+  },
 };
 
 // Helper function to check if a route is public
@@ -253,6 +259,7 @@ api.profile = {
   async fetchUserProfile() {
     try {
       const response = await api.get('/profile/me');
+      console.log('User Profile Response:', response.data); // Add this line
       return response.data;
     } catch (error) {
       throw new Error(api.helpers.handleError(error));
@@ -278,6 +285,17 @@ api.profile = {
       const endpoint =
         userType === 'developer' ? '/profile/developer' : '/profile/client';
       const response = await api.put(endpoint, profileData);
+      return response.data;
+    } catch (error) {
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async createProfile(userType, profileData) {
+    try {
+      const endpoint =
+        userType === 'developer' ? '/profile/developer' : '/profile/client';
+      const response = await api.post(endpoint, profileData);
       return response.data;
     } catch (error) {
       throw new Error(api.helpers.handleError(error));

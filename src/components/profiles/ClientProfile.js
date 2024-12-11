@@ -1,26 +1,21 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import UrlInput from '../../components/common/UrlInput'; // Update the import path
 import {
   createClientProfile,
   fetchProfile,
-  updateClientProfile,
+  selectError,
+  selectIsInitialized,
+  selectLoading,
+  selectProfile,
 } from '../../redux/profileSlice';
-import styles from './DeveloperProfile.module.css';
+import styles from './ClientProfile.module.css';
 
 const DEFAULT_VALUES = {
   company_name: '',
   industry: '',
   company_size: '',
   website: '',
-};
-
-const PLACEHOLDERS = {
-  company_name: 'Your Company Name',
-  industry: 'e.g., Technology, Healthcare',
-  company_size: '',
-  website: 'https://your-company.com',
 };
 
 const COMPANY_SIZES = [
@@ -32,64 +27,35 @@ const COMPANY_SIZES = [
 
 const ClientProfile = () => {
   const dispatch = useDispatch();
-  const {
-    data: profile,
-    loading,
-    error,
-  } = useSelector((state) => state.profile);
+  const profile = useSelector(selectProfile);
+  const isInitialized = useSelector(selectIsInitialized);
+  const loading = useSelector(selectLoading);
+  const error = useSelector(selectError);
   const [formData, setFormData] = useState(DEFAULT_VALUES);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isWebsiteValid, setIsWebsiteValid] = useState(true);
 
   useEffect(() => {
-    dispatch(fetchProfile());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (profile?.client_profile) {
-      const profileData = profile.client_profile;
-      setFormData({
-        company_name: profileData.company_name || '',
-        industry: profileData.industry || '',
-        company_size: profileData.company_size || '',
-        website: profileData.website || '',
-      });
+    if (!isInitialized) {
+      dispatch(fetchProfile());
     }
-  }, [profile]);
+  }, [dispatch, isInitialized]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!isWebsiteValid && formData.website) {
-      toast.error('Please enter a valid website URL');
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
-      const action = profile?.client_profile
-        ? await dispatch(updateClientProfile(formData))
-        : await dispatch(createClientProfile(formData));
-
-      if (action.type.endsWith('/fulfilled')) {
-        toast.success(
-          profile?.client_profile
-            ? 'Profile updated successfully!'
-            : 'Profile created successfully!'
-        );
-      } else {
-        toast.error(action.payload || 'Failed to save profile');
-      }
+      await dispatch(createClientProfile(formData)).unwrap();
+      toast.success('Profile created successfully!');
+      dispatch(fetchProfile());
     } catch (err) {
-      toast.error('Error saving profile');
-      console.error('Profile save error:', err);
+      toast.error(err || 'Error creating profile');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  if (loading) {
+  if (loading && !isInitialized) {
     return (
       <div className={styles.loadingContainer}>
         <div className={styles.loadingSpinner}>Loading profile...</div>
@@ -97,22 +63,11 @@ const ClientProfile = () => {
     );
   }
 
-  const hasProfile = !!profile?.client_profile;
-
   return (
     <div className={styles.profileContainer}>
       <div className={styles.card}>
         <div className={styles.header}>
-          <h2 className={styles.title}>
-            {hasProfile ? 'Update Your Profile' : 'Create Your Profile'}
-          </h2>
-          {hasProfile && (
-            <div className={styles.profileStatus}>
-              <span className={styles.checkmark}>✓</span>
-              Profile created on{' '}
-              {new Date(profile.client_profile.created_at).toLocaleDateString()}
-            </div>
-          )}
+          <h2 className={styles.title}>Create Your Profile</h2>
         </div>
 
         <form onSubmit={handleSubmit} className={styles.form}>
@@ -137,7 +92,6 @@ const ClientProfile = () => {
               onChange={(e) =>
                 setFormData({ ...formData, company_name: e.target.value })
               }
-              placeholder={PLACEHOLDERS.company_name}
               required
             />
           </div>
@@ -155,7 +109,6 @@ const ClientProfile = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, industry: e.target.value })
                 }
-                placeholder={PLACEHOLDERS.industry}
                 required
               />
             </div>
@@ -173,7 +126,7 @@ const ClientProfile = () => {
                 }
                 required
               >
-                <option value="">Select size</option>
+                <option value="">Select size...</option>
                 {COMPANY_SIZES.map(({ value, label }) => (
                   <option key={value} value={value}>
                     {label}
@@ -183,15 +136,23 @@ const ClientProfile = () => {
             </div>
           </div>
 
-          <UrlInput
-            label="Website"
-            value={formData.website}
-            onChange={(value) =>
-              setFormData((prev) => ({ ...prev, website: value }))
-            }
-            onValidation={setIsWebsiteValid}
-            placeholder={PLACEHOLDERS.website}
-          />
+          <div className={styles.formGroup}>
+            <div className={styles.labelContainer}>
+              <label className={styles.label}>Website</label>
+            </div>
+            <input
+              type="url"
+              className={styles.input}
+              value={formData.website}
+              onChange={(e) =>
+                setFormData({ ...formData, website: e.target.value })
+              }
+              placeholder="https://example.com"
+            />
+            <span className={styles.helpText}>
+              Enter your company's website URL
+            </span>
+          </div>
 
           <div className={styles.formActions}>
             <button
@@ -200,11 +161,9 @@ const ClientProfile = () => {
               disabled={isSubmitting}
             >
               {isSubmitting ? (
-                <span className={styles.loadingText}>
-                  {hasProfile ? 'Updating...' : 'Creating...'}
-                </span>
+                <span className={styles.loadingText}>Creating...</span>
               ) : (
-                <span>{hasProfile ? 'Update Profile' : 'Create Profile'}</span>
+                'Create Profile'
               )}
             </button>
           </div>

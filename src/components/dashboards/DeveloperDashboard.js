@@ -1,11 +1,15 @@
 import {
   Bell,
   Briefcase,
-  FolderOpen, // Add this
+  Clock,
+  DollarSign,
+  FolderOpen,
+  MessageCircle,
   MessageSquare,
   Plus,
   Share2,
-  Star, // Add this
+  Star,
+  User,
 } from 'lucide-react';
 
 import { useEffect, useState } from 'react';
@@ -118,23 +122,102 @@ const SharedRequestCard = ({ request, onStartConversation, onView }) => {
   );
 };
 
-// Conversation Card Component (New)
 const ConversationCard = ({ conversation, navigate }) => {
+  const formatAgreementStatus = (status) => {
+    if (!status || status === 'No Agreement') {
+      return conversation.agreement_status || 'No Agreement';
+    }
+    return status;
+  };
+
+  const getStatusClass = (status) => {
+    const formattedStatus = formatAgreementStatus(status);
+    switch (formattedStatus.toLowerCase()) {
+      case 'accepted':
+        return styles.statusAccepted;
+      case 'negotiating':
+        return styles.statusNegotiating;
+      default:
+        return styles.statusDefault;
+    }
+  };
+
+  const formatTimeSince = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
+
+    if (diffInHours < 24) {
+      return `${diffInHours} hours ago`;
+    }
+    const diffInDays = Math.floor(diffInHours / 24);
+    return `${diffInDays} days ago`;
+  };
+
+  const statusClass = getStatusClass(conversation.agreement_status);
+  const displayStatus = formatAgreementStatus(conversation.agreement_status);
+
   return (
-    <div className={styles.conversationCard}>
-      <h3>{conversation.title || 'Untitled Conversation'}</h3>
-      <div className={styles.conversationMeta}>
-        <span>Status: {conversation.status}</span>
-        <span>
-          Last Updated: {new Date(conversation.updated_at).toLocaleDateString()}
-        </span>
+    <div
+      className={styles.conversationCard}
+      onClick={() => navigate(`/conversations/${conversation.id}`)}
+    >
+      <div className={styles.cardContent}>
+        {/* Title and Status Row */}
+        <div className={styles.mainRow}>
+          <div className={styles.titleSection}>
+            <MessageSquare size={16} />
+            <h4 className={styles.cardTitle}>
+              {conversation.request_title || 'Untitled Request'}
+            </h4>
+          </div>
+          <div className={`${styles.statusBadge} ${statusClass}`}>
+            {displayStatus}
+          </div>
+        </div>
+
+        {/* Client Info and Budget Row */}
+        <div className={styles.infoRow}>
+          <div className={styles.clientInfo}>
+            <User size={14} />
+            <span>Client: {conversation.client_username}</span>
+          </div>
+          {conversation.estimated_budget && (
+            <div className={styles.budgetInfo}>
+              <DollarSign size={14} />
+              <span>${conversation.estimated_budget}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Message Preview Row */}
+        {conversation.last_message && (
+          <div className={styles.messagePreview}>
+            <MessageCircle size={14} />
+            <span className={styles.lastMessage}>
+              "{conversation.last_message.substring(0, 50)}
+              {conversation.last_message.length > 50 ? '...' : '"'}
+            </span>
+          </div>
+        )}
+
+        {/* Stats Row */}
+        <div className={styles.statsRow}>
+          <div className={styles.messageCount}>
+            <MessageSquare size={14} />
+            <span>{conversation.message_count || 0} messages</span>
+          </div>
+          <div className={styles.lastActivity}>
+            <Clock size={14} />
+            <span>
+              Last activity:{' '}
+              {formatTimeSince(
+                conversation.last_activity || conversation.updated_at
+              )}
+            </span>
+          </div>
+        </div>
       </div>
-      <button
-        onClick={() => navigate(`/conversations/${conversation.id}`)}
-        className={styles.viewButton}
-      >
-        View Conversation
-      </button>
     </div>
   );
 };
@@ -176,20 +259,47 @@ const DeveloperDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      // Only fetch shared requests if user is a developer
-      const promises = [
-        api.get('/requests/public'),
-        api.get('/conversations/user/list'),
-        user.userType === 'developer'
-          ? api.get('/requests/shared-with-me')
-          : Promise.resolve({ data: [] }),
-      ];
+      // Get conversations
+      const conversationsRes = await api.get('/conversations/user/list');
+      const conversations = Array.isArray(conversationsRes.data)
+        ? conversationsRes.data
+        : [];
 
-      const [requestsRes, conversationsRes, sharedRequestsRes] =
-        await Promise.all(promises);
+      // Extract request IDs from conversations
+      const requestIds = conversations.map((conv) => conv.request_id);
+
+      if (requestIds.length > 0) {
+        // Get agreement statuses for all conversations
+        const agreementResponse = await api.get(`/agreements/statuses`, {
+          params: {
+            request_ids: requestIds.join(','),
+          },
+        });
+
+        // Map agreement statuses to conversations
+        const updatedConversations = conversations.map((conversation) => {
+          const agreement = agreementResponse.data.find(
+            (status) => status.request_id === conversation.request_id
+          );
+          return {
+            ...conversation,
+            agreement_status: agreement ? agreement.status : 'No Agreement',
+          };
+        });
+
+        setConversations(updatedConversations);
+      } else {
+        setConversations([]);
+      }
+
+      // Fetch other data...
+      const requestsRes = await api.get('/requests/public');
+      const sharedRequestsRes =
+        user.userType === 'developer'
+          ? await api.get('/requests/shared-with-me')
+          : { data: [] };
 
       setActiveRequests(requestsRes.data || []);
-      setConversations(conversationsRes.data || []);
       setSharedRequests(
         user.userType === 'developer' ? sharedRequestsRes.data || [] : []
       );
@@ -256,7 +366,9 @@ const DeveloperDashboard = () => {
     }
   };
 
-  const activeProjects = conversations.filter((c) => c.status === 'accepted');
+  const activeProjects = conversations.filter(
+    (c) => c.agreement_status && c.agreement_status.toLowerCase() === 'accepted'
+  );
 
   return (
     <div className={styles.dashboardContainer}>
@@ -271,13 +383,11 @@ const DeveloperDashboard = () => {
             Public Requests
           </button>
         </div>
-
         {!hasSeenTutorial && (
           <div className={styles.tutorialHint}>
             Click any card to view more details
           </div>
         )}
-
         <div className={styles.statsGrid}>
           <div
             className={`${styles.statCard} ${
@@ -331,10 +441,9 @@ const DeveloperDashboard = () => {
             </div>
           </div>
         </div>
-
         {/* Shared Requests Section */}
         {expandedSections.sharedRequests && (
-          <div className={styles.sharedRequests}>
+          <div className={styles.expandedSection}>
             <h2>Shared Requests</h2>
             {sharedRequests.length > 0 ? (
               <div className={styles.requestsList}>
@@ -349,22 +458,22 @@ const DeveloperDashboard = () => {
               </div>
             ) : (
               <div className={styles.emptyState}>
-                <FolderOpen className={styles.emptyStateIcon} />
-                <p>No active projects yet.</p>
+                <Share2 className={styles.emptyStateIcon} />
+                <p>There haven't been any requests shared with you yet</p>
                 <p>
-                  Projects will appear here once you've accepted an agreement!
+                  Requests will appear here when clients share them with you
                 </p>
               </div>
             )}
           </div>
         )}
-
         {/* Active Conversations Section */}
         {expandedSections.conversations && (
-          <div className={styles.conversations}>
-            <h2>Conversations</h2>
+          <div className={styles.expandedSection}>
+            {' '}
+            <h2>Conversations:</h2>
             {conversations.length > 0 ? (
-              <div className={styles.conversationsList}>
+              <div className={styles.conversationGrid}>
                 {conversations.map((conversation) => (
                   <ConversationCard
                     key={conversation.id}
@@ -382,7 +491,6 @@ const DeveloperDashboard = () => {
             )}
           </div>
         )}
-
         {/* Active Projects Section */}
         {expandedSections.projects && (
           <div className={styles.projects}>
@@ -408,7 +516,6 @@ const DeveloperDashboard = () => {
             )}
           </div>
         )}
-
         {/* Recent Opportunities Section */}
         {expandedSections.opportunities && (
           <div className={styles.recentActivity}>

@@ -151,17 +151,21 @@
 }
 
 .requestCard {
-  flex: 1;
   background: white;
-  border-radius: 0.5rem;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-  padding: 1.25rem;
-  width: 100%;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid #edf2f7;
+  transition: all 0.2s ease;
 }
 
 .requestCard:hover {
-  background-color: #f3f4f6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
+
+
 
 .requestCheckbox {
   margin-top: 1.5rem;
@@ -200,27 +204,97 @@
   color: #333;
 }
 
-.itemDescription {
-  margin: 0;
-  color: #666;
+.requestHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
 }
 
+.statusBadge {
+  font-size: 0.875rem;
+  padding: 4px 12px;
+  border-radius: 16px;
+  background-color: #e6f6ff;
+  color: #0077cc;
+  font-weight: 500;
+}
+
+.itemTitle {
+  color: #2d3748;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+
+.status {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.itemDescription {
+  color: #4a5568;
+  margin: 12px 0;
+  line-height: 1.5;
+}
 .itemDate {
   margin: 0;
   color: #999;
   font-size: 0.875rem;
 }
 
-/* Shared Info Styles */
-.sharedWith {
+.metaInfo {
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  justify-content: space-between;
+  color: #718096;
   font-size: 0.875rem;
-  color: #6b7280;
-  padding-top: 0.5rem;
-  border-top: 1px solid #e5e7eb;
+  margin: 12px 0;
+  padding: 8px 0;
+  border-top: 1px solid #edf2f7;
+}
+
+.budget {
+  color: #38a169;
+  font-weight: 500;
+}
+
+/* Shared Info Styles */
+.requestMeta {
+  display: flex;
+  justify-content: space-between;
+  margin: 12px 0;
+  font-size: 0.9rem;
+  color: #718096;
+}
+
+.sharedLabel {
+  font-weight: 500;
+  color: #4a5568;
+}
+
+.sharedUsers {
+  display: inline;
+  margin-left: 4px;
+}
+
+.sharedUser {
+  color: #4299e1;
+  font-weight: 500;
+}
+
+
+
+.sharedWith {
+  margin-top: 12px;
+  color: #4a5568;
+  font-size: 0.875rem;
 }
 
 /* Empty State */
@@ -428,6 +502,8 @@
   height: 1rem;
   color: #6c757d;
 }
+
+
 
 /* Responsive Design */
 @media (max-width: 1024px) {
