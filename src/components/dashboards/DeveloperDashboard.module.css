@@ -537,8 +537,37 @@
 }
 
 .projectCard {
-  background: #f9fafb;
-  border-left: 3px solid #22c55e;
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.projectCard:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.projectHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.projectTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md); /* Increased spacing between icon and title */
+  font-weight: 500;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-primary);
+}
+
+.projectIcon {
+  color: var(--color-primary);
 }
 
 .projectTitle {
@@ -548,15 +577,30 @@
 }
 
 .projectBadge {
-  display: inline-flex;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: var(--color-primary);
+  color: white;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+}
+
+.projectDetails {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md); /* Increased spacing between items */
+}
+
+.detailItem {
+  display: flex;
   align-items: center;
-  padding: 0.25rem 0.75rem;
-  background: #dcfce7;
-  color: #15803d;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  align-self: flex-start;
+  gap: var(--spacing-md); /* Increased spacing between icon and text */
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.detailIcon {
+  flex-shrink: 0;
+  color: var(--color-text-secondary);
 }
 
 .projectActivity {

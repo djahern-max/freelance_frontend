@@ -2,11 +2,13 @@ import {
   Bell,
   Briefcase,
   Clock,
+  FileText, // Add this
   FolderOpen,
   MessageSquare,
   Plus,
   Share2,
   Star,
+  Users, // Add this if not already imported
 } from 'lucide-react';
 
 import { useEffect, useState } from 'react';
@@ -123,59 +125,64 @@ const SharedRequestCard = ({ request, onStartConversation, onView }) => {
 const ConversationCard = ({ conversation, navigate, isProject = false }) => {
   const formatTimeSince = (dateString) => {
     if (!dateString) return 'Unknown';
-
     const date = new Date(dateString);
     const now = new Date();
-
     if (isNaN(date.getTime())) return 'Invalid date';
-
     const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
-
     if (diffInHours < 1) return 'Just now';
     if (diffInHours < 24) return `${diffInHours} hours ago`;
-
     const diffInDays = Math.floor(diffInHours / 24);
     if (diffInDays === 1) return 'Yesterday';
     if (diffInDays < 7) return `${diffInDays} days ago`;
     if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} weeks ago`;
-
     return date.toLocaleDateString();
   };
 
   const handleNavigation = () => {
     if (isProject) {
-      // Navigate to agreement view instead of project view
       navigate(`/agreements/request/${conversation.request_id}`);
     } else {
       navigate(`/conversations/${conversation.id}`);
     }
   };
 
+  // In DeveloperDashboard.js - ConversationCard component
   if (isProject) {
+    const lastMessage =
+      conversation.messages?.[conversation.messages.length - 1];
+
     return (
       <div className={styles.projectCard} onClick={handleNavigation}>
-        {/* Project Title */}
-        <MessageSquare
-          size={16}
-          style={{ marginRight: '8px', color: '#4B5563' }}
-        />
-        <span className={styles.projectTitle}>
-          {conversation.request_title || 'test 2'}
-        </span>
-
-        {/* Active Project Badge */}
-        <div className={styles.projectBadge}>
-          <Star size={14} style={{ marginRight: '4px' }} />
-          Active Project
+        <div className={styles.projectHeader}>
+          <div className={styles.projectTitle}>
+            <Star size={16} className={styles.projectIcon} />
+            <span>{conversation.request_title || 'Untitled Project'}</span>
+          </div>
+          <div className={styles.projectBadge}>Active Project</div>
         </div>
 
-        {/* Last Activity */}
-        <div className={styles.projectActivity}>
-          <Clock size={14} style={{ marginRight: '4px', color: '#6B7280' }} />
-          Last activity:{' '}
-          {formatTimeSince(
-            conversation.last_activity || conversation.updated_at
+        <div className={styles.projectDetails}>
+          {/* Agreement Status */}
+          <div className={styles.detailItem}>
+            <FileText size={14} className={styles.detailIcon} />
+            <span>Agreement Status: {conversation.agreement_status}</span>
+          </div>
+
+          {/* Last Activity */}
+          {lastMessage && (
+            <div className={styles.detailItem}>
+              <Clock size={14} className={styles.detailIcon} />
+              <span>
+                Last activity: {formatTimeSince(lastMessage.created_at)}
+              </span>
+            </div>
           )}
+
+          {/* Participants Count */}
+          <div className={styles.detailItem}>
+            <Users size={14} className={styles.detailIcon} />
+            <span>2 participants</span>
+          </div>
         </div>
       </div>
     );
@@ -369,18 +376,41 @@ const DeveloperDashboard = () => {
       console.error('Error marking share as viewed:', error);
     }
   };
-
-  // In DeveloperDashboard.js
   const fetchDashboardData = async () => {
     try {
       // Get conversations
       const conversationsRes = await api.get('/conversations/user/list');
-      const conversations = Array.isArray(conversationsRes.data)
+      let conversations = Array.isArray(conversationsRes.data)
         ? conversationsRes.data
         : [];
 
+      // Get additional details for each conversation
+      const conversationsWithDetails = await Promise.all(
+        conversations.map(async (conv) => {
+          try {
+            // Get messages for this conversation
+            const messagesRes = await api.get(
+              `/conversations/${conv.id}/messages`
+            );
+
+            return {
+              ...conv,
+              messages: messagesRes.data,
+            };
+          } catch (err) {
+            console.error(
+              `Error fetching details for conversation ${conv.id}:`,
+              err
+            );
+            return conv;
+          }
+        })
+      );
+
       // Extract request IDs from conversations
-      const requestIds = conversations.map((conv) => conv.request_id);
+      const requestIds = conversationsWithDetails.map(
+        (conv) => conv.request_id
+      );
 
       if (requestIds.length > 0) {
         // Get agreement statuses for all conversations
@@ -397,20 +427,22 @@ const DeveloperDashboard = () => {
           : [];
 
         // Map agreement statuses to conversations
-        const updatedConversations = conversations.map((conversation) => {
-          const agreement = agreementResponse.data.find(
-            (status) => status.request_id === conversation.request_id
-          );
-          // Find matching project
-          const relatedProject = projects.find(
-            (p) => p.request_id === conversation.request_id
-          );
-          return {
-            ...conversation,
-            agreement_status: agreement ? agreement.status : 'No Agreement',
-            project_id: relatedProject?.id, // Add project ID to conversation data
-          };
-        });
+        const updatedConversations = conversationsWithDetails.map(
+          (conversation) => {
+            const agreement = agreementResponse.data.find(
+              (status) => status.request_id === conversation.request_id
+            );
+            // Find matching project
+            const relatedProject = projects.find(
+              (p) => p.request_id === conversation.request_id
+            );
+            return {
+              ...conversation,
+              agreement_status: agreement ? agreement.status : 'No Agreement',
+              project_id: relatedProject?.id, // Add project ID to conversation data
+            };
+          }
+        );
 
         setConversations(updatedConversations);
       } else {
@@ -441,6 +473,7 @@ const DeveloperDashboard = () => {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     if (auth.token) {
       fetchDashboardData();
