@@ -1,4 +1,3 @@
-/* ProjectDashboardCard.module.css */
 .projectsContainer {
   width: 100%;
   display: flex;
@@ -21,8 +20,14 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.cardContent {
+  display: flex;
+  justify-content: space-between; /* Distribute space between left and right sections */
+  align-items: center;
+}
+
 .projectHeader {
-  margin-bottom: 1.5rem;
+  max-width: 70%; /* Limit width to prevent overlap with right section */
 }
 
 .projectTitle {
@@ -37,38 +42,8 @@
   color: #666;
 }
 
-.metricsContainer {
-  width: 100%;
-}
-
-.metricsRow {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.metricItem {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.metricLabel {
-  font-size: 0.875rem;
-  color: #666;
-  margin-bottom: 0.25rem;
-}
-
-.metricValue {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1a1a1a;
-}
-
-.bottomSection {
-  border-top: 1px solid #eee;
-  padding-top: 1rem;
+.rightSection {
+  text-align: right; /* Align text to the right */
 }
 
 .lastActivity {
@@ -77,61 +52,17 @@
   gap: 0.5rem;
   color: #666;
   font-size: 0.875rem;
-  margin-bottom: 1rem;
 }
 
-.progressSection {
-  width: 100%;
-}
-
-.progressBar {
-  width: 100%;
-  height: 8px;
-  background-color: #e5e5e5;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.progressFill {
-  height: 100%;
-  background-color: #3b82f6;
-  border-radius: 4px;
-  transition: width 0.3s ease;
-}
-
-.progressText {
-  font-size: 0.875rem;
-  color: #666;
-  margin-top: 0.5rem;
-}
-
-/* Icon colors */
 .iconBlue {
   width: 20px;
   height: 20px;
   color: #3b82f6;
 }
 
-.iconGreen {
-  width: 20px;
-  height: 20px;
-  color: #22c55e;
-}
-
-.iconPurple {
-  width: 20px;
-  height: 20px;
-  color: #8b5cf6;
-}
-
-.iconOrange {
-  width: 20px;
-  height: 20px;
-  color: #f97316;
-}
-
-.iconGray {
-  width: 20px;
-  height: 20px;
-  color: #666;
+.clickMessage {
+  font-size: 0.875rem;
+  color: #3b82f6;
+  font-weight: 500;
+  margin-top: 0.5rem;
 }

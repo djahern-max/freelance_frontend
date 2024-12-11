@@ -74,8 +74,8 @@ const ClientDashboard = () => {
 
   const fetchProjects = async () => {
     try {
-      const response = await api.get('/projects/');
-      setProjects(response.data);
+      const response = await api.get('/projects/'); // Fetch projects from the API
+      setProjects(response.data); // Directly use the response data without modifying it
       setErrors((prev) => ({ ...prev, projects: null }));
     } catch (error) {
       console.error('Error fetching projects:', error);
