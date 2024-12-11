@@ -142,12 +142,18 @@ const ConversationCard = ({ conversation, navigate, isProject = false }) => {
     return date.toLocaleDateString();
   };
 
+  const handleNavigation = () => {
+    if (isProject) {
+      // Navigate to agreement view instead of project view
+      navigate(`/agreements/request/${conversation.request_id}`);
+    } else {
+      navigate(`/conversations/${conversation.id}`);
+    }
+  };
+
   if (isProject) {
     return (
-      <div
-        className={styles.projectCard}
-        onClick={() => navigate(`/conversations/${conversation.id}`)}
-      >
+      <div className={styles.projectCard} onClick={handleNavigation}>
         {/* Project Title */}
         <MessageSquare
           size={16}
@@ -177,10 +183,7 @@ const ConversationCard = ({ conversation, navigate, isProject = false }) => {
 
   // Conversation view
   return (
-    <div
-      className={styles.conversationCard}
-      onClick={() => navigate(`/conversations/${conversation.id}`)}
-    >
+    <div className={styles.conversationCard} onClick={handleNavigation}>
       {/* Conversation Title */}
       <MessageSquare
         size={16}
@@ -209,6 +212,7 @@ const DeveloperDashboard = () => {
   const [activeRequests, setActiveRequests] = useState([]);
   const [conversations, setConversations] = useState([]);
   const [sharedRequests, setSharedRequests] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [hasSeenTutorial, setHasSeenTutorial] = useState(() => {
@@ -366,6 +370,7 @@ const DeveloperDashboard = () => {
     }
   };
 
+  // In DeveloperDashboard.js
   const fetchDashboardData = async () => {
     try {
       // Get conversations
@@ -385,14 +390,25 @@ const DeveloperDashboard = () => {
           },
         });
 
+        // Get projects
+        const projectsRes = await api.get('/projects/');
+        const projects = Array.isArray(projectsRes.data)
+          ? projectsRes.data
+          : [];
+
         // Map agreement statuses to conversations
         const updatedConversations = conversations.map((conversation) => {
           const agreement = agreementResponse.data.find(
             (status) => status.request_id === conversation.request_id
           );
+          // Find matching project
+          const relatedProject = projects.find(
+            (p) => p.request_id === conversation.request_id
+          );
           return {
             ...conversation,
             agreement_status: agreement ? agreement.status : 'No Agreement',
+            project_id: relatedProject?.id, // Add project ID to conversation data
           };
         });
 
@@ -425,7 +441,6 @@ const DeveloperDashboard = () => {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     if (auth.token) {
       fetchDashboardData();

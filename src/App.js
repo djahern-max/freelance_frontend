@@ -23,6 +23,7 @@ import Home from './components/pages/HomePage';
 import SubscriptionSuccess from './components/payments/SubscriptionSuccess';
 import PublicDevelopers from './components/profiles/PublicDevelopers';
 import CreateProject from './components/projects/CreateProject';
+import ProjectAgreementView from './components/projects/ProjectAgreementView';
 import ProjectDetails from './components/projects/ProjectDetails';
 import ProjectsList from './components/projects/ProjectsList';
 import PublicRequests from './components/requests/PublicRequests';
@@ -92,6 +93,14 @@ function AppContent() {
           <Route
             path="/subscription/success"
             element={<SubscriptionSuccess />}
+          />
+          <Route
+            path="/agreements/request/:requestId"
+            element={
+              <ProtectedRoute userType="developer">
+                <ProjectAgreementView />
+              </ProtectedRoute>
+            }
           />
           {/* Client-specific routes */}
           <Route
