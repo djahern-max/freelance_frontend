@@ -7,7 +7,6 @@ import {
   Plus,
   Share2,
   Star,
-  User,
 } from 'lucide-react';
 
 import { useEffect, useState } from 'react';
@@ -143,50 +142,65 @@ const ConversationCard = ({ conversation, navigate, isProject = false }) => {
     return date.toLocaleDateString();
   };
 
-  // Simpler card layout that matches your current design
+  if (isProject) {
+    return (
+      <div
+        className={styles.projectCard}
+        onClick={() => navigate(`/conversations/${conversation.id}`)}
+      >
+        {/* Project Title */}
+        <MessageSquare
+          size={16}
+          style={{ marginRight: '8px', color: '#4B5563' }}
+        />
+        <span className={styles.projectTitle}>
+          {conversation.request_title || 'test 2'}
+        </span>
+
+        {/* Active Project Badge */}
+        <div className={styles.projectBadge}>
+          <Star size={14} style={{ marginRight: '4px' }} />
+          Active Project
+        </div>
+
+        {/* Last Activity */}
+        <div className={styles.projectActivity}>
+          <Clock size={14} style={{ marginRight: '4px', color: '#6B7280' }} />
+          Last activity:{' '}
+          {formatTimeSince(
+            conversation.last_activity || conversation.updated_at
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Conversation view
   return (
     <div
       className={styles.conversationCard}
       onClick={() => navigate(`/conversations/${conversation.id}`)}
     >
-      {/* Title */}
-      <MessageSquare size={16} style={{ marginRight: '8px' }} />
-      {conversation.request_title || 'test 2'}
+      {/* Conversation Title */}
+      <MessageSquare
+        size={16}
+        style={{ marginRight: '8px', color: '#4B5563' }}
+      />
+      <span className={styles.conversationTitle}>
+        {conversation.request_title || 'test 2'}
+      </span>
 
-      {/* Client Info */}
-      <div className={styles.clientInfo}>
-        <User size={14} style={{ marginRight: '4px' }} />
-        Client: {conversation.client_username}
+      {/* Agreement Status */}
+      <div className={styles.agreementStatus}>
+        Agreement Status: {conversation.agreement_status || 'No Agreement'}
       </div>
-
-      {/* Show different information based on type */}
-      {!isProject ? (
-        // Conversations view
-        <>
-          <div className={styles.messageCount}>
-            <MessageSquare size={14} style={{ marginRight: '4px' }} />
-            {conversation.message_count || 0} messages
-          </div>
-        </>
-      ) : (
-        // Projects view - could show project-specific info
-        <>
-          <div className={styles.projectStatus}>
-            <Star size={14} style={{ marginRight: '4px' }} />
-            Active Project
-          </div>
-        </>
-      )}
 
       {/* Last Activity */}
       <div className={styles.lastActivity}>
-        <Clock size={14} style={{ marginRight: '4px' }} />
+        <Clock size={14} style={{ marginRight: '4px', color: '#6B7280' }} />
         Last activity:{' '}
         {formatTimeSince(conversation.last_activity || conversation.updated_at)}
       </div>
-
-      {/* Status Badge */}
-      <div className={styles.accepted}>accepted</div>
     </div>
   );
 };

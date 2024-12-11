@@ -521,6 +521,7 @@
   margin-top: 1rem;
 }
 
+.projectCard,
 .conversationCard {
   background: white;
   border: 1px solid #eaeaea;
@@ -530,6 +531,40 @@
   cursor: pointer;
   width: 100%;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.projectCard {
+  background: #f9fafb;
+  border-left: 3px solid #22c55e;
+}
+
+.projectTitle {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #111827;
+}
+
+.projectBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  background: #dcfce7;
+  color: #15803d;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  align-self: flex-start;
+}
+
+.projectActivity {
+  display: flex;
+  align-items: center;
+  color: #6B7280;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
 }
 
 .projectStatus {
@@ -556,9 +591,11 @@
   margin: 0.5rem 0;
 }
 
+.projectCard:hover,
 .conversationCard:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transition: all 0.2s ease;
 }
 
 .cardContent {
@@ -721,8 +758,15 @@
 }
 
 .agreementStatus {
-  width: 34%;
-  justify-content: center;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  background: #dbeafe;
+  color: #1e40af;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  align-self: flex-start;
 }
 
 .requestDate {
@@ -809,9 +853,9 @@
 .lastActivity {
   display: flex;
   align-items: center;
-  color: #666;
+  color: #6B7280;
   font-size: 0.875rem;
-  margin: 0.5rem 0;
+  margin-top: 0.25rem;
 }
 
 .accepted {
@@ -1016,14 +1060,12 @@
 
 .conversationCard {
   background: white;
-  border: 1px solid #eaeaea;
-  border-radius: 0.5rem;
-  padding: 1rem;
-  margin-bottom: 0.5rem;
-  cursor: pointer;
-  position: relative;
-  width: 100%;
-  box-sizing: border-box;
+}
+
+.conversationTitle {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #111827;
 }
 
 /* Empty State Styles */
