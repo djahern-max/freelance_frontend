@@ -43,12 +43,7 @@ const CreateRequestModal = ({
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modal}>
-        <div className={styles.header}>
-          <h1 className={styles.title}>
-            {isEditing ? 'Edit Request' : 'Create New Request'}
-          </h1>
-        </div>
-
+        {/* Removed the header containing the title */}
         {error && <div className={styles.error}>{error}</div>}
 
         <form className={styles.form} onSubmit={handleSubmit}>
@@ -130,10 +125,6 @@ const CreateRequestModal = ({
                   Make this request public
                 </span>
               </label>
-              <div className={styles.helpText}>
-                Public requests will be visible to all developers on the
-                platform
-              </div>
             </div>
           </div>
 
