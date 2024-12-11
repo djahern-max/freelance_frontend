@@ -110,17 +110,6 @@ const RequestDetails = () => {
     });
   };
 
-  const handleShareComplete = () => {
-    // Fetch updated request details
-    api.get(`/requests/${requestId}`).then((response) => {
-      setRequest(response.data);
-      setSuccessMessage('Request shared successfully!'); // Set success message
-
-      // Clear the message after 5 seconds
-      setTimeout(() => setSuccessMessage(''), 5000);
-    });
-  };
-
   const handleBack = () => {
     if (location.state?.from) {
       navigate(location.state.from);
