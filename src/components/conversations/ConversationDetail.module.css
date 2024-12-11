@@ -98,10 +98,9 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   position: relative;
-  height: calc(100vh - 64px - 2rem); /* Full height minus header and padding */
-  margin: 0; /* Remove margin */
+  height: 100%;
+  width: 100%; /* Added to ensure full width */
 }
-
 .messagesContainer {
   flex: 1;
   overflow-y: auto;
@@ -109,8 +108,8 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding-bottom: 70px;
-  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.05); /* Add subtle inset shadow */
+  padding-bottom: 100px; /* Increased to ensure space for input */
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.05);
 }
 .messageWrapper {
   display: flex;
@@ -199,20 +198,21 @@
   word-break: break-word;
 }
 .inputContainer {
-  position: absolute;
+  position: sticky; /* Change from fixed to sticky */
   bottom: 0;
-  left: 0;
-  right: 0;
+  width: 100%; /* Full width */
   background: white;
   padding: 1rem;
   border-top: 1px solid #e5e7eb;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
-  z-index: 10;
-  margin-bottom: 0; /* Ensure no margin at bottom */
+  z-index: 100;
+  margin: 0;
 }
+
 .inputForm {
   display: flex;
   gap: 0.5rem;
+  width: 100%; /* Make form full width */
 }
 
 .messageInput {
@@ -221,6 +221,7 @@
   border: 1px solid #e5e7eb;
   border-radius: 0.375rem;
   font-size: 1rem;
+  min-width: 0; /* Prevent flex item from overflowing */
 }
 
 .messageInput:focus {
@@ -244,6 +245,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0; /* Prevent button from shrinking */
 }
 .sendButton:hover {
   background: #2563eb;
@@ -843,6 +845,9 @@
   .mainSection {
     width: 100%;
   }
+  .inputContainer {
+    max-width: 100%;
+  }
 }
 
 
@@ -863,13 +868,17 @@
     max-width: 90%;
   }
   .inputContainer {
-    position: sticky;
+    position: fixed;
     bottom: 0;
-    width: 100%;
-    padding: 1rem;
+    left: 0;
+    right: 0;
     background: white;
-    border-top: 1px solid #e9ecef;
-    z-index: 10;
+    padding: 1rem;
+    border-top: 1px solid #e5e7eb;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+    z-index: 100;
+    width: 100%; /* Added to ensure full width */
+    margin: 0; /* Remove any margins */
   }
 
   .buttonGroup {
