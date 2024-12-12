@@ -310,6 +310,14 @@ const ConversationDetail = () => {
     <div className={styles.container}>
       <ToastContainer />
 
+      {/* Add overlay div */}
+      {isSidebarVisible && (
+        <div
+          className={styles.overlay}
+          onClick={() => setIsSidebarVisible(false)}
+        />
+      )}
+
       <div className={styles.header}>
         <button className={styles.backButton} onClick={() => navigate(-1)}>
           <ArrowLeft size={20} />
@@ -379,11 +387,22 @@ const ConversationDetail = () => {
         </div>
 
         {/* Sidebar */}
+
         <div
           className={`${styles.sidebar} ${
             isSidebarVisible ? styles.mobileVisible : ''
           }`}
         >
+          <div className={styles.sidebarHeader}>
+            <button
+              className={styles.closeSidebar}
+              onClick={() => setIsSidebarVisible(false)}
+              aria-label="Close sidebar"
+            >
+              ×
+            </button>
+          </div>
+
           {/* Agreement Section */}
           <div className={styles.sidebarSection}>
             <div className={styles.sectionHeader}>

@@ -800,6 +800,10 @@
   cursor: pointer;
 }
 
+.sidebarHeader {
+  display: none; /* Hidden by default on desktop */
+}
+
 
 @media (max-width: 768px) {
   .sidebar {
@@ -813,6 +817,32 @@
     background: white;
     box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
     border-radius: 0;
+  }
+
+  .sidebarHeader {
+    display: flex;
+    justify-content: flex-end;
+    padding: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .closeSidebar {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #666;
+    cursor: pointer;
+    padding: 0.5rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.25rem;
+  }
+
+  .closeSidebar:hover {
+    background-color: #f3f4f6;
   }
 
   .sidebar.mobileVisible {
@@ -834,8 +864,12 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.5);
     z-index: 999;
+  }
+
+  .overlay.visible {
+    display: block;
   }
 
   .overlay.mobileVisible {
