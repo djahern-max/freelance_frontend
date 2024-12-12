@@ -8,6 +8,12 @@
   color: #1a1a1a;
 }
 
+.buttonWrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
 .input:focus {
   outline: none;
   border-color: #3b82f6;
@@ -261,11 +267,21 @@
 }
 
 .menuToggle {
-  display: none; /* Hide on large screens */
+  display: none; /* Hide by default (for larger screens) */
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #f3f4f6;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  color: #374151;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
 }
 
 .menuToggle:hover {
-  color: #3b82f6;
+  background-color: #e5e7eb;
 }
 .sidebar {
   width: 280px;
@@ -282,12 +298,11 @@
 }
 
 .sidebarSection {
-  background-color: white; /* Changed from light blue */
+  background-color: white;
   border-radius: 0.75rem;
   padding: 1.25rem;
   margin-bottom: 1rem;
-  border: 1px solid #e9ecef;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08); /* This could be creating a line effect */
 }
 
 .sidebarSection:hover {
@@ -801,7 +816,28 @@
 }
 
 .sidebarHeader {
-  display: none; /* Hidden by default on desktop */
+  padding: 1rem;
+
+}
+
+.closeSidebarButton {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.closeSidebarButton:hover {
+  background-color: #e5e7eb;
 }
 
 
@@ -813,10 +849,13 @@
     top: 64px;
     height: calc(100vh - 64px);
     width: 280px;
-    z-index: 1000;
     background: white;
+    z-index: 1000;
     box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
-    border-radius: 0;
+  }
+
+  .menuToggle {
+    display: flex;
   }
 
   .sidebarHeader {

@@ -5,7 +5,7 @@ import {
   Clock,
   DollarSign,
   FileText,
-  Menu,
+  Info,
   Send,
   User,
   XCircle,
@@ -326,9 +326,9 @@ const ConversationDetail = () => {
         <button
           className={styles.menuToggle}
           onClick={() => setIsSidebarVisible(!isSidebarVisible)}
-          aria-label="Toggle sidebar"
+          aria-label={isSidebarVisible ? 'Close details' : 'Show details'}
         >
-          <Menu size={24} />
+          <Info size={24} /> {/* or whichever icon you prefer */}
         </button>
       </div>
       <div className={styles.content}>
@@ -395,20 +395,19 @@ const ConversationDetail = () => {
         >
           <div className={styles.sidebarHeader}>
             <button
-              className={styles.closeSidebar}
+              className={styles.closeSidebarButton}
               onClick={() => setIsSidebarVisible(false)}
-              aria-label="Close sidebar"
             >
-              ×
+              Close Details
             </button>
           </div>
 
           {/* Agreement Section */}
           <div className={styles.sidebarSection}>
-            <div className={styles.sectionHeader}>
-              {(user.userType === 'developer' || user.userType === 'client') &&
-                !agreement &&
-                !showAgreementForm && (
+            {(user.userType === 'developer' || user.userType === 'client') &&
+              !agreement &&
+              !showAgreementForm && (
+                <div className={styles.buttonWrapper}>
                   <button
                     onClick={() => setShowAgreementForm(true)}
                     className={styles.createAgreementButton}
@@ -416,106 +415,106 @@ const ConversationDetail = () => {
                     <FileText size={16} />
                     Create Agreement
                   </button>
-                )}
-            </div>
-            {agreement ? (
-              <div
-                className={`${styles.existingAgreement} ${styles.clickable}`}
-                onClick={handleAgreementClick}
-                role="button"
-                tabIndex={0}
-              >
-                <h3>Work Agreement</h3>
-                <div className={styles.agreementDetails}>
-                  <p>
-                    <strong>Price:</strong> {formatCurrency(agreement.price)}
-                  </p>
-                  <p>
-                    <strong>Status:</strong> {agreement.status}
-                  </p>
-                  <p className={styles.agreementPreview}>
-                    <strong>Terms:</strong> {agreement.terms.substring(0, 100)}
-                    {agreement.terms.length > 100 && '...'}
-                  </p>
-                  {agreement.status === 'proposed' &&
-                    user.id !== agreement.proposed_by && (
-                      <div className={styles.agreementActions}>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            acceptAgreement();
-                          }}
-                          className={styles.acceptButton}
-                          disabled={isAcceptingAgreement}
-                        >
-                          {isAcceptingAgreement
-                            ? 'Accepting...'
-                            : 'Accept Agreement'}
-                        </button>
-                      </div>
-                    )}
                 </div>
-              </div>
-            ) : (
-              showAgreementForm && (
-                <div className={styles.agreementContent}>
-                  <form
-                    onSubmit={createAgreement}
-                    className={styles.agreementForm}
-                  >
-                    <h3>Propose Work Agreement</h3>
-                    <div className={styles.formGroup}>
-                      <label>Price (USD)</label>
-                      <input
-                        type="number"
-                        value={price}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          // Check if input is a valid number
-                          if (!/^\d*$/.test(value)) {
-                            toast.error('Please enter numbers only');
-                            return;
-                          }
-                          setPrice(value);
-                        }}
-                        required
-                        className={styles.input}
-                        placeholder="Enter price in USD"
-                      />
-                    </div>
-                    <div className={styles.formGroup}>
-                      <label>Terms and Conditions</label>
-                      <textarea
-                        value={terms}
-                        onChange={(e) => setTerms(e.target.value)}
-                        required
-                        className={styles.textarea}
-                        placeholder="Describe the work terms, timeline, and payment schedule..."
-                      />
-                    </div>
-                    <div className={styles.buttonGroup}>
-                      <button
-                        type="submit"
-                        className={styles.submitButton}
-                        disabled={isSubmittingAgreement}
-                      >
-                        {isSubmittingAgreement
-                          ? 'Creating...'
-                          : 'Propose Agreement'}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setShowAgreementForm(false)}
-                        className={styles.cancelButton}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              )
-            )}
+              )}
           </div>
+          {agreement ? (
+            <div
+              className={`${styles.existingAgreement} ${styles.clickable}`}
+              onClick={handleAgreementClick}
+              role="button"
+              tabIndex={0}
+            >
+              <h3>Work Agreement</h3>
+              <div className={styles.agreementDetails}>
+                <p>
+                  <strong>Price:</strong> {formatCurrency(agreement.price)}
+                </p>
+                <p>
+                  <strong>Status:</strong> {agreement.status}
+                </p>
+                <p className={styles.agreementPreview}>
+                  <strong>Terms:</strong> {agreement.terms.substring(0, 100)}
+                  {agreement.terms.length > 100 && '...'}
+                </p>
+                {agreement.status === 'proposed' &&
+                  user.id !== agreement.proposed_by && (
+                    <div className={styles.agreementActions}>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          acceptAgreement();
+                        }}
+                        className={styles.acceptButton}
+                        disabled={isAcceptingAgreement}
+                      >
+                        {isAcceptingAgreement
+                          ? 'Accepting...'
+                          : 'Accept Agreement'}
+                      </button>
+                    </div>
+                  )}
+              </div>
+            </div>
+          ) : (
+            showAgreementForm && (
+              <div className={styles.agreementContent}>
+                <form
+                  onSubmit={createAgreement}
+                  className={styles.agreementForm}
+                >
+                  <h3>Propose Work Agreement</h3>
+                  <div className={styles.formGroup}>
+                    <label>Price (USD)</label>
+                    <input
+                      type="number"
+                      value={price}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        // Check if input is a valid number
+                        if (!/^\d*$/.test(value)) {
+                          toast.error('Please enter numbers only');
+                          return;
+                        }
+                        setPrice(value);
+                      }}
+                      required
+                      className={styles.input}
+                      placeholder="Enter price in USD"
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Terms and Conditions</label>
+                    <textarea
+                      value={terms}
+                      onChange={(e) => setTerms(e.target.value)}
+                      required
+                      className={styles.textarea}
+                      placeholder="Describe the work terms, timeline, and payment schedule..."
+                    />
+                  </div>
+                  <div className={styles.buttonGroup}>
+                    <button
+                      type="submit"
+                      className={styles.submitButton}
+                      disabled={isSubmittingAgreement}
+                    >
+                      {isSubmittingAgreement
+                        ? 'Creating...'
+                        : 'Propose Agreement'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowAgreementForm(false)}
+                      className={styles.cancelButton}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )
+          )}
 
           {/* Request Details Section */}
           <div className={styles.sidebarSection}>
