@@ -36,15 +36,17 @@
 }
 .container {
   width: 100%;
-  height: calc(100vh - 140px);
+  height: calc(100vh - 16px); /* Added 16px of bottom space */
   background-color: #ebebeb;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   position: relative;
+  margin-bottom: 16px; /* Add margin to show background */
 }
+
 .header {
-  height: 64px;
+  height: 48px; /* Reduced from 64px */
   background-color: white;
   border-bottom: 1px solid #0000001a;
   display: flex;
@@ -58,17 +60,23 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 8px;
+  padding: 8px 12px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  line-height: 0; /* Added to help with vertical centering */
+  gap: 8px;
+  color: #374151;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: all 0.2s ease;
 }
 
 .backButton:hover {
-  background-color: #f8f9fa;
+  background-color: #f3f4f6;
 }
 
+.backText {
+  font-size: 0.875rem;
+}
 .backButton:focus {
   outline: 2px solid #0066cc;
   outline-offset: 2px;
@@ -91,7 +99,7 @@
   gap: 1rem;
   padding: 1rem;
   padding-bottom: 0;
-  height: calc(100% - 64px);
+  height: calc(100% - 48px); /* Adjusted to match new header height */
   overflow: hidden;
 }
 .mainSection {

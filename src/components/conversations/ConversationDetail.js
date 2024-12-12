@@ -321,14 +321,14 @@ const ConversationDetail = () => {
       <div className={styles.header}>
         <button className={styles.backButton} onClick={() => navigate(-1)}>
           <ArrowLeft size={20} />
+          <span className={styles.backText}>Back to Dashboard</span>
         </button>
-        <h1 className={styles.title}>{requestDetails?.title}</h1>
         <button
           className={styles.menuToggle}
           onClick={() => setIsSidebarVisible(!isSidebarVisible)}
           aria-label={isSidebarVisible ? 'Close details' : 'Show details'}
         >
-          <Info size={24} /> {/* or whichever icon you prefer */}
+          <Info size={24} />
         </button>
       </div>
       <div className={styles.content}>

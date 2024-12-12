@@ -79,169 +79,180 @@ function AppContent() {
   return (
     <>
       <ToastContainer />
-      <Header />
-      <div className="app-content">
-        <Routes>
-          {/* Public routes */}
-          <Route path="/" element={<Home />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/logout" element={<Logout />} />
-          <Route path="/opportunities" element={<PublicRequests />} />
-          <Route path="/videos" element={<VideoList />} />
-          <Route path="/creators" element={<PublicDevelopers />} />
-          <Route
-            path="/subscription/success"
-            element={<SubscriptionSuccess />}
-          />
-          <Route
-            path="/agreements/request/:requestId"
-            element={
-              <ProtectedRoute userType="developer">
-                <ProjectAgreementView />
-              </ProtectedRoute>
-            }
-          />
-          {/* Client-specific routes */}
-          <Route
-            path="/client-dashboard"
-            element={
-              <ProtectedRoute userType="client">
-                <ClientDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/create-project"
-            element={
-              <ProtectedRoute userType="client">
-                <CreateProject />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/projects/:projectId"
-            element={
-              <ProtectedRoute userType="client">
-                <ProjectDetails />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/requests"
-            element={
-              <ProtectedRoute>
-                <Requests />
-              </ProtectedRoute>
-            }
-          />
+      <Routes>
+        {/* Conversation route without header/footer */}
+        <Route
+          path="/conversations/:id"
+          element={
+            <ProtectedRoute>
+              <ConversationDetail />
+            </ProtectedRoute>
+          }
+        />
 
-          {/* Developer-specific routes */}
-          <Route
-            path="/developer-dashboard"
-            element={
-              <ProtectedRoute userType="developer">
-                <DeveloperDashboard />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/app-dashboard"
-            element={
-              <ProtectedRoute>
-                <AppDashboard />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/video-upload"
-            element={
-              <ProtectedRoute>
-                <VideoUpload />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Shared routes */}
-
-          <Route
-            path="/conversations"
-            element={
-              <ProtectedRoute>
-                <ConversationsList />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/conversations/:id"
-            element={
-              <ProtectedRoute>
-                <ConversationDetail />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/requests/responses"
-            element={
-              <ProtectedRoute>
-                <RequestResponses />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/requests/:requestId"
-            element={
-              <ProtectedRoute>
-                <RequestDetails />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <Settings />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/projects"
-            element={
-              <ProtectedRoute>
-                <ProjectsList />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Dashboard redirect based on user type */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                {({ user }) => (
-                  <Navigate
-                    to={
-                      user.userType === 'client'
-                        ? '/client-dashboard'
-                        : '/developer-dashboard'
-                    }
-                    replace
+        <Route
+          path="*"
+          element={
+            <>
+              <Header />
+              <div className="app-content">
+                <Routes>
+                  {/* Public routes */}
+                  <Route path="/" element={<Home />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/logout" element={<Logout />} />
+                  <Route path="/opportunities" element={<PublicRequests />} />
+                  <Route path="/videos" element={<VideoList />} />
+                  <Route path="/creators" element={<PublicDevelopers />} />
+                  <Route
+                    path="/subscription/success"
+                    element={<SubscriptionSuccess />}
                   />
-                )}
-              </ProtectedRoute>
-            }
-          />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </div>
-      <Footer />
+                  <Route
+                    path="/agreements/request/:requestId"
+                    element={
+                      <ProtectedRoute userType="developer">
+                        <ProjectAgreementView />
+                      </ProtectedRoute>
+                    }
+                  />
+                  {/* Client-specific routes */}
+                  <Route
+                    path="/client-dashboard"
+                    element={
+                      <ProtectedRoute userType="client">
+                        <ClientDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/create-project"
+                    element={
+                      <ProtectedRoute userType="client">
+                        <CreateProject />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/projects/:projectId"
+                    element={
+                      <ProtectedRoute userType="client">
+                        <ProjectDetails />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/requests"
+                    element={
+                      <ProtectedRoute>
+                        <Requests />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* Developer-specific routes */}
+                  <Route
+                    path="/developer-dashboard"
+                    element={
+                      <ProtectedRoute userType="developer">
+                        <DeveloperDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  <Route
+                    path="/app-dashboard"
+                    element={
+                      <ProtectedRoute>
+                        <AppDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  <Route
+                    path="/video-upload"
+                    element={
+                      <ProtectedRoute>
+                        <VideoUpload />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* Shared routes */}
+
+                  <Route
+                    path="/conversations"
+                    element={
+                      <ProtectedRoute>
+                        <ConversationsList />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  <Route
+                    path="/requests/responses"
+                    element={
+                      <ProtectedRoute>
+                        <RequestResponses />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/requests/:requestId"
+                    element={
+                      <ProtectedRoute>
+                        <RequestDetails />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  <Route
+                    path="/profile"
+                    element={
+                      <ProtectedRoute>
+                        <Settings />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/projects"
+                    element={
+                      <ProtectedRoute>
+                        <ProjectsList />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* Dashboard redirect based on user type */}
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <ProtectedRoute>
+                        {({ user }) => (
+                          <Navigate
+                            to={
+                              user.userType === 'client'
+                                ? '/client-dashboard'
+                                : '/developer-dashboard'
+                            }
+                            replace
+                          />
+                        )}
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </div>
+              <Footer />
+            </>
+          }
+        />
+      </Routes>
     </>
   );
 }
-
 function App() {
   return (
     <Provider store={store}>
