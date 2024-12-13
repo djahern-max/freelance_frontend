@@ -48,9 +48,16 @@ export const API_ROUTES = {
 };
 
 // Helper function to check if a route is public
+// In api.js
 const isPublicRoute = (url) => {
-  return Object.values(API_ROUTES.PUBLIC).some((route) =>
-    url.startsWith(route)
+  // Remove trailing slash for comparison
+  const normalizedUrl = url.replace(/\/$/, '');
+  const publicRoutes = [
+    ...Object.values(API_ROUTES.PUBLIC),
+    '/video_display', // Add this explicitly
+  ];
+  return publicRoutes.some(
+    (route) => normalizedUrl === route || normalizedUrl.startsWith(route + '/')
   );
 };
 
@@ -108,7 +115,6 @@ api.interceptors.request.use(
 );
 
 // Response interceptor with comprehensive error handling
-// Replace the Response interceptor section with this updated version
 api.interceptors.response.use(
   (response) => {
     if (process.env.NODE_ENV === 'development') {
@@ -123,14 +129,6 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Special handling for agreement 404s
-    if (
-      error.response?.status === 404 &&
-      originalRequest?.url?.includes('/agreements/request/')
-    ) {
-      return { data: null }; // Return null data instead of rejecting
-    }
-
     // Log detailed error information
     const errorDetails = {
       url: originalRequest?.url,
@@ -142,7 +140,7 @@ api.interceptors.response.use(
     };
     console.error('API Error Details:', errorDetails);
 
-    // Rest of your existing error handling...
+    // Handle network errors
     if (!error.response) {
       if (error.code === 'ECONNABORTED') {
         return Promise.reject(

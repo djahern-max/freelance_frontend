@@ -1,10 +1,10 @@
-import { Clock, MessageSquare, Play, ThumbsUp, Upload, X } from 'lucide-react';
+import { Clock, Play, ThumbsUp, Upload, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
 import AuthDialog from '../auth/AuthDialog';
-import SubscriptionDialog from '../payments/SubscriptionDialog';
+import VideoEmptyState from './VideoEmptyState';
 import styles from './VideoList.module.css';
 
 const VideoList = () => {
@@ -14,7 +14,6 @@ const VideoList = () => {
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [showVideoModal, setShowVideoModal] = useState(false);
-  const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
   const [expandedDescriptions, setExpandedDescriptions] = useState(new Set());
 
   const location = useLocation();
@@ -22,19 +21,27 @@ const VideoList = () => {
   const user = useSelector((state) => state.auth.user);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
+  // In VideoList.js, modify the fetchVideos function
   const fetchVideos = async () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await api.get('/video_display/');
-      const allVideos = response.data.other_videos || [];
-      setVideos(allVideos);
+      const response = await api.get('/video_display');
+      if (response.data && Array.isArray(response.data.other_videos)) {
+        setVideos(response.data.other_videos);
+      } else {
+        setVideos([]);
+      }
     } catch (err) {
-      const errorMessage =
-        err.code === 'ERR_NETWORK'
-          ? 'Unable to connect to server. Please check your connection and try again.'
-          : err.response?.data?.detail || 'Failed to fetch videos.';
-      setError(errorMessage);
+      console.error('Video fetch error:', err);
+      // Don't treat 401 as an error for public routes
+      if (err.response?.status === 401) {
+        setVideos([]);
+      } else {
+        setError(
+          "We're having trouble loading the videos. Please try again later."
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -110,6 +117,7 @@ const VideoList = () => {
         )
       );
 
+      // Make API call - note the endpoint is just '/vote'
       const response = await api.post('/vote', {
         video_id: videoId,
         dir: currentlyLiked ? 0 : 1,
@@ -135,135 +143,6 @@ const VideoList = () => {
     }
   };
 
-  const handleStartConversation = async (video) => {
-    if (!isAuthenticated) {
-      setShowAuthDialog(true);
-      return;
-    }
-
-    if (user?.userType !== 'client') {
-      try {
-        const response = await api.get('/payments/subscription-status');
-        if (response.data.status !== 'active') {
-          setShowSubscriptionDialog(true);
-          return;
-        }
-      } catch (error) {
-        console.error('Error checking subscription:', error);
-        return;
-      }
-    }
-
-    try {
-      // Log the video object to check its structure
-      console.log('Video data:', video);
-
-      const response = await api.post('/conversations/from-video/', {
-        video_id: video.id,
-        // Include any other required fields based on your schema
-        title: `Discussion about video: ${video.title}`,
-        content: `Starting conversation about video "${video.title}"`,
-        user_id: user.id,
-      });
-
-      if (response.data.id) {
-        navigate(`/conversations/${response.data.id}`);
-      } else {
-        throw new Error('No conversation ID returned');
-      }
-    } catch (error) {
-      console.error('Error details:', error.response?.data);
-      console.error('Error creating conversation:', error);
-    }
-  };
-
-  const renderVideoCard = (video) => (
-    <div key={video.id || Math.random()} className={styles.videoCard}>
-      <div
-        className={styles.thumbnailContainer}
-        onClick={() => handleVideoClick(video)}
-      >
-        {video.thumbnail_path ? (
-          <>
-            <img
-              src={video.thumbnail_path}
-              alt={video.title || 'Video Thumbnail'}
-              className={styles.thumbnail}
-            />
-            <div className={styles.playButton}>
-              <Play size={24} />
-            </div>
-          </>
-        ) : (
-          <div className={styles.thumbnailPlaceholder}>
-            <Play size={32} className={styles.playButton} />
-          </div>
-        )}
-      </div>
-
-      <div className={styles.contentContainer}>
-        <h2 className={styles.videoTitle}>{video.title || 'Untitled Video'}</h2>
-        {video.description && (
-          <div className={styles.description}>
-            <p>
-              {expandedDescriptions.has(video.id)
-                ? video.description
-                : `${video.description.substring(0, 100)}${
-                    video.description.length > 100 ? '...' : ''
-                  }`}
-            </p>
-            {video.description.length > 100 && (
-              <button
-                className={styles.readMoreButton}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleDescription(video.id);
-                }}
-              >
-                {expandedDescriptions.has(video.id) ? 'Show Less' : 'Read More'}
-              </button>
-            )}
-          </div>
-        )}
-
-        <div className={styles.metadata}>
-          <span>{formatDate(video.upload_date)}</span>
-          <div className={styles.actionButtons}>
-            <button
-              className={`${styles.likeButton} ${
-                video.liked_by_user ? styles.liked : ''
-              }`}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleVote(video.id, video.liked_by_user);
-              }}
-            >
-              <ThumbsUp
-                size={16}
-                className={styles.icon}
-                fill={video.liked_by_user ? 'currentColor' : 'none'}
-              />
-              <span>{video.likes}</span>
-            </button>
-
-            {user?.userType === 'client' && (
-              <button
-                className={styles.chatButton}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleStartConversation(video);
-                }}
-              >
-                <MessageSquare size={16} />
-                <span>Chat</span>
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
   if (loading) {
     return (
       <div className={styles.container}>
@@ -271,6 +150,22 @@ const VideoList = () => {
           <Clock className={styles.loadingIcon} size={24} />
           <span className={styles.loadingText}>Loading videos...</span>
         </div>
+      </div>
+    );
+  }
+
+  if (error || !videos || videos.length === 0) {
+    return (
+      <div className={styles.container}>
+        <VideoEmptyState
+          isAuthenticated={isAuthenticated}
+          userType={user?.userType}
+          onCreateVideo={() => navigate('/video-upload')}
+          onSignUp={() => setShowAuthDialog(true)}
+          error={error}
+          onRetry={fetchVideos}
+          isEmpty={!error && (!videos || videos.length === 0)}
+        />
       </div>
     );
   }
@@ -289,7 +184,83 @@ const VideoList = () => {
         )}
       </div>
 
-      <div className={styles.grid}>{videos.map(renderVideoCard)}</div>
+      <div className={styles.grid}>
+        {videos.map((video) => (
+          <div key={video.id || Math.random()} className={styles.videoCard}>
+            <div
+              className={styles.thumbnailContainer}
+              onClick={() => handleVideoClick(video)}
+            >
+              {video.thumbnail_path ? (
+                <>
+                  <img
+                    src={video.thumbnail_path}
+                    alt={video.title || 'Video Thumbnail'}
+                    className={styles.thumbnail}
+                  />
+                  <div className={styles.playButton}>
+                    <Play size={24} />
+                  </div>
+                </>
+              ) : (
+                <div className={styles.thumbnailPlaceholder}>
+                  <Play size={32} className={styles.playButton} />
+                </div>
+              )}
+            </div>
+
+            <div className={styles.contentContainer}>
+              <h2 className={styles.videoTitle}>
+                {video.title || 'Untitled Video'}
+              </h2>
+              {video.description && (
+                <div className={styles.description}>
+                  <p>
+                    {expandedDescriptions.has(video.id)
+                      ? video.description
+                      : `${video.description.substring(0, 100)}${
+                          video.description.length > 100 ? '...' : ''
+                        }`}
+                  </p>
+                  {video.description.length > 100 && (
+                    <button
+                      className={styles.readMoreButton}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleDescription(video.id);
+                      }}
+                    >
+                      {expandedDescriptions.has(video.id)
+                        ? 'Show Less'
+                        : 'Read More'}
+                    </button>
+                  )}
+                </div>
+              )}
+
+              <div className={styles.metadata}>
+                <span>{formatDate(video.upload_date)}</span>
+                <button
+                  className={`${styles.likeButton} ${
+                    video.liked_by_user ? styles.liked : ''
+                  }`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleVote(video.id, video.liked_by_user);
+                  }}
+                >
+                  <ThumbsUp
+                    size={16}
+                    className={styles.icon}
+                    fill={video.liked_by_user ? 'currentColor' : 'none'}
+                  />
+                  <span>{video.likes}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
 
       {showVideoModal && selectedVideo && (
         <div className={styles.modal}>
@@ -363,15 +334,6 @@ const VideoList = () => {
         onRegister={() =>
           navigate('/register', { state: { from: location.pathname } })
         }
-      />
-
-      <SubscriptionDialog
-        isOpen={showSubscriptionDialog}
-        onClose={() => setShowSubscriptionDialog(false)}
-        onSuccess={() => {
-          setShowSubscriptionDialog(false);
-          // Retry the conversation creation if needed
-        }}
       />
     </div>
   );
