@@ -127,24 +127,34 @@ const PublicRequests = () => {
       setLoading(true);
       setSelectedRequest(request);
 
-      const subscriptionResponse = await api.get(
-        '/payments/subscription-status'
-      );
-      console.log('Subscription status:', subscriptionResponse.data);
+      // Check subscription status first
+      try {
+        const subscriptionResponse = await api.get(
+          '/payments/subscription-status'
+        );
+        console.log('Subscription status:', subscriptionResponse.data);
 
-      if (
-        !subscriptionResponse.data ||
-        subscriptionResponse.data.status !== 'active'
-      ) {
+        // If no subscription or not active, show subscription dialog immediately
+        if (
+          !subscriptionResponse.data ||
+          subscriptionResponse.data.status !== 'active'
+        ) {
+          setShowSubscriptionDialog(true);
+          return; // Exit early
+        }
+      } catch (subError) {
+        // If there's any error checking subscription, assume no subscription
+        console.error('Error checking subscription:', subError);
         setShowSubscriptionDialog(true);
-        return;
+        return; // Exit early
       }
 
+      // Only proceed with conversation creation if we get here (meaning active subscription)
       try {
-        // Use the new createConversation function here
         const conversationData = await createConversation(request.id);
         navigate(`/conversations/${conversationData.id}`);
       } catch (convError) {
+        // Still handle 403 as backup in case subscription status changed
         if (convError.response?.status === 403) {
           setShowSubscriptionDialog(true);
           return;
@@ -292,7 +302,7 @@ const PublicRequests = () => {
                       }}
                       disabled={loading}
                     >
-                      Respond to Request
+                      {loading ? 'Please wait...' : 'Respond to Request'}
                     </button>
                   ) : (
                     <button className={styles.buttonOutline}>

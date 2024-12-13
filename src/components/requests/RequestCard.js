@@ -13,23 +13,21 @@ const RequestCard = ({ request, onUpdate }) => {
     setIsUpdating(true);
     setError(null);
     try {
-      const response = await api.put(`/requests/${requestId}/privacy`, {
-        is_public: !currentStatus,
-      });
-
-      if (response.status === 200) {
-        onUpdate();
-      } else {
-        throw new Error('Failed to update privacy settings');
-      }
+      // Add the is_public parameter as a query parameter, not in the body
+      await api.put(
+        `/requests/${requestId}/privacy?is_public=${!currentStatus}`
+      );
+      // No need to check response.status since api interceptor handles errors
+      onUpdate();
     } catch (error) {
       console.error('Failed to update privacy:', error);
-      setError('Unable to update privacy settings');
+      setError(
+        api.helpers.handleError(error) || 'Unable to update privacy settings'
+      );
     } finally {
       setIsUpdating(false);
     }
   };
-
   const getStatusClass = (status) => {
     const statusMap = {
       open: 'open',

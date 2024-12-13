@@ -1,5 +1,6 @@
 import {
   LayoutDashboard,
+  LogIn,
   LogOut,
   MessageSquareMore,
   Search,
@@ -10,19 +11,43 @@ import {
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
+import AuthDialog from '../auth/AuthDialog';
 import FeedbackModal from '../feedback/FeedbackModal';
 import SharedRequestNotification from '../requests/SharedRequestNotification';
-import Logo from '../shared/Logo';
 import styles from './Header.module.css';
 import HeaderMenu from './HeaderMenu';
 
 const Header = () => {
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const userType = useSelector((state) => state.auth.userType);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const handleLoginClick = () => {
+    setShowAuthDialog(true);
+  };
+
+  const handleAuthDialogClose = () => {
+    setShowAuthDialog(false);
+  };
+
+  const handleLoginRedirect = () => {
+    setShowAuthDialog(false);
+    navigate('/login');
+  };
+
+  const handleRegisterRedirect = () => {
+    setShowAuthDialog(false);
+    navigate('/register');
+  };
+
+  const handleLogout = () => {
+    dispatch({ type: 'LOGOUT' });
+    navigate('/login');
+  };
 
   const getDashboardPath = () => {
     return userType === 'client' ? '/client-dashboard' : '/developer-dashboard';
@@ -68,27 +93,16 @@ const Header = () => {
     navigate(path);
   };
 
-  const handleLogout = () => {
-    dispatch({ type: 'LOGOUT' });
-    navigate('/login');
-  };
-
-  // Filter out the current page from navigation items
   const navigationItems = getPages().filter((page) => {
-    // Get the base path without query parameters
     const currentPath = location.pathname.split('?')[0];
-
-    // Check if the page should be shown based on auth requirements and current path
     return (
       (!page.requiresAuth || (page.requiresAuth && isAuthenticated)) &&
       page.path !== currentPath &&
-      // Also hide if current path is /requests and page is dashboard for clients
       !(
         userType === 'client' &&
         currentPath === '/requests' &&
         page.path === '/client-dashboard'
       ) &&
-      // Hide dashboard icon when on either dashboard
       !(
         page.path === getDashboardPath() &&
         (currentPath === '/client-dashboard' ||
@@ -97,20 +111,13 @@ const Header = () => {
       )
     );
   });
-  <Logo size="medium" />;
 
-  // Menu items for the dropdown menu
   const menuItems = [
     {
       icon: MessageSquareMore,
       title: 'Feedback',
       onClick: () => setShowFeedbackModal(true),
     },
-    // {
-    //   icon: HelpCircle,
-    //   title: 'Support',
-    //   onClick: () => navigate('/support'),
-    // },
     ...(isAuthenticated
       ? [
           {
@@ -168,6 +175,13 @@ const Header = () => {
               ))}
             </HeaderMenu>
           </div>
+
+          {!isAuthenticated && (
+            <button className={styles.signInButton} onClick={handleLoginClick}>
+              <LogIn size={20} />
+              <span>Sign In</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -178,6 +192,13 @@ const Header = () => {
           onClose={() => setShowFeedbackModal(false)}
         />
       )}
+
+      <AuthDialog
+        isOpen={showAuthDialog}
+        onClose={handleAuthDialogClose}
+        onLogin={handleLoginRedirect}
+        onRegister={handleRegisterRedirect}
+      />
     </header>
   );
 };

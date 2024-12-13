@@ -59,30 +59,52 @@ const ConversationDetail = () => {
     }
   }, [id]);
 
-  // Add this after fetchConversation
   const fetchAgreement = useCallback(async () => {
+    // Early return if no request_id (good to keep)
     if (!conversation?.request_id) return;
 
     try {
-      console.log('Fetching agreement for request:', conversation.request_id); // Debug log
+      console.log('Fetching agreement for request:', conversation.request_id);
       const response = await api.get(
         `/agreements/request/${conversation.request_id}`
       );
-      console.log('Fetched agreement:', response.data); // Debug log
-      setAgreement(response.data);
 
-      // If we find an agreement and conversation isn't in negotiating state, update it
-      if (response.data && conversation.status !== 'negotiating') {
-        await api.patch(`/conversations/${id}`, {
-          status: 'negotiating',
-        });
-        fetchConversation(); // Refresh conversation data
+      // If we get a response, handle the agreement
+      if (response.data) {
+        console.log('Fetched agreement:', response.data);
+        setAgreement(response.data);
+
+        // Update conversation status to negotiating if needed
+        if (conversation.status !== 'negotiating') {
+          try {
+            await api.patch(`/conversations/${id}`, {
+              status: 'negotiating',
+            });
+            fetchConversation(); // Refresh conversation data
+          } catch (updateErr) {
+            console.error('Error updating conversation status:', updateErr);
+            // Continue with the agreement data even if status update fails
+          }
+        }
+      } else {
+        // Handle case where response exists but no data
+        console.log('No agreement data found');
+        setAgreement(null);
       }
     } catch (err) {
-      if (err.response?.status !== 404) {
+      // Handle different error cases
+      if (err.response?.status === 404) {
+        // No agreement exists yet - normal case
+        console.log('No agreement exists for this request yet');
+        setAgreement(null);
+      } else {
+        // Log other errors that might need attention
         console.error('Error fetching agreement:', err);
+        setAgreement(null);
+
+        // Optionally set an error state if you want to show error feedback
+        // setError('Unable to fetch agreement details');
       }
-      setAgreement(null);
     }
   }, [conversation?.request_id, id, conversation?.status, fetchConversation]);
 
@@ -350,26 +372,28 @@ const ConversationDetail = () => {
                         : styles.received
                     }`}
                   >
-                    <div className={styles.message}>
+                    <div className={styles.messageContent}>
                       <div className={styles.messageHeader}>
                         <span className={styles.username}>
                           {message.user_id === user.id
                             ? 'You'
-                            : message.username}
+                            : conversation.recipient_username}
                         </span>
                         <span className={styles.timestamp}>
-                          {new Date(message.created_at).toLocaleTimeString()}
+                          {new Date(message.created_at).toLocaleString()}
                         </span>
                       </div>
-                      <p className={styles.messageContent}>{message.content}</p>
+                      <div className={styles.messageText}>
+                        {message.content}
+                      </div>
                     </div>
                   </div>
                 ))}
-                <div ref={messagesEndRef} />
               </>
             )}
           </div>
 
+          {/* Input Container */}
           <div className={styles.inputContainer}>
             <form onSubmit={sendMessage} className={styles.inputForm}>
               <input
@@ -385,7 +409,6 @@ const ConversationDetail = () => {
             </form>
           </div>
         </div>
-
         {/* Sidebar */}
 
         <div
@@ -401,12 +424,11 @@ const ConversationDetail = () => {
               Close Details
             </button>
           </div>
-
           {/* Agreement Section */}
-          <div className={styles.sidebarSection}>
-            {(user.userType === 'developer' || user.userType === 'client') &&
-              !agreement &&
-              !showAgreementForm && (
+
+          {(user.userType === 'developer' || user.userType === 'client') &&
+            (!agreement && !showAgreementForm ? (
+              <div className={styles.sidebarSection}>
                 <div className={styles.buttonWrapper}>
                   <button
                     onClick={() => setShowAgreementForm(true)}
@@ -416,8 +438,9 @@ const ConversationDetail = () => {
                     Create Agreement
                   </button>
                 </div>
-              )}
-          </div>
+              </div>
+            ) : null)}
+
           {agreement ? (
             <div
               className={`${styles.existingAgreement} ${styles.clickable}`}

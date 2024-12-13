@@ -78,7 +78,14 @@ function AppContent() {
 
   return (
     <>
-      <ToastContainer />
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        theme="light"
+        hideProgressBar
+        icon={false}
+        toastClassName="custom-toast-success"
+      />
       <Routes>
         {/* Conversation route without header/footer */}
         <Route

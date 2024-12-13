@@ -108,6 +108,7 @@ api.interceptors.request.use(
 );
 
 // Response interceptor with comprehensive error handling
+// Replace the Response interceptor section with this updated version
 api.interceptors.response.use(
   (response) => {
     if (process.env.NODE_ENV === 'development') {
@@ -122,6 +123,14 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // Special handling for agreement 404s
+    if (
+      error.response?.status === 404 &&
+      originalRequest?.url?.includes('/agreements/request/')
+    ) {
+      return { data: null }; // Return null data instead of rejecting
+    }
+
     // Log detailed error information
     const errorDetails = {
       url: originalRequest?.url,
@@ -133,7 +142,7 @@ api.interceptors.response.use(
     };
     console.error('API Error Details:', errorDetails);
 
-    // Handle network errors
+    // Rest of your existing error handling...
     if (!error.response) {
       if (error.code === 'ECONNABORTED') {
         return Promise.reject(
