@@ -1,3 +1,4 @@
+// VideoEmptyState.js
 import { PlayCircle, PlusCircle, RefreshCw, UserPlus } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './VideoEmptyState.module.css';
@@ -8,6 +9,7 @@ const VideoEmptyState = ({
   onCreateVideo,
   error,
   onRetry,
+  onSignUp,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -37,7 +39,17 @@ const VideoEmptyState = ({
           <PlayCircle className={styles.icon} size={48} />
         </div>
 
-        <h2 className={styles.title}>No Videos Available</h2>
+        <h2 className={styles.title}>
+          {isAuthenticated
+            ? 'No Videos Available Yet'
+            : 'Explore Creator Videos'}
+        </h2>
+
+        <p className={styles.description}>
+          {isAuthenticated
+            ? 'Be the first to share your knowledge and expertise with the community.'
+            : 'Sign up to access creator videos and share your own content.'}
+        </p>
 
         <div className={styles.actionWrapper}>
           {!isAuthenticated ? (
@@ -53,11 +65,11 @@ const VideoEmptyState = ({
           )}
         </div>
 
-        <p className={styles.footer}>
-          {isAuthenticated
-            ? 'Share your knowledge and expertise with the community.'
-            : ''}
-        </p>
+        {userType === 'developer' && isAuthenticated && (
+          <p className={styles.footer}>
+            Share your expertise through videos to attract potential clients
+          </p>
+        )}
       </div>
     </div>
   );

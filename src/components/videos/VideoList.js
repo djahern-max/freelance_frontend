@@ -156,6 +156,7 @@ const VideoList = () => {
           onSignUp={() => setShowAuthDialog(true)}
           error={error}
           onRetry={fetchVideos}
+          isEmpty={!error && (!videos || videos.length === 0)}
         />
       </div>
     );
