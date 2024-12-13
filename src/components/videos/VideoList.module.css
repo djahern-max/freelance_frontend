@@ -141,11 +141,18 @@
 .metadata {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: space-between;
+  padding: 8px 0;
   color: #666;
   font-size: 0.875rem;
 }
 
+.metaItem {
+  /* Remove any existing space/gap */
+  display: flex;
+  align-items: center;
+  color: #666;
+}
 .icon {
   color: #666;
 }
@@ -303,19 +310,46 @@
 .likeButton {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
+  gap: 6px;
+  padding: 6px 12px;
   border: 1px solid #e0e0e0;
-  border-radius: 4px;
+  border-radius: 20px;  /* More rounded corners */
   background: white;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  color: #666;
 }
 
+.likeButton:hover {
+  background: #f5f5f5;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
 .likeButton.liked {
   background: #e3f2fd;
   border-color: #2196f3;
   color: #2196f3;
+}
+
+.likeButton span {
+  font-weight: 500;
+}
+
+.likeButton.liked:hover {
+  background: #bbdefb;
+}
+
+.likeButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.likeButton .icon {
+  transition: transform 0.2s ease;
+}
+
+.likeButton:hover .icon {
+  transform: scale(1.1);
 }
 
 .modalMetadata {

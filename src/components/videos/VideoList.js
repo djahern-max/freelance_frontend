@@ -1,4 +1,4 @@
-import { Calendar, Clock, Play, ThumbsUp, Upload, X } from 'lucide-react';
+import { Clock, Play, ThumbsUp, Upload, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -45,22 +45,13 @@ const VideoList = () => {
 
   const formatDate = (dateString) => {
     try {
-      // First check if we have a valid date string
       if (!dateString) {
         return 'Date unavailable';
       }
-
-      // Check if date is in timestamp format
-      const date =
-        typeof dateString === 'number'
-          ? new Date(dateString * 1000)
-          : new Date(dateString);
-
-      // Validate if date is valid
+      const date = new Date(dateString);
       if (isNaN(date.getTime())) {
         return 'Date unavailable';
       }
-
       return date.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
@@ -98,67 +89,45 @@ const VideoList = () => {
     });
   };
 
-  const handleVote = async (videoId, direction) => {
+  const handleVote = async (videoId, currentlyLiked) => {
     if (!isAuthenticated) {
       setShowAuthDialog(true);
       return;
     }
 
     try {
-      // Optimistically update UI
+      // Optimistically update the UI
       setVideos((prevVideos) =>
         prevVideos.map((video) =>
           video.id === videoId
             ? {
                 ...video,
-                likes:
-                  direction === 1
-                    ? (video.likes || 0) + 1
-                    : (video.likes || 0) - 1,
-                liked: direction === 1,
+                likes: currentlyLiked ? video.likes - 1 : video.likes + 1,
+                liked_by_user: !currentlyLiked,
               }
             : video
         )
       );
 
-      // Make API call
+      // Make API call - note the endpoint is just '/vote'
       const response = await api.post('/vote', {
-        video_id: videoId, // Changed from post_id to video_id
-        dir: direction,
+        video_id: videoId,
+        dir: currentlyLiked ? 0 : 1,
       });
 
       if (!response.data) {
-        // Revert changes if API call fails
-        setVideos((prevVideos) =>
-          prevVideos.map((video) =>
-            video.id === videoId
-              ? {
-                  ...video,
-                  likes:
-                    direction === 0
-                      ? (video.likes || 0) + 1
-                      : (video.likes || 0) - 1,
-                  liked: direction === 0,
-                }
-              : video
-          )
-        );
+        throw new Error('Failed to update vote');
       }
     } catch (error) {
       console.error('Error voting:', error);
-      // Show error message to user
-      alert('Failed to update like status. Please try again.');
-      // Revert changes
+      // Revert the optimistic update
       setVideos((prevVideos) =>
         prevVideos.map((video) =>
           video.id === videoId
             ? {
                 ...video,
-                likes:
-                  direction === 0
-                    ? (video.likes || 0) + 1
-                    : (video.likes || 0) - 1,
-                liked: direction === 0,
+                likes: currentlyLiked ? video.likes + 1 : video.likes - 1,
+                liked_by_user: currentlyLiked,
               }
             : video
         )
@@ -259,27 +228,25 @@ const VideoList = () => {
                   )}
                 </div>
               )}
+
               <div className={styles.metadata}>
-                <div className={styles.metaItem}>
-                  <Calendar size={16} className={styles.icon} />
-                  <span>
-                    {formatDate(video.upload_date || video.created_at)}
-                  </span>
-                </div>
-                <div className={styles.likeContainer}>
-                  <button
-                    className={`${styles.likeButton} ${
-                      video.liked ? styles.liked : ''
-                    }`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleVote(video.id, video.liked ? 0 : 1);
-                    }}
-                  >
-                    <ThumbsUp size={16} className={styles.icon} />
-                    <span>{video.likes || 0}</span>
-                  </button>
-                </div>
+                <span>{formatDate(video.upload_date)}</span>
+                <button
+                  className={`${styles.likeButton} ${
+                    video.liked_by_user ? styles.liked : ''
+                  }`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleVote(video.id, video.liked_by_user);
+                  }}
+                >
+                  <ThumbsUp
+                    size={16}
+                    className={styles.icon}
+                    fill={video.liked_by_user ? 'currentColor' : 'none'}
+                  />
+                  <span>{video.likes}</span>
+                </button>
               </div>
             </div>
           </div>
@@ -312,26 +279,30 @@ const VideoList = () => {
             </div>
             <div className={styles.modalInfo}>
               <h2 className={styles.videoTitle}>{selectedVideo.title}</h2>
+
               <div className={styles.modalMetadata}>
-                <span>
-                  {formatDate(
-                    selectedVideo.upload_date || selectedVideo.created_at
-                  )}
-                </span>
+                <span>{formatDate(selectedVideo.upload_date)}</span>
                 <div className={styles.likeContainer}>
                   <button
                     className={`${styles.likeButton} ${
-                      selectedVideo.liked ? styles.liked : ''
+                      selectedVideo.liked_by_user ? styles.liked : ''
                     }`}
                     onClick={() =>
-                      handleVote(selectedVideo.id, selectedVideo.liked ? 0 : 1)
+                      handleVote(selectedVideo.id, selectedVideo.liked_by_user)
                     }
                   >
-                    <ThumbsUp size={16} className={styles.icon} />
+                    <ThumbsUp
+                      size={16}
+                      className={styles.icon}
+                      fill={
+                        selectedVideo.liked_by_user ? 'currentColor' : 'none'
+                      }
+                    />
                     <span>{selectedVideo.likes || 0}</span>
                   </button>
                 </div>
               </div>
+
               {selectedVideo.description && (
                 <p className={styles.description}>
                   {selectedVideo.description}
