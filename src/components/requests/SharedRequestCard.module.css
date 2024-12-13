@@ -1,99 +1,144 @@
-/* SharedRequestCard.module.css */
 .card {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 16px;
-    margin-bottom: 16px;
-    height: 200px;
-    overflow: hidden;
-    transition: height 0.2s ease-in-out;
-  }
-  
-  .card.expanded {
-    height: auto;
-  }
-  
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 12px;
-  }
-  
-  .title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: #111827;
-    margin: 0;
-  }
-  
-  .newBadge {
-    background-color: #dbeafe;
-    color: #1e40af;
-    font-size: 0.75rem;
-    font-weight: 500;
-    padding: 4px 8px;
-    border-radius: 4px;
-  }
-  
-  .metaGrid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    margin-bottom: 16px;
-  }
-  
-  .metaItem {
-    display: flex;
-    align-items: center;
-    color: #4b5563;
-    font-size: 0.875rem;
-  }
-  
-  .icon {
-    width: 16px;
-    height: 16px;
-    margin-right: 8px;
-  }
-  
-  .content {
-    color: #4b5563;
-    font-size: 0.875rem;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  
-  .content.expanded {
-    -webkit-line-clamp: unset;
-  }
-  
-  .expandButton {
-    margin-top: 8px;
-    color: #2563eb;
-    font-size: 0.875rem;
-    font-weight: 500;
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .expandButton:hover {
-    color: #1d4ed8;
-  }
-  
-  .viewedIndicator {
-    display: flex;
-    align-items: center;
-    margin-top: 8px;
-    color: #9ca3af;
-    font-size: 0.75rem;
-  }
-  
-  .viewedIcon {
-    width: 12px;
-    height: 12px;
-    margin-right: 4px;
-  }
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  margin-bottom: 16px;
+  height: 200px;
+  overflow: hidden;
+  transition: height 0.2s ease-in-out;
+}
+
+.card.expanded {
+  height: auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.newBadge {
+  background-color: #dbeafe;
+  color: #1e40af;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.metaGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  color: #4b5563;
+  font-size: 0.875rem;
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+}
+
+.content {
+  color: #4b5563;
+  font-size: 0.875rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.content.expanded {
+  -webkit-line-clamp: unset;
+}
+
+/* New styles for action buttons */
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  margin-bottom: 12px;
+}
+
+.actionButton {
+  flex: 1;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+}
+
+.actionButton:hover {
+  background-color: #e5e7eb;
+}
+
+.actionButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.primaryButton {
+  background-color: #2563eb;
+  border: 1px solid #2563eb;
+  color: white;
+}
+
+.primaryButton:hover {
+  background-color: #1d4ed8;
+}
+
+.error {
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin-top: 8px;
+}
+
+.expandButton {
+  margin-top: 8px;
+  color: #2563eb;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.expandButton:hover {
+  color: #1d4ed8;
+}
+
+.viewedIndicator {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  color: #9ca3af;
+  font-size: 0.75rem;
+}
+
+.viewedIcon {
+  width: 12px;
+  height: 12px;
+  margin-right: 4px;
+}

@@ -1,4 +1,4 @@
-import { Calendar, Clock, Play, Upload, X } from 'lucide-react';
+import { Calendar, Clock, Play, ThumbsUp, Upload, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -14,6 +14,7 @@ const VideoList = () => {
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [showVideoModal, setShowVideoModal] = useState(false);
+  const [expandedDescriptions, setExpandedDescriptions] = useState(new Set());
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -24,21 +25,14 @@ const VideoList = () => {
     try {
       setLoading(true);
       setError(null);
-
       const response = await api.get('/video_display/');
-      console.log('Video response:', response); // Add this line
-
       const allVideos = response.data.other_videos || [];
-      console.log('Processed videos:', allVideos); // Add this line
-
       setVideos(allVideos);
     } catch (err) {
-      console.error('Full error object:', err); // Enhanced error logging
       const errorMessage =
         err.code === 'ERR_NETWORK'
           ? 'Unable to connect to server. Please check your connection and try again.'
           : err.response?.data?.detail || 'Failed to fetch videos.';
-
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -51,13 +45,29 @@ const VideoList = () => {
 
   const formatDate = (dateString) => {
     try {
-      const date = new Date(dateString);
+      // First check if we have a valid date string
+      if (!dateString) {
+        return 'Date unavailable';
+      }
+
+      // Check if date is in timestamp format
+      const date =
+        typeof dateString === 'number'
+          ? new Date(dateString * 1000)
+          : new Date(dateString);
+
+      // Validate if date is valid
+      if (isNaN(date.getTime())) {
+        return 'Date unavailable';
+      }
+
       return date.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
       });
     } catch (err) {
+      console.error('Date formatting error:', err);
       return 'Date unavailable';
     }
   };
@@ -68,19 +78,92 @@ const VideoList = () => {
       setShowAuthDialog(true);
       return;
     }
-
     if (!video || !video.file_path) {
       console.error('Invalid video data:', video);
       return;
     }
-
     setSelectedVideo({ ...video, streamUrl: video.file_path });
     setShowVideoModal(true);
   };
 
-  const closeVideoModal = () => {
-    setShowVideoModal(false);
-    setSelectedVideo(null);
+  const toggleDescription = (videoId) => {
+    setExpandedDescriptions((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(videoId)) {
+        newSet.delete(videoId);
+      } else {
+        newSet.add(videoId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleVote = async (videoId, direction) => {
+    if (!isAuthenticated) {
+      setShowAuthDialog(true);
+      return;
+    }
+
+    try {
+      // Optimistically update UI
+      setVideos((prevVideos) =>
+        prevVideos.map((video) =>
+          video.id === videoId
+            ? {
+                ...video,
+                likes:
+                  direction === 1
+                    ? (video.likes || 0) + 1
+                    : (video.likes || 0) - 1,
+                liked: direction === 1,
+              }
+            : video
+        )
+      );
+
+      // Make API call
+      const response = await api.post('/vote', {
+        video_id: videoId, // Changed from post_id to video_id
+        dir: direction,
+      });
+
+      if (!response.data) {
+        // Revert changes if API call fails
+        setVideos((prevVideos) =>
+          prevVideos.map((video) =>
+            video.id === videoId
+              ? {
+                  ...video,
+                  likes:
+                    direction === 0
+                      ? (video.likes || 0) + 1
+                      : (video.likes || 0) - 1,
+                  liked: direction === 0,
+                }
+              : video
+          )
+        );
+      }
+    } catch (error) {
+      console.error('Error voting:', error);
+      // Show error message to user
+      alert('Failed to update like status. Please try again.');
+      // Revert changes
+      setVideos((prevVideos) =>
+        prevVideos.map((video) =>
+          video.id === videoId
+            ? {
+                ...video,
+                likes:
+                  direction === 0
+                    ? (video.likes || 0) + 1
+                    : (video.likes || 0) - 1,
+                liked: direction === 0,
+              }
+            : video
+        )
+      );
+    }
   };
 
   if (loading) {
@@ -153,16 +236,49 @@ const VideoList = () => {
                 {video.title || 'Untitled Video'}
               </h2>
               {video.description && (
-                <p className={styles.description}>
-                  {video.description.length > 100
-                    ? `${video.description.substring(0, 100)}...`
-                    : video.description}
-                </p>
+                <div className={styles.description}>
+                  <p>
+                    {expandedDescriptions.has(video.id)
+                      ? video.description
+                      : `${video.description.substring(0, 100)}${
+                          video.description.length > 100 ? '...' : ''
+                        }`}
+                  </p>
+                  {video.description.length > 100 && (
+                    <button
+                      className={styles.readMoreButton}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleDescription(video.id);
+                      }}
+                    >
+                      {expandedDescriptions.has(video.id)
+                        ? 'Show Less'
+                        : 'Read More'}
+                    </button>
+                  )}
+                </div>
               )}
               <div className={styles.metadata}>
                 <div className={styles.metaItem}>
                   <Calendar size={16} className={styles.icon} />
-                  <span>{formatDate(video.created_at)}</span>
+                  <span>
+                    {formatDate(video.upload_date || video.created_at)}
+                  </span>
+                </div>
+                <div className={styles.likeContainer}>
+                  <button
+                    className={`${styles.likeButton} ${
+                      video.liked ? styles.liked : ''
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleVote(video.id, video.liked ? 0 : 1);
+                    }}
+                  >
+                    <ThumbsUp size={16} className={styles.icon} />
+                    <span>{video.likes || 0}</span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -170,14 +286,16 @@ const VideoList = () => {
         ))}
       </div>
 
-      {/* Video Playback Modal */}
       {showVideoModal && selectedVideo && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>
             <button
               type="button"
               className={styles.closeButton}
-              onClick={closeVideoModal}
+              onClick={() => {
+                setShowVideoModal(false);
+                setSelectedVideo(null);
+              }}
               aria-label="Close modal"
             >
               <X size={24} />
@@ -194,6 +312,26 @@ const VideoList = () => {
             </div>
             <div className={styles.modalInfo}>
               <h2 className={styles.videoTitle}>{selectedVideo.title}</h2>
+              <div className={styles.modalMetadata}>
+                <span>
+                  {formatDate(
+                    selectedVideo.upload_date || selectedVideo.created_at
+                  )}
+                </span>
+                <div className={styles.likeContainer}>
+                  <button
+                    className={`${styles.likeButton} ${
+                      selectedVideo.liked ? styles.liked : ''
+                    }`}
+                    onClick={() =>
+                      handleVote(selectedVideo.id, selectedVideo.liked ? 0 : 1)
+                    }
+                  >
+                    <ThumbsUp size={16} className={styles.icon} />
+                    <span>{selectedVideo.likes || 0}</span>
+                  </button>
+                </div>
+              </div>
               {selectedVideo.description && (
                 <p className={styles.description}>
                   {selectedVideo.description}
@@ -211,14 +349,10 @@ const VideoList = () => {
           setSelectedVideo(null);
         }}
         onLogin={() =>
-          navigate('/login', {
-            state: { from: location.pathname },
-          })
+          navigate('/login', { state: { from: location.pathname } })
         }
         onRegister={() =>
-          navigate('/register', {
-            state: { from: location.pathname },
-          })
+          navigate('/register', { state: { from: location.pathname } })
         }
       />
     </div>

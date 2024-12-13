@@ -1,5 +1,4 @@
 import {
-  HelpCircle,
   LayoutDashboard,
   LogOut,
   MessageSquareMore,
@@ -107,11 +106,11 @@ const Header = () => {
       title: 'Feedback',
       onClick: () => setShowFeedbackModal(true),
     },
-    {
-      icon: HelpCircle,
-      title: 'Support',
-      onClick: () => navigate('/support'),
-    },
+    // {
+    //   icon: HelpCircle,
+    //   title: 'Support',
+    //   onClick: () => navigate('/support'),
+    // },
     ...(isAuthenticated
       ? [
           {

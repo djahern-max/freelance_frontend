@@ -110,6 +110,10 @@ function AppContent() {
                     element={<SubscriptionSuccess />}
                   />
                   <Route
+                    path="/subscription/success"
+                    element={<SubscriptionSuccess />}
+                  />
+                  <Route
                     path="/agreements/request/:requestId"
                     element={
                       <ProtectedRoute userType="developer">

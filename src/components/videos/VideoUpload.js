@@ -1,4 +1,3 @@
-// VideoUpload.js
 import {
   ArrowLeft,
   Image as ImageIcon,
@@ -53,13 +52,50 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
   const handleThumbnailSelect = (event) => {
     const file = event.target.files[0];
     if (file) {
-      if (file.type.startsWith('image/')) {
+      if (!file.type.match('image/(jpeg|jpg|png|gif|bmp)')) {
+        showMessage('Please select a JPG, PNG, BMP or GIF file', 'error');
+        return;
+      }
+
+      // Check file size - YouTube's limit is 2MB
+      if (file.size > 2 * 1024 * 1024) {
+        showMessage('Image must be under 2MB', 'error');
+        return;
+      }
+
+      const img = new Image();
+      img.onload = () => {
+        URL.revokeObjectURL(img.src);
+
+        // YouTube minimum width is 640px
+        if (img.width < 640) {
+          showMessage('Image width must be at least 640 pixels', 'error');
+          return;
+        }
+
+        // Check for 16:9 aspect ratio with some tolerance
+        const aspectRatio = img.width / img.height;
+        const targetRatio = 16 / 9;
+        const tolerance = 0.1; // Allow 10% deviation
+
+        if (Math.abs(aspectRatio - targetRatio) > tolerance) {
+          showMessage(
+            'Image must have a 16:9 aspect ratio (like 1280x720 pixels)',
+            'error'
+          );
+          return;
+        }
+
         setThumbnailFile(file);
         setThumbnailPreview(URL.createObjectURL(file));
         showMessage(null);
-      } else {
-        showMessage('Please select a valid image file for thumbnail', 'error');
-      }
+      };
+
+      img.onerror = () => {
+        showMessage('Failed to load image. Please try another file.', 'error');
+      };
+
+      img.src = URL.createObjectURL(file);
     }
   };
 
@@ -142,6 +178,7 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
           <ArrowLeft size={16} />
           Back
         </button>
+
         <h1 className={styles.title}>Upload Video</h1>
 
         <form onSubmit={handleSubmit} className={styles.uploadForm}>
@@ -189,6 +226,12 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
               <span>
                 {thumbnailFile ? 'Change Thumbnail' : 'Select Thumbnail'}
               </span>
+              <div className={styles.thumbnailRequirements}>
+                <small>Best quality: 1280x720 pixels (16:9)</small>
+                <small>Minimum width: 640 pixels</small>
+                <small>File types: JPG, PNG, BMP, GIF</small>
+                <small>Max file size: 2MB</small>
+              </div>
             </button>
 
             <input
@@ -203,7 +246,7 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
             <input
               ref={thumbnailInputRef}
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/gif,image/bmp"
               onChange={handleThumbnailSelect}
               style={{ display: 'none' }}
               disabled={uploading}

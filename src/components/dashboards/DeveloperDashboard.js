@@ -15,6 +15,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
+import SubscriptionDialog from '../payments/SubscriptionDialog';
 import Header from '../shared/Header';
 import DashboardSections from './DashboardSections';
 import styles from './DeveloperDashboard.module.css';
@@ -24,6 +25,8 @@ const RequestCard = ({ request, navigate }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const maxLength = 150;
   const needsTruncation = request.content.length > maxLength;
+  const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
+  const [pendingRequest, setPendingRequest] = useState(null);
 
   return (
     <div className={styles.requestCard}>
@@ -226,9 +229,28 @@ const DeveloperDashboard = () => {
     return localStorage.getItem('dashboardTutorialSeen') === 'true';
   });
 
+  const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
+  const [pendingRequest, setPendingRequest] = useState(null);
+
   const navigate = useNavigate();
   const auth = useSelector((state) => state.auth);
   const user = useSelector((state) => state.auth.user);
+
+  const viewSharedRequest = async (request) => {
+    if (!request || !request.id) {
+      console.error('Invalid request object:', request);
+      return;
+    }
+
+    try {
+      if (request.share_id) {
+        await markShareViewed(request.share_id);
+      }
+      navigate(`/requests/${request.id}`);
+    } catch (error) {
+      console.error('Error viewing shared request:', error);
+    }
+  };
 
   // Move this calculation before the sections array
   const activeProjects = conversations.filter(
@@ -503,30 +525,47 @@ const DeveloperDashboard = () => {
 
   const startConversation = async (request) => {
     try {
-      const response = await api.post('/conversations/', {
-        request_id: request.id,
-      });
-      await markShareViewed(request.share_id);
-      navigate(`/conversations/${response.data.id}`);
+      // First check subscription status
+      const subscriptionResponse = await api.get(
+        '/payments/subscription-status'
+      );
+
+      if (subscriptionResponse.data.status === 'active') {
+        // If subscribed, create conversation
+        const response = await api.post('/conversations/', {
+          request_id: request.id,
+        });
+        await markShareViewed(request.share_id);
+        navigate(`/conversations/${response.data.id}`);
+      } else {
+        // If not subscribed, show subscription dialog
+        setPendingRequest(request);
+        localStorage.setItem('pending_conversation_request_id', request.id);
+        setShowSubscriptionDialog(true);
+      }
     } catch (error) {
       console.error('Error starting conversation:', error);
+      if (error.response?.status === 403) {
+        // Show subscription dialog if not subscribed
+        setPendingRequest(request);
+        localStorage.setItem('pending_conversation_request_id', request.id);
+        setShowSubscriptionDialog(true);
+      } else {
+        // Handle other errors
+        console.error('Unexpected error:', error);
+      }
     }
   };
 
-  const viewSharedRequest = async (request) => {
-    if (!request || !request.id) {
-      console.error('Invalid request object:', request);
-      return;
-    }
+  const handleSubscriptionDialogClose = () => {
+    setShowSubscriptionDialog(false);
+    setPendingRequest(null);
+    localStorage.removeItem('pending_conversation_request_id');
+  };
 
-    try {
-      if (request.share_id) {
-        await markShareViewed(request.share_id);
-      }
-      navigate(`/requests/${request.id}`);
-    } catch (error) {
-      console.error('Error viewing shared request:', error);
-    }
+  const handleSubscriptionSuccess = () => {
+    setShowSubscriptionDialog(false);
+    // Don't start conversation here - it will happen in SubscriptionSuccess component
   };
 
   return (
@@ -550,6 +589,12 @@ const DeveloperDashboard = () => {
         )}
         <DashboardSections sections={sections} renderSection={renderSection} />
       </div>
+
+      <SubscriptionDialog
+        isOpen={showSubscriptionDialog}
+        onClose={handleSubscriptionDialogClose}
+        onSuccess={handleSubscriptionSuccess}
+      />
     </div>
   );
 };

@@ -307,7 +307,6 @@
   border-radius: 0.75rem;
   padding: 1.25rem;
   margin-bottom: 1rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08); /* This could be creating a line effect */
 }
 
 .sidebarSection:hover {
@@ -821,8 +820,8 @@
 }
 
 .sidebarHeader {
+  display: none;  /* Hide by default */
   padding: 1rem;
-
 }
 
 .closeSidebarButton {
@@ -864,7 +863,7 @@
   }
 
   .sidebarHeader {
-    display: flex;
+    display: flex;  /* Show on mobile */
     justify-content: flex-end;
     padding: 1rem;
     border-bottom: 1px solid #e5e7eb;
