@@ -128,10 +128,11 @@
   display: flex;
   margin: 0.5rem 0;
   max-width: 75%;
-  animation: messageAppear 0.2s ease-out;
 }
+
 .messageWrapper.sent {
-  justify-content: flex-end;
+  margin-left: auto; /* This ensures the wrapper aligns to the right */
+  align-self: flex-end; /* Added to ensure proper flex alignment */
 }
 
 .messageWrapper.received {
@@ -139,10 +140,12 @@
 }
 
 .sent {
+  align-items: flex-end;
   margin-left: auto;
 }
 
 .received {
+  align-items: flex-start;
   margin-right: auto;
 }
 @keyframes messageAppear {
@@ -240,21 +243,19 @@
   border-radius: 1.25rem;
   position: relative;
   max-width: 100%;
-  margin: 0.25rem 0;
+  width: fit-content;
 }
 
 .sent .messageContent {
-  background: #0084ff; /* iMessage blue */
+  margin-left: auto; /* This ensures the content aligns to the right within the wrapper */
+  background: #0084ff;
   color: white;
   border-bottom-right-radius: 0.3rem;
-  margin-left: auto;
 }
-
 .received .messageContent {
-  background: #e9e9eb; /* iMessage grey */
+  background: #e9e9eb;
   color: black;
   border-bottom-left-radius: 0.3rem;
-  margin-right: auto;
 }
 
 .messageText {
