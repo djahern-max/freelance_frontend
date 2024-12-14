@@ -50,6 +50,7 @@ const RequestCard = ({ request, navigate }) => {
         )}
         <span>Posted: {new Date(request.created_at).toLocaleDateString()}</span>
       </div>
+
       <button
         onClick={() => navigate(`/requests/${request.id}`)}
         className={styles.viewButton}

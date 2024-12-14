@@ -183,14 +183,14 @@ const ProjectDetails = () => {
             >
               Conversations
             </button>
-            <button
+            {/* <button
               className={`${styles.tabButton} ${
                 activeTab === 'agreements' ? styles.activeTab : ''
               }`}
               onClick={() => setActiveTab('agreements')}
             >
               Terms of Agreement
-            </button>
+            </button> */}
           </div>
 
           <div className={styles.tabContent}>

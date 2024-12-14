@@ -206,7 +206,7 @@ const RequestSharing = ({
             className={styles.shareInput}
             value={shareUsername}
             onChange={handleInputChange}
-            placeholder="@Type username to share"
+            placeholder="@..."
           />
 
           {showSuggestions && suggestions.length > 0 && (

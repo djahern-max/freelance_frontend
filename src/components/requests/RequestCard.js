@@ -1,3 +1,4 @@
+// RequestCard.js
 import { ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -13,18 +14,10 @@ const RequestCard = ({ request, onUpdate }) => {
     setIsUpdating(true);
     setError(null);
     try {
-      // Format status to match backend enum
       const formattedStatus = newStatus.toLowerCase().replace(' ', '_');
-      console.log('Sending status update:', {
-        requestId,
-        status: formattedStatus,
-      });
-
       const response = await api.put(`/requests/${requestId}`, {
         status: formattedStatus,
       });
-
-      console.log('Update response:', response);
 
       if (response?.data) {
         onUpdate();
@@ -71,70 +64,58 @@ const RequestCard = ({ request, onUpdate }) => {
     <div
       className={`${styles.requestCard} ${isUpdating ? styles.loading : ''}`}
     >
-      <div className={styles.mainContent}>
-        {/* Left section with title and content */}
-        <div className={styles.textContent}>
-          <h3 className={styles.title}>{request.title}</h3>
-          <p className={styles.content}>{request.content}</p>
-        </div>
-
-        {/* Right section with metadata */}
-        <div className={styles.metadata}>
-          <div className={styles.metadataRow}>
-            <div className={styles.statusSection}>
-              <select
-                value={request.status}
-                onChange={(e) =>
-                  updateRequestStatus(request.id, e.target.value)
-                }
-                disabled={isUpdating}
-                className={`${styles.statusSelect} ${
-                  styles[getStatusClass(request.status)]
-                }`}
-              >
-                <option value="open">Open</option>
-                <option value="in_progress">In Progress</option>
-                <option value="completed">Completed</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
-            </div>
-
-            {request.estimated_budget && (
-              <div className={styles.budgetBadge}>
-                Budget: ${request.estimated_budget}
-              </div>
-            )}
+      <div className={styles.header}>
+        <h3 className={styles.title}>{request.title}</h3>
+        {request.estimated_budget && (
+          <div className={styles.budgetBadge}>
+            Budget: ${request.estimated_budget}
           </div>
+        )}
+      </div>
 
-          <div className={styles.metadataRow}>
-            <div className={styles.privacyControl}>
-              <label className={styles.toggleSwitch}>
-                <input
-                  type="checkbox"
-                  checked={request.is_public}
-                  onChange={() =>
-                    toggleRequestPrivacy(request.id, request.is_public)
-                  }
-                  disabled={isUpdating}
-                />
-                <span className={styles.slider}></span>
-              </label>
-              <span className={styles.privacyLabel}>
-                {isUpdating
-                  ? 'Updating...'
-                  : request.is_public
-                  ? 'Public'
-                  : 'Private'}
-              </span>
-            </div>
+      <div className={styles.statusSection}>
+        <select
+          value={request.status}
+          onChange={(e) => updateRequestStatus(request.id, e.target.value)}
+          disabled={isUpdating}
+          className={`${styles.statusSelect} ${
+            styles[getStatusClass(request.status)]
+          }`}
+        >
+          <option value="open">Open</option>
+          <option value="in_progress">In Progress</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
 
-            <button
-              className={styles.viewDetailsButton}
-              onClick={() => navigate(`/requests/${request.id}`)}
-            >
-              View Details <ChevronRight size={16} />
-            </button>
-          </div>
+      <div className={styles.footer}>
+        <button
+          className={styles.viewDetailsButton}
+          onClick={() => navigate(`/requests/${request.id}`)}
+        >
+          View Details <ChevronRight size={16} />
+        </button>
+
+        <div className={styles.privacyControl}>
+          <label className={styles.toggleSwitch}>
+            <input
+              type="checkbox"
+              checked={request.is_public}
+              onChange={() =>
+                toggleRequestPrivacy(request.id, request.is_public)
+              }
+              disabled={isUpdating}
+            />
+            <span className={styles.slider}></span>
+          </label>
+          <span className={styles.privacyLabel}>
+            {isUpdating
+              ? 'Updating...'
+              : request.is_public
+              ? 'Public'
+              : 'Private'}
+          </span>
         </div>
       </div>
 

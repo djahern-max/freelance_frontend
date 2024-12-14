@@ -1,56 +1,47 @@
+/* RequestCard.module.css */
 .requestCard {
   background: white;
   border-radius: 8px;
-  padding: 24px;
+  padding: 20px;
   margin-bottom: 16px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: box-shadow 0.3s ease;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .requestCard:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.mainContent {
-  display: grid;
-  grid-template-columns: 1fr 300px;
-  gap: 24px;
-}
-
-.textContent {
-  min-width: 0; /* Prevent text overflow */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
 }
 
 .title {
   font-size: 1.2rem;
   font-weight: 600;
-  margin: 0 0 12px 0;
-  color: #2d3748;
-}
-
-.content {
-  color: #4a5568;
   margin: 0;
-  line-height: 1.5;
-  overflow-wrap: break-word;
+  color: #2d3748;
+  flex: 1;
 }
 
-.metadata {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.metadataRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+.budgetBadge {
+  background-color: #edf2f7;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: #4a5568;
+  white-space: nowrap;
 }
 
 .statusSection {
-  flex: 1;
+  width: 200px;
 }
 
 .statusSelect {
@@ -90,28 +81,46 @@
   color: #742a2a;
 }
 
-.budgetBadge {
-  background-color: #edf2f7;
-  padding: 8px 12px;
+.footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+.viewDetailsButton {
+  width: 200px;
+  padding: 8px 16px;
+  background-color: #4299e1;
+  color: white;
+  border: none;
   border-radius: 6px;
   font-size: 0.9rem;
-  color: #4a5568;
-  white-space: nowrap;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.viewDetailsButton:hover {
+  background-color: #3182ce;
 }
 
 .privacyControl {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 8px;
 }
-
 .privacyLabel {
   font-size: 0.9rem;
   color: #4a5568;
   min-width: 60px;
 }
 
-/* Toggle Switch Styles */
 .toggleSwitch {
   position: relative;
   display: inline-block;
@@ -157,24 +166,6 @@ input:checked + .slider:before {
   transform: translateX(24px);
 }
 
-.viewDetailsButton {
-  padding: 8px 16px;
-  background-color: #4299e1;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  transition: background-color 0.2s ease;
-}
-
-.viewDetailsButton:hover {
-  background-color: #3182ce;
-}
-
 .error {
   color: #e53e3e;
   margin-top: 12px;
@@ -187,40 +178,36 @@ input:checked + .slider:before {
 }
 
 /* Responsive Styles */
-@media (max-width: 1024px) {
-  .mainContent {
-    grid-template-columns: 1fr;
-  }
-
-  .metadata {
-    border-top: 1px solid #e2e8f0;
-    padding-top: 16px;
-  }
-}
-
 @media (max-width: 640px) {
   .requestCard {
     padding: 16px;
   }
 
-  .metadataRow {
+  .header {
     flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .budgetBadge {
+    align-self: flex-start;
+  }
+
+  .statusSection {
     width: 100%;
   }
 
-  .statusSection,
-  .budgetBadge,
-  .privacyControl,
   .viewDetailsButton {
     width: 100%;
   }
 
-  .budgetBadge,
+  .footer {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
   .privacyControl {
-    justify-content: center;
-  }
-
-  .viewDetailsButton {
-    justify-content: center;
+    width: 100%;
+    justify-content: flex-start;
   }
 }

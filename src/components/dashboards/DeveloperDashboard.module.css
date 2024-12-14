@@ -262,12 +262,11 @@
 .requestCard {
   background: white;
   border-radius: 0.5rem;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+ 
   padding: 1.25rem;
   transition: transform 0.2s, box-shadow 0.2s;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #e5e7eb; /* Light border */
 }
-
 .requestCard:hover {
   transform: translateY(-2px);
   box-shadow: rgba(0, 0, 0, 0.15) 0px 8px 24px;
@@ -335,8 +334,9 @@
   align-items: center;
   justify-content: center;
   gap: var(--spacing-sm);
-  margin-top: var(--spacing-sm); /* Reduced for desktop */
+  margin-top: 1rem; /* Add this line to create space above the button */
 }
+
 .viewButton:hover {
   background-color: var(--color-primary-dark);
   transform: translateY(-1px);
