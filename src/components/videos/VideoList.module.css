@@ -133,16 +133,21 @@
   font-size: 0.875rem;
   line-height: 1.5;
   margin-bottom: 1rem;
+  overflow: hidden; /* Ensures hidden overflow */
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 3; /* Limit text to 3 lines */
   -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 
 .metadata {
+  display: flex;
+  justify-content: space-between; /* Ensures spacing between date and like button */
+  align-items: center; /* Aligns items vertically */
   margin-top: auto;
   padding-top: 1rem;
   border-top: 1px solid #e0e0e0;
+  font-size: 0.875rem; /* Adjust font size if needed */
+  color: #666; /* Match with the rest of the design */
 }
 .metaItem {
   /* Remove any existing space/gap */
@@ -296,12 +301,13 @@
   font: inherit;
   cursor: pointer;
   margin-top: 4px;
+  display: inline-block;
 }
 
 .likeContainer {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 8px; /* Adds spacing between the like icon and number */
 }
 
 .likeButton {
@@ -310,13 +316,12 @@
   gap: 6px;
   padding: 6px 12px;
   border: 1px solid #e0e0e0;
-  border-radius: 20px;  /* More rounded corners */
+  border-radius: 20px; /* Rounded corners */
   background: white;
   cursor: pointer;
   transition: all 0.2s ease;
   color: #666;
 }
-
 .likeButton:hover {
   background: #f5f5f5;
   transform: translateY(-1px);

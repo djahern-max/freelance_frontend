@@ -291,7 +291,7 @@ const VideoList = () => {
 
               <div className={styles.metadata}>
                 <span>{formatDate(video.upload_date)}</span>
-                <div className={styles.actionButtons}>
+                <div className={styles.likeContainer}>
                   <button
                     className={`${styles.likeButton} ${
                       video.liked_by_user ? styles.liked : ''
