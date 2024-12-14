@@ -1,9 +1,12 @@
 import {
   Briefcase,
+  Clock,
+  FileText,
   FolderOpen,
   MessageSquare,
   Plus,
   Share2,
+  User,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -91,6 +94,19 @@ const ClientDashboard = () => {
     },
   ];
 
+  const formatTimeSince = (date) => {
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - new Date(date)) / 1000);
+
+    if (diffInSeconds < 60) return 'Just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400)
+      return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    if (diffInSeconds < 604800)
+      return `${Math.floor(diffInSeconds / 86400)}d ago`;
+    return new Date(date).toLocaleDateString('en-US');
+  };
+
   const renderSection = (sectionId) => {
     switch (sectionId) {
       case 'opportunities':
@@ -104,60 +120,70 @@ const ClientDashboard = () => {
               <div className={styles.error}>{errors.conversations}</div>
             ) : dashboardData.conversations.length > 0 ? (
               <div className={styles.conversationGrid}>
-                {dashboardData.conversations.map((conversation) => (
-                  <div
-                    key={conversation.id}
-                    className={styles.conversationCard}
-                    onClick={() =>
-                      navigate(`/conversations/${conversation.id}`)
-                    }
-                  >
-                    <div className={styles.cardContent}>
-                      {/* Title Section */}
-                      <div className={styles.cardSection}>
-                        <MessageSquare className={styles.cardIcon} />
-                        <h4 className={styles.cardTitle}>
-                          {conversation.request_title || 'Untitled Request'}
-                        </h4>
-                      </div>
+                {dashboardData.conversations.map((conversation) => {
+                  const otherUser =
+                    user.id === conversation.starter_user_id
+                      ? conversation.recipient_username
+                      : conversation.starter_username;
 
-                      {/* Agreement Status Section */}
-                      <div className={styles.cardSection}>
-                        <Briefcase
-                          className={`${styles.cardStatusIcon} ${
-                            conversation.agreement_status === 'accepted'
-                              ? styles.statusAccepted
-                              : conversation.agreement_status === 'negotiating'
-                              ? styles.statusNegotiating
-                              : styles.statusDefault
-                          }`}
-                        />
-                        <span
-                          className={`${
-                            conversation.agreement_status === 'accepted'
-                              ? styles.statusAccepted
-                              : conversation.agreement_status === 'negotiating'
-                              ? styles.statusNegotiating
-                              : styles.statusDefault
-                          }`}
-                        >
-                          Agreement Status:{' '}
-                          {conversation.agreement_status || 'No Agreement'}
-                        </span>
-                      </div>
+                  const otherUserRole =
+                    user.id === conversation.starter_user_id
+                      ? 'Developer'
+                      : 'Client';
 
-                      {/* Date Section */}
-                      <div className={styles.cardSection}>
-                        <FolderOpen className={styles.cardDateIcon} />
-                        <span className={styles.cardDate}>
-                          {new Date(conversation.created_at).toLocaleDateString(
-                            'en-US'
-                          )}
-                        </span>
+                  return (
+                    // In ClientDashboard.js, update the conversation card section:
+
+                    <div
+                      key={conversation.id}
+                      className={styles.conversationCard}
+                      onClick={() =>
+                        navigate(`/conversations/${conversation.id}`)
+                      }
+                    >
+                      <div className={styles.cardContent}>
+                        <div className={styles.cardSection}>
+                          <FileText className={styles.cardIconFile} />{' '}
+                          {/* Change icon type */}
+                          <span className={styles.requestTitle}>
+                            {conversation.request_title || 'Untitled Request'}
+                          </span>
+                          <span
+                            className={`${styles.status} ${
+                              styles[conversation.status]
+                            }`}
+                          >
+                            {conversation.status}
+                          </span>
+                        </div>
+
+                        <div className={styles.cardSection}>
+                          <User className={styles.cardIconUser} />
+                          <span className={styles.participantInfo}>
+                            {otherUser} ({otherUserRole})
+                          </span>
+                        </div>
+
+                        <div className={styles.cardSection}>
+                          <MessageSquare className={styles.cardIconMessage} />
+                          <span className={styles.messageCount}>
+                            {conversation.messages?.length || 0} messages
+                          </span>
+                        </div>
+
+                        <div className={styles.cardSection}>
+                          <Clock className={styles.cardIconTime} />
+                          <span className={styles.timeInfo}>
+                            Last message:{' '}
+                            {formatTimeSince(
+                              conversation.updated_at || conversation.created_at
+                            )}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
               <div className={styles.emptyState}>

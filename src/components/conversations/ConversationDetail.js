@@ -467,7 +467,7 @@ const ConversationDetail = () => {
           </div>
           {/* Agreement Section */}
 
-          {(user.userType === 'developer' || user.userType === 'client') &&
+          {/* {(user.userType === 'developer' || user.userType === 'client') &&
             (!agreement && !showAgreementForm ? (
               <div className={styles.sidebarSection}>
                 <div className={styles.buttonWrapper}>
@@ -578,7 +578,7 @@ const ConversationDetail = () => {
                 </form>
               </div>
             )
-          )}
+          )} */}
 
           {/* Request Details Section */}
           <div className={styles.sidebarSection}>

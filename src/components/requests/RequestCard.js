@@ -1,7 +1,7 @@
 import { ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../../utils/api'; // Added this import
+import api from '../../utils/api';
 import styles from './RequestCard.module.css';
 
 const RequestCard = ({ request, onUpdate }) => {
@@ -13,11 +13,9 @@ const RequestCard = ({ request, onUpdate }) => {
     setIsUpdating(true);
     setError(null);
     try {
-      // Add the is_public parameter as a query parameter, not in the body
       await api.put(
         `/requests/${requestId}/privacy?is_public=${!currentStatus}`
       );
-      // No need to check response.status since api interceptor handles errors
       onUpdate();
     } catch (error) {
       console.error('Failed to update privacy:', error);
@@ -28,11 +26,31 @@ const RequestCard = ({ request, onUpdate }) => {
       setIsUpdating(false);
     }
   };
+
+  const updateRequestStatus = async (requestId, newStatus) => {
+    setIsUpdating(true);
+    setError(null);
+    try {
+      await api.put(`/requests/${requestId}`, {
+        status: newStatus,
+      });
+      onUpdate();
+    } catch (error) {
+      console.error('Failed to update status:', error);
+      setError(
+        api.helpers.handleError(error) || 'Unable to update request status'
+      );
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   const getStatusClass = (status) => {
     const statusMap = {
       open: 'open',
-      'in-progress': 'inProgress',
+      in_progress: 'inProgress',
       completed: 'completed',
+      cancelled: 'cancelled',
     };
     return statusMap[status.toLowerCase()] || 'open';
   };
@@ -47,18 +65,28 @@ const RequestCard = ({ request, onUpdate }) => {
       </div>
 
       <div className={styles.metaContainer}>
-        <span
-          className={`${styles.statusBadge} ${
-            styles[getStatusClass(request.status)]
-          }`}
-        >
-          Status: {request.status}
-        </span>
+        <div className={styles.statusControl}>
+          <select
+            value={request.status}
+            onChange={(e) => updateRequestStatus(request.id, e.target.value)}
+            disabled={isUpdating}
+            className={`${styles.statusSelect} ${
+              styles[getStatusClass(request.status)]
+            }`}
+          >
+            <option value="open">Open</option>
+            <option value="in_progress">In Progress</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+
         {request.estimated_budget && (
           <span className={styles.budgetBadge}>
             Budget: ${request.estimated_budget}
           </span>
         )}
+
         <div className={styles.privacyControl}>
           <label
             className={styles.toggleSwitch}

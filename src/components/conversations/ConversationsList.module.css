@@ -232,6 +232,28 @@
   margin-bottom: 1rem;
 }
 
+.messageStats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.messageStats .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.timeInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+  font-size: 0.9rem;
+}
+
 @media (max-width: 640px) {
   .browseButton {
     display: none !important;

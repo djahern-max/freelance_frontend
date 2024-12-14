@@ -39,6 +39,19 @@ const ConversationsList = () => {
     }
   };
 
+  const formatTimeSince = (date) => {
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - date) / 1000);
+
+    if (diffInSeconds < 60) return 'Just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400)
+      return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    if (diffInSeconds < 604800)
+      return `${Math.floor(diffInSeconds / 86400)}d ago`;
+    return date.toLocaleDateString();
+  };
+
   const fetchConversations = async () => {
     try {
       setLoading(true);
@@ -113,6 +126,17 @@ const ConversationsList = () => {
     const otherUser = getOtherUserName(conversation);
     const otherUserRole = getOtherUserRole(conversation);
     const requestDetails = conversation.requestDetails;
+    const totalMessages = conversation.messages?.length || 0;
+
+    // Calculate time since last message
+    const lastMessageTime =
+      conversation.messages?.length > 0
+        ? new Date(
+            conversation.messages[conversation.messages.length - 1].created_at
+          )
+        : new Date(conversation.created_at);
+
+    const timeSince = formatTimeSince(lastMessageTime);
 
     return (
       <div
@@ -144,17 +168,18 @@ const ConversationsList = () => {
 
           <div className={styles.timeInfo}>
             <Clock className={styles.icon} />
-            <span>
-              Last activity:{' '}
-              {new Date(conversation.updated_at).toLocaleDateString()}
-            </span>
+            <span>Last activity: {timeSince}</span>
           </div>
 
-          {conversation.unread_count > 0 && (
-            <div className={styles.unreadBadge}>
-              {conversation.unread_count} new
-            </div>
-          )}
+          <div className={styles.messageStats}>
+            <MessageSquare className={styles.icon} />
+            <span>{totalMessages} messages total</span>
+            {conversation.unread_count > 0 && (
+              <span className={styles.unreadBadge}>
+                {conversation.unread_count} new
+              </span>
+            )}
+          </div>
         </div>
       </div>
     );
