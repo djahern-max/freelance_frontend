@@ -1,41 +1,56 @@
 .requestCard {
   background: white;
   border-radius: 8px;
-  padding: 20px;
+  padding: 24px;
   margin-bottom: 16px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: box-shadow 0.3s ease;
+  width: 100%;
 }
 
 .requestCard:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
+.mainContent {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 24px;
+}
+
+.textContent {
+  min-width: 0; /* Prevent text overflow */
+}
+
 .title {
   font-size: 1.2rem;
   font-weight: 600;
-  margin: 0 0 8px 0;
+  margin: 0 0 12px 0;
   color: #2d3748;
 }
 
 .content {
   color: #4a5568;
-  margin-bottom: 16px;
+  margin: 0;
   line-height: 1.5;
+  overflow-wrap: break-word;
 }
 
-.metaContainer {
+.metadata {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.metadataRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
   gap: 12px;
-  margin-bottom: 16px;
 }
 
-.statusControl {
-  position: relative;
-  min-width: 140px;
+.statusSection {
+  flex: 1;
 }
 
 .statusSelect {
@@ -43,10 +58,9 @@
   padding: 8px 12px;
   border-radius: 6px;
   border: 1px solid #e2e8f0;
-  appearance: none;
-  font-size: 0.9rem;
-  cursor: pointer;
   background-color: white;
+  cursor: pointer;
+  font-size: 0.9rem;
   transition: all 0.2s ease;
 }
 
@@ -57,31 +71,32 @@
 }
 
 .statusSelect.open {
-  color: #2b6cb0;
   background-color: #ebf8ff;
+  color: #2b6cb0;
 }
 
 .statusSelect.inProgress {
-  color: #7b341e;
   background-color: #fffaf0;
+  color: #7b341e;
 }
 
 .statusSelect.completed {
-  color: #276749;
   background-color: #f0fff4;
+  color: #276749;
 }
 
 .statusSelect.cancelled {
-  color: #742a2a;
   background-color: #fff5f5;
+  color: #742a2a;
 }
 
 .budgetBadge {
-  padding: 6px 12px;
   background-color: #edf2f7;
-  border-radius: 4px;
+  padding: 8px 12px;
+  border-radius: 6px;
   font-size: 0.9rem;
   color: #4a5568;
+  white-space: nowrap;
 }
 
 .privacyControl {
@@ -90,6 +105,13 @@
   gap: 8px;
 }
 
+.privacyLabel {
+  font-size: 0.9rem;
+  color: #4a5568;
+  min-width: 60px;
+}
+
+/* Toggle Switch Styles */
 .toggleSwitch {
   position: relative;
   display: inline-block;
@@ -135,27 +157,17 @@ input:checked + .slider:before {
   transform: translateX(24px);
 }
 
-.privacyStatus {
-  font-size: 0.9rem;
-  color: #4a5568;
-}
-
-.error {
-  color: #e53e3e;
-  margin-top: 8px;
-  font-size: 0.9rem;
-}
-
 .viewDetailsButton {
-  display: flex;
-  align-items: center;
-  gap: 4px;
   padding: 8px 16px;
   background-color: #4299e1;
   color: white;
   border: none;
   border-radius: 6px;
+  font-size: 0.9rem;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
   transition: background-color 0.2s ease;
 }
 
@@ -163,7 +175,52 @@ input:checked + .slider:before {
   background-color: #3182ce;
 }
 
+.error {
+  color: #e53e3e;
+  margin-top: 12px;
+  font-size: 0.9rem;
+}
+
 .loading {
   opacity: 0.7;
   pointer-events: none;
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+  .mainContent {
+    grid-template-columns: 1fr;
+  }
+
+  .metadata {
+    border-top: 1px solid #e2e8f0;
+    padding-top: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .requestCard {
+    padding: 16px;
+  }
+
+  .metadataRow {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .statusSection,
+  .budgetBadge,
+  .privacyControl,
+  .viewDetailsButton {
+    width: 100%;
+  }
+
+  .budgetBadge,
+  .privacyControl {
+    justify-content: center;
+  }
+
+  .viewDetailsButton {
+    justify-content: center;
+  }
 }
