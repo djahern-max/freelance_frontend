@@ -115,11 +115,12 @@
 .thumbnailContainer:hover .playButton {
   opacity: 1;
 }
-
 .contentContainer {
   padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;  /* Add consistent spacing between elements */
 }
-
 .videoTitle {
   font-size: 1.25rem;
   font-weight: 600;
@@ -139,14 +140,10 @@
 }
 
 .metadata {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 1rem;
-  padding-top: 0.5rem;
-  border-top: 1px solid #e5e7eb;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
 }
-
 .metaItem {
   /* Remove any existing space/gap */
   display: flex;
@@ -362,29 +359,57 @@
 
 .actionButtons {
   display: flex;
-  gap: 1rem;
   align-items: center;
+  gap: 0.75rem;
 }
 
+
+.likeButton,
 .requestButton {
+  height: 36px;  /* Set consistent height */
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  background-color: #2563eb;
-  color: white;
+  gap: 6px;
+  padding: 0 12px;
+  border-radius: 18px;
   font-size: 0.875rem;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
+}
+
+
+
+.requestButton {
+  /* Change to square style with new colors */
+  background-color: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  color: #333;
+  border-radius: 4px;  /* Make it square instead of rounded */
+  padding: 8px 16px;
+  margin: 12px 0;  /* Add margin for spacing */
+  width: 100%;  /* Make it full width */
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
 }
 
 .requestButton:hover {
-  background-color: #1d4ed8;
+  background-color: #e8e8e8;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .requestButton .icon {
-  width: 1rem;
-  height: 1rem;
+  color: #333;  /* Make icon black to match text */
+}
+
+/* Add button loading state */
+.requestButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .chatButton {

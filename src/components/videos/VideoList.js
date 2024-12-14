@@ -1,4 +1,4 @@
-import { Clock, MessageSquare, Play, ThumbsUp, Upload, X } from 'lucide-react';
+import { MessageSquare, Play, ThumbsUp, Upload, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -168,20 +168,28 @@ const VideoList = () => {
     });
   };
   const handleRequestSent = (creatorUsername) => {
-    toast.success(`Request sent to ${creatorUsername}`);
+    toast.success(
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <span style={{ fontWeight: 'bold', marginBottom: '4px' }}>
+          Request Sent Successfully
+        </span>
+        <span>
+          Your request has been shared with {creatorUsername}. They will be
+          notified and can review it shortly.
+        </span>
+      </div>,
+      {
+        position: 'top-center',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      }
+    );
     setSelectedCreator(null);
   };
-
-  if (loading) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.loadingContainer}>
-          <Clock className={styles.loadingIcon} size={24} />
-          <span className={styles.loadingText}>Loading videos...</span>
-        </div>
-      </div>
-    );
-  }
 
   if (error || !videos || videos.length === 0) {
     return (
@@ -242,6 +250,20 @@ const VideoList = () => {
               <h2 className={styles.videoTitle}>
                 {video.title || 'Untitled Video'}
               </h2>
+
+              {user?.userType !== 'developer' && (
+                <button
+                  className={styles.requestButton}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSendRequest(video);
+                  }}
+                >
+                  <MessageSquare size={16} className={styles.icon} />
+                  <span>Send Request</span>
+                </button>
+              )}
+
               {video.description && (
                 <div className={styles.description}>
                   <p>
@@ -286,19 +308,6 @@ const VideoList = () => {
                     />
                     <span>{video.likes}</span>
                   </button>
-
-                  {user?.userType !== 'developer' && (
-                    <button
-                      className={styles.requestButton}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleSendRequest(video);
-                      }}
-                    >
-                      <MessageSquare size={16} className={styles.icon} />
-                      <span>Send Request</span>
-                    </button>
-                  )}
                 </div>
               </div>
             </div>
@@ -388,7 +397,7 @@ const VideoList = () => {
               await api.post('/requests/', {
                 ...formData,
                 developer_id: selectedCreator.id,
-                video_id: selectedCreator.videoId, // Make sure this is being set
+                video_id: selectedCreator.videoId,
               });
               handleRequestSent(selectedCreator.username);
             } catch (error) {
