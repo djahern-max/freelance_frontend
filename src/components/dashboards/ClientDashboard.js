@@ -15,7 +15,7 @@ import CreateRequestModal from '../requests/CreateRequestModal';
 import ProjectHandler from '../requests/ProjectHandler';
 import RequestCard from '../requests/RequestCard';
 import RequestGroupingToolbar from '../requests/RequestGroupingToolbar';
-import FeatureTour from '../shared/FeatureTour';
+// import FeatureTour from '../shared/FeatureTour';
 import Header from '../shared/Header';
 import styles from './ClientDashboard.module.css';
 import DashboardSections from './DashboardSections';
@@ -62,7 +62,7 @@ const ClientDashboard = () => {
       [section]: !prev[section],
     }));
   };
-  const [showFeatureTour, setShowFeatureTour] = useState(true);
+  // const [showFeatureTour, setShowFeatureTour] = useState(true);
 
   const sections = [
     {
@@ -456,7 +456,7 @@ const ClientDashboard = () => {
       );
 
       toast.success(
-        `🎉 Project "${projectData.name}" created successfully with ${selectedRequests.length} requests!`,
+        `Project "${projectData.name}" created successfully with ${selectedRequests.length} requests.`,
         {
           position: 'top-center',
           autoClose: 5000, // stays visible for 5 seconds
@@ -606,9 +606,9 @@ const ClientDashboard = () => {
         )}
       </div>
 
-      {showFeatureTour && (
+      {/* {showFeatureTour && (
         <FeatureTour onComplete={() => setShowFeatureTour(false)} />
-      )}
+      )} */}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { AlertTriangle, Check, Info, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import styles from './Alert.module.css';
 
@@ -29,19 +29,6 @@ const Alert = ({
 
   if (!isVisible) return null;
 
-  const getIcon = () => {
-    switch (type) {
-      case 'success':
-        return <Check className={styles.icon} />;
-      case 'error':
-        return <AlertTriangle className={styles.icon} />;
-      case 'info':
-        return <Info className={styles.icon} />;
-      default:
-        return null;
-    }
-  };
-
   const alertClasses = `
     ${styles.alert}
     ${styles[type]}
@@ -50,7 +37,6 @@ const Alert = ({
 
   return (
     <div className={alertClasses}>
-      <div className={styles.iconWrapper}>{getIcon()}</div>
       <div className={styles.content}>
         <div className={styles.message}>{message}</div>
         {showRedirectMessage && (

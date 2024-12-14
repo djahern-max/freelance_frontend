@@ -61,7 +61,7 @@ const CreateProject = () => {
       {showSuccess && (
         <Alert
           type="success"
-          message="Project created successfully!"
+          message="Project successfully created"
           showRedirectMessage={true}
           duration={1500}
         />
