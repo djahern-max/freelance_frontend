@@ -14,7 +14,6 @@ const PublicDevelopers = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const [selectedBio, setSelectedBio] = useState(null);
   const [selectedCreator, setSelectedCreator] = useState(null);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const location = useLocation();
@@ -44,7 +43,26 @@ const PublicDevelopers = () => {
   }, []);
 
   const handleRequestSent = (creatorUsername) => {
-    toast.success(`Request sent to ${creatorUsername}`);
+    toast.success(
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <span style={{ fontWeight: 'bold', marginBottom: '4px' }}>
+          Request Sent Successfully
+        </span>
+        <span>
+          Your request has been shared with {creatorUsername}. They will be
+          notified and can review it shortly.
+        </span>
+      </div>,
+      {
+        position: 'top-center',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      }
+    );
     setSelectedCreator(null);
   };
 
@@ -55,10 +73,8 @@ const PublicDevelopers = () => {
     }
 
     if (user?.userType === 'developer') {
-      // For developers, implement request forwarding
-      // You can either navigate to a different view or show a different modal
       toast.info(
-        'As a creator, you can forward requests but not create new ones.'
+        'As a developer, you cannot send requests to other developers.'
       );
       return;
     }
@@ -135,15 +151,12 @@ const PublicDevelopers = () => {
                     ? developer.bio.slice(0, TRUNCATE_LENGTH)
                     : developer.bio}
                   {developer.bio.length > TRUNCATE_LENGTH && (
-                    <>
-                      <span style={{ color: '#4b5563' }}>...</span>
-                      <button
-                        onClick={() => setSelectedBio(developer.bio)}
-                        className={styles.readMoreButton}
-                      >
-                        Read more
-                      </button>
-                    </>
+                    <button
+                      onClick={() => setSelectedCreator(developer.bio)}
+                      className={styles.readMoreButton}
+                    >
+                      Read more
+                    </button>
                   )}
                 </p>
 
@@ -157,24 +170,21 @@ const PublicDevelopers = () => {
                     ))}
                   </div>
                 </div>
-                <button
-                  onClick={() => handleSendRequest(developer)}
-                  className={styles.contactButton}
-                >
-                  <MessageSquare size={16} />
-                  <span>
-                    {user?.userType === 'developer'
-                      ? 'Forward Request'
-                      : 'Send Request to Creator'}
-                  </span>
-                </button>
+                {user?.userType !== 'developer' && (
+                  <button
+                    onClick={() => handleSendRequest(developer)}
+                    className={styles.contactButton}
+                  >
+                    <MessageSquare size={16} />
+                    <span>Send Request</span>
+                  </button>
+                )}
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* Add AuthDialog component */}
       <AuthDialog
         isOpen={showAuthDialog}
         onClose={() => setShowAuthDialog(false)}
@@ -186,34 +196,23 @@ const PublicDevelopers = () => {
         }
       />
 
-      {/* Bio Modal */}
-      {selectedBio && (
-        <div
-          className={styles.modalOverlay}
-          onClick={() => setSelectedBio(null)}
-        >
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <button
-              className={styles.closeButton}
-              onClick={() => setSelectedBio(null)}
-              aria-label="Close"
-            >
-              ×
-            </button>
-            <div className={styles.modalContent}>
-              <h3>About this Creator</h3>
-              <p>{selectedBio}</p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Create Request Modal */}
       {selectedCreator && user?.userType !== 'developer' && (
         <CreateRequestModal
-          creatorId={selectedCreator.id}
+          creatorId={String(selectedCreator.id)} // Convert the number to a string
           creatorUsername={selectedCreator.username}
           onClose={() => setSelectedCreator(null)}
+          onSubmit={async (formData) => {
+            try {
+              await api.post('/requests/', {
+                ...formData,
+                developer_id: selectedCreator.id,
+              });
+              handleRequestSent(selectedCreator.username);
+            } catch (error) {
+              toast.error('Failed to send request');
+              console.error('Request error:', error);
+            }
+          }}
           onRequestSent={() => handleRequestSent(selectedCreator.username)}
         />
       )}

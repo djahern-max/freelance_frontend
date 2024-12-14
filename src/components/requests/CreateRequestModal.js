@@ -6,6 +6,7 @@ const CreateRequestModal = ({
   initialData = null,
   onClose,
   onSubmit,
+  creatorId,
   isEditing = false,
 }) => {
   const [formData, setFormData] = useState({
@@ -30,7 +31,8 @@ const CreateRequestModal = ({
     setError(null);
 
     try {
-      await onSubmit(formData);
+      // Include creatorId in the form submission
+      await onSubmit({ ...formData, creatorId });
       onClose();
     } catch (err) {
       console.error('Error submitting request:', err);
@@ -168,9 +170,10 @@ CreateRequestModal.propTypes = {
     is_public: PropTypes.bool,
     project_id: PropTypes.number,
   }),
-  onClose: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
-  isEditing: PropTypes.bool,
+  onClose: PropTypes.func.isRequired,
+  creatorId: PropTypes.string.isRequired,
+  creatorUsername: PropTypes.string.isRequired,
 };
 
 export default CreateRequestModal;

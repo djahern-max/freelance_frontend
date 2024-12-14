@@ -133,10 +133,18 @@
   font-size: 0.875rem;
   line-height: 1.5;
   margin-bottom: 1rem;
-  overflow: hidden; /* Ensures hidden overflow */
-  display: -webkit-box;
-  -webkit-line-clamp: 3; /* Limit text to 3 lines */
-  -webkit-box-orient: vertical;
+  overflow: hidden; /* Ensure overflow hidden only for truncated content */
+  transition: max-height 0.3s ease; /* Smooth transition for toggling content */
+}
+
+.description p {
+  margin: 0;
+}
+
+.description.expanded {
+  overflow: visible; /* Show full content when expanded */
+  -webkit-line-clamp: unset; /* Disable truncation */
+  max-height: none;
 }
 
 .metadata {
