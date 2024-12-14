@@ -126,8 +126,9 @@
 }
 .messageWrapper {
   display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  margin: 0.5rem 0;
+  max-width: 75%;
+  animation: messageAppear 0.2s ease-out;
 }
 .messageWrapper.sent {
   justify-content: flex-end;
@@ -138,13 +139,12 @@
 }
 
 .sent {
-  align-items: flex-end;
+  margin-left: auto;
 }
 
 .received {
-  align-items: flex-start;
+  margin-right: auto;
 }
-
 @keyframes messageAppear {
   from {
     opacity: 0;
@@ -194,22 +194,77 @@
   color: rgba(255, 255, 255, 0.9);
 }
 
+.sent .messageHeader {
+  color: rgba(255, 255, 255, 0.9);
+  text-align: right;
+}
+
+.received .messageHeader {
+  color: #65676b;
+  text-align: left;
+}
+
 .username {
   font-weight: 600;
 }
 
 .timestamp {
-  color: #6b7280;
+  font-size: 0.75rem;
+  color: #65676b;
+  margin-top: 0.25rem;
 }
+
 
 .sent .timestamp {
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.7);
+}
+.timestampDivider {
+  text-align: center;
+  padding: 1rem 0;
+  color: #8e8e93;
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin: 0.5rem 0;
 }
 
+.messageWrapper {
+  display: flex;
+  margin: 0.5rem 0;
+  max-width: 75%;
+}
+
+
+
 .messageContent {
-  margin: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 1.25rem;
+  position: relative;
+  max-width: 100%;
+  margin: 0.25rem 0;
+}
+
+.sent .messageContent {
+  background: #0084ff; /* iMessage blue */
+  color: white;
+  border-bottom-right-radius: 0.3rem;
+  margin-left: auto;
+}
+
+.received .messageContent {
+  background: #e9e9eb; /* iMessage grey */
+  color: black;
+  border-bottom-left-radius: 0.3rem;
+  margin-right: auto;
+}
+
+.messageText {
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  white-space: pre-wrap;
   word-break: break-word;
 }
+
+
 .inputContainer {
   position: absolute;
   bottom: 0;

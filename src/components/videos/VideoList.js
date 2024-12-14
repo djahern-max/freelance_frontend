@@ -1,9 +1,11 @@
-import { Clock, Play, ThumbsUp, Upload, X } from 'lucide-react';
+import { Clock, MessageSquare, Play, ThumbsUp, Upload, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import api from '../../utils/api';
 import AuthDialog from '../auth/AuthDialog';
+import CreateRequestModal from '../requests/CreateRequestModal';
 import VideoEmptyState from './VideoEmptyState';
 import styles from './VideoList.module.css';
 
@@ -15,6 +17,7 @@ const VideoList = () => {
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [expandedDescriptions, setExpandedDescriptions] = useState(new Set());
+  const [selectedCreator, setSelectedCreator] = useState(null);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -144,6 +147,32 @@ const VideoList = () => {
     }
   };
 
+  const handleSendRequest = (video) => {
+    if (!isAuthenticated) {
+      setShowAuthDialog(true);
+      return;
+    }
+
+    if (user?.userType === 'developer') {
+      toast.info('As a creator, you cannot send requests to other creators.');
+      return;
+    }
+
+    setSelectedCreator({
+      id: video.user_id,
+      username:
+        video.user?.full_name ||
+        video.user?.username ||
+        `Creator #${video.user_id}`,
+      videoId: video.id,
+    });
+  };
+
+  const handleRequestSent = (creatorUsername) => {
+    toast.success(`Request sent to ${creatorUsername}`);
+    setSelectedCreator(null);
+  };
+
   if (loading) {
     return (
       <div className={styles.container}>
@@ -241,22 +270,37 @@ const VideoList = () => {
 
               <div className={styles.metadata}>
                 <span>{formatDate(video.upload_date)}</span>
-                <button
-                  className={`${styles.likeButton} ${
-                    video.liked_by_user ? styles.liked : ''
-                  }`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleVote(video.id, video.liked_by_user);
-                  }}
-                >
-                  <ThumbsUp
-                    size={16}
-                    className={styles.icon}
-                    fill={video.liked_by_user ? 'currentColor' : 'none'}
-                  />
-                  <span>{video.likes}</span>
-                </button>
+                <div className={styles.actionButtons}>
+                  <button
+                    className={`${styles.likeButton} ${
+                      video.liked_by_user ? styles.liked : ''
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleVote(video.id, video.liked_by_user);
+                    }}
+                  >
+                    <ThumbsUp
+                      size={16}
+                      className={styles.icon}
+                      fill={video.liked_by_user ? 'currentColor' : 'none'}
+                    />
+                    <span>{video.likes}</span>
+                  </button>
+
+                  {user?.userType !== 'developer' && (
+                    <button
+                      className={styles.requestButton}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSendRequest(video);
+                      }}
+                    >
+                      <MessageSquare size={16} className={styles.icon} />
+                      <span>Send Request</span>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -336,6 +380,25 @@ const VideoList = () => {
           navigate('/register', { state: { from: location.pathname } })
         }
       />
+
+      {selectedCreator && (
+        <CreateRequestModal
+          onClose={() => setSelectedCreator(null)}
+          onSubmit={async (formData) => {
+            try {
+              await api.post('/requests/', {
+                ...formData,
+                developer_id: selectedCreator.id,
+                video_id: selectedCreator.videoId,
+              });
+              handleRequestSent(selectedCreator.username);
+            } catch (error) {
+              toast.error('Failed to send request');
+              console.error('Request error:', error);
+            }
+          }}
+        />
+      )}
     </div>
   );
 };

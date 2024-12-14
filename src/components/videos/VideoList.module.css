@@ -140,11 +140,11 @@
 
 .metadata {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 8px 0;
-  color: #666;
-  font-size: 0.875rem;
+  align-items: center;
+  margin-top: 1rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e5e7eb;
 }
 
 .metaItem {
@@ -362,8 +362,29 @@
 
 .actionButtons {
   display: flex;
-  gap: 12px;
+  gap: 1rem;
   align-items: center;
+}
+
+.requestButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  background-color: #2563eb;
+  color: white;
+  font-size: 0.875rem;
+  transition: background-color 0.2s;
+}
+
+.requestButton:hover {
+  background-color: #1d4ed8;
+}
+
+.requestButton .icon {
+  width: 1rem;
+  height: 1rem;
 }
 
 .chatButton {

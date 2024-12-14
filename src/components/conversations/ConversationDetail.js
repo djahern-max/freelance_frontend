@@ -19,13 +19,14 @@ import api from '../../utils/api';
 import styles from './ConversationDetail.module.css';
 
 const ConversationDetail = () => {
+  // 1. Hooks and constants first
   const { id } = useParams();
   const navigate = useNavigate();
   const messagesEndRef = useRef(null);
   const { token, user } = useSelector((state) => state.auth);
   const apiUrl = process.env.REACT_APP_API_URL;
 
-  // State declarations
+  // 2. State declarations
   const [conversation, setConversation] = useState(null);
   const [requestDetails, setRequestDetails] = useState(null);
   const [newMessage, setNewMessage] = useState('');
@@ -41,7 +42,16 @@ const ConversationDetail = () => {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const lastSeenAgreementRef = useRef(null);
 
-  // Fetch conversation data
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  // 4. Callback functions (functions that need useCallback)
   const fetchConversation = useCallback(async () => {
     try {
       const conversationRes = await api.get(`/conversations/${id}`);
@@ -157,15 +167,6 @@ const ConversationDetail = () => {
       lastSeenAgreementRef.current = agreement.id;
     }
   }, [agreement, user.id]);
-
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
 
   const sendSystemMessage = async (content) => {
     try {
@@ -355,6 +356,7 @@ const ConversationDetail = () => {
       </div>
       <div className={styles.content}>
         {/* Main Messages Section */}
+
         <div className={styles.mainSection}>
           <div className={styles.messagesContainer}>
             {!conversation.messages?.length ? (
@@ -363,32 +365,70 @@ const ConversationDetail = () => {
               </div>
             ) : (
               <>
-                {conversation.messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`${styles.messageWrapper} ${
-                      message.user_id === user.id
-                        ? styles.sent
-                        : styles.received
-                    }`}
-                  >
-                    <div className={styles.messageContent}>
-                      <div className={styles.messageHeader}>
-                        <span className={styles.username}>
-                          {message.user_id === user.id
-                            ? 'You'
-                            : conversation.recipient_username}
-                        </span>
-                        <span className={styles.timestamp}>
-                          {new Date(message.created_at).toLocaleString()}
-                        </span>
-                      </div>
-                      <div className={styles.messageText}>
-                        {message.content}
+                {conversation.messages.map((message, index) => {
+                  const isSentByUser = message.user_id === user.id;
+                  const currentDate = new Date(message.created_at);
+
+                  // Helper function to check if two dates are the same day
+                  const isSameDay = (date1, date2) => {
+                    return date1?.toDateString() === date2?.toDateString();
+                  };
+                  const showDateDivider =
+                    index === 0 ||
+                    !isSameDay(
+                      new Date(conversation.messages[index - 1]?.created_at),
+                      currentDate
+                    );
+
+                  // Format date divider with time
+                  const getDateDividerWithTime = (date) => {
+                    const today = new Date();
+                    const yesterday = new Date(today);
+                    yesterday.setDate(yesterday.getDate() - 1);
+
+                    const timeString = date.toLocaleTimeString('en-US', {
+                      hour: 'numeric',
+                      minute: '2-digit',
+                      hour12: true,
+                    });
+
+                    if (date.toDateString() === today.toDateString()) {
+                      return `Today ${timeString}`;
+                    } else if (
+                      date.toDateString() === yesterday.toDateString()
+                    ) {
+                      return `Yesterday ${timeString}`;
+                    } else {
+                      return (
+                        date.toLocaleDateString('en-US', {
+                          month: 'long',
+                          day: 'numeric',
+                        }) + ` ${timeString}`
+                      );
+                    }
+                  };
+
+                  return (
+                    <div key={message.id}>
+                      {showDateDivider && (
+                        <div className={styles.timestampDivider}>
+                          {getDateDividerWithTime(currentDate)}
+                        </div>
+                      )}
+                      <div
+                        className={`${styles.messageWrapper} ${
+                          isSentByUser ? styles.sent : styles.received
+                        }`}
+                      >
+                        <div className={styles.messageContent}>
+                          <div className={styles.messageText}>
+                            {message.content}
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </>
             )}
           </div>
@@ -409,6 +449,7 @@ const ConversationDetail = () => {
             </form>
           </div>
         </div>
+
         {/* Sidebar */}
 
         <div
