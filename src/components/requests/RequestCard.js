@@ -9,6 +9,36 @@ const RequestCard = ({ request, onUpdate }) => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  const updateRequestStatus = async (requestId, newStatus) => {
+    setIsUpdating(true);
+    setError(null);
+    try {
+      // Format status to match backend enum
+      const formattedStatus = newStatus.toLowerCase().replace(' ', '_');
+      console.log('Sending status update:', {
+        requestId,
+        status: formattedStatus,
+      });
+
+      const response = await api.put(`/requests/${requestId}`, {
+        status: formattedStatus,
+      });
+
+      console.log('Update response:', response);
+
+      if (response?.data) {
+        onUpdate();
+      }
+    } catch (error) {
+      console.error('Failed to update status:', error);
+      setError(
+        error.response?.data?.detail || 'Unable to update request status'
+      );
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   const toggleRequestPrivacy = async (requestId, currentStatus) => {
     setIsUpdating(true);
     setError(null);
@@ -21,24 +51,6 @@ const RequestCard = ({ request, onUpdate }) => {
       console.error('Failed to update privacy:', error);
       setError(
         api.helpers.handleError(error) || 'Unable to update privacy settings'
-      );
-    } finally {
-      setIsUpdating(false);
-    }
-  };
-
-  const updateRequestStatus = async (requestId, newStatus) => {
-    setIsUpdating(true);
-    setError(null);
-    try {
-      await api.put(`/requests/${requestId}`, {
-        status: newStatus,
-      });
-      onUpdate();
-    } catch (error) {
-      console.error('Failed to update status:', error);
-      setError(
-        api.helpers.handleError(error) || 'Unable to update request status'
       );
     } finally {
       setIsUpdating(false);
