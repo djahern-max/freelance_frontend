@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { clearAuthData } from '../../utils/authCleanup';
+import TermsModal from '../shared/TermsModal'; // Import the shared modal component
 import styles from './Register.module.css';
 
 const Register = () => {
@@ -11,15 +12,17 @@ const Register = () => {
     confirmPassword: '',
     userType: 'client',
     full_name: '',
+    termsAccepted: false,
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from || '/';
 
-  // Correctly placed useEffect for auth cleanup
+  // Cleanup stale auth data
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -28,23 +31,29 @@ const Register = () => {
     }
   }, []);
 
+  // Handle input changes
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
-  // Fixed handleRegister function - removed incorrect useEffect
+  // Handle registration logic
   const handleRegister = async (e) => {
     e.preventDefault();
-    console.log('Form Data:', formData);
     setError('');
     setIsLoading(true);
 
+    if (!formData.termsAccepted) {
+      setError('You must accept the Terms and Conditions to register.');
+      setIsLoading(false);
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError('Passwords do not match.');
       setIsLoading(false);
       return;
     }
@@ -56,9 +65,8 @@ const Register = () => {
         password: formData.password,
         user_type: formData.userType,
         full_name: formData.full_name,
+        terms_accepted: formData.termsAccepted,
       };
-
-      console.log('Request Payload:', requestBody);
 
       const response = await fetch(
         `${process.env.REACT_APP_API_URL}/auth/register`,
@@ -73,11 +81,9 @@ const Register = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.log('Error Response:', errorData);
         throw new Error(errorData.detail || 'Registration failed');
       }
 
-      // Redirect to login with success message
       navigate('/login', {
         state: {
           from,
@@ -98,7 +104,6 @@ const Register = () => {
       <div className={styles.formWrapper}>
         <div className={styles.header}>
           <h1 className={styles.title}>Create Account</h1>
-          <p className={styles.subtitle}></p>
         </div>
 
         {error && <div className={styles.error}>{error}</div>}
@@ -188,6 +193,27 @@ const Register = () => {
             />
           </div>
 
+          <div className={styles.termsGroup}>
+            <input
+              type="checkbox"
+              id="termsAccepted"
+              name="termsAccepted"
+              checked={formData.termsAccepted}
+              onChange={handleInputChange}
+              className={styles.checkbox}
+            />
+            <label htmlFor="termsAccepted" className={styles.termsLabel}>
+              I agree to the{' '}
+              <button
+                type="button"
+                onClick={() => setIsTermsModalOpen(true)}
+                className={styles.termsLink}
+              >
+                Terms and Conditions
+              </button>
+            </label>
+          </div>
+
           <button
             type="submit"
             className={styles.submitButton}
@@ -195,10 +221,6 @@ const Register = () => {
           >
             {isLoading ? 'Creating Account...' : 'Create Account'}
           </button>
-
-          <p className={styles.hint}>
-            You can complete your profile details after signing up
-          </p>
         </form>
 
         <div className={styles.footer}>
@@ -210,6 +232,12 @@ const Register = () => {
           </p>
         </div>
       </div>
+
+      {/* Use shared TermsModal */}
+      <TermsModal
+        isOpen={isTermsModalOpen}
+        onClose={() => setIsTermsModalOpen(false)}
+      />
     </div>
   );
 };

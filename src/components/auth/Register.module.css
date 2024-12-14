@@ -123,6 +123,38 @@
   text-decoration: underline;
 }
 
+.termsGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: var(--spacing-sm);
+}
+
+.checkbox {
+  margin: 0;
+  accent-color: var(--color-primary);
+}
+
+.termsLabel {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+}
+
+.termsLink {
+  color: var(--color-primary);
+  background: none;
+  border: none;
+  font-size: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.termsLink:hover {
+  text-decoration: none;
+  font-weight: bold;
+}
+
+
 @media (max-width: 768px) {
   .formWrapper {
     padding: var(--spacing-lg);
