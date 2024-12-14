@@ -15,6 +15,7 @@ import CreateRequestModal from '../requests/CreateRequestModal';
 import ProjectHandler from '../requests/ProjectHandler';
 import RequestCard from '../requests/RequestCard';
 import RequestGroupingToolbar from '../requests/RequestGroupingToolbar';
+import FeatureTour from '../shared/FeatureTour';
 import Header from '../shared/Header';
 import styles from './ClientDashboard.module.css';
 import DashboardSections from './DashboardSections';
@@ -61,6 +62,7 @@ const ClientDashboard = () => {
       [section]: !prev[section],
     }));
   };
+  const [showFeatureTour, setShowFeatureTour] = useState(true);
 
   const sections = [
     {
@@ -500,6 +502,13 @@ const ClientDashboard = () => {
   const renderRequests = () => (
     <div className={styles.expandedSection}>
       <h2>Work Requests</h2>
+      {dashboardData.requests.length > 0 && (
+        <div className={styles.groupingInfo}>
+          <span className={styles.groupingMessage}>
+            Group Requests into Projects with the Checkbox
+          </span>
+        </div>
+      )}
       {showGroupingToolbar && (
         <RequestGroupingToolbar
           selectedRequests={selectedRequests}
@@ -596,6 +605,10 @@ const ClientDashboard = () => {
           />
         )}
       </div>
+
+      {showFeatureTour && (
+        <FeatureTour onComplete={() => setShowFeatureTour(false)} />
+      )}
     </div>
   );
 };

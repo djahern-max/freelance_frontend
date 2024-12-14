@@ -34,7 +34,15 @@ const RequestGroupingToolbar = ({
         throw new Error(result.error);
       }
 
-      toast.success('Requests grouped successfully!');
+      toast.success('Requests grouped successfully', {
+        position: 'bottom-right',
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        className: styles.toast,
+      });
       setSelectedProjectId('');
 
       if (onGroup) {
