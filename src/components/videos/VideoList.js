@@ -167,7 +167,6 @@ const VideoList = () => {
       videoId: video.id,
     });
   };
-
   const handleRequestSent = (creatorUsername) => {
     toast.success(`Request sent to ${creatorUsername}`);
     setSelectedCreator(null);
@@ -389,7 +388,7 @@ const VideoList = () => {
               await api.post('/requests/', {
                 ...formData,
                 developer_id: selectedCreator.id,
-                video_id: selectedCreator.videoId,
+                video_id: selectedCreator.videoId, // Make sure this is being set
               });
               handleRequestSent(selectedCreator.username);
             } catch (error) {
