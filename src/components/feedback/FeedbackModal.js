@@ -10,6 +10,13 @@ const FeedbackModal = ({ location, targetId, onClose }) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
+  const handleOverlayClick = (e) => {
+    // Prevent closing if clicking inside the modal content
+    if (e.target.classList.contains(styles.overlay)) {
+      onClose();
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (rating === 0) {
@@ -18,36 +25,36 @@ const FeedbackModal = ({ location, targetId, onClose }) => {
     }
 
     try {
-      const response = await fetch('http://localhost:8000/feedback/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          rating,
-          comment,
-          name,
-          email,
-          location,
-          target_id: targetId,
-        }),
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/feedback/`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            rating,
+            comment,
+            name,
+            email,
+            location,
+            target_id: targetId,
+          }),
+        }
+      );
 
-      if (!response.ok) throw new Error('Failed to submit feedback');
+      // Handle the response as needed
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
 
-      setSuccess(true);
-      setTimeout(() => {
-        onClose();
-      }, 2000);
-    } catch (err) {
-      setError('Failed to submit feedback. Please try again.');
+      const data = await response.json();
+      console.log('Feedback submitted successfully:', data);
+    } catch (error) {
+      console.error('Error submitting feedback:', error);
     }
-  };
 
-  const handleOverlayClick = (e) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
+    setSuccess(true);
   };
 
   return (

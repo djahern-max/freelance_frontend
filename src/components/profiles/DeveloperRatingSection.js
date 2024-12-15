@@ -1,3 +1,5 @@
+// src/components/profiles/DeveloperRatingSection.js
+
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -11,11 +13,12 @@ const DeveloperRatingSection = ({ developerId }) => {
   const [totalRatings, setTotalRatings] = useState(0);
   const [userRating, setUserRating] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const user = useSelector((state) => state.auth.user);
   const isClient = user?.user_type === 'client';
+  const isDeveloper = user?.user_type === 'developer';
 
   useEffect(() => {
-    // Only load ratings if we have a valid developerId
     if (developerId) {
       loadRatings();
     }
@@ -23,24 +26,30 @@ const DeveloperRatingSection = ({ developerId }) => {
 
   const loadRatings = async () => {
     try {
-      if (!developerId) {
-        console.error('No developer ID provided');
-        return;
-      }
-
-      const [ratingData, userRatingData] = await Promise.all([
-        axios.get(`${API_ROUTES.ratings}/developer/${developerId}/user-rating`),
-        isClient
-          ? axios.get(`${API_ROUTES.ratings}/user/${developerId}`)
-          : Promise.resolve({ data: { rating: null } }),
-      ]);
-
+      const ratingData = await axios.get(
+        `${API_ROUTES.ratings}/developer/${developerId}`
+      );
       setAverageRating(ratingData.data.average_rating || 0);
       setTotalRatings(ratingData.data.total_ratings || 0);
-      setUserRating(userRatingData.data?.rating || null);
-    } catch (error) {
-      console.error('Error loading ratings:', error);
-      toast.error('Failed to load ratings');
+
+      if (isDeveloper) {
+        // Fetch the user's rating for the developer
+        const userRatingData = await axios.get(
+          `${API_ROUTES.ratings}/developer/${developerId}/user-rating`
+        );
+        setUserRating(userRatingData.data?.rating || null);
+      }
+    } catch (err) {
+      if (err.response && err.response.status === 404) {
+        // No ratings found, set default values
+        setAverageRating(0);
+        setTotalRatings(0);
+        setUserRating(null);
+      } else {
+        console.error('Error loading ratings:', err);
+        setError(err);
+        toast.error('Failed to load ratings');
+      }
     } finally {
       setLoading(false);
     }
@@ -48,16 +57,11 @@ const DeveloperRatingSection = ({ developerId }) => {
 
   const handleRate = async (stars) => {
     try {
-      if (!developerId) {
-        toast.error('Cannot rate: Developer ID is missing');
-        return;
-      }
-
       const response = await axios.post(
         `${API_ROUTES.ratings}/developer/${developerId}`,
         {
-          stars: stars, // The backend expects 'stars', not 'rating'
-          comment: '', // Optional comment field
+          stars: stars,
+          comment: '',
         }
       );
 
@@ -65,31 +69,41 @@ const DeveloperRatingSection = ({ developerId }) => {
       setTotalRatings(response.data.total_ratings || 0);
       setUserRating(stars);
       toast.success(response.data.message || 'Rating submitted successfully');
-    } catch (error) {
-      console.error('Error submitting rating:', error);
+    } catch (err) {
+      console.error('Error submitting rating:', err);
       toast.error('Failed to submit rating');
     }
   };
 
   if (!developerId) {
-    return null; // Or some fallback UI
+    return <div className={styles.container}>Unable to load ratings.</div>;
   }
 
   if (loading) {
     return <div className={styles.loading}>Loading ratings...</div>;
   }
 
+  if (error) {
+    return <div className={styles.container}>Error loading ratings.</div>;
+  }
+
   return (
     <div className={styles.container}>
-      <StarRating
-        rating={averageRating}
-        totalRatings={totalRatings}
-        interactive={isClient}
-        onRate={handleRate}
-        userRating={userRating}
-      />
-      {isClient && !userRating && (
-        <p className={styles.ratePrompt}>Click to rate this developer</p>
+      {totalRatings === 0 && isClient ? (
+        <div className={styles.noRatings}>
+          <p>This developer has not been rated yet.</p>
+          <p className={styles.ratePrompt}>
+            Be the first to rate this developer!
+          </p>
+        </div>
+      ) : (
+        <StarRating
+          rating={averageRating}
+          totalRatings={totalRatings}
+          interactive={isClient || isDeveloper}
+          onRate={handleRate}
+          userRating={userRating}
+        />
       )}
     </div>
   );

@@ -33,6 +33,7 @@ const DeveloperProfile = () => {
   const [formData, setFormData] = useState(DEFAULT_VALUES);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showImageUpload, setShowImageUpload] = useState(false);
+  const [noProfileFound, setNoProfileFound] = useState(false);
 
   useEffect(() => {
     dispatch(fetchDeveloperProfile())
@@ -40,14 +41,20 @@ const DeveloperProfile = () => {
       .then((data) => {
         console.log('Fetched developer profile:', data);
         setFormData({
-          skills: data.skills || '',
-          experience_years: data.experience_years?.toString() || '',
-          bio: data.bio || '',
-          is_public: data.is_public || false,
+          skills: data?.skills || '',
+          experience_years: data?.experience_years?.toString() || '',
+          bio: data?.bio || '',
+          is_public: data?.is_public || false,
         });
       })
       .catch((err) => {
         console.error('Error fetching developer profile:', err);
+        if (err.status === 404) {
+          setNoProfileFound(true);
+        } else {
+          // Reset to default values if fetch fails for other reasons
+          setFormData(DEFAULT_VALUES);
+        }
       });
   }, [dispatch]);
 
@@ -116,6 +123,14 @@ const DeveloperProfile = () => {
       </div>
     );
   }
+
+  const renderDeveloperRatingSection = () => {
+    // Only render if profile and profile.id exist
+    if (profile?.id) {
+      return <DeveloperRatingSection developerId={profile.id} />;
+    }
+    return null;
+  };
 
   const hasProfile = !!profile?.developer_profile;
 
@@ -260,7 +275,7 @@ const DeveloperProfile = () => {
                 <span>{profile ? 'Update Profile' : 'Create Profile'}</span>
               )}
             </button>
-            <DeveloperRatingSection developerId={profile.id} />
+            {renderDeveloperRatingSection()}
           </div>
         </form>
       </div>
