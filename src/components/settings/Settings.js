@@ -11,8 +11,6 @@ const Settings = () => {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Settings</h1>
-
       <div className={styles.tabContainer}>
         <div className={styles.tabs}>
           <button

@@ -48,7 +48,14 @@ const ClientProfile = () => {
       })
       .catch((err) => {
         console.error('Error fetching client profile:', err);
-        toast.error('Error loading profile');
+
+        // Check for "Profile not found" specifically
+        if (err === 'The requested resource was not found.') {
+          setFormData(DEFAULT_VALUES); // Reset form to default
+        } else {
+          console.log('Unhandled error:', err); // Debugging log
+          // Only show the toast.error for unexpected errors
+        }
       });
   }, [dispatch]);
 

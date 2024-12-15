@@ -47,14 +47,12 @@ const DeveloperProfile = () => {
       })
       .catch((err) => {
         console.error('Error fetching developer profile:', err);
-        toast.error('Error loading profile');
       });
   }, [dispatch]);
+
   useEffect(() => {
     if (profile) {
-      const profileData = profile.developer_profile || profile; // Fallback to main profile if developer_profile is null
-      console.log('Populating form with:', profileData);
-
+      const profileData = profile.developer_profile || profile; // Remove `developer_profile` if unnecessary
       setFormData({
         skills: profileData.skills || '',
         experience_years: profileData.experience_years?.toString() || '',

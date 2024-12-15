@@ -114,7 +114,6 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor with comprehensive error handling
 api.interceptors.response.use(
   (response) => {
     if (process.env.NODE_ENV === 'development') {
@@ -129,41 +128,19 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // Handle specific 404 errors
+    if (error.response?.status === 404 && error.response?.data?.detail) {
+      return Promise.reject(error.response.data.detail); // Pass the specific message for frontend handling
+    }
+
     // Log detailed error information
-    const errorDetails = {
+    console.error('API Error Details:', {
       url: originalRequest?.url,
-      method: originalRequest?.method,
       status: error.response?.status,
-      data: error.response?.data,
       message: error.message,
-      retryCount: originalRequest?.retryCount || 0,
-    };
-    console.error('API Error Details:', errorDetails);
+    });
 
-    // Handle network errors
-    if (!error.response) {
-      if (error.code === 'ECONNABORTED') {
-        return Promise.reject(
-          new Error('Request timed out. Please try again.')
-        );
-      }
-      return Promise.reject(
-        new Error('Network error. Please check your connection.')
-      );
-    }
-
-    // Handle retry logic for 5xx errors
-    if (
-      error.response.status >= 500 &&
-      originalRequest?.retries > originalRequest?.retryCount
-    ) {
-      originalRequest.retryCount = (originalRequest.retryCount || 0) + 1;
-      return new Promise((resolve) => setTimeout(resolve, 1000)).then(() =>
-        api(originalRequest)
-      );
-    }
-
-    // Handle specific error status codes
+    // Handle common error codes
     switch (error.response.status) {
       case 401:
         clearAuthData();
@@ -173,38 +150,23 @@ api.interceptors.response.use(
         ) {
           window.location.href = '/login';
         }
-        return Promise.reject(
-          new Error('Session expired. Please log in again.')
-        );
-
+        return Promise.reject('Session expired. Please log in again.');
       case 403:
         if (error.response.data?.detail?.includes('subscription')) {
-          return Promise.reject(new Error('Subscription required or expired.'));
+          return Promise.reject('Subscription required or expired.');
         }
         return Promise.reject(
-          new Error('You do not have permission to perform this action.')
+          'You do not have permission to perform this action.'
         );
-
       case 404:
-        return Promise.reject(
-          new Error('The requested resource was not found.')
-        );
-
+        return Promise.reject('The requested resource was not found.');
       case 422:
-        return Promise.reject(
-          new Error('Validation error. Please check your input.')
-        );
-
+        return Promise.reject('Validation error. Please check your input.');
       case 429:
-        return Promise.reject(
-          new Error('Too many requests. Please try again later.')
-        );
-
+        return Promise.reject('Too many requests. Please try again later.');
       default:
         return Promise.reject(
-          new Error(
-            error.response.data?.detail || 'An unexpected error occurred.'
-          )
+          error.response.data?.detail || 'An unexpected error occurred.'
         );
     }
   }

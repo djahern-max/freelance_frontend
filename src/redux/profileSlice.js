@@ -103,7 +103,7 @@ const profileSlice = createSlice({
       })
       .addCase(fetchDeveloperProfile.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload;
+        state.data = action.payload; // Ensure action.payload matches the backend response
         state.isInitialized = true;
       })
       .addCase(fetchDeveloperProfile.rejected, (state, action) => {
