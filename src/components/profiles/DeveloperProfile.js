@@ -253,10 +253,10 @@ const DeveloperProfile = () => {
             >
               {isSubmitting ? (
                 <span className={styles.loadingText}>
-                  {hasProfile ? 'Updating...' : 'Creating...'}
+                  {profile ? 'Updating...' : 'Creating...'}
                 </span>
               ) : (
-                <span>{hasProfile ? 'Update Profile' : 'Create Profile'}</span>
+                <span>{profile ? 'Update Profile' : 'Create Profile'}</span>
               )}
             </button>
           </div>

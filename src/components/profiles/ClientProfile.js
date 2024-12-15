@@ -180,9 +180,11 @@ const ClientProfile = () => {
               disabled={isSubmitting}
             >
               {isSubmitting ? (
-                <span className={styles.loadingText}>Creating...</span>
+                <span className={styles.loadingText}>
+                  {profile ? 'Updating...' : 'Creating...'}
+                </span>
               ) : (
-                'Create Profile'
+                <span>{profile ? 'Update Profile' : 'Create Profile'}</span>
               )}
             </button>
           </div>
