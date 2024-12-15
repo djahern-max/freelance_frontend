@@ -1,24 +1,25 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import api, { API_ROUTES } from '../utils/api';
 
-export const fetchProfile = createAsyncThunk(
-  'profile/fetchProfile',
+export const fetchDeveloperProfile = createAsyncThunk(
+  'profile/fetchDeveloperProfile',
   async (_, { rejectWithValue }) => {
     try {
-      const userProfile = await api.profile.fetchUserProfile();
-
-      if (!userProfile) {
-        return null;
-      }
-
-      return {
-        ...userProfile,
-        [`${userProfile.user_type}_profile`]: null,
-      };
+      const response = await api.get('/profile/developer');
+      return response.data;
     } catch (error) {
-      if (error.response?.status === 404) {
-        return null;
-      }
+      return rejectWithValue(api.helpers.handleError(error));
+    }
+  }
+);
+
+export const fetchClientProfile = createAsyncThunk(
+  'profile/fetchClientProfile',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get('/profile/client');
+      return response.data;
+    } catch (error) {
       return rejectWithValue(api.helpers.handleError(error));
     }
   }
@@ -95,17 +96,32 @@ const profileSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Fetch Profile
-      .addCase(fetchProfile.pending, (state) => {
+      // Fetch Developer Profile
+      .addCase(fetchDeveloperProfile.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchProfile.fulfilled, (state, action) => {
+      .addCase(fetchDeveloperProfile.fulfilled, (state, action) => {
         state.loading = false;
         state.data = action.payload;
         state.isInitialized = true;
       })
-      .addCase(fetchProfile.rejected, (state, action) => {
+      .addCase(fetchDeveloperProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.isInitialized = true;
+      })
+      // Fetch Client Profile
+      .addCase(fetchClientProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchClientProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = action.payload;
+        state.isInitialized = true;
+      })
+      .addCase(fetchClientProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
         state.isInitialized = true;

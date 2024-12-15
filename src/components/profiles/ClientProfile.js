@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import {
   createClientProfile,
-  fetchProfile,
+  fetchClientProfile, // Import the correct function
   selectError,
   selectIsInitialized,
   selectLoading,
@@ -35,10 +35,22 @@ const ClientProfile = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!isInitialized) {
-      dispatch(fetchProfile());
-    }
-  }, [dispatch, isInitialized]);
+    dispatch(fetchClientProfile())
+      .unwrap()
+      .then((data) => {
+        console.log('Fetched client profile:', data);
+        setFormData({
+          company_name: data.company_name || '',
+          industry: data.industry || '',
+          company_size: data.company_size || '',
+          website: data.website || '',
+        });
+      })
+      .catch((err) => {
+        console.error('Error fetching client profile:', err);
+        toast.error('Error loading profile');
+      });
+  }, [dispatch]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -47,7 +59,7 @@ const ClientProfile = () => {
     try {
       await dispatch(createClientProfile(formData)).unwrap();
       toast.success('Profile created successfully!');
-      dispatch(fetchProfile());
+      dispatch(fetchClientProfile());
     } catch (err) {
       toast.error(err || 'Error creating profile');
     } finally {

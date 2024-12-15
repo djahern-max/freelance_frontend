@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import {
   createDeveloperProfile,
-  fetchProfile,
+  fetchDeveloperProfile, // Corrected here
   updateDeveloperProfile,
 } from '../../redux/profileSlice';
 import styles from './DeveloperProfile.module.css';
@@ -34,24 +34,36 @@ const DeveloperProfile = () => {
   const [showImageUpload, setShowImageUpload] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchProfile())
+    dispatch(fetchDeveloperProfile())
       .unwrap()
+      .then((data) => {
+        console.log('Fetched developer profile:', data);
+        setFormData({
+          skills: data.skills || '',
+          experience_years: data.experience_years?.toString() || '',
+          bio: data.bio || '',
+          is_public: data.is_public || false,
+        });
+      })
       .catch((err) => {
-        if (err.status !== 404) {
-          toast.error('Error loading profile');
-        }
+        console.error('Error fetching developer profile:', err);
+        toast.error('Error loading profile');
       });
   }, [dispatch]);
-
   useEffect(() => {
-    if (profile?.developer_profile) {
-      const profileData = profile.developer_profile;
+    if (profile) {
+      const profileData = profile.developer_profile || profile; // Fallback to main profile if developer_profile is null
+      console.log('Populating form with:', profileData);
+
       setFormData({
         skills: profileData.skills || '',
         experience_years: profileData.experience_years?.toString() || '',
         bio: profileData.bio || '',
         is_public: profileData.is_public || false,
       });
+    } else {
+      console.log('No profile found, using default values');
+      setFormData(DEFAULT_VALUES); // Fallback to default values
     }
   }, [profile]);
 
@@ -94,7 +106,7 @@ const DeveloperProfile = () => {
   const handleImageUploadSuccess = (imageUrl) => {
     toast.success('Profile picture uploaded successfully!');
     // Refresh profile data to show new image
-    dispatch(fetchProfile());
+    dispatch(fetchDeveloperProfile());
     setShowImageUpload(false);
   };
 
