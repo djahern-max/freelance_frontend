@@ -17,11 +17,16 @@ const PublicDevelopers = () => {
   const [selectedCreator, setSelectedCreator] = useState(null);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const location = useLocation();
+  const [expandedBioId, setExpandedBioId] = useState(null);
 
   const user = useSelector((state) => state.auth.user);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
   const TRUNCATE_LENGTH = 150;
+
+  const toggleReadMore = (id) => {
+    setExpandedBioId(expandedBioId === id ? null : id);
+  };
 
   const fetchDevelopers = async () => {
     try {
@@ -147,15 +152,18 @@ const PublicDevelopers = () => {
                   </div>
                 </div>
                 <p className={styles.bio}>
-                  {developer.bio.length > TRUNCATE_LENGTH
-                    ? developer.bio.slice(0, TRUNCATE_LENGTH)
-                    : developer.bio}
+                  {expandedBioId === developer.id ||
+                  developer.bio.length <= TRUNCATE_LENGTH
+                    ? developer.bio
+                    : `${developer.bio.slice(0, TRUNCATE_LENGTH)}...`}
                   {developer.bio.length > TRUNCATE_LENGTH && (
                     <button
-                      onClick={() => setSelectedCreator(developer.bio)}
+                      onClick={() => toggleReadMore(developer.id)}
                       className={styles.readMoreButton}
                     >
-                      Read more
+                      {expandedBioId === developer.id
+                        ? 'Read less'
+                        : 'Read more'}
                     </button>
                   )}
                 </p>
