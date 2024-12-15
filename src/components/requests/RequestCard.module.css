@@ -87,6 +87,7 @@
   justify-content: space-between;
   align-items: center;
   margin-top: auto;
+  gap: 16px; /* Add this */
 }
 
 .viewDetailsButton {
@@ -177,6 +178,34 @@ input:checked + .slider:before {
   pointer-events: none;
 }
 
+.actionButtons {
+  display: flex;
+  gap: 12px;
+}
+
+.snagButton {
+  padding: 8px 16px;
+  background-color: #4299e1;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.snagButton:hover {
+  background-color: #3182ce;
+}
+
+.snagButton:disabled {
+  background-color: #cbd5e0;
+  cursor: not-allowed;
+}
+
 /* Responsive Styles */
 @media (max-width: 640px) {
   .requestCard {
@@ -209,5 +238,15 @@ input:checked + .slider:before {
   .privacyControl {
     width: 100%;
     justify-content: flex-start;
+  }
+
+  .actionButtons {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .snagButton {
+    width: 100%;
+    justify-content: center;
   }
 }

@@ -71,7 +71,7 @@ const ClientDashboard = () => {
     {
       id: 'opportunities',
       icon: Briefcase,
-      title: 'Work Requests',
+      title: 'My Tickets',
       count: dashboardData.requests.length,
     },
     {
@@ -83,7 +83,7 @@ const ClientDashboard = () => {
     {
       id: 'sharedRequests',
       icon: Share2,
-      title: "Requests I've Shared",
+      title: 'Assignments',
       count: dashboardData.sharedRequests.length,
     },
     {
@@ -614,7 +614,7 @@ const ClientDashboard = () => {
             className={styles.headerCreateButton}
           >
             <Plus size={24} className={styles.buttonIcon} />
-            New Request
+            Create Ticket
           </button>
         </div>
 

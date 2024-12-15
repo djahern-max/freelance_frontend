@@ -124,7 +124,7 @@ const CreateRequestModal = ({
                   disabled={isSubmitting}
                 />
                 <span className={styles.checkboxText}>
-                  Make this request public
+                  Make this ticket public
                 </span>
               </label>
             </div>

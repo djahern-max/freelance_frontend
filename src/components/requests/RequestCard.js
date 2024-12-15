@@ -1,13 +1,16 @@
-// RequestCard.js
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, MessageSquare } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
 import styles from './RequestCard.module.css';
+import SnagTicketModal from './SnagTicketModal';
 
 const RequestCard = ({ request, onUpdate }) => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState(null);
+  const [showSnagModal, setShowSnagModal] = useState(false);
+  const [userVideos, setUserVideos] = useState([]);
+  const [profileData, setProfileData] = useState(null);
   const navigate = useNavigate();
 
   const updateRequestStatus = async (requestId, newStatus) => {
@@ -60,6 +63,54 @@ const RequestCard = ({ request, onUpdate }) => {
     return statusMap[status.toLowerCase()] || 'open';
   };
 
+  const loadUserData = async () => {
+    try {
+      const [videosRes, profileRes] = await Promise.all([
+        api.get('/video_display/my-videos'),
+        api.get('/profile/developer'),
+      ]);
+      setUserVideos(videosRes.data);
+      setProfileData(profileRes.data);
+    } catch (error) {
+      console.error('Error loading user data:', error);
+      setError('Failed to load user data');
+    }
+  };
+
+  const handleSnagTicket = async (data) => {
+    setIsUpdating(true);
+    setError(null);
+    try {
+      // Check subscription status first
+      const subscriptionRes = await api.get('/payments/subscription-status');
+      if (subscriptionRes.data.status !== 'active') {
+        navigate('/subscription');
+        return;
+      }
+
+      // Create the conversation
+      const conversationRes = await api.post('/conversations/', {
+        request_id: request.id,
+        initial_message: data.message,
+        video_ids: data.videoIds,
+        include_profile: data.includeProfile,
+      });
+
+      // Navigate to the new conversation
+      navigate(`/conversations/${conversationRes.data.id}`);
+    } catch (error) {
+      console.error('Failed to snag ticket:', error);
+      if (error.response?.status === 403) {
+        navigate('/subscription');
+      } else {
+        setError(error.response?.data?.detail || 'Unable to snag ticket');
+      }
+    } finally {
+      setIsUpdating(false);
+      setShowSnagModal(false);
+    }
+  };
+
   return (
     <div
       className={`${styles.requestCard} ${isUpdating ? styles.loading : ''}`}
@@ -90,12 +141,25 @@ const RequestCard = ({ request, onUpdate }) => {
       </div>
 
       <div className={styles.footer}>
-        <button
-          className={styles.viewDetailsButton}
-          onClick={() => navigate(`/requests/${request.id}`)}
-        >
-          View Details <ChevronRight size={16} />
-        </button>
+        <div className={styles.actionButtons}>
+          <button
+            className={styles.viewDetailsButton}
+            onClick={() => navigate(`/requests/${request.id}`)}
+          >
+            View Details <ChevronRight size={16} />
+          </button>
+
+          <button
+            className={styles.snagButton}
+            onClick={() => {
+              loadUserData();
+              setShowSnagModal(true);
+            }}
+          >
+            <MessageSquare size={16} />
+            Snag Ticket
+          </button>
+        </div>
 
         <div className={styles.privacyControl}>
           <label className={styles.toggleSwitch}>
@@ -120,6 +184,14 @@ const RequestCard = ({ request, onUpdate }) => {
       </div>
 
       {error && <div className={styles.error}>{error}</div>}
+
+      <SnagTicketModal
+        isOpen={showSnagModal}
+        onClose={() => setShowSnagModal(false)}
+        onSubmit={handleSnagTicket}
+        videos={userVideos}
+        profileUrl={profileData?.profile_url}
+      />
     </div>
   );
 };

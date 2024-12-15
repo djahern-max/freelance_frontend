@@ -259,7 +259,7 @@ const DeveloperDashboard = () => {
     {
       id: 'opportunities',
       icon: Briefcase,
-      title: 'New Requests', // Changed from 'Opportunities'
+      title: 'New Opportunities',
       count: activeRequests.length,
     },
     {
@@ -271,7 +271,7 @@ const DeveloperDashboard = () => {
     {
       id: 'sharedRequests',
       icon: Share2,
-      title: 'Shared Requests',
+      title: 'Assigned to You',
       count: sharedRequests.length,
     },
     // {
@@ -575,7 +575,7 @@ const DeveloperDashboard = () => {
             className={styles.headerCreateButton}
           >
             <Plus size={24} className={styles.buttonIcon} />
-            View All Public Requests
+            Explore Open Tickets
           </button>
         </div>
 
