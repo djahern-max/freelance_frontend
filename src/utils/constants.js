@@ -4,4 +4,8 @@ export const API_ROUTES = {
     SUBSCRIPTION_STATUS: '/payments/subscription-status',
     WEBHOOK: '/payments/webhook',
   },
+  RATINGS: {
+    DEVELOPER: (id) => `/ratings/developer/${id}`,
+    USER_RATING: (id) => `/ratings/developer/${id}/user-rating`,
+  },
 };

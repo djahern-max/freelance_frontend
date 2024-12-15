@@ -1,4 +1,4 @@
-import { Award, Briefcase, Loader, MessageSquare, Star } from 'lucide-react';
+import { Award, Briefcase, Loader, MessageSquare } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import api, { API_ROUTES } from '../../utils/api';
 import AuthDialog from '../auth/AuthDialog';
 import CreateRequestModal from '../requests/CreateRequestModal';
+import DeveloperRatingSection from './DeveloperRatingSection';
 import DevelopersEmptyState from './DevelopersEmptyState';
 import styles from './PublicDevelopers.module.css';
 
@@ -136,8 +137,7 @@ const PublicDevelopers = () => {
                       {getUsername(developer)}
                     </h2>
                     <div className={styles.rating}>
-                      <Star className={styles.icon} size={16} />
-                      <span>{developer.rating || 'New'}</span>
+                      <DeveloperRatingSection developerId={developer.id} />
                     </div>
                   </div>
                 </div>

@@ -1,0 +1,39 @@
+.container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .starsContainer {
+    display: flex;
+    gap: 2px;
+  }
+  
+  .star {
+    transition: transform 0.2s ease;
+  }
+  
+  .interactive {
+    cursor: pointer;
+  }
+  
+  .interactive:hover {
+    transform: scale(1.1);
+  }
+  
+  .filled {
+    color: #FAC920;
+  }
+  
+  .empty {
+    color: #E5E7EB;
+  }
+  
+  .userRated {
+    color: #F59E0B;
+  }
+  
+  .ratingCount {
+    font-size: 14px;
+    color: #6B7280;
+  }

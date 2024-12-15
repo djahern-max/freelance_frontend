@@ -7,6 +7,7 @@ import {
   updateDeveloperProfile,
 } from '../../redux/profileSlice';
 import styles from './DeveloperProfile.module.css';
+import DeveloperRatingSection from './DeveloperRatingSection';
 import ImageUpload from './ImageUpload';
 
 const DEFAULT_VALUES = {
@@ -259,6 +260,7 @@ const DeveloperProfile = () => {
                 <span>{profile ? 'Update Profile' : 'Create Profile'}</span>
               )}
             </button>
+            <DeveloperRatingSection developerId={profile.id} />
           </div>
         </form>
       </div>
