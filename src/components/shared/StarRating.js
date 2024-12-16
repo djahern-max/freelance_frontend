@@ -1,4 +1,4 @@
-import { Star, StarHalf } from 'lucide-react';
+import { Star } from 'lucide-react';
 import styles from './StarRating.module.css';
 
 const StarRating = ({
@@ -20,50 +20,31 @@ const StarRating = ({
   };
 
   for (let i = 1; i <= 5; i++) {
-    if (i <= fullStars) {
-      stars.push(
+    stars.push(
+      <button
+        key={i}
+        type="button"
+        onClick={() => handleClick(i)}
+        className={`${styles.starButton} ${
+          !interactive ? styles.nonInteractive : ''
+        }`}
+        disabled={!interactive}
+      >
         <Star
-          key={i}
-          className={`${styles.star} ${interactive ? styles.interactive : ''} ${
-            userRating === i ? styles.userRated : styles.filled
-          }`}
+          className={`${styles.star} ${
+            i <= fullStars || (i === fullStars + 1 && hasHalfStar)
+              ? styles.filled
+              : ''
+          } ${i === userRating ? styles.userRated : ''}`}
           size={size}
-          fill="currentColor"
-          onClick={() => handleClick(i)}
         />
-      );
-    } else if (i === fullStars + 1 && hasHalfStar) {
-      stars.push(
-        <StarHalf
-          key={i}
-          className={`${styles.star} ${interactive ? styles.interactive : ''}`}
-          size={size}
-          fill="currentColor"
-          color="#FAC920"
-        />
-      );
-    } else {
-      stars.push(
-        <Star
-          key={i}
-          className={`${styles.star} ${interactive ? styles.interactive : ''} ${
-            styles.empty
-          }`}
-          size={size}
-          onClick={() => handleClick(i)}
-        />
-      );
-    }
+      </button>
+    );
   }
 
   return (
     <div className={styles.container}>
       <div className={styles.starsContainer}>{stars}</div>
-      {totalRatings !== undefined && (
-        <span className={styles.ratingCount}>
-          ({totalRatings} {totalRatings === 1 ? 'rating' : 'ratings'})
-        </span>
-      )}
     </div>
   );
 };

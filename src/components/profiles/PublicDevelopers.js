@@ -1,4 +1,4 @@
-import { Award, Briefcase, Loader, MessageSquare } from 'lucide-react';
+import { Award, Briefcase, Loader, MessageSquare, Star } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -9,6 +9,7 @@ import CreateRequestModal from '../requests/CreateRequestModal';
 import DeveloperRatingSection from './DeveloperRatingSection';
 import DevelopersEmptyState from './DevelopersEmptyState';
 import styles from './PublicDevelopers.module.css';
+import RatingModal from './RatingModal';
 
 const PublicDevelopers = () => {
   const [developers, setDevelopers] = useState([]);
@@ -19,6 +20,7 @@ const PublicDevelopers = () => {
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const location = useLocation();
   const [expandedBioId, setExpandedBioId] = useState(null);
+  const [ratingDeveloper, setRatingDeveloper] = useState(null);
 
   const user = useSelector((state) => state.auth.user);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -33,16 +35,34 @@ const PublicDevelopers = () => {
     try {
       setLoading(true);
       setError(null);
+      // Log the request attempt
+      console.log('Fetching public developers...');
       const response = await api.get(API_ROUTES.PUBLIC.DEVELOPERS);
-      console.log('Developer data:', response.data);
-      setDevelopers(response.data);
+      console.log('Developers response:', response.data);
+
+      if (Array.isArray(response.data)) {
+        setDevelopers(response.data);
+      } else {
+        console.error('Invalid developers data format:', response.data);
+        setError('Invalid data format received from server');
+      }
     } catch (err) {
-      console.error('Error details:', err);
-      setError('Failed to load creators');
+      console.error('Error fetching developers:', err);
+      console.error('Error details:', {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status,
+      });
+      setError(err.response?.data?.detail || 'Failed to load creators');
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    console.log('Current user:', user);
+    console.log('Is authenticated:', isAuthenticated);
+  }, [user, isAuthenticated]);
 
   useEffect(() => {
     fetchDevelopers();
@@ -99,6 +119,20 @@ const PublicDevelopers = () => {
     );
   };
 
+  const handleRateCreator = (developer) => {
+    if (!isAuthenticated) {
+      setShowAuthDialog(true);
+      return;
+    }
+
+    if (user?.user_type !== 'client') {
+      toast.info('Only clients can rate creators');
+      return;
+    }
+
+    setRatingDeveloper(developer);
+  };
+
   return (
     <div className={styles.container}>
       {loading ? (
@@ -137,10 +171,11 @@ const PublicDevelopers = () => {
                       {getUsername(developer)}
                     </h2>
                     <div className={styles.rating}>
-                      <DeveloperRatingSection developerId={developer.id} />
+                      <DeveloperRatingSection developerId={developer.user_id} />
                     </div>
                   </div>
                 </div>
+
                 <div className={styles.stats}>
                   <div className={styles.statItem}>
                     <Briefcase className={styles.icon} size={16} />
@@ -151,6 +186,7 @@ const PublicDevelopers = () => {
                     <span>{developer.total_projects} projects completed</span>
                   </div>
                 </div>
+
                 <p className={styles.bio}>
                   {expandedBioId === developer.id ||
                   developer.bio.length <= TRUNCATE_LENGTH
@@ -178,15 +214,27 @@ const PublicDevelopers = () => {
                     ))}
                   </div>
                 </div>
-                {user?.userType !== 'developer' && (
-                  <button
-                    onClick={() => handleSendRequest(developer)}
-                    className={styles.contactButton}
-                  >
-                    <MessageSquare size={16} />
-                    <span>Send Request</span>
-                  </button>
-                )}
+
+                <div className={styles.buttonContainer}>
+                  {user?.userType !== 'developer' && (
+                    <button
+                      onClick={() => handleSendRequest(developer)}
+                      className={styles.contactButton}
+                    >
+                      <MessageSquare size={16} />
+                      <span>Send Request</span>
+                    </button>
+                  )}
+                  {user?.user_type === 'client' && (
+                    <button
+                      onClick={() => handleRateCreator(developer)}
+                      className={styles.rateButton}
+                    >
+                      <Star size={16} />
+                      <span>Rate Creator</span>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           ))}
@@ -222,6 +270,16 @@ const PublicDevelopers = () => {
             }
           }}
           onRequestSent={() => handleRequestSent(selectedCreator.username)}
+        />
+      )}
+
+      {ratingDeveloper && (
+        <RatingModal
+          developerId={ratingDeveloper.user_id}
+          onClose={() => setRatingDeveloper(null)}
+          onRatingSubmitted={() => {
+            fetchDevelopers(); // Refresh the developers list to update ratings
+          }}
         />
       )}
     </div>

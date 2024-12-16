@@ -1,26 +1,77 @@
 .container {
+  width: 100%;
+  padding: 8px 0;
+  min-height: 40px; /* Ensure minimum height */
+}
+
+.loading {
+  text-align: center;
+  padding: 1rem;
+  color: #6c757d;
+}
+
+.error {
+  color: #dc3545;
+  padding: 1rem;
+  text-align: center;
+  background-color: #f8d7da;
+  border-radius: 4px;
+}
+
+.ratingInfo {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-}
-  
-.loading {
-  color: #666;
-  font-size: 0.9rem;
+  gap: 8px;
 }
 
+.noRatings {
+  text-align: center;
+  padding: 8px;
+  background-color: #f3f4f6;
+  border-radius: 6px;
+  margin: 8px 0;
+}
+.totalRatings {
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.noRatings {
+  text-align: center;
+  color: #6c757d;
+}
 .ratePrompt {
-  font-size: 0.8rem;
-  color: #666;
+  color: #2563eb;
+  font-weight: 500;
+  cursor: pointer;
   margin-top: 4px;
 }
-  
-  @keyframes pulse {
-    0%, 100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: .5;
-    }
-  }
+.totalRatings {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.error {
+  color: #dc2626;
+  font-size: 0.875rem;
+}
+
+.loading {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.ratingDetails {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-top: 0.5rem;
+}
+
+.ratingNote {
+  font-size: 0.875rem;
+  color: darkblue;
+  margin-top: 0.25rem;
+}

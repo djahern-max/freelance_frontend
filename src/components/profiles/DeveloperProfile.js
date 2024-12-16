@@ -171,6 +171,10 @@ const DeveloperProfile = () => {
                   profile.developer_profile.created_at
                 ).toLocaleDateString()}
               </div>
+              {/* Add rating section here */}
+              <div className={styles.ratingSection}>
+                {renderDeveloperRatingSection()}
+              </div>
               <ImageUpload
                 mode="upload"
                 onUploadSuccess={handleImageUploadSuccess}
