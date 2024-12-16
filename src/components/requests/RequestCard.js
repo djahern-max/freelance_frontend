@@ -1,19 +1,13 @@
-import { ChevronRight, MessageSquare } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
-import { useSnagTicket } from '../../utils/snagTicket';
 import styles from './RequestCard.module.css';
-import SnagTicketModal from './SnagTicketModal';
 
 const RequestCard = ({ request, onUpdate }) => {
   const navigate = useNavigate();
-  const { snagTicket, loading, error: snagError } = useSnagTicket(navigate);
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState(null);
-  const [showSnagModal, setShowSnagModal] = useState(false);
-  const [userVideos, setUserVideos] = useState([]);
-  const [profileData, setProfileData] = useState(null);
 
   const updateRequestStatus = async (requestId, newStatus) => {
     setIsUpdating(true);
@@ -65,33 +59,9 @@ const RequestCard = ({ request, onUpdate }) => {
     return statusMap[status.toLowerCase()] || 'open';
   };
 
-  const loadUserData = async () => {
-    try {
-      const [videosRes, profileRes] = await Promise.all([
-        api.get('/video_display/my-videos'),
-        api.get('/profile/developer'),
-      ]);
-      setUserVideos(videosRes.data);
-      setProfileData(profileRes.data);
-    } catch (error) {
-      console.error('Error loading user data:', error);
-      setError('Failed to load user data');
-    }
-  };
-  const handleSnagTicket = async (data) => {
-    try {
-      await snagTicket(request.id, data);
-      // The hook will automatically handle navigation on success
-    } catch (err) {
-      // Errors are handled by the hook, but you can add additional handling here if needed
-      setShowSnagModal(false);
-    }
-  };
   return (
     <div
-      className={`${styles.requestCard} ${
-        isUpdating || loading ? styles.loading : ''
-      }`}
+      className={`${styles.requestCard} ${isUpdating ? styles.loading : ''}`}
     >
       <div className={styles.header}>
         <h3 className={styles.title}>{request.title}</h3>
@@ -126,17 +96,6 @@ const RequestCard = ({ request, onUpdate }) => {
           >
             View Details <ChevronRight size={16} />
           </button>
-
-          <button
-            className={styles.snagButton}
-            onClick={() => {
-              loadUserData();
-              setShowSnagModal(true);
-            }}
-          >
-            <MessageSquare size={16} />
-            Snag Ticket
-          </button>
         </div>
 
         <div className={styles.privacyControl}>
@@ -162,16 +121,6 @@ const RequestCard = ({ request, onUpdate }) => {
       </div>
 
       {error && <div className={styles.error}>{error}</div>}
-
-      <SnagTicketModal
-        isOpen={showSnagModal}
-        onClose={() => setShowSnagModal(false)}
-        onSubmit={handleSnagTicket}
-        videos={userVideos}
-        profileUrl={profileData?.profile_url}
-        isLoading={loading}
-        error={snagError} // Use the error from the hook
-      />
     </div>
   );
 };

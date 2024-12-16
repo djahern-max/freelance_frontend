@@ -16,7 +16,7 @@ const PublicRequests = () => {
   const [publicRequests, setPublicRequests] = useState([]);
   const [conversations, setConversations] = useState({});
   const [error, setError] = useState(null);
-  const [setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [expandedCards, setExpandedCards] = useState({});
@@ -26,21 +26,7 @@ const PublicRequests = () => {
   const location = useLocation();
   const user = useSelector((state) => state.auth.user);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  const { snagTicket, loading, error: snagError } = useSnagTicket(navigate);
-
-  const createConversation = async (requestId, retries = 3) => {
-    for (let i = 0; i < retries; i++) {
-      try {
-        const response = await api.post('/conversations/', {
-          request_id: requestId,
-        });
-        return response.data;
-      } catch (err) {
-        if (i === retries - 1) throw err;
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-      }
-    }
-  };
+  const { snagTicket } = useSnagTicket(navigate); // Only keep snagTicket since it's being used
 
   const fetchData = async () => {
     try {

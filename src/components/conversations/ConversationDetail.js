@@ -54,12 +54,20 @@ const ConversationDetail = () => {
   // 4. Callback functions (functions that need useCallback)
   const fetchConversation = useCallback(async () => {
     try {
-      const conversationRes = await api.get(`/conversations/${id}`);
-      const requestRes = await api.get(
-        `/requests/${conversationRes.data.request_id}`
+      // Use the user/list endpoint since we don't have a single conversation endpoint
+      const conversationsRes = await api.get('/conversations/user/list');
+      // Find the specific conversation from the list
+      const conversation = conversationsRes.data.find(
+        (conv) => conv.id === parseInt(id)
       );
 
-      setConversation(conversationRes.data);
+      if (!conversation) {
+        throw new Error('Conversation not found');
+      }
+
+      const requestRes = await api.get(`/requests/${conversation.request_id}`);
+
+      setConversation(conversation);
       setRequestDetails(requestRes.data);
       setIsLoading(false);
     } catch (err) {
@@ -465,120 +473,6 @@ const ConversationDetail = () => {
               Close Details
             </button>
           </div>
-          {/* Agreement Section */}
-
-          {/* {(user.userType === 'developer' || user.userType === 'client') &&
-            (!agreement && !showAgreementForm ? (
-              <div className={styles.sidebarSection}>
-                <div className={styles.buttonWrapper}>
-                  <button
-                    onClick={() => setShowAgreementForm(true)}
-                    className={styles.createAgreementButton}
-                  >
-                    <FileText size={16} />
-                    Create Agreement
-                  </button>
-                </div>
-              </div>
-            ) : null)}
-
-          {agreement ? (
-            <div
-              className={`${styles.existingAgreement} ${styles.clickable}`}
-              onClick={handleAgreementClick}
-              role="button"
-              tabIndex={0}
-            >
-              <h3>Work Agreement</h3>
-              <div className={styles.agreementDetails}>
-                <p>
-                  <strong>Price:</strong> {formatCurrency(agreement.price)}
-                </p>
-                <p>
-                  <strong>Status:</strong> {agreement.status}
-                </p>
-                <p className={styles.agreementPreview}>
-                  <strong>Terms:</strong> {agreement.terms.substring(0, 100)}
-                  {agreement.terms.length > 100 && '...'}
-                </p>
-                {agreement.status === 'proposed' &&
-                  user.id !== agreement.proposed_by && (
-                    <div className={styles.agreementActions}>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          acceptAgreement();
-                        }}
-                        className={styles.acceptButton}
-                        disabled={isAcceptingAgreement}
-                      >
-                        {isAcceptingAgreement
-                          ? 'Accepting...'
-                          : 'Accept Agreement'}
-                      </button>
-                    </div>
-                  )}
-              </div>
-            </div>
-          ) : (
-            showAgreementForm && (
-              <div className={styles.agreementContent}>
-                <form
-                  onSubmit={createAgreement}
-                  className={styles.agreementForm}
-                >
-                  <h3>Propose Work Agreement</h3>
-                  <div className={styles.formGroup}>
-                    <label>Price (USD)</label>
-                    <input
-                      type="number"
-                      value={price}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        // Check if input is a valid number
-                        if (!/^\d*$/.test(value)) {
-                          toast.error('Please enter numbers only');
-                          return;
-                        }
-                        setPrice(value);
-                      }}
-                      required
-                      className={styles.input}
-                      placeholder="Enter price in USD"
-                    />
-                  </div>
-                  <div className={styles.formGroup}>
-                    <label>Terms and Conditions</label>
-                    <textarea
-                      value={terms}
-                      onChange={(e) => setTerms(e.target.value)}
-                      required
-                      className={styles.textarea}
-                      placeholder="Describe the work terms, timeline, and payment schedule..."
-                    />
-                  </div>
-                  <div className={styles.buttonGroup}>
-                    <button
-                      type="submit"
-                      className={styles.submitButton}
-                      disabled={isSubmittingAgreement}
-                    >
-                      {isSubmittingAgreement
-                        ? 'Creating...'
-                        : 'Propose Agreement'}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setShowAgreementForm(false)}
-                      className={styles.cancelButton}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </form>
-              </div>
-            )
-          )} */}
 
           {/* Request Details Section */}
           <div className={styles.sidebarSection}>

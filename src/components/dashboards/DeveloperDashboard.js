@@ -1,5 +1,6 @@
 import {
   Bell,
+  Bookmark,
   Briefcase,
   Clock,
   MessageSquare,
@@ -177,7 +178,7 @@ const DeveloperDashboard = () => {
   const [activeRequests, setActiveRequests] = useState([]);
   const [conversations, setConversations] = useState([]);
   const [sharedRequests, setSharedRequests] = useState([]);
-
+  const [snaggedRequests, setSnaggedRequests] = useState([]); // Add this line
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [hasSeenTutorial, setHasSeenTutorial] = useState(() => {
@@ -231,6 +232,12 @@ const DeveloperDashboard = () => {
       icon: Share2,
       title: 'Assigned to You',
       count: sharedRequests.length,
+    },
+    {
+      id: 'snagged', // Add this new section
+      icon: Bookmark,
+      title: 'Snagged Requests',
+      count: snaggedRequests.length, // You'll need to add this state
     },
   ];
 
@@ -310,6 +317,78 @@ const DeveloperDashboard = () => {
           </div>
         );
     }
+
+    switch (sectionId) {
+      // ... other cases ...
+
+      case 'snagged':
+        return (
+          <div className={styles.expandedSection}>
+            <h2>Snagged Requests</h2>
+            {snaggedRequests.length > 0 ? (
+              <div className={styles.requestsList}>
+                {snaggedRequests.map((item) => (
+                  <div key={item.id} className={styles.requestCard}>
+                    <div className={styles.requestHeader}>
+                      <h3>{item.request.title}</h3>
+                    </div>
+                    <p className={styles.requestContent}>
+                      {item.request.content.length > 150
+                        ? `${item.request.content.substring(0, 150)}...`
+                        : item.request.content}
+                    </p>
+                    <div className={styles.requestMeta}>
+                      {item.request.estimated_budget && (
+                        <span>Budget: ${item.request.estimated_budget}</span>
+                      )}
+                      <span>By: {item.request.owner_username}</span>
+                      <span>Status: {item.request.status}</span>
+                    </div>
+                    <div className={styles.buttonContainer}>
+                      <button
+                        className={styles.viewButton}
+                        onClick={() => navigate(`/requests/${item.request.id}`)}
+                      >
+                        View Details
+                      </button>
+                      <button
+                        className={`${styles.button} ${styles.removeButton}`}
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          try {
+                            await api.delete(
+                              `/snagged-requests/${item.request.id}`
+                            );
+                            setSnaggedRequests((prevRequests) =>
+                              prevRequests.filter((req) => req.id !== item.id)
+                            );
+                          } catch (error) {
+                            console.error(
+                              'Error removing snagged request:',
+                              error
+                            );
+                          }
+                        }}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className={styles.emptyState}>
+                <Bookmark className={styles.emptyStateIcon} />
+                <p>No snagged requests yet</p>
+                <p>When you snag a request, it will appear here</p>
+              </div>
+            )}
+          </div>
+        );
+
+      default:
+        return null;
+    }
   };
 
   const markShareViewed = async (shareId) => {
@@ -319,6 +398,7 @@ const DeveloperDashboard = () => {
       console.error('Error marking share as viewed:', error);
     }
   };
+
   const fetchDashboardData = async () => {
     try {
       // Get conversations
@@ -382,7 +462,7 @@ const DeveloperDashboard = () => {
             return {
               ...conversation,
               agreement_status: agreement ? agreement.status : 'No Agreement',
-              project_id: relatedProject?.id, // Add project ID to conversation data
+              project_id: relatedProject?.id,
             };
           }
         );
@@ -392,7 +472,7 @@ const DeveloperDashboard = () => {
         setConversations([]);
       }
 
-      // Fetch other data...
+      // Fetch public requests
       const requestsRes = await api.get('/requests/public');
       const sortedRequests = requestsRes.data
         .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
@@ -400,15 +480,27 @@ const DeveloperDashboard = () => {
 
       setActiveRequests(sortedRequests);
 
+      // Fetch shared requests if user is a developer
       const sharedRequestsRes =
         user.userType === 'developer'
           ? await api.get('/requests/shared-with-me')
           : { data: [] };
 
-      setActiveRequests(requestsRes.data || []);
       setSharedRequests(
         user.userType === 'developer' ? sharedRequestsRes.data || [] : []
       );
+
+      // Fetch snagged requests if user is a developer
+      if (user.userType === 'developer') {
+        try {
+          const snaggedRequestsRes = await api.get('/snagged-requests/');
+          setSnaggedRequests(snaggedRequestsRes.data || []);
+        } catch (err) {
+          console.error('Error fetching snagged requests:', err);
+          setSnaggedRequests([]);
+        }
+      }
+
       setError(null);
     } catch (err) {
       console.error('API Error:', err);

@@ -442,6 +442,16 @@
   margin-bottom: 1.5rem;
 }
 
+.removeButton {
+  background-color: #fee2e2;
+  color: #dc2626;
+  border: none;
+}
+
+.removeButton:hover {
+  background-color: #fecaca;
+}
+
 .buttonContainer {
   display: flex;
   gap: 0.75rem;
