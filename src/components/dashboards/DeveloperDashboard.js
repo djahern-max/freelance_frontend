@@ -146,48 +146,6 @@ const ConversationCard = ({ conversation, navigate, isProject = false }) => {
     }
   };
 
-  // In DeveloperDashboard.js - ConversationCard component
-  // if (isProject) {
-  //   const lastMessage =
-  //     conversation.messages?.[conversation.messages.length - 1];
-
-  //   return (
-  //     <div className={styles.projectCard} onClick={handleNavigation}>
-  //       <div className={styles.projectHeader}>
-  //         <div className={styles.projectTitle}>
-  //           <Star size={16} className={styles.projectIcon} />
-  //           <span>{conversation.request_title || 'Untitled Project'}</span>
-  //         </div>
-  //         <div className={styles.projectBadge}>Active Project</div>
-  //       </div>
-
-  //       <div className={styles.projectDetails}>
-  //         {/* Agreement Status */}
-  //         <div className={styles.detailItem}>
-  //           <FileText size={14} className={styles.detailIcon} />
-  //           <span>Agreement Status: {conversation.agreement_status}</span>
-  //         </div>
-
-  //         {/* Last Activity */}
-  //         {lastMessage && (
-  //           <div className={styles.detailItem}>
-  //             <Clock size={14} className={styles.detailIcon} />
-  //             <span>
-  //               Last activity: {formatTimeSince(lastMessage.created_at)}
-  //             </span>
-  //           </div>
-  //         )}
-
-  //         {/* Participants Count */}
-  //         <div className={styles.detailItem}>
-  //           <Users size={14} className={styles.detailIcon} />
-  //           <span>2 participants</span>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
-  // }
-
   // Conversation view
   return (
     <div className={styles.conversationCard} onClick={handleNavigation}>
@@ -274,12 +232,6 @@ const DeveloperDashboard = () => {
       title: 'Assigned to You',
       count: sharedRequests.length,
     },
-    // {
-    //   id: 'projects',
-    //   icon: FolderOpen,
-    //   title: 'Active Projects',
-    //   count: activeProjects.length,
-    // },
   ];
 
   // Add this render function
@@ -357,34 +309,6 @@ const DeveloperDashboard = () => {
             )}
           </div>
         );
-      // case 'projects':
-      //   return (
-      //     <div className={styles.projects}>
-      //       <h2>Active Projects</h2>
-      //       {activeProjects.length > 0 ? (
-      //         <div className={styles.projectsList}>
-      //           {activeProjects.map((project) => (
-      //             <ConversationCard
-      //               key={project.id}
-      //               conversation={project}
-      //               navigate={navigate}
-      //               isProject={true} // Add this line
-      //             />
-      //           ))}
-      //         </div>
-      //       ) : (
-      //         <div className={styles.emptyState}>
-      //           <Star className={styles.emptyStateIcon} />
-      //           <p>No active projects yet.</p>
-      //           <p>
-      //             Projects will appear here once you've accepted an agreement!
-      //           </p>
-      //         </div>
-      //       )}
-      //     </div>
-      //   );
-      // default:
-      //   return null;
     }
   };
 

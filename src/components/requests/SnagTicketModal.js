@@ -1,3 +1,5 @@
+// SnagTicketModal.js
+import { X } from 'lucide-react';
 import { useState } from 'react';
 import styles from './SnagTicketModal.module.css';
 
@@ -7,6 +9,8 @@ const SnagTicketModal = ({
   onSubmit,
   videos = [],
   profileUrl,
+  isLoading = false,
+  error = null,
 }) => {
   const [message, setMessage] = useState('');
   const [selectedVideos, setSelectedVideos] = useState([]);
@@ -26,7 +30,13 @@ const SnagTicketModal = ({
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
-        <h2 className={styles.modalTitle}>Start Conversation</h2>
+        <div className={styles.modalHeader}>
+          <h2 className={styles.modalTitle}>Start Conversation</h2>
+          <button onClick={onClose} className={styles.closeButton}>
+            <X size={20} />
+          </button>
+        </div>
+
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGroup}>
             <label className={styles.label}>Message to Client</label>
@@ -76,16 +86,23 @@ const SnagTicketModal = ({
             </label>
           )}
 
+          {error && <div className={styles.error}>{error}</div>}
+
           <div className={styles.buttonGroup}>
             <button
               type="button"
               onClick={onClose}
               className={styles.cancelButton}
+              disabled={isLoading}
             >
               Cancel
             </button>
-            <button type="submit" className={styles.submitButton}>
-              Send Message
+            <button
+              type="submit"
+              className={styles.submitButton}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Starting Conversation...' : 'Start Conversation'}
             </button>
           </div>
         </form>

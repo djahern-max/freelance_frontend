@@ -7,6 +7,7 @@ import api from '../../utils/api';
 import AuthDialog from '../auth/AuthDialog';
 import SubscriptionDialog from '../payments/SubscriptionDialog';
 
+import { useSnagTicket } from '../../utils/snagTicket';
 import Header from '../shared/Header';
 import EmptyState from './EmptyState';
 import styles from './PublicRequests.module.css';
@@ -15,7 +16,7 @@ const PublicRequests = () => {
   const [publicRequests, setPublicRequests] = useState([]);
   const [conversations, setConversations] = useState({});
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [setLoading] = useState(true);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [expandedCards, setExpandedCards] = useState({});
@@ -25,6 +26,7 @@ const PublicRequests = () => {
   const location = useLocation();
   const user = useSelector((state) => state.auth.user);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const { snagTicket, loading, error: snagError } = useSnagTicket(navigate);
 
   const createConversation = async (requestId, retries = 3) => {
     for (let i = 0; i < retries; i++) {
@@ -124,48 +126,16 @@ const PublicRequests = () => {
 
   const handleStartConversation = async (request) => {
     try {
-      setLoading(true);
       setSelectedRequest(request);
 
-      // Check subscription status first
-      try {
-        const subscriptionResponse = await api.get(
-          '/payments/subscription-status'
-        );
-        console.log('Subscription status:', subscriptionResponse.data);
-
-        // If no subscription or not active, show subscription dialog immediately
-        if (
-          !subscriptionResponse.data ||
-          subscriptionResponse.data.status !== 'active'
-        ) {
-          setShowSubscriptionDialog(true);
-          return; // Exit early
-        }
-      } catch (subError) {
-        // If there's any error checking subscription, assume no subscription
-        console.error('Error checking subscription:', subError);
-        setShowSubscriptionDialog(true);
-        return; // Exit early
-      }
-
-      // Only proceed with conversation creation if we get here (meaning active subscription)
-      try {
-        const conversationData = await createConversation(request.id);
-        navigate(`/conversations/${conversationData.id}`);
-      } catch (convError) {
-        // Still handle 403 as backup in case subscription status changed
-        if (convError.response?.status === 403) {
-          setShowSubscriptionDialog(true);
-          return;
-        }
-        throw convError;
-      }
+      await snagTicket(request.id, {
+        message: '', // You can add a default message if you want
+        videoIds: [], // Optional video IDs
+        includeProfile: true, // Whether to include profile link
+      });
     } catch (err) {
-      console.error('Operation failed:', err);
-      setError(err.response?.data?.detail || 'Failed to start conversation');
-    } finally {
-      setLoading(false);
+      console.error('Failed to start conversation:', err);
+      // The hook already handles showing subscription dialog and errors
     }
   };
 

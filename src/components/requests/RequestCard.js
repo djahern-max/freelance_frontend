@@ -2,16 +2,18 @@ import { ChevronRight, MessageSquare } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
+import { useSnagTicket } from '../../utils/snagTicket';
 import styles from './RequestCard.module.css';
 import SnagTicketModal from './SnagTicketModal';
 
 const RequestCard = ({ request, onUpdate }) => {
+  const navigate = useNavigate();
+  const { snagTicket, loading, error: snagError } = useSnagTicket(navigate);
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState(null);
   const [showSnagModal, setShowSnagModal] = useState(false);
   const [userVideos, setUserVideos] = useState([]);
   const [profileData, setProfileData] = useState(null);
-  const navigate = useNavigate();
 
   const updateRequestStatus = async (requestId, newStatus) => {
     setIsUpdating(true);
@@ -76,44 +78,20 @@ const RequestCard = ({ request, onUpdate }) => {
       setError('Failed to load user data');
     }
   };
-
   const handleSnagTicket = async (data) => {
-    setIsUpdating(true);
-    setError(null);
     try {
-      // Check subscription status first
-      const subscriptionRes = await api.get('/payments/subscription-status');
-      if (subscriptionRes.data.status !== 'active') {
-        navigate('/subscription');
-        return;
-      }
-
-      // Create the conversation
-      const conversationRes = await api.post('/conversations/', {
-        request_id: request.id,
-        initial_message: data.message,
-        video_ids: data.videoIds,
-        include_profile: data.includeProfile,
-      });
-
-      // Navigate to the new conversation
-      navigate(`/conversations/${conversationRes.data.id}`);
-    } catch (error) {
-      console.error('Failed to snag ticket:', error);
-      if (error.response?.status === 403) {
-        navigate('/subscription');
-      } else {
-        setError(error.response?.data?.detail || 'Unable to snag ticket');
-      }
-    } finally {
-      setIsUpdating(false);
+      await snagTicket(request.id, data);
+      // The hook will automatically handle navigation on success
+    } catch (err) {
+      // Errors are handled by the hook, but you can add additional handling here if needed
       setShowSnagModal(false);
     }
   };
-
   return (
     <div
-      className={`${styles.requestCard} ${isUpdating ? styles.loading : ''}`}
+      className={`${styles.requestCard} ${
+        isUpdating || loading ? styles.loading : ''
+      }`}
     >
       <div className={styles.header}>
         <h3 className={styles.title}>{request.title}</h3>
@@ -191,6 +169,8 @@ const RequestCard = ({ request, onUpdate }) => {
         onSubmit={handleSnagTicket}
         videos={userVideos}
         profileUrl={profileData?.profile_url}
+        isLoading={loading}
+        error={snagError} // Use the error from the hook
       />
     </div>
   );
