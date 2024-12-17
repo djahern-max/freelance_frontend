@@ -183,7 +183,6 @@ const PublicRequests = () => {
                     </div>
                   )}
                 </div>
-
                 <div className={styles.description}>
                   {request.content.length > 200 &&
                   !expandedCards[request.id] ? (

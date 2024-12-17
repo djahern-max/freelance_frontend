@@ -150,6 +150,8 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: 1.5rem;  /* Add space between title and budget */
+  margin-bottom: 0.5rem;  /* Add some space below the header */
 }
 
 .requestTitle {
@@ -157,6 +159,7 @@
   color: #1a1a1a;
   margin: 0;
   flex: 1;
+  line-height: 1.4;  /* Improve readability */
 }
 
 .budget {
@@ -167,10 +170,12 @@
   font-weight: 600;
 }
 
-.description {
-  color: #4b5563;
-  margin: 0;
-  line-height: 1.5;
+.budget {
+  font-size: 1.125rem;  /* Slightly larger font for visibility */
+  color: #2563eb;  /* Blue color for emphasis */
+  font-weight: 600;
+  white-space: nowrap;  /* Prevent price from wrapping */
+  padding-left: 0.5rem;  /* Add some space from the title */
 }
 
 .metaInfo {
