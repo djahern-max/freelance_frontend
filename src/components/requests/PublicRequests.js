@@ -36,6 +36,20 @@ const PublicRequests = () => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const { snagTicket } = useSnagTicket(navigate);
 
+  const createConversation = async (requestId) => {
+    try {
+      const response = await api.conversations.create({
+        request_id: requestId,
+      });
+      return response;
+    } catch (error) {
+      if (error.response?.status === 403) {
+        throw new Error('subscription_required');
+      }
+      throw error;
+    }
+  };
+
   const fetchData = useCallback(
     async (isPolling = false) => {
       // Cancel any ongoing requests
@@ -177,16 +191,31 @@ const PublicRequests = () => {
 
   const handleStartConversation = async (request) => {
     try {
+      setLoading(true);
       setSelectedRequest(request);
 
-      await snagTicket(request.id, {
-        message: '', // You can add a default message if you want
-        videoIds: [], // Optional video IDs
-        includeProfile: true, // Whether to include profile link
-      });
+      // Check subscription status first
+      const subscriptionResponse = await api.subscriptions.getStatus();
+
+      if (!subscriptionResponse || subscriptionResponse.status !== 'active') {
+        setShowSubscriptionDialog(true);
+        return;
+      }
+
+      // Create conversation if subscription is active
+      const conversationData = await createConversation(request.id);
+      navigate(`/conversations/${conversationData.id}`);
     } catch (err) {
       console.error('Failed to start conversation:', err);
-      // The hook already handles showing subscription dialog and errors
+
+      if (err.message === 'subscription_required') {
+        setShowSubscriptionDialog(true);
+        return;
+      }
+
+      setError(api.helpers.handleError(err));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -213,7 +242,7 @@ const PublicRequests = () => {
         {polling && (
           <div className={styles.pollingIndicator}>
             <Loader className={styles.spinnerSmall} />
-            <span>Updating...</span>
+            <span>Scanning for New Requests...</span>
           </div>
         )}
         <div className={styles.headerContainer}>
@@ -287,7 +316,6 @@ const PublicRequests = () => {
                     </>
                   )}
                 </div>
-
                 <div className={styles.metaInfo}>
                   <div className={styles.metaItem} title="Posted Date">
                     <Clock className={styles.icon} size={16} />
@@ -368,11 +396,10 @@ const PublicRequests = () => {
           isOpen={showSubscriptionDialog}
           onClose={() => {
             setShowSubscriptionDialog(false);
-            setSelectedRequest(null); // Clear selected request on close
+            setSelectedRequest(null);
           }}
           onSuccess={async () => {
             setShowSubscriptionDialog(false);
-            // Re-check subscription status after successful subscription
             try {
               const subscriptionCheck = await api.get(
                 '/payments/subscription-status'
@@ -396,4 +423,5 @@ const PublicRequests = () => {
     </div>
   );
 };
+
 export default PublicRequests;
