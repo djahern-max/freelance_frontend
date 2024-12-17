@@ -120,6 +120,8 @@ api.interceptors.request.use(
 );
 
 // Response interceptor with comprehensive error handling
+// In api.js, update the response interceptor
+
 api.interceptors.response.use(
   (response) => {
     if (process.env.NODE_ENV === 'development') {
@@ -132,18 +134,29 @@ api.interceptors.response.use(
     return response;
   },
   async (error) => {
-    const originalRequest = error.config;
+    // Handle cancellations first, before any other error processing
+    if (error.name === 'CanceledError' || error.message === 'canceled') {
+      return Promise.reject(new Error('REQUEST_CANCELLED'));
+    }
+
+    // Get the original request configuration from the error object
+    const config = error.config;
 
     // Log detailed error information
     const errorDetails = {
-      url: originalRequest?.url,
-      method: originalRequest?.method,
+      url: config?.url,
+      method: config?.method,
       status: error.response?.status,
       data: error.response?.data,
       message: error.message,
-      retryCount: originalRequest?.retryCount || 0,
+      retryCount: config?.retryCount || 0,
     };
     console.error('API Error Details:', errorDetails);
+
+    // Add specific handling for canceled requests
+    if (error.name === 'CanceledError' || error.message === 'canceled') {
+      return Promise.reject(new Error('REQUEST_CANCELLED'));
+    }
 
     // Handle network errors
     if (!error.response) {
@@ -160,11 +173,11 @@ api.interceptors.response.use(
     // Handle retry logic for 5xx errors
     if (
       error.response.status >= 500 &&
-      originalRequest?.retries > originalRequest?.retryCount
+      config?.retries > (config?.retryCount || 0)
     ) {
-      originalRequest.retryCount = (originalRequest.retryCount || 0) + 1;
+      config.retryCount = (config.retryCount || 0) + 1;
       return new Promise((resolve) => setTimeout(resolve, 1000)).then(() =>
-        api(originalRequest)
+        api(config)
       );
     }
 
@@ -174,7 +187,7 @@ api.interceptors.response.use(
         clearAuthData();
         if (
           !window.location.pathname.includes('/login') &&
-          !isPublicRoute(originalRequest.url)
+          !isPublicRoute(config.url)
         ) {
           window.location.href = '/login';
         }

@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { Clock, Loader, MessageSquare, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -7,64 +6,88 @@ import api from '../../utils/api';
 import AuthDialog from '../auth/AuthDialog';
 import SubscriptionDialog from '../payments/SubscriptionDialog';
 
+import { useCallback, useRef } from 'react';
 import { useSnagTicket } from '../../utils/snagTicket';
 import Header from '../shared/Header';
 import EmptyState from './EmptyState';
 import styles from './PublicRequests.module.css';
+
+const POLL_INTERVAL = 60000; // Increased to 60 seconds
+const DEBOUNCE_DELAY = 300; // 300ms debounce for rapid updates
 
 const PublicRequests = () => {
   const [publicRequests, setPublicRequests] = useState([]);
   const [conversations, setConversations] = useState({});
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [polling, setPolling] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [expandedCards, setExpandedCards] = useState({});
   const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
 
+  const pollTimeoutRef = useRef(null);
+  const abortControllerRef = useRef(null);
+  const lastFetchTimeRef = useRef(Date.now());
+
   const navigate = useNavigate();
   const location = useLocation();
   const user = useSelector((state) => state.auth.user);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  const { snagTicket } = useSnagTicket(navigate); // Only keep snagTicket since it's being used
+  const { snagTicket } = useSnagTicket(navigate);
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+  const fetchData = useCallback(
+    async (isPolling = false) => {
+      // Cancel any ongoing requests
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      abortControllerRef.current = new AbortController();
 
-      let retries = 3;
-      let publicResponse;
-
-      while (retries > 0) {
-        try {
-          publicResponse = await axios.get(
-            `${
-              process.env.REACT_APP_API_URL || 'http://localhost:8000'
-            }/requests/public`,
-            {
-              headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-              },
-            }
-          );
-          break; // If successful, exit the retry loop
-        } catch (err) {
-          retries--;
-          if (retries === 0) throw err; // If out of retries, throw the error
-          await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second before retrying
-        }
+      // Don't show loading indicator for polling updates
+      if (!isPolling) {
+        setLoading(true);
+      } else {
+        setPolling(true);
       }
 
-      setPublicRequests(publicResponse.data);
+      try {
+        setError(null);
+        const currentTime = Date.now();
 
-      // Only fetch conversations if user is authenticated
-      if (isAuthenticated && user) {
-        try {
+        // Prevent too frequent updates
+        if (
+          isPolling &&
+          currentTime - lastFetchTimeRef.current < DEBOUNCE_DELAY
+        ) {
+          return;
+        }
+
+        lastFetchTimeRef.current = currentTime;
+
+        const publicResponse = await api.get('/requests/public', {
+          signal: abortControllerRef.current.signal,
+        });
+
+        // Only update if the component is still mounted
+        setPublicRequests((prevRequests) => {
+          // Avoid unnecessary re-renders
+          if (
+            JSON.stringify(prevRequests) === JSON.stringify(publicResponse.data)
+          ) {
+            return prevRequests;
+          }
+          return publicResponse.data;
+        });
+
+        if (isAuthenticated && user) {
           const conversationsResponse = await api.get(
-            '/conversations/user/list'
+            '/conversations/user/list',
+            {
+              signal: abortControllerRef.current.signal,
+            }
           );
+
           const conversationCounts = conversationsResponse.data.reduce(
             (acc, conv) => {
               acc[conv.request_id] = (acc[conv.request_id] || 0) + 1;
@@ -72,34 +95,76 @@ const PublicRequests = () => {
             },
             {}
           );
-          setConversations(conversationCounts);
-        } catch (convErr) {
-          console.warn('Failed to fetch conversations:', convErr);
-          // Don't fail the whole operation if conversations fail to load
-        }
-      }
-    } catch (err) {
-      const errorMessage =
-        err.code === 'ERR_NETWORK'
-          ? 'Unable to connect to server. Please check your connection and try again.'
-          : err.response?.data?.detail || 'Failed to fetch requests.';
 
-      setError(errorMessage);
-      console.error('Error fetching data:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+          setConversations((prevCounts) => {
+            // Avoid unnecessary re-renders
+            if (
+              JSON.stringify(prevCounts) === JSON.stringify(conversationCounts)
+            ) {
+              return prevCounts;
+            }
+            return conversationCounts;
+          });
+        }
+      } catch (err) {
+        // Handle cancelled requests and aborts silently
+        if (err.message === 'REQUEST_CANCELLED' || err.name === 'AbortError') {
+          return;
+        }
+
+        // Only set error for non-polling requests
+        if (!isPolling) {
+          const errorMessage =
+            err.code === 'ERR_NETWORK'
+              ? 'Unable to connect to server. Please check your connection and try again.'
+              : err.response?.data?.detail || 'Failed to fetch requests.';
+
+          setError(errorMessage);
+          // Only log real errors
+          console.error('Error fetching data:', err);
+        }
+      } finally {
+        if (!isPolling) {
+          setLoading(false);
+        }
+        setPolling(false);
+      }
+    },
+    [isAuthenticated, user]
+  );
 
   useEffect(() => {
     fetchData();
-    // Refresh data every 30 seconds only if authenticated
-    let interval;
-    if (isAuthenticated) {
-      interval = setInterval(fetchData, 30000);
-    }
-    return () => interval && clearInterval(interval);
-  }, [isAuthenticated]);
+
+    return () => {
+      if (pollTimeoutRef.current) {
+        clearTimeout(pollTimeoutRef.current);
+      }
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, [fetchData]);
+
+  useEffect(() => {
+    const setupPolling = () => {
+      if (isAuthenticated) {
+        pollTimeoutRef.current = setTimeout(() => {
+          fetchData(true).then(() => {
+            setupPolling();
+          });
+        }, POLL_INTERVAL);
+      }
+    };
+
+    setupPolling();
+
+    return () => {
+      if (pollTimeoutRef.current) {
+        clearTimeout(pollTimeoutRef.current);
+      }
+    };
+  }, [isAuthenticated, fetchData]);
 
   const handleRequestClick = (request) => {
     if (!isAuthenticated) {
@@ -145,6 +210,12 @@ const PublicRequests = () => {
     <div className={styles.mainContainer}>
       <Header />
       <main className={styles.mainContent}>
+        {polling && (
+          <div className={styles.pollingIndicator}>
+            <Loader className={styles.spinnerSmall} />
+            <span>Updating...</span>
+          </div>
+        )}
         <div className={styles.headerContainer}>
           {!isAuthenticated && <p className={styles.subtitle}></p>}
         </div>
