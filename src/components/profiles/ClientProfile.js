@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import {
-  createClientProfile,
-  fetchClientProfile, // Import the correct function
+  createClientProfile, // Add this import
+  fetchClientProfile,
   selectError,
   selectIsInitialized,
   selectLoading,
   selectProfile,
+  updateClientProfile, // Add this import
 } from '../../redux/profileSlice';
 import styles from './ClientProfile.module.css';
 
@@ -46,15 +47,15 @@ const ClientProfile = () => {
             website: data.website || '',
           });
         } else {
-          // Profile doesn't exist yet, use default values
           setFormData(DEFAULT_VALUES);
         }
       })
       .catch((err) => {
-        // Only log actual errors, not the "not found" case
         if (err !== 'The requested resource was not found.') {
           console.error('Error fetching client profile:', err);
-          toast.error(`Error loading profile: ${err}`);
+          toast.error('Error loading profile', {
+            className: 'custom-toast custom-toast-error',
+          });
         }
         setFormData(DEFAULT_VALUES);
       });
@@ -65,11 +66,25 @@ const ClientProfile = () => {
     setIsSubmitting(true);
 
     try {
-      await dispatch(createClientProfile(formData)).unwrap();
-      toast.success('Profile created successfully!');
+      // If profile exists, update it; otherwise, create it
+      const action = profile ? updateClientProfile : createClientProfile;
+      await dispatch(action(formData)).unwrap();
+
+      toast.success(
+        profile
+          ? 'Profile updated successfully!'
+          : 'Profile created successfully!',
+        {
+          className: 'custom-toast custom-toast-success',
+        }
+      );
+
+      // Refresh profile data
       dispatch(fetchClientProfile());
     } catch (err) {
-      toast.error(err || 'Error creating profile');
+      toast.error(err || 'Error saving profile', {
+        className: 'custom-toast custom-toast-error',
+      });
     } finally {
       setIsSubmitting(false);
     }

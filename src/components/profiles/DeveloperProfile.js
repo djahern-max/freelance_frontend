@@ -3,11 +3,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import {
   createDeveloperProfile,
-  fetchDeveloperProfile, // Corrected here
+  fetchDeveloperProfile,
+  selectError,
+  selectIsInitialized,
+  selectLoading,
+  selectProfile,
   updateDeveloperProfile,
 } from '../../redux/profileSlice';
 import styles from './DeveloperProfile.module.css';
-import DeveloperRatingSection from './DeveloperRatingSection';
 import ImageUpload from './ImageUpload';
 
 const DEFAULT_VALUES = {
@@ -25,53 +28,34 @@ const PLACEHOLDERS = {
 
 const DeveloperProfile = () => {
   const dispatch = useDispatch();
-  const {
-    data: profile,
-    loading,
-    error,
-  } = useSelector((state) => state.profile);
+  const profile = useSelector(selectProfile);
+  const loading = useSelector(selectLoading);
+  const error = useSelector(selectError);
+  const isInitialized = useSelector(selectIsInitialized);
   const [formData, setFormData] = useState(DEFAULT_VALUES);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showImageUpload, setShowImageUpload] = useState(false);
-  const [noProfileFound, setNoProfileFound] = useState(false);
 
   useEffect(() => {
     dispatch(fetchDeveloperProfile())
       .unwrap()
       .then((data) => {
-        console.log('Fetched developer profile:', data);
-        setFormData({
-          skills: data?.skills || '',
-          experience_years: data?.experience_years?.toString() || '',
-          bio: data?.bio || '',
-          is_public: data?.is_public || false,
-        });
+        if (data) {
+          setFormData({
+            skills: data.skills || '',
+            experience_years: data.experience_years?.toString() || '',
+            bio: data.bio || '',
+            is_public: data.is_public || false,
+          });
+        } else {
+          setFormData(DEFAULT_VALUES);
+        }
       })
       .catch((err) => {
         console.error('Error fetching developer profile:', err);
-        if (err.status === 404) {
-          setNoProfileFound(true);
-        } else {
-          // Reset to default values if fetch fails for other reasons
-          setFormData(DEFAULT_VALUES);
-        }
+        setFormData(DEFAULT_VALUES);
       });
   }, [dispatch]);
-
-  useEffect(() => {
-    if (profile) {
-      const profileData = profile.developer_profile || profile; // Remove `developer_profile` if unnecessary
-      setFormData({
-        skills: profileData.skills || '',
-        experience_years: profileData.experience_years?.toString() || '',
-        bio: profileData.bio || '',
-        is_public: profileData.is_public || false,
-      });
-    } else {
-      console.log('No profile found, using default values');
-      setFormData(DEFAULT_VALUES); // Fallback to default values
-    }
-  }, [profile]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -83,26 +67,26 @@ const DeveloperProfile = () => {
         experience_years: parseInt(formData.experience_years) || 0,
       };
 
-      const action = profile?.developer_profile
-        ? await dispatch(updateDeveloperProfile(processedData))
-        : await dispatch(createDeveloperProfile(processedData));
+      // If profile exists, update it; otherwise, create it
+      // Changed to match ClientProfile.js logic
+      const action = profile ? updateDeveloperProfile : createDeveloperProfile;
+      await dispatch(action(processedData)).unwrap();
 
-      if (action.type.endsWith('/fulfilled')) {
-        toast.success(
-          profile?.developer_profile
-            ? 'Profile updated successfully!'
-            : 'Profile created successfully!'
-        );
+      toast.success(
+        profile
+          ? 'Profile updated successfully!'
+          : 'Profile created successfully!'
+      );
 
-        // Show image upload option after successful profile creation
-        if (!profile?.developer_profile) {
-          setShowImageUpload(true);
-        }
-      } else {
-        toast.error(action.payload || 'Failed to save profile');
+      // Refresh profile data
+      dispatch(fetchDeveloperProfile());
+
+      // Only show image upload for new profiles
+      if (!profile) {
+        setShowImageUpload(true);
       }
     } catch (err) {
-      toast.error('Error saving profile');
+      toast.error(err || 'Error saving profile');
       console.error('Profile save error:', err);
     } finally {
       setIsSubmitting(false);
@@ -111,28 +95,17 @@ const DeveloperProfile = () => {
 
   const handleImageUploadSuccess = (imageUrl) => {
     toast.success('Profile picture uploaded successfully!');
-    // Refresh profile data to show new image
     dispatch(fetchDeveloperProfile());
     setShowImageUpload(false);
   };
 
-  if (loading) {
+  if (loading && !isInitialized) {
     return (
       <div className={styles.loadingContainer}>
         <div className={styles.loadingSpinner}>Loading profile...</div>
       </div>
     );
   }
-
-  const renderDeveloperRatingSection = () => {
-    // Only render if profile and profile.id exist
-    if (profile?.id) {
-      return <DeveloperRatingSection developerId={profile.id} />;
-    }
-    return null;
-  };
-
-  const hasProfile = !!profile?.developer_profile;
 
   // Show the image upload prompt after successful profile creation
   if (showImageUpload) {
@@ -155,6 +128,8 @@ const DeveloperProfile = () => {
     );
   }
 
+  const hasProfile = !!profile?.developer_profile;
+
   return (
     <div className={styles.profileContainer}>
       <div className={styles.card}>
@@ -170,10 +145,6 @@ const DeveloperProfile = () => {
                 {new Date(
                   profile.developer_profile.created_at
                 ).toLocaleDateString()}
-              </div>
-              {/* Add rating section here */}
-              <div className={styles.ratingSection}>
-                {renderDeveloperRatingSection()}
               </div>
               <ImageUpload
                 mode="upload"
@@ -273,13 +244,16 @@ const DeveloperProfile = () => {
             >
               {isSubmitting ? (
                 <span className={styles.loadingText}>
-                  {profile ? 'Updating...' : 'Creating...'}
+                  {profile?.developer_profile ? 'Updating...' : 'Creating...'}
                 </span>
               ) : (
-                <span>{profile ? 'Update Profile' : 'Create Profile'}</span>
+                <span>
+                  {profile?.developer_profile
+                    ? 'Update Profile'
+                    : 'Create Profile'}
+                </span>
               )}
             </button>
-            {renderDeveloperRatingSection()}
           </div>
         </form>
       </div>

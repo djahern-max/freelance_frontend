@@ -5,10 +5,12 @@ export const fetchDeveloperProfile = createAsyncThunk(
   'profile/fetchDeveloperProfile',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get('/profile/developer');
-      return response.data;
+      // Use the same helper method we're using for client profiles
+      const response = await api.profile.fetchSpecificProfile('developer');
+      return response; // Will be null if profile doesn't exist
     } catch (error) {
-      return rejectWithValue(api.helpers.handleError(error));
+      console.error('Profile fetch error:', error);
+      return rejectWithValue(error.message);
     }
   }
 );

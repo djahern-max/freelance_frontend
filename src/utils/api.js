@@ -4,12 +4,13 @@ import { clearAuthData } from './authCleanup';
 if (process.env.NODE_ENV === 'development') {
   const originalConsoleError = console.error;
   console.error = (...args) => {
-    // Suppress 404 errors for profile endpoints
+    // Suppress 404 errors for profile endpoints and ratings
     if (
       args[0] === 'API Error Details:' &&
       args[1]?.url &&
       (args[1].url.endsWith('/profile/client') ||
-        args[1].url.endsWith('/profile/developer')) &&
+        args[1].url.endsWith('/profile/developer') ||
+        args[1].url.includes('/ratings/developer/')) && // Add this line
       args[1].status === 404
     ) {
       return;
@@ -139,6 +140,7 @@ api.interceptors.request.use(
 // Response interceptor with comprehensive error handling
 // In api.js, update the response interceptor
 
+// Response interceptor with comprehensive error handling
 api.interceptors.response.use(
   (response) => {
     if (process.env.NODE_ENV === 'development') {
@@ -169,11 +171,6 @@ api.interceptors.response.use(
       retryCount: config?.retryCount || 0,
     };
     console.error('API Error Details:', errorDetails);
-
-    // Add specific handling for canceled requests
-    if (error.name === 'CanceledError' || error.message === 'canceled') {
-      return Promise.reject(new Error('REQUEST_CANCELLED'));
-    }
 
     // Handle network errors
     if (!error.response) {
@@ -221,16 +218,17 @@ api.interceptors.response.use(
         );
 
       case 404:
-        // Replace this entire case with:
+        // Special handling for profile endpoints
         if (
-          config.url.endsWith('/profile/client') ||
-          config.url.endsWith('/profile/developer')
+          config.url === '/profile/client' ||
+          config.url === '/profile/developer'
         ) {
           return Promise.resolve({ data: null });
         }
         return Promise.reject(
           new Error('The requested resource was not found.')
         );
+
       case 422:
         return Promise.reject(
           new Error('Validation error. Please check your input.')
@@ -278,16 +276,14 @@ api.helpers = {
         }
         return "You don't have permission to perform this action";
       case 404:
-        // Add specific handling for profile endpoints
+        // Special handling for profile endpoints
         if (
           error.config.url.endsWith('/profile/client') ||
           error.config.url.endsWith('/profile/developer')
         ) {
-          return Promise.resolve({ data: null }); // Return null data instead of rejecting
+          return { data: null }; // Return null data instead of rejecting
         }
-        return Promise.reject(
-          new Error('The requested resource was not found.')
-        );
+        return 'The requested resource was not found.';
       case 422:
         return 'Validation error. Please check your input.';
       case 429:
@@ -312,11 +308,12 @@ api.helpers = {
 };
 
 // Profile-related API methods
+// Profile-related API methods
 api.profile = {
   async fetchUserProfile() {
     try {
       const response = await api.get('/profile/me');
-      console.log('User Profile Response:', response.data); // Add this line
+      console.log('User Profile Response:', response.data);
       return response.data;
     } catch (error) {
       throw new Error(api.helpers.handleError(error));
@@ -330,10 +327,29 @@ api.profile = {
       const response = await api.get(endpoint);
       return response.data;
     } catch (error) {
+      // Handle 404 case first
       if (error.response?.status === 404) {
+        console.log(`No ${userType} profile found, returning null`);
         return null;
       }
-      throw new Error(api.helpers.handleError(error));
+
+      // If it's an error from the response interceptor that's already been handled
+      if (error.response?.data === null) {
+        return null;
+      }
+
+      // For network errors or other issues
+      if (!error.response) {
+        throw new Error('Network error. Please check your connection.');
+      }
+
+      // For any other error, use the helper
+      const errorMessage = api.helpers.handleError(error);
+      if (errorMessage?.data === null) {
+        return null;
+      }
+
+      throw new Error(errorMessage);
     }
   },
 
@@ -437,20 +453,17 @@ api.ratings = {
 
   async getDeveloperRating(developerId) {
     try {
-      // Use the new endpoint for getting ratings
       const response = await api.get(
         API_ROUTES.RATINGS.DEVELOPER_RATING(developerId)
       );
       return response.data;
     } catch (error) {
-      if (error.response?.status === 404) {
-        return {
-          average_rating: 0,
-          total_ratings: 0,
-          rating_distribution: {},
-        };
-      }
-      throw new Error(api.helpers.handleError(error));
+      // For 404s or any error, return default rating structure
+      return {
+        average_rating: 0,
+        total_ratings: 0,
+        rating_distribution: {},
+      };
     }
   },
 

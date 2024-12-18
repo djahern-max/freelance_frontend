@@ -84,7 +84,6 @@ function AppContent() {
         theme="light"
         hideProgressBar
         icon={false}
-        toastClassName="custom-toast-success"
       />
       <Routes>
         {/* Conversation route without header/footer */}
