@@ -280,6 +280,17 @@ const PublicRequests = () => {
                   {request.estimated_budget && (
                     <div className={styles.budget}>
                       <span>${request.estimated_budget.toLocaleString()}</span>
+                      <span
+                        className={styles.snagEmoji}
+                        role="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          snagTicket(request.id);
+                        }}
+                        title="Snag this request"
+                      >
+                        🌀
+                      </span>
                     </div>
                   )}
                 </div>
@@ -316,7 +327,6 @@ const PublicRequests = () => {
                     </>
                   )}
                 </div>
-
                 <div className={styles.cardFooter}>
                   <div className={styles.statusBadgeWrapper}></div>
                   <div className={styles.metaInfo}>
@@ -338,11 +348,9 @@ const PublicRequests = () => {
                     )}
                   </div>
                 </div>
-
                 <div className={styles.cardFooter}>
                   <div className={styles.metaInfo}>{/* ... */}</div>
                 </div>
-
                 <div className={styles.cardActionsWrapper}>
                   <div
                     className={`${styles.statusBadge} ${
@@ -365,16 +373,18 @@ const PublicRequests = () => {
                         Sign In to View Details
                       </button>
                     ) : user?.userType === 'developer' ? (
-                      <button
-                        className={styles.buttonPrimary}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleStartConversation(request);
-                        }}
-                        disabled={loading}
-                      >
-                        {loading ? 'Please wait...' : 'Respond to Request'}
-                      </button>
+                      <>
+                        <button
+                          className={styles.buttonPrimary}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleStartConversation(request);
+                          }}
+                          disabled={loading}
+                        >
+                          {loading ? 'Please wait...' : 'Respond to Request'}
+                        </button>
+                      </>
                     ) : (
                       <button className={styles.buttonOutline}>
                         View Details
