@@ -371,13 +371,18 @@
 }
 
 .statusBadge.completed {
-  background-color: #3b82f6; /* Blue for Completed */
+  background-color: #6b7280;
 }
 
 .statusBadge.cancelled {
   background-color: #ef4444; /* Red for Cancelled */
 }
 
+.cardActionsWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
 @keyframes spin {
   from {

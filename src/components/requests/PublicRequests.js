@@ -339,42 +339,48 @@ const PublicRequests = () => {
                   </div>
                 </div>
 
-                <div className={styles.cardActions}>
-                  {!isAuthenticated ? (
-                    <button
-                      className={styles.buttonSecondary}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedRequest(request);
-                        setShowAuthDialog(true);
-                      }}
-                    >
-                      ; Sign In to View Details
-                    </button>
-                  ) : user?.userType === 'developer' ? (
-                    <button
-                      className={styles.buttonPrimary}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleStartConversation(request);
-                      }}
-                      disabled={loading}
-                    >
-                      {loading ? 'Please wait...' : 'Respond to Request'}
-                    </button>
-                  ) : (
-                    <button className={styles.buttonOutline}>
-                      View Details
-                    </button>
-                  )}
+                <div className={styles.cardFooter}>
+                  <div className={styles.metaInfo}>{/* ... */}</div>
                 </div>
-                <div
-                  className={`${styles.statusBadge} ${
-                    styles[request.status?.toLowerCase() || 'open']
-                  }`}
-                  title="Request Status"
-                >
-                  {request.status?.replace('_', ' ').toUpperCase() || 'OPEN'}
+
+                <div className={styles.cardActionsWrapper}>
+                  <div
+                    className={`${styles.statusBadge} ${
+                      styles[request.status?.toLowerCase() || 'open']
+                    }`}
+                    title="Request Status"
+                  >
+                    {request.status?.replace('_', ' ').toUpperCase() || 'OPEN'}
+                  </div>
+                  <div className={styles.cardActions}>
+                    {!isAuthenticated ? (
+                      <button
+                        className={styles.buttonSecondary}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedRequest(request);
+                          setShowAuthDialog(true);
+                        }}
+                      >
+                        Sign In to View Details
+                      </button>
+                    ) : user?.userType === 'developer' ? (
+                      <button
+                        className={styles.buttonPrimary}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleStartConversation(request);
+                        }}
+                        disabled={loading}
+                      >
+                        {loading ? 'Please wait...' : 'Respond to Request'}
+                      </button>
+                    ) : (
+                      <button className={styles.buttonOutline}>
+                        View Details
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
