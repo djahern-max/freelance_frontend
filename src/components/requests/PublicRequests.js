@@ -275,22 +275,22 @@ const PublicRequests = () => {
                 onClick={() => handleRequestClick(request)}
                 data-expanded={expandedCards[request.id]}
               >
+                <span
+                  className={styles.snagEmoji}
+                  role="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    snagTicket(request.id);
+                  }}
+                  title="Snag this request"
+                >
+                  🌀 <span className={styles.snagText}>Snag Ticket</span>
+                </span>
                 <div className={styles.cardHeader}>
                   <h2 className={styles.requestTitle}>{request.title}</h2>
                   {request.estimated_budget && (
                     <div className={styles.budget}>
                       <span>${request.estimated_budget.toLocaleString()}</span>
-                      <span
-                        className={styles.snagEmoji}
-                        role="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          snagTicket(request.id);
-                        }}
-                        title="Snag this request"
-                      >
-                        🌀
-                      </span>
                     </div>
                   )}
                 </div>
@@ -382,7 +382,7 @@ const PublicRequests = () => {
                           }}
                           disabled={loading}
                         >
-                          {loading ? 'Please wait...' : 'Respond to Request'}
+                          {loading ? 'Please wait...' : 'Start Conversation'}
                         </button>
                       </>
                     ) : (
