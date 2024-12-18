@@ -40,6 +40,16 @@
   white-space: nowrap;
 }
 
+.content {
+  color: #4a5568;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.description {
+  margin: 0;
+}
+
 .statusSection {
   width: 200px;
 }
@@ -87,7 +97,12 @@
   justify-content: space-between;
   align-items: center;
   margin-top: auto;
-  gap: 16px; /* Add this */
+  gap: 16px;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 12px;
 }
 
 .viewDetailsButton {
@@ -110,12 +125,36 @@
   background-color: #3182ce;
 }
 
+.snagButton {
+  padding: 8px 16px;
+  background-color: #4299e1;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.snagButton:hover {
+  background-color: #3182ce;
+}
+
+.snagButton:disabled {
+  background-color: #cbd5e0;
+  cursor: not-allowed;
+}
+
 .privacyControl {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
 }
+
 .privacyLabel {
   font-size: 0.9rem;
   color: #4a5568;
@@ -176,34 +215,6 @@ input:checked + .slider:before {
 .loading {
   opacity: 0.7;
   pointer-events: none;
-}
-
-.actionButtons {
-  display: flex;
-  gap: 12px;
-}
-
-.snagButton {
-  padding: 8px 16px;
-  background-color: #4299e1;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  transition: background-color 0.2s ease;
-}
-
-.snagButton:hover {
-  background-color: #3182ce;
-}
-
-.snagButton:disabled {
-  background-color: #cbd5e0;
-  cursor: not-allowed;
 }
 
 /* Responsive Styles */

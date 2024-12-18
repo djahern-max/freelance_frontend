@@ -72,6 +72,14 @@ const RequestCard = ({ request, onUpdate }) => {
         )}
       </div>
 
+      <div className={styles.content}>
+        <p className={styles.description}>
+          {request.content.length > 200
+            ? `${request.content.substring(0, 200)}...`
+            : request.content}
+        </p>
+      </div>
+
       <div className={styles.statusSection}>
         <select
           value={request.status}

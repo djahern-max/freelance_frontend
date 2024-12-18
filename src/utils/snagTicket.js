@@ -1,4 +1,3 @@
-// src/utils/snagTicket.js
 import { useState } from 'react';
 import api from './api';
 
@@ -17,42 +16,25 @@ export const handleSnagTicket = async ({
       onLoadingChange(true);
     }
 
-    // Check subscription status first
-    const subscriptionRes = await api.get('/payments/subscription-status');
-    if (subscriptionRes.data.status !== 'active') {
-      if (onSubscriptionNeeded) {
-        onSubscriptionNeeded();
-      }
-      return;
-    }
-
-    // Create the conversation with initial message
-    const conversationRes = await api.post('/conversations/', {
+    // Create the snagged request
+    const snaggedRequestRes = await api.post('/snagged-requests/', {
       request_id: requestId,
-      initial_message: message,
+      message,
       video_ids: videoIds,
-      include_profile: includeProfile,
+      profile_link: includeProfile,
     });
 
     if (onSuccess) {
-      onSuccess(conversationRes.data);
+      onSuccess(snaggedRequestRes.data);
     }
 
-    return conversationRes.data;
+    return snaggedRequestRes.data;
   } catch (error) {
-    console.error('Failed to snag ticket:', error);
-
-    if (error.response?.status === 403) {
-      if (onSubscriptionNeeded) {
-        onSubscriptionNeeded();
-      }
-    } else {
-      const errorMessage = api.helpers.handleError(error);
-      if (onError) {
-        onError(errorMessage);
-      }
+    console.error('Failed to snag request:', error);
+    const errorMessage = api.helpers.handleError(error);
+    if (onError) {
+      onError(errorMessage);
     }
-
     throw error;
   } finally {
     if (onLoadingChange) {
@@ -61,7 +43,7 @@ export const handleSnagTicket = async ({
   }
 };
 
-export const useSnagTicket = (navigate) => {
+export const useSnagTicket = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -69,14 +51,11 @@ export const useSnagTicket = (navigate) => {
     return handleSnagTicket({
       requestId,
       ...data,
-      onSuccess: (conversation) => {
-        navigate(`/conversations/${conversation.id}`);
+      onSuccess: () => {
+        // Success is handled by the component
       },
       onError: (message) => {
         setError(message);
-      },
-      onSubscriptionNeeded: () => {
-        navigate('/subscription');
       },
       onLoadingChange: setLoading,
     });
@@ -86,6 +65,6 @@ export const useSnagTicket = (navigate) => {
     snagTicket,
     loading,
     error,
-    setError, // Expose this to allow clearing errors
+    setError,
   };
 };

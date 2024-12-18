@@ -180,9 +180,9 @@
 
 .metaInfo {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: auto;
+  align-items: center;
+  gap: 1.5rem; /* Adds spacing between items */
+  margin-top: 1rem; /* Adds space from the content above */
 }
 
 .metaItem {
@@ -348,6 +348,36 @@
   height: 1rem;
   color: #22c55e; /* Green color for the spinner too */
 }
+
+.statusBadge {
+  display: inline-block; /* Prevent it from taking up full width */
+  max-width: fit-content; /* Ensure it only spans the necessary width */
+  padding: 0.3rem 1rem; /* Adjust padding for spacing */
+  border-radius: 20px; /* Keep rounded corners */
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: white;
+  background-color: #6b7280; /* Default gray */
+  margin-top: 0.5rem; /* Add slight spacing from other elements */
+}
+
+.statusBadge.open {
+  background-color: #10b981; /* Green for Open */
+}
+
+.statusBadge.in_progress {
+  background-color: #f59e0b; /* Amber for In Progress */
+}
+
+.statusBadge.completed {
+  background-color: #3b82f6; /* Blue for Completed */
+}
+
+.statusBadge.cancelled {
+  background-color: #ef4444; /* Red for Cancelled */
+}
+
 
 @keyframes spin {
   from {

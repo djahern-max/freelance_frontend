@@ -316,23 +316,27 @@ const PublicRequests = () => {
                     </>
                   )}
                 </div>
-                <div className={styles.metaInfo}>
-                  <div className={styles.metaItem} title="Posted Date">
-                    <Clock className={styles.icon} size={16} />
-                    <span>
-                      {new Date(request.created_at).toLocaleDateString()}
-                    </span>
-                  </div>
-                  <div className={styles.metaItem} title="Response Count">
-                    <MessageSquare className={styles.icon} size={16} />
-                    <span>{conversations[request.id] || 0} responses</span>
-                  </div>
-                  {request.owner_username && (
-                    <div className={styles.metaItem} title="Request Owner">
-                      <Users className={styles.icon} size={16} />
-                      <span>{request.owner_username}</span>
+
+                <div className={styles.cardFooter}>
+                  <div className={styles.statusBadgeWrapper}></div>
+                  <div className={styles.metaInfo}>
+                    <div className={styles.metaItem} title="Posted Date">
+                      <Clock className={styles.icon} size={16} />
+                      <span>
+                        {new Date(request.created_at).toLocaleDateString()}
+                      </span>
                     </div>
-                  )}
+                    <div className={styles.metaItem} title="Response Count">
+                      <MessageSquare className={styles.icon} size={16} />
+                      <span>{conversations[request.id] || 0} responses</span>
+                    </div>
+                    {request.owner_username && (
+                      <div className={styles.metaItem} title="Request Owner">
+                        <Users className={styles.icon} size={16} />
+                        <span>{request.owner_username}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className={styles.cardActions}>
@@ -345,7 +349,7 @@ const PublicRequests = () => {
                         setShowAuthDialog(true);
                       }}
                     >
-                      Sign In to View Details
+                      ; Sign In to View Details
                     </button>
                   ) : user?.userType === 'developer' ? (
                     <button
@@ -363,6 +367,14 @@ const PublicRequests = () => {
                       View Details
                     </button>
                   )}
+                </div>
+                <div
+                  className={`${styles.statusBadge} ${
+                    styles[request.status?.toLowerCase() || 'open']
+                  }`}
+                  title="Request Status"
+                >
+                  {request.status?.replace('_', ' ').toUpperCase() || 'OPEN'}
                 </div>
               </div>
             ))}

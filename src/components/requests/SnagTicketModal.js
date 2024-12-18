@@ -1,4 +1,3 @@
-// SnagTicketModal.js
 import { X } from 'lucide-react';
 import { useState } from 'react';
 import styles from './SnagTicketModal.module.css';
@@ -14,14 +13,14 @@ const SnagTicketModal = ({
 }) => {
   const [message, setMessage] = useState('');
   const [selectedVideos, setSelectedVideos] = useState([]);
-  const [includeProfile, setIncludeProfile] = useState(true);
+  const [includeProfile, setIncludeProfile] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit({
       message,
-      videoIds: selectedVideos,
-      includeProfile,
+      video_ids: selectedVideos,
+      profile_link: includeProfile,
     });
   };
 
@@ -31,7 +30,7 @@ const SnagTicketModal = ({
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
         <div className={styles.modalHeader}>
-          <h2 className={styles.modalTitle}>Start Conversation</h2>
+          <h2 className={styles.modalTitle}>Snag This Request</h2>
           <button onClick={onClose} className={styles.closeButton}>
             <X size={20} />
           </button>
@@ -39,19 +38,19 @@ const SnagTicketModal = ({
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGroup}>
-            <label className={styles.label}>Message to Client</label>
+            <label className={styles.label}>Why are you interested?</label>
             <textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               className={styles.textarea}
-              placeholder="Introduce yourself and explain why you're interested in this project..."
+              placeholder="Explain why you're interested in this request and what makes you a good fit..."
               required
             />
           </div>
 
           {videos.length > 0 && (
             <div className={styles.formGroup}>
-              <label className={styles.label}>Link Videos</label>
+              <label className={styles.label}>Link Relevant Videos</label>
               <div className={styles.videoList}>
                 {videos.map((video) => (
                   <label key={video.id} className={styles.checkboxLabel}>
@@ -82,7 +81,7 @@ const SnagTicketModal = ({
                 onChange={(e) => setIncludeProfile(e.target.checked)}
                 className={styles.checkbox}
               />
-              <span>Include link to my profile</span>
+              <span>Include my profile link</span>
             </label>
           )}
 
@@ -102,7 +101,7 @@ const SnagTicketModal = ({
               className={styles.submitButton}
               disabled={isLoading}
             >
-              {isLoading ? 'Starting Conversation...' : 'Start Conversation'}
+              {isLoading ? 'Snagging Request...' : 'Snag Request'}
             </button>
           </div>
         </form>
