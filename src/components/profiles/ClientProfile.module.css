@@ -191,6 +191,18 @@
   gap: var(--spacing-sm);
 }
 
+.infoMessage {
+  background-color: #e3f2fd;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.infoMessage p {
+  color: #1976d2;
+  margin: 0;
+}
+
 @keyframes slideIn {
   from {
     transform: translateY(-10px);

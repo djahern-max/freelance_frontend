@@ -17,14 +17,16 @@ export const fetchClientProfile = createAsyncThunk(
   'profile/fetchClientProfile',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get('/profile/client');
-      return response.data;
+      const response = await api.profile.fetchSpecificProfile('client');
+      // Using the api.profile helper which already handles 404s properly
+      return response; // Will be null if profile doesn't exist
     } catch (error) {
-      return rejectWithValue(api.helpers.handleError(error));
+      // For any other errors
+      console.error('Profile fetch error:', error);
+      return rejectWithValue(error.message);
     }
   }
 );
-
 export const createClientProfile = createAsyncThunk(
   'profile/createClient',
   async (profileData, { rejectWithValue }) => {
@@ -118,13 +120,15 @@ const profileSlice = createSlice({
       })
       .addCase(fetchClientProfile.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload;
+        state.data = action.payload; // This will be null for new users
         state.isInitialized = true;
+        state.error = null; // Clear any previous errors
       })
       .addCase(fetchClientProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
         state.isInitialized = true;
+        state.data = null;
       })
       // Create Client Profile
       .addCase(createClientProfile.pending, (state) => {

@@ -38,24 +38,25 @@ const ClientProfile = () => {
     dispatch(fetchClientProfile())
       .unwrap()
       .then((data) => {
-        console.log('Fetched client profile:', data);
-        setFormData({
-          company_name: data.company_name || '',
-          industry: data.industry || '',
-          company_size: data.company_size || '',
-          website: data.website || '',
-        });
+        if (data) {
+          setFormData({
+            company_name: data.company_name || '',
+            industry: data.industry || '',
+            company_size: data.company_size || '',
+            website: data.website || '',
+          });
+        } else {
+          // Profile doesn't exist yet, use default values
+          setFormData(DEFAULT_VALUES);
+        }
       })
       .catch((err) => {
-        console.error('Error fetching client profile:', err);
-
-        // Check for "Profile not found" specifically
-        if (err === 'The requested resource was not found.') {
-          setFormData(DEFAULT_VALUES); // Reset form to default
-        } else {
-          console.log('Unhandled error:', err); // Debugging log
-          // Only show the toast.error for unexpected errors
+        // Only log actual errors, not the "not found" case
+        if (err !== 'The requested resource was not found.') {
+          console.error('Error fetching client profile:', err);
+          toast.error(`Error loading profile: ${err}`);
         }
+        setFormData(DEFAULT_VALUES);
       });
   }, [dispatch]);
 
@@ -90,12 +91,18 @@ const ClientProfile = () => {
         </div>
 
         <form onSubmit={handleSubmit} className={styles.form}>
-          {error && (
+          {error && error !== 'The requested resource was not found.' && (
             <div className={styles.error}>
               <div className={styles.errorContent}>
                 <span className={styles.errorIcon}>⚠️</span>
                 <p className={styles.errorMessage}>{error}</p>
               </div>
+            </div>
+          )}
+
+          {(!profile || error === 'The requested resource was not found.') && (
+            <div className={styles.infoMessage}>
+              <p>Welcome! Please create your client profile to get started.</p>
             </div>
           )}
 

@@ -1,6 +1,23 @@
 import axios from 'axios';
 import { clearAuthData } from './authCleanup';
 
+if (process.env.NODE_ENV === 'development') {
+  const originalConsoleError = console.error;
+  console.error = (...args) => {
+    // Suppress 404 errors for profile endpoints
+    if (
+      args[0] === 'API Error Details:' &&
+      args[1]?.url &&
+      (args[1].url.endsWith('/profile/client') ||
+        args[1].url.endsWith('/profile/developer')) &&
+      args[1].status === 404
+    ) {
+      return;
+    }
+    originalConsoleError.apply(console, args);
+  };
+}
+
 // API Routes constants
 export const API_ROUTES = {
   RATINGS: {
@@ -204,10 +221,16 @@ api.interceptors.response.use(
         );
 
       case 404:
+        // Replace this entire case with:
+        if (
+          config.url.endsWith('/profile/client') ||
+          config.url.endsWith('/profile/developer')
+        ) {
+          return Promise.resolve({ data: null });
+        }
         return Promise.reject(
           new Error('The requested resource was not found.')
         );
-
       case 422:
         return Promise.reject(
           new Error('Validation error. Please check your input.')
@@ -255,7 +278,16 @@ api.helpers = {
         }
         return "You don't have permission to perform this action";
       case 404:
-        return 'The requested resource was not found';
+        // Add specific handling for profile endpoints
+        if (
+          error.config.url.endsWith('/profile/client') ||
+          error.config.url.endsWith('/profile/developer')
+        ) {
+          return Promise.resolve({ data: null }); // Return null data instead of rejecting
+        }
+        return Promise.reject(
+          new Error('The requested resource was not found.')
+        );
       case 422:
         return 'Validation error. Please check your input.';
       case 429:
