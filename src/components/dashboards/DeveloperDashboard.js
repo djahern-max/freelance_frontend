@@ -6,6 +6,7 @@ import {
   MessageSquare,
   Plus,
   Share2,
+  User,
 } from 'lucide-react';
 
 import { useEffect, useState } from 'react';
@@ -123,7 +124,7 @@ const SharedRequestCard = ({ request, onStartConversation, onView }) => {
   );
 };
 
-const ConversationCard = ({ conversation, navigate, isProject = false }) => {
+const ConversationCard = ({ conversation, navigate, user }) => {
   const formatTimeSince = (dateString) => {
     if (!dateString) return 'Unknown';
     const date = new Date(dateString);
@@ -139,36 +140,61 @@ const ConversationCard = ({ conversation, navigate, isProject = false }) => {
     return date.toLocaleDateString();
   };
 
-  const handleNavigation = () => {
-    if (isProject) {
-      navigate(`/agreements/request/${conversation.request_id}`);
-    } else {
-      navigate(`/conversations/${conversation.id}`);
-    }
-  };
+  // Add safety checks for user determination
+  const otherUser =
+    user && conversation
+      ? user.id === conversation.starter_user_id
+        ? conversation.recipient_username
+        : conversation.starter_username
+      : 'Unknown User';
 
-  // Conversation view
+  const otherUserRole =
+    user && conversation
+      ? user.id === conversation.starter_user_id
+        ? 'Client'
+        : 'Developer'
+      : 'Unknown Role';
+
   return (
-    <div className={styles.conversationCard} onClick={handleNavigation}>
-      {/* Conversation Title */}
-      <MessageSquare
-        size={16}
-        style={{ marginRight: '8px', color: '#4B5563' }}
-      />
-      <span className={styles.conversationTitle}>
-        {conversation.request_title || 'test 2'}
-      </span>
+    <div
+      className={styles.conversationCard}
+      onClick={() => navigate(`/conversations/${conversation.id}`)}
+    >
+      <div className={styles.conversationRow}>
+        <div className={styles.titleSection}>
+          <span className={styles.requestTitle}>
+            {conversation?.request_title || 'Untitled Request'}
+          </span>
+          <span className={styles.status}>
+            {conversation?.status || 'active'}
+          </span>
+        </div>
 
-      {/* Agreement Status */}
-      <div className={styles.agreementStatus}>
-        Agreement Status: {conversation.agreement_status || 'No Agreement'}
-      </div>
+        <div className={styles.userSection}>
+          <User className={styles.iconUser} />
+          <span className={styles.participantInfo}>
+            {otherUser} ({otherUserRole})
+          </span>
+        </div>
 
-      {/* Last Activity */}
-      <div className={styles.lastActivity}>
-        <Clock size={14} style={{ marginRight: '4px', color: '#6B7280' }} />
-        Last activity:{' '}
-        {formatTimeSince(conversation.last_activity || conversation.updated_at)}
+        <div className={styles.messageSection}>
+          <MessageSquare className={styles.iconMessage} />
+          <span className={styles.messageCount}>
+            {conversation?.messages?.length || 0} messages
+          </span>
+        </div>
+
+        <div className={styles.timeSection}>
+          <Clock className={styles.iconTime} />
+          <span className={styles.timeInfo}>
+            Last message:{' '}
+            {formatTimeSince(
+              conversation?.last_activity ||
+                conversation?.updated_at ||
+                conversation?.created_at
+            )}
+          </span>
+        </div>
       </div>
     </div>
   );
@@ -278,6 +304,7 @@ const DeveloperDashboard = () => {
                     key={conversation.id}
                     conversation={conversation}
                     navigate={navigate}
+                    user={user} // Make sure you're passing the user here
                   />
                 ))}
               </div>

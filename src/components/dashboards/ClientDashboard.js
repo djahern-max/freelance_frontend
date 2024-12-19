@@ -1,7 +1,6 @@
 import {
   Briefcase,
   Clock,
-  FileText,
   FolderOpen,
   MessageSquare,
   Plus,
@@ -132,8 +131,6 @@ const ClientDashboard = () => {
                       : 'Client';
 
                   return (
-                    // In ClientDashboard.js, update the conversation card section:
-
                     <div
                       key={conversation.id}
                       className={styles.conversationCard}
@@ -141,10 +138,8 @@ const ClientDashboard = () => {
                         navigate(`/conversations/${conversation.id}`)
                       }
                     >
-                      <div className={styles.cardContent}>
-                        <div className={styles.cardSection}>
-                          <FileText className={styles.cardIconFile} />{' '}
-                          {/* Change icon type */}
+                      <div className={styles.conversationRow}>
+                        <div className={styles.titleSection}>
                           <span className={styles.requestTitle}>
                             {conversation.request_title || 'Untitled Request'}
                           </span>
@@ -153,26 +148,26 @@ const ClientDashboard = () => {
                               styles[conversation.status]
                             }`}
                           >
-                            {conversation.status}
+                            {conversation.status || 'active'}
                           </span>
                         </div>
 
-                        <div className={styles.cardSection}>
-                          <User className={styles.cardIconUser} />
+                        <div className={styles.userSection}>
+                          <User className={styles.iconUser} />
                           <span className={styles.participantInfo}>
                             {otherUser} ({otherUserRole})
                           </span>
                         </div>
 
-                        <div className={styles.cardSection}>
-                          <MessageSquare className={styles.cardIconMessage} />
+                        <div className={styles.messageSection}>
+                          <MessageSquare className={styles.iconMessage} />
                           <span className={styles.messageCount}>
                             {conversation.messages?.length || 0} messages
                           </span>
                         </div>
 
-                        <div className={styles.cardSection}>
-                          <Clock className={styles.cardIconTime} />
+                        <div className={styles.timeSection}>
+                          <Clock className={styles.iconTime} />
                           <span className={styles.timeInfo}>
                             Last message:{' '}
                             {formatTimeSince(
