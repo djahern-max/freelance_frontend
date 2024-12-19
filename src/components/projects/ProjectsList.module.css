@@ -1,146 +1,146 @@
 .container {
-    min-height: calc(100vh - 60px);
-    background-color: #ebebeb;
-    width: 100%;
+  min-height: calc(100vh - 60px);
+  background-color: #ebebeb;
+  width: 100%;
 
-  }
-  
-  .content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: var(--spacing-lg) var(--spacing-md);
-  }
-  
+}
+
+.content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-lg) var(--spacing-md);
+}
+
+.headerSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.title {
+  font-size: var(--font-size-xl);
+  color: var(--color-text-primary);
+  font-weight: 600;
+  margin: 0;
+}
+
+.createButton {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.createButton:hover {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-1px);
+}
+
+.projectsGrid {
+  display: grid;
+  gap: var(--spacing-md);
+}
+
+.projectCard {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  border: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.projectCard:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary);
+}
+
+.projectInfo {
+  flex: 1;
+}
+
+.projectInfo h3 {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-xs);
+}
+
+.projectInfo p {
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.viewButton {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-light);
+  color: var(--color-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.viewButton:hover {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.emptyState {
+  text-align: center;
+  padding: var(--spacing-xl);
+  background: white;
+  border-radius: var(--radius-lg);
+  border: 2px dashed var(--color-border);
+}
+
+.error {
+  background-color: var(--color-error-bg);
+  color: var(--color-error);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-md);
+  text-align: center;
+}
+
+.retryButton {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
   .headerSection {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--spacing-xl);
-  }
-  
-  .title {
-    font-size: var(--font-size-xl);
-    color: var(--color-text-primary);
-    font-weight: 600;
-    margin: 0;
-  }
-  
-  .createButton {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-sm) var(--spacing-md);
-    background-color: var(--color-primary);
-    color: white;
-    border: none;
-    border-radius: var(--radius-md);
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  
-  .createButton:hover {
-    background-color: var(--color-primary-dark);
-    transform: translateY(-1px);
-  }
-  
-  .projectsGrid {
-    display: grid;
+    flex-direction: column;
     gap: var(--spacing-md);
+    align-items: flex-start;
   }
   
   .projectCard {
-    background: white;
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-lg);
-    border: 1px solid var(--color-border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: all 0.2s ease;
-  }
-  
-  .projectCard:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    border-color: var(--color-primary);
-  }
-  
-  .projectInfo {
-    flex: 1;
-  }
-  
-  .projectInfo h3 {
-    font-size: var(--font-size-lg);
-    color: var(--color-text-primary);
-    margin: 0 0 var(--spacing-xs);
-  }
-  
-  .projectInfo p {
-    color: var(--color-text-secondary);
-    margin: 0;
+    flex-direction: column;
+    gap: var(--spacing-md);
   }
   
   .viewButton {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-sm) var(--spacing-md);
-    background-color: var(--color-light);
-    color: var(--color-primary);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    width: 100%;
+    justify-content: center;
   }
-  
-  .viewButton:hover {
-    background-color: var(--color-primary);
-    color: white;
-  }
-  
-  .emptyState {
-    text-align: center;
-    padding: var(--spacing-xl);
-    background: white;
-    border-radius: var(--radius-lg);
-    border: 2px dashed var(--color-border);
-  }
-  
-  .error {
-    background-color: var(--color-error-bg);
-    color: var(--color-error);
-    padding: var(--spacing-md);
-    border-radius: var(--radius-md);
-    margin-bottom: var(--spacing-md);
-    text-align: center;
-  }
-  
-  .retryButton {
-    margin-top: var(--spacing-md);
-    padding: var(--spacing-sm) var(--spacing-md);
-    background-color: var(--color-primary);
-    color: white;
-    border: none;
-    border-radius: var(--radius-md);
-    cursor: pointer;
-  }
-  
-  @media (max-width: 768px) {
-    .headerSection {
-      flex-direction: column;
-      gap: var(--spacing-md);
-      align-items: flex-start;
-    }
-    
-    .projectCard {
-      flex-direction: column;
-      gap: var(--spacing-md);
-    }
-    
-    .viewButton {
-      width: 100%;
-      justify-content: center;
-    }
-  }
+}

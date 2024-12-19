@@ -2,7 +2,7 @@ import {
   Briefcase,
   Clock,
   FolderOpen,
-  MessageSquare,
+  Inbox,
   Plus,
   Share2,
   User,
@@ -75,20 +75,20 @@ const ClientDashboard = () => {
     },
     {
       id: 'conversations',
-      icon: MessageSquare,
-      title: 'Conversations',
+      icon: Inbox,
+      title: 'Inbox',
       count: dashboardData.conversations.length,
     },
     {
       id: 'sharedRequests',
       icon: Share2,
-      title: 'Assignments',
+      title: 'Shared',
       count: dashboardData.sharedRequests.length,
     },
     {
       id: 'projects',
       icon: FolderOpen,
-      title: 'Active Projects',
+      title: 'Projects',
       count: projects.length,
     },
   ];
@@ -160,7 +160,7 @@ const ClientDashboard = () => {
                         </div>
 
                         <div className={styles.messageSection}>
-                          <MessageSquare className={styles.iconMessage} />
+                          <Inbox className={styles.iconMessage} />
                           <span className={styles.messageCount}>
                             {conversation.messages?.length || 0} messages
                           </span>
@@ -191,7 +191,7 @@ const ClientDashboard = () => {
       case 'sharedRequests':
         return (
           <div className={styles.expandedSection}>
-            <h2>Requests I've Shared</h2>
+            <h2>Tickets I've Shared</h2>
             {errors.sharedRequests ? (
               <div className={styles.error}>{errors.sharedRequests}</div>
             ) : dashboardData.sharedRequests.length > 0 ? (
@@ -233,9 +233,9 @@ const ClientDashboard = () => {
             ) : (
               <div className={styles.emptyState}>
                 <Share2 className={styles.emptyStateIcon} />
-                <p>You haven't shared any requests yet</p>
+                <p>You haven't shared any tickets yet</p>
                 <p>
-                  Share your requests with developers you'd like to work with
+                  Share your tickets with developers you'd like to work with
                 </p>
               </div>
             )}

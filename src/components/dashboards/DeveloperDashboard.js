@@ -262,7 +262,7 @@ const DeveloperDashboard = () => {
     {
       id: 'snagged', // Add this new section
       icon: Bookmark,
-      title: 'Snagged Requests',
+      title: 'Watch List',
       count: snaggedRequests.length, // You'll need to add this state
     },
   ];
@@ -351,7 +351,7 @@ const DeveloperDashboard = () => {
       case 'snagged':
         return (
           <div className={styles.expandedSection}>
-            <h2>Snagged Requests</h2>
+            <h2>Snagged Tickets</h2>
             {snaggedRequests.length > 0 ? (
               <div className={styles.requestsList}>
                 {snaggedRequests.map((item) => (
