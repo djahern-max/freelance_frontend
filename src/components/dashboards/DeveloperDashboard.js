@@ -331,6 +331,7 @@ const DeveloperDashboard = () => {
                   <div key={item.id} className={styles.requestCard}>
                     <div className={styles.requestHeader}>
                       <h3>{item.request.title}</h3>
+                      <span className={styles.statusBadge}>open</span>
                     </div>
                     <p className={styles.requestContent}>
                       {item.request.content.length > 150
@@ -338,15 +339,16 @@ const DeveloperDashboard = () => {
                         : item.request.content}
                     </p>
                     <div className={styles.requestMeta}>
-                      {item.request.estimated_budget && (
-                        <span>Budget: ${item.request.estimated_budget}</span>
-                      )}
-                      <span>By: {item.request.owner_username}</span>
-                      <span>Status: {item.request.status}</span>
+                      <span className={styles.budget}>
+                        Budget: ${item.request.estimated_budget}
+                      </span>
+                      <span className={styles.userLabel}>
+                        User: {item.request.owner_username}
+                      </span>
                     </div>
                     <div className={styles.buttonContainer}>
                       <button
-                        className={styles.viewButton}
+                        className={styles.button}
                         onClick={() => navigate(`/requests/${item.request.id}`)}
                       >
                         View Details

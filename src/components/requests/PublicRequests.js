@@ -1,21 +1,23 @@
-import { Clock, Loader, MessageSquare, Users } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Loader } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import api from '../../utils/api';
+import { useSnagTicket } from '../../utils/snagTicket';
 import AuthDialog from '../auth/AuthDialog';
 import SubscriptionDialog from '../payments/SubscriptionDialog';
-
-import { useCallback, useRef } from 'react';
-import { useSnagTicket } from '../../utils/snagTicket';
 import Header from '../shared/Header';
 import EmptyState from './EmptyState';
+import PublicRequestCard from './PublicRequestCard';
 import styles from './PublicRequests.module.css';
+import SnagTicketModal from './SnagTicketModal';
 
-const POLL_INTERVAL = 60000; // Increased to 60 seconds
-const DEBOUNCE_DELAY = 300; // 300ms debounce for rapid updates
+const POLL_INTERVAL = 60000;
+const DEBOUNCE_DELAY = 300;
 
 const PublicRequests = () => {
+  // Existing state
   const [publicRequests, setPublicRequests] = useState([]);
   const [conversations, setConversations] = useState({});
   const [error, setError] = useState(null);
@@ -26,6 +28,11 @@ const PublicRequests = () => {
   const [expandedCards, setExpandedCards] = useState({});
   const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
 
+  // New state for snag ticket functionality
+  const [showSnagModal, setShowSnagModal] = useState(false);
+  const [userVideos, setUserVideos] = useState([]);
+  const [profileUrl, setProfileUrl] = useState(null);
+
   const pollTimeoutRef = useRef(null);
   const abortControllerRef = useRef(null);
   const lastFetchTimeRef = useRef(Date.now());
@@ -34,7 +41,111 @@ const PublicRequests = () => {
   const location = useLocation();
   const user = useSelector((state) => state.auth.user);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  const { snagTicket } = useSnagTicket(navigate);
+  const {
+    snagTicket,
+    loading: snagLoading,
+    error: snagError,
+    setError: setSnagError,
+  } = useSnagTicket();
+
+  // Add function to fetch user's videos
+  const fetchUserVideos = async () => {
+    try {
+      const response = await api.get('/video_display/my-videos');
+      // Make sure we're setting the correct data structure with id and title
+      const formattedVideos = (response.data.user_videos || []).map(
+        (video) => ({
+          id: video.id,
+          title: video.title,
+        })
+      );
+      setUserVideos(formattedVideos);
+    } catch (error) {
+      console.error('Failed to fetch user videos:', error);
+      setUserVideos([]);
+    }
+  };
+
+  // Add function to fetch developer profile URL
+  const fetchProfileUrl = async () => {
+    try {
+      const response = await api.get('/profile/developer');
+      // Assuming the profile URL is in the response
+      const profileUrlFromResponse =
+        response.data.profile_url ||
+        `/profile/developers/${response.data.user_id}/public`;
+      setProfileUrl(profileUrlFromResponse);
+    } catch (error) {
+      console.error('Failed to fetch profile URL:', error);
+      setProfileUrl(null);
+    }
+  };
+
+  // Modify snag ticket handler
+  const handleSnagTicket = async (requestId) => {
+    if (!isAuthenticated) {
+      setSelectedRequest({ id: requestId });
+      setShowAuthDialog(true);
+      return;
+    }
+
+    // Add check for client user type
+    if (user?.userType === 'client') {
+      toast("You're a Client, You Sure You Have the Chops for This? 💪", {
+        type: 'warning',
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      return; // Prevent further execution for clients
+    }
+
+    try {
+      await Promise.all([fetchUserVideos(), fetchProfileUrl()]);
+
+      setSelectedRequest(publicRequests.find((r) => r.id === requestId));
+      setShowSnagModal(true);
+    } catch (error) {
+      console.error('Error preparing snag ticket:', error);
+      toast('Failed to prepare snag ticket. Please try again.', {
+        type: 'error',
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: true,
+      });
+    }
+  };
+
+  // Add function to handle snag ticket submission
+  const handleSnagSubmit = async (formData) => {
+    try {
+      await snagTicket(selectedRequest.id, formData);
+      setShowSnagModal(false);
+      toast('Request snagged successfully!', {
+        type: 'success',
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: true,
+      });
+      fetchData();
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.detail ||
+        'Failed to snag request. Please try again.';
+      toast(errorMessage, {
+        type: 'error',
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: true,
+      });
+      if (error.response?.status === 400) {
+        setShowSnagModal(false);
+      }
+    }
+  };
 
   const createConversation = async (requestId) => {
     try {
@@ -239,6 +350,27 @@ const PublicRequests = () => {
     <div className={styles.mainContainer}>
       <Header />
       <main className={styles.mainContent}>
+        <SnagTicketModal
+          isOpen={showSnagModal}
+          onClose={() => {
+            setShowSnagModal(false);
+            setSelectedRequest(null);
+            setSnagError(null);
+          }}
+          onSubmit={handleSnagSubmit}
+          videos={userVideos}
+          profileUrl={profileUrl}
+          isLoading={snagLoading}
+          error={snagError}
+        />
+        {/* Add temporary debugging output */}
+        {process.env.NODE_ENV === 'development' && (
+          <div style={{ display: 'none' }}>
+            Debug: Videos Count: {userVideos?.length || 0}
+            Debug: Has Profile URL: {profileUrl ? 'Yes' : 'No'}
+          </div>
+        )}
+
         {polling && (
           <div className={styles.pollingIndicator}>
             <Loader className={styles.spinnerSmall} />
@@ -269,133 +401,78 @@ const PublicRequests = () => {
         ) : (
           <div className={styles.requestsGrid}>
             {publicRequests.map((request) => (
-              <div
+              <PublicRequestCard
                 key={request.id}
-                className={styles.requestCard}
-                onClick={() => handleRequestClick(request)}
-                data-expanded={expandedCards[request.id]}
-              >
-                <span
-                  className={styles.snagEmoji}
-                  role="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    snagTicket(request.id);
-                  }}
-                  title="Snag this request"
-                >
-                  🌀 <span className={styles.snagText}>Snag Ticket</span>
-                </span>
-                <div className={styles.cardHeader}>
-                  <h2 className={styles.requestTitle}>{request.title}</h2>
-                  {request.estimated_budget && (
-                    <div className={styles.budget}>
-                      <span>${request.estimated_budget.toLocaleString()}</span>
-                    </div>
-                  )}
-                </div>
-                <div className={styles.description}>
-                  {request.content.length > 200 &&
-                  !expandedCards[request.id] ? (
-                    <>
-                      {request.content.substring(0, 200)}
-                      <span className={styles.fade} />
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleCardExpansion(request.id);
-                        }}
-                        className={styles.readMoreButton}
-                      >
-                        Read More
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      {request.content}
-                      {request.content.length > 200 && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleCardExpansion(request.id);
-                          }}
-                          className={styles.readMoreButton}
-                        >
-                          Show Less
-                        </button>
-                      )}
-                    </>
-                  )}
-                </div>
-                <div className={styles.cardFooter}>
-                  <div className={styles.statusBadgeWrapper}></div>
-                  <div className={styles.metaInfo}>
-                    <div className={styles.metaItem} title="Posted Date">
-                      <Clock className={styles.icon} size={16} />
-                      <span>
-                        {new Date(request.created_at).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <div className={styles.metaItem} title="Response Count">
-                      <MessageSquare className={styles.icon} size={16} />
-                      <span>{conversations[request.id] || 0} responses</span>
-                    </div>
-                    {request.owner_username && (
-                      <div className={styles.metaItem} title="Request Owner">
-                        <Users className={styles.icon} size={16} />
-                        <span>{request.owner_username}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div className={styles.cardFooter}>
-                  <div className={styles.metaInfo}>{/* ... */}</div>
-                </div>
-                <div className={styles.cardActionsWrapper}>
-                  <div
-                    className={`${styles.statusBadge} ${
-                      styles[request.status?.toLowerCase() || 'open']
-                    }`}
-                    title="Request Status"
-                  >
-                    {request.status?.replace('_', ' ').toUpperCase() || 'OPEN'}
-                  </div>
-                  <div className={styles.cardActions}>
-                    {!isAuthenticated ? (
-                      <button
-                        className={styles.buttonSecondary}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedRequest(request);
-                          setShowAuthDialog(true);
-                        }}
-                      >
-                        Sign In to View Details
-                      </button>
-                    ) : user?.userType === 'developer' ? (
-                      <>
-                        <button
-                          className={styles.buttonPrimary}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleStartConversation(request);
-                          }}
-                          disabled={loading}
-                        >
-                          {loading ? 'Please wait...' : 'Start Conversation'}
-                        </button>
-                      </>
-                    ) : (
-                      <button className={styles.buttonOutline}>
-                        View Details
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
+                request={request}
+                onSnag={handleSnagTicket}
+                onCardClick={handleRequestClick}
+                isExpanded={expandedCards[request.id]}
+                onToggleExpand={toggleCardExpansion}
+                isAuthenticated={isAuthenticated}
+                userType={user?.userType}
+                loading={loading}
+                conversations={conversations}
+                onStartConversation={handleStartConversation}
+                onAuthDialog={(e) => {
+                  e.stopPropagation();
+                  setSelectedRequest(request);
+                  setShowAuthDialog(true);
+                }}
+              />
             ))}
           </div>
         )}
+
+        <AuthDialog
+          isOpen={showAuthDialog}
+          onClose={() => {
+            setShowAuthDialog(false);
+            setSelectedRequest(null);
+          }}
+          onLogin={() =>
+            navigate('/login', {
+              state: {
+                from: location.pathname,
+                requestId: selectedRequest?.id,
+              },
+            })
+          }
+          onRegister={() =>
+            navigate('/register', {
+              state: {
+                from: location.pathname,
+                requestId: selectedRequest?.id,
+              },
+            })
+          }
+        />
+        <SubscriptionDialog
+          isOpen={showSubscriptionDialog}
+          onClose={() => {
+            setShowSubscriptionDialog(false);
+            setSelectedRequest(null);
+          }}
+          onSuccess={async () => {
+            setShowSubscriptionDialog(false);
+            try {
+              const subscriptionCheck = await api.get(
+                '/payments/subscription-status'
+              );
+              if (
+                subscriptionCheck.data?.status === 'active' &&
+                selectedRequest
+              ) {
+                await handleStartConversation(selectedRequest);
+              }
+            } catch (err) {
+              console.error(
+                'Failed to verify subscription after payment:',
+                err
+              );
+              setError('Failed to verify subscription. Please try again.');
+            }
+          }}
+        />
 
         <AuthDialog
           isOpen={showAuthDialog}

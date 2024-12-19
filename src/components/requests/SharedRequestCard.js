@@ -1,3 +1,4 @@
+// SharedRequestCard.jsx
 import { FileText, MessageSquare } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -15,7 +16,6 @@ const SharedRequestCard = ({ request }) => {
     setLoading(true);
     setError(null);
     try {
-      // Check subscription status using the api helper
       const subscriptionResponse = await api.subscriptions.getStatus();
 
       if (!subscriptionResponse || subscriptionResponse.status !== 'active') {
@@ -23,12 +23,10 @@ const SharedRequestCard = ({ request }) => {
         return;
       }
 
-      // If subscription is active, create conversation
       const conversationResponse = await api.conversations.create({
         request_id: request.id,
       });
 
-      // Navigate to the new conversation
       navigate(`/conversations/${conversationResponse.id}`);
     } catch (err) {
       console.error('Error starting conversation:', err);
@@ -70,16 +68,20 @@ const SharedRequestCard = ({ request }) => {
             className={styles.viewButton}
             disabled={loading}
           >
-            <FileText size={16} />
-            View Details
+            <span className={styles.buttonContent}>
+              <FileText size={16} />
+              <span>View Details</span>
+            </span>
           </button>
           <button
             onClick={checkSubscriptionAndStartConversation}
             className={styles.conversationButton}
             disabled={loading}
           >
-            <MessageSquare size={16} />
-            {loading ? 'Please wait...' : 'Start Conversation'}
+            <span className={styles.buttonContent}>
+              <MessageSquare size={16} />
+              <span>{loading ? 'Please wait...' : 'Start Conversation'}</span>
+            </span>
           </button>
         </div>
       </div>
@@ -89,7 +91,6 @@ const SharedRequestCard = ({ request }) => {
         onClose={() => setShowSubscriptionDialog(false)}
         onSuccess={async () => {
           setShowSubscriptionDialog(false);
-          // Recheck subscription and try to create conversation
           try {
             const subscriptionCheck = await api.subscriptions.getStatus();
             if (subscriptionCheck?.status === 'active') {

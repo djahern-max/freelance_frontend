@@ -1,0 +1,208 @@
+.card {
+    position: relative;
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s;
+    min-height: 320px; /* Increased from 280px */
+  }
+  .statusIndicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    border-radius: 8px 8px 0 0;
+  }
+  
+  .card:hover {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .card[data-expanded="true"] .description {
+    max-height: none;
+  }
+  
+  .card[data-expanded="true"] .fade {
+    display: none;
+  }
+  
+  .snagButton {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    padding: 0.375rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    z-index: 1;
+  }
+  
+  .snagButtonEnabled {
+    background-color: #10b981;
+    color: white;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+  
+  .snagButtonDisabled {
+    background-color: #f3f4f6;
+    color: #6b7280;
+  }
+  
+  
+  .snagButtonEnabled:hover {
+    background-color: #059669;
+  }
+  
+  .snagButtonDisabled {
+    background-color: #e5e7eb;
+    color: #6b7280;
+    cursor: default;
+  }
+  
+  .header {
+    margin-top: 0.5rem;
+    padding-right: 6rem;
+    padding-bottom: 4rem; /* Make room for meta info */
+  }
+  .headerContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  
+  .title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+    padding-right: 1rem;
+    line-height: 1.4;
+    margin-top: 1rem;
+  }
+
+  .fade {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3em; /* Increased height of fade */
+    background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
+    pointer-events: none;
+  }
+  .description {
+    position: relative;
+    color: #4b5563;
+    margin: 1rem 0;
+    line-height: 1.6;
+    max-height: 9.6em; /* Increased to show 6 lines of text */
+    overflow: hidden;
+    padding-bottom: 1rem; /* Space for fade effect */
+  }
+
+  .readMoreButton {
+    background: none;
+    border: none;
+    color: #2563eb;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0;
+    cursor: pointer;
+    transition: color 0.2s;
+    margin-top: 0.5rem;
+    display: block;
+  }
+  
+  .readMoreButton:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+  }
+  
+  .budget {
+    color: #2563eb;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  
+  .content {
+    color: #4b5563;
+    margin-top: 0.75rem;
+    line-height: 1.5;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+  
+  .metaInfo {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 1.5rem;
+    right: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 1rem;
+    background: white; /* Ensure it covers any overflow */
+  }
+  
+  .metaItem {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  
+  .footer {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f3f4f6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  
+  .statusOpen {
+    background-color: #ecfdf5;
+    color: #065f46;
+  }
+  
+  .statusInProgress {
+    background-color: #fff7ed;
+    color: #9a3412;
+  }
+  
+  .statusDefault {
+    background-color: #f3f4f6;
+    color: #374151;
+  }
+  
+  .conversationButton {
+    background-color: #2563eb;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .conversationButton:hover {
+    background-color: #1d4ed8;
+  }

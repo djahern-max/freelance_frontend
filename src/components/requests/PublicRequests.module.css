@@ -384,23 +384,9 @@
   align-items: center;
 }
 
-.snagEmoji {
-  display: inline-flex;
-  align-items: center;
-  cursor: pointer;
-  font-size: 18px;
-}
 
-.snagText {
-  color: #0047AB;
-  font-weight: bold;
-  margin-left: 5px;
-}
 
-.snagEmoji:hover .snagText {
-  color: #00008B;
-  text-decoration: underline;
-}
+
 
 
 

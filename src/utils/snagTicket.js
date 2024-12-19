@@ -8,7 +8,6 @@ export const handleSnagTicket = async ({
   includeProfile = false,
   onSuccess,
   onError,
-  onSubscriptionNeeded,
   onLoadingChange,
 }) => {
   try {
@@ -31,11 +30,28 @@ export const handleSnagTicket = async ({
     return snaggedRequestRes.data;
   } catch (error) {
     console.error('Failed to snag request:', error);
-    const errorMessage = api.helpers.handleError(error);
+    let errorMessage = 'Failed to snag request';
+
+    // Handle specific error cases
+    if (error.response?.status === 400) {
+      if (error.response.data?.detail?.includes('Only open requests')) {
+        errorMessage =
+          'This request is no longer available for snagging. Only open requests can be snagged.';
+      } else if (error.response.data?.detail?.includes('already snagged')) {
+        errorMessage = 'You have already snagged this request.';
+      } else {
+        errorMessage = error.response.data?.detail || 'Invalid request';
+      }
+    } else if (error.response?.status === 403) {
+      errorMessage = 'Only developers can snag requests';
+    } else {
+      errorMessage = api.helpers.handleError(error);
+    }
+
     if (onError) {
       onError(errorMessage);
     }
-    throw error;
+    throw new Error(errorMessage);
   } finally {
     if (onLoadingChange) {
       onLoadingChange(false);
@@ -51,9 +67,6 @@ export const useSnagTicket = () => {
     return handleSnagTicket({
       requestId,
       ...data,
-      onSuccess: () => {
-        // Success is handled by the component
-      },
       onError: (message) => {
         setError(message);
       },
