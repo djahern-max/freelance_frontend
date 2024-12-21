@@ -71,8 +71,21 @@
   gap: var(--spacing-md);
   border: 1px solid var(--color-border);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  user-select: none;
 
+
+}
+
+.statCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+.statCard:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 .conversationCard, 
@@ -113,12 +126,22 @@
   color: var(--color-text-secondary);
   margin-bottom: var(--spacing-xs);
 }
-
 .statInfo p {
   font-size: var(--font-size-xl);
   font-weight: 600;
   color: var(--color-text-primary);
 }
+
+/* Style for the "No data available yet" text */
+.statInfo p:not([data-numeric="true"]) {
+  font-size: 0.75rem; /* Very small text */
+  color: #1e40af; /* Dark blue */
+  font-style: italic;
+  font-weight: normal;
+  margin-top: 4px; /* Add a little spacing */
+}
+
+
 
 .quickActions {
   display: flex;
@@ -390,6 +413,11 @@
 
 .viewButton:hover {
   background-color: var(--color-border);
+}
+
+#requests-section,
+#conversations-section {
+  scroll-margin-top: 2rem;
 }
 
 
