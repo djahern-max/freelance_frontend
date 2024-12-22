@@ -430,7 +430,7 @@ const ConversationDetail = () => {
                           <div className={styles.messageText}>
                             {message.content}
 
-                            // Inside ConversationDetail.js, update the linked content section
+
 
                             {message.linked_content?.length > 0 && (
                               <div className={styles.linkedContent}>
