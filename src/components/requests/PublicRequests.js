@@ -122,25 +122,30 @@ const PublicRequests = () => {
   // Add function to handle snag ticket submission
   const handleSnagSubmit = async (formData) => {
     try {
-      await snagTicket(selectedRequest.id, formData);
+      console.log('Submitting snag request with formData:', formData);
+
+      const result = await snagTicket(selectedRequest.id, formData);
+      console.log('Snag request successful:', result);
+
       setShowSnagModal(false);
-      toast('Request snagged successfully!', {
-        type: 'success',
+      toast.success('Request snagged successfully!', {
         position: 'top-right',
         autoClose: 5000,
-        hideProgressBar: true,
+        hideProgressBar: true
       });
-      fetchData();
+
+      // Refresh the data
+      await fetchData();
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.detail ||
-        'Failed to snag request. Please try again.';
-      toast(errorMessage, {
-        type: 'error',
+      console.error('Snag request failed:', error);
+
+      const errorMessage = error.response?.data?.detail || 'Failed to snag request. Please try again.';
+      toast.error(errorMessage, {
         position: 'top-right',
         autoClose: 5000,
-        hideProgressBar: true,
+        hideProgressBar: true
       });
+
       if (error.response?.status === 400) {
         setShowSnagModal(false);
       }

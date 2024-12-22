@@ -1,122 +1,64 @@
-// toastConfig.js
 import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-// Icons for different toast types
-const ToastIcon = ({ type }) => {
-  const iconColor = {
-    success: '#10B981',
-    error: '#EF4444',
-    warning: '#F59E0B',
-    info: '#3B82F6'
-  }[type];
-
-  return (
-    <svg 
-      className="toast-icon" 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke={iconColor} 
-      strokeWidth="2"
-      strokeLinecap="round" 
-      strokeLinejoin="round"
-    >
-      {type === 'success' && (
-        <path d="M20 6L9 17L4 12" />
-      )}
-      {type === 'error' && (
-        <>
-          <line x1="18" y1="6" x2="6" y2="18" />
-          <line x1="6" y1="6" x2="18" y2="18" />
-        </>
-      )}
-      {type === 'warning' && (
-        <>
-          <path d="M12 9v4" />
-          <path d="M12 17h.01" />
-          <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-        </>
-      )}
-      {type === 'info' && (
-        <>
-          <circle cx="12" cy="12" r="10" />
-          <path d="M12 16v-4" />
-          <path d="M12 8h.01" />
-        </>
-      )}
-    </svg>
-  );
-};
-
-// Toast configuration options
-const toastConfig = {
-  success: (message) => {
-    toast.success(
-      <div className="toast-content">
-        <ToastIcon type="success" />
-        <p className="toast-message">{message}</p>
-      </div>,
-      {
-        className: 'custom-toast custom-toast-success',
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      }
-    );
-  },
-  error: (message) => {
-    toast.error(
-      <div className="toast-content">
-        <ToastIcon type="error" />
-        <p className="toast-message">{message}</p>
-      </div>,
-      {
-        className: 'custom-toast custom-toast-error',
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      }
-    );
-  },
-  warning: (message) => {
-    toast.warning(
-      <div className="toast-content">
-        <ToastIcon type="warning" />
-        <p className="toast-message">{message}</p>
-      </div>,
-      {
-        className: 'custom-toast custom-toast-warning',
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      }
-    );
-  },
-  info: (message) => {
-    toast.info(
-      <div className="toast-content">
-        <ToastIcon type="info" />
-        <p className="toast-message">{message}</p>
-      </div>,
-      {
-        className: 'custom-toast custom-toast-info',
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      }
-    );
+export const toastConfig = {
+  position: toast.POSITION.TOP_RIGHT,
+  autoClose: 3000,
+  hideProgressBar: false,
+  closeOnClick: true,
+  pauseOnHover: true,
+  draggable: true,
+  progress: undefined,
+  theme: 'light',
+  style: {
+    background: '#fff',
+    color: '#333',
+    borderRadius: '8px',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+    fontSize: '14px',
   }
 };
 
-export default toastConfig;
+// Custom toast styles for different types
+export const toastStyles = {
+  success: {
+    style: {
+      ...toastConfig.style,
+      background: '#EDF7ED',
+      border: '1px solid #4CAF50',
+    },
+    icon: '🎉'
+  },
+  error: {
+    style: {
+      ...toastConfig.style,
+      background: '#FDEDED',
+      border: '1px solid #EF5350',
+    },
+    icon: '❌'
+  },
+  info: {
+    style: {
+      ...toastConfig.style,
+      background: '#E8F4FD',
+      border: '1px solid #2196F3',
+    },
+    icon: 'ℹ️'
+  },
+  warning: {
+    style: {
+      ...toastConfig.style,
+      background: '#FFF4E5',
+      border: '1px solid #FF9800',
+    },
+    icon: '⚠️'
+  }
+};
+
+// Custom toast functions
+export const customToast = {
+  success: (message) => toast.success(message, { ...toastConfig, ...toastStyles.success }),
+  error: (message) => toast.error(message, { ...toastConfig, ...toastStyles.error }),
+  info: (message) => toast.info(message, { ...toastConfig, ...toastStyles.info }),
+  warning: (message) => toast.warning(message, { ...toastConfig, ...toastStyles.warning })
+};

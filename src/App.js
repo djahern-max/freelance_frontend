@@ -8,6 +8,7 @@ import {
 } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import './styles/toast.css';
 import Login from './components/auth/Login';
 import Logout from './components/auth/Logout';
 import Register from './components/auth/Register';
@@ -33,6 +34,7 @@ import Footer from './components/shared/Footer';
 import Header from './components/shared/Header';
 import VideoList from './components/videos/VideoList';
 import VideoUpload from './components/videos/VideoUpload';
+import DeveloperProfileView from './components/profiles/DeveloperProfileView';
 import { login } from './redux/authSlice';
 import { store } from './redux/store';
 import './styles/global.css';
@@ -78,12 +80,29 @@ function AppContent() {
 
   return (
     <>
+
       <ToastContainer
         position="top-right"
         autoClose={5000}
+        hideProgressBar={false} // Show progress bar for better UX
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
         theme="light"
-        hideProgressBar
-        icon={false}
+        toastStyle={{
+          background: '#fff',
+          borderRadius: '8px',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+          fontSize: '14px',
+          padding: '12px 24px',
+        }}
+        toastClassName="custom-toast"
+        progressStyle={{
+          background: 'var(--primary-color, #007bff)'
+        }}
       />
       <Routes>
         {/* Conversation route without header/footer */}
@@ -110,6 +129,8 @@ function AppContent() {
                   <Route path="/logout" element={<Logout />} />
                   <Route path="/opportunities" element={<PublicRequests />} />
                   <Route path="/videos" element={<VideoList />} />
+                  <Route path="/profile/developer/:id" element={<PublicDevelopers />} />
+                  <Route path="/profile/developer/:id" element={<DeveloperProfileView />} />
                   <Route path="/creators" element={<PublicDevelopers />} />
                   <Route
                     path="/subscription/success"

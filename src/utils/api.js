@@ -68,6 +68,11 @@ export const API_ROUTES = {
     DETAIL: (id) => `/projects/${id}/`,
     ADD_REQUEST: (requestId) => `/requests/${requestId}/project`,
   },
+  SNAGGED_REQUESTS: {
+    CREATE: '/snagged-requests/',
+    LIST: '/snagged-requests/',
+    REMOVE: (id) => `/snagged-requests/${id}`
+  },
 };
 
 // Helper function to check if a route is public
@@ -494,6 +499,8 @@ api.conversations = {
     }
   },
 
+
+
   async getDetail(id) {
     try {
       const response = await api.get(API_ROUTES.CONVERSATIONS.DETAIL(id));
@@ -537,6 +544,48 @@ api.conversations = {
       throw new Error(api.helpers.handleError(error));
     }
   },
+};
+
+
+// Add snagged requests methods
+api.snaggedRequests = {
+  async create(requestId, data) {
+    try {
+      console.log('Creating snagged request:', { requestId, ...data });
+      const response = await api.post(API_ROUTES.SNAGGED_REQUESTS.CREATE, {
+        request_id: requestId,
+        message: data.message,
+        video_ids: data.video_ids || [],
+        profile_link: data.include_profile,
+        include_profile: data.include_profile
+      });
+      console.log('Snagged request response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating snagged request:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async list() {
+    try {
+      const response = await api.get(API_ROUTES.SNAGGED_REQUESTS.LIST);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching snagged requests:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async remove(requestId) {
+    try {
+      const response = await api.delete(API_ROUTES.SNAGGED_REQUESTS.REMOVE(requestId));
+      return response.data;
+    } catch (error) {
+      console.error('Error removing snagged request:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
+  }
 };
 
 // Token management

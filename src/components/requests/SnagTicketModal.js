@@ -17,11 +17,17 @@ const SnagTicketModal = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit({
+
+    // Create the payload exactly matching what the backend expects
+    const payload = {
       message,
-      video_ids: selectedVideos,
-      profile_link: includeProfile,
-    });
+      video_ids: selectedVideos,  // Array of video IDs
+      profile_link: includeProfile, // This matches backend's SnaggedRequestCreate schema
+      include_profile: includeProfile // This matches the ConversationMessageCreate schema
+    };
+
+    console.log('Submitting snag ticket with payload:', payload);
+    onSubmit(payload);
   };
 
   if (!isOpen) return null;
@@ -48,6 +54,7 @@ const SnagTicketModal = ({
             />
           </div>
 
+          {/* Video Selection Section */}
           {videos.length > 0 && (
             <div className={styles.formGroup}>
               <label className={styles.label}>Link Relevant Videos</label>
@@ -73,6 +80,7 @@ const SnagTicketModal = ({
             </div>
           )}
 
+          {/* Profile Link Section */}
           {profileUrl && (
             <label className={styles.checkboxLabel}>
               <input
@@ -99,7 +107,7 @@ const SnagTicketModal = ({
             <button
               type="submit"
               className={styles.submitButton}
-              disabled={isLoading}
+              disabled={isLoading || !message.trim()}
             >
               {isLoading ? 'Snagging Request...' : 'Snag Request'}
             </button>

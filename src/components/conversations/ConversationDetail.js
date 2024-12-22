@@ -138,13 +138,13 @@ const ConversationDetail = () => {
     const shouldPoll = ['negotiating', 'agreed'].includes(conversation.status);
     const intervalId = shouldPoll
       ? setInterval(() => {
-          // Use a function to ensure we're working with fresh state
-          fetchAgreement().catch((err) => {
-            console.error('Polling error:', err);
-            // Optionally show user-friendly error
-            toast.error('Error updating agreement status');
-          });
-        }, 5000)
+        // Use a function to ensure we're working with fresh state
+        fetchAgreement().catch((err) => {
+          console.error('Polling error:', err);
+          // Optionally show user-friendly error
+          toast.error('Error updating agreement status');
+        });
+      }, 5000)
       : null;
 
     // Cleanup
@@ -285,8 +285,7 @@ const ConversationDetail = () => {
       }));
 
       await sendSystemMessage(
-        `${user.username} has ${
-          accept ? 'accepted' : 'declined'
+        `${user.username} has ${accept ? 'accepted' : 'declined'
         } the conversation.`
       );
 
@@ -424,13 +423,52 @@ const ConversationDetail = () => {
                         </div>
                       )}
                       <div
-                        className={`${styles.messageWrapper} ${
-                          isSentByUser ? styles.sent : styles.received
-                        }`}
+                        className={`${styles.messageWrapper} ${isSentByUser ? styles.sent : styles.received
+                          }`}
                       >
                         <div className={styles.messageContent}>
                           <div className={styles.messageText}>
                             {message.content}
+
+                            {message.linked_content?.length > 0 && (
+                              <div className={styles.linkedContent}>
+                                {message.linked_content.map((link) => (
+                                  <div key={link.id} className={styles.linkItem}>
+                                    {link.type === 'video' ? (
+                                      <a
+                                        href={link.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className={styles.videoLink}
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          // If you have a video player route, use that
+                                          navigate(`/video_display/stream/${link.content_id}`);
+                                        }}
+                                      >
+                                        📹 View Attached Video: {link.title}
+                                      </a>
+                                    ) : link.type === 'profile' ? (
+                                      <a
+                                        href={link.url}
+                                        className={styles.profileLink}
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          // This should match your frontend route for developer profiles
+                                          navigate(`/profile/developers/${link.content_id}/public`);
+                                        }}
+                                      >
+                                        👤 View Developer Profile
+                                      </a>
+                                    ) : null}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+
+
+
                           </div>
                         </div>
                       </div>
@@ -461,9 +499,8 @@ const ConversationDetail = () => {
         {/* Sidebar */}
 
         <div
-          className={`${styles.sidebar} ${
-            isSidebarVisible ? styles.mobileVisible : ''
-          }`}
+          className={`${styles.sidebar} ${isSidebarVisible ? styles.mobileVisible : ''
+            }`}
         >
           <div className={styles.sidebarHeader}>
             <button
@@ -513,9 +550,8 @@ const ConversationDetail = () => {
             ].map((participant) => (
               <div
                 key={participant.id}
-                className={`${styles.participant} ${
-                  participant.id === user.id ? styles.currentUser : ''
-                }`}
+                className={`${styles.participant} ${participant.id === user.id ? styles.currentUser : ''
+                  }`}
               >
                 <User size={16} />
                 <span>{participant.name}</span>
