@@ -236,10 +236,10 @@ button {
 
 
 /* Add this temporarily at the bottom of your global.css */
-[style*="background"] {
+/* [style*="background"] {
   outline: 3px solid red !important;
 }
 
 *[class*="module_"] {
   outline: 1px solid blue;
-}
+} */

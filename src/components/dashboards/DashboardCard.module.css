@@ -1,6 +1,6 @@
 /* DashboardCard.module.css */
 .card {
-  background: #ebebeb;
+  background-color: var(--color-background-main);
   border-radius: 8px;
   padding: 1.5rem;
   display: flex;

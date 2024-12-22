@@ -2,7 +2,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: var(--spacing-md);
-  background-color: #ebebeb;
+  background-color: var(--color-background-main);
 }
 
 .title {
@@ -69,11 +69,11 @@
   .container {
     padding: var(--spacing-sm);
   }
-  
+
   .tabs {
     gap: var(--spacing-sm);
   }
-  
+
   .tabButton {
     padding: var(--spacing-sm);
   }

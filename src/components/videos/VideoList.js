@@ -113,10 +113,10 @@ const VideoList = () => {
         prevVideos.map((video) =>
           video.id === videoId
             ? {
-                ...video,
-                likes: currentlyLiked ? video.likes - 1 : video.likes + 1,
-                liked_by_user: !currentlyLiked,
-              }
+              ...video,
+              likes: currentlyLiked ? video.likes - 1 : video.likes + 1,
+              liked_by_user: !currentlyLiked,
+            }
             : video
         )
       );
@@ -137,10 +137,10 @@ const VideoList = () => {
         prevVideos.map((video) =>
           video.id === videoId
             ? {
-                ...video,
-                likes: currentlyLiked ? video.likes + 1 : video.likes - 1,
-                liked_by_user: currentlyLiked,
-              }
+              ...video,
+              likes: currentlyLiked ? video.likes + 1 : video.likes - 1,
+              liked_by_user: currentlyLiked,
+            }
             : video
         )
       );
@@ -260,7 +260,7 @@ const VideoList = () => {
                   }}
                 >
                   <MessageSquare size={16} className={styles.icon} />
-                  <span>Send Request</span>
+                  <span>Give Business</span>
                 </button>
               )}
 
@@ -269,9 +269,8 @@ const VideoList = () => {
                   <p>
                     {expandedDescriptions.has(video.id)
                       ? video.description
-                      : `${video.description.substring(0, 100)}${
-                          video.description.length > 100 ? '...' : ''
-                        }`}
+                      : `${video.description.substring(0, 100)}${video.description.length > 100 ? '...' : ''
+                      }`}
                   </p>
                   {video.description.length > 100 && (
                     <button
@@ -293,9 +292,8 @@ const VideoList = () => {
                 <span>{formatDate(video.upload_date)}</span>
                 <div className={styles.likeContainer}>
                   <button
-                    className={`${styles.likeButton} ${
-                      video.liked_by_user ? styles.liked : ''
-                    }`}
+                    className={`${styles.likeButton} ${video.liked_by_user ? styles.liked : ''
+                      }`}
                     onClick={(e) => {
                       e.stopPropagation();
                       handleVote(video.id, video.liked_by_user);
@@ -346,9 +344,8 @@ const VideoList = () => {
                 <span>{formatDate(selectedVideo.upload_date)}</span>
                 <div className={styles.likeContainer}>
                   <button
-                    className={`${styles.likeButton} ${
-                      selectedVideo.liked_by_user ? styles.liked : ''
-                    }`}
+                    className={`${styles.likeButton} ${selectedVideo.liked_by_user ? styles.liked : ''
+                      }`}
                     onClick={() =>
                       handleVote(selectedVideo.id, selectedVideo.liked_by_user)
                     }

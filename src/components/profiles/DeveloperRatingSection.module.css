@@ -1,17 +1,20 @@
 .container {
   width: 100%;
   padding: 8px 0;
-  min-height: 40px; /* Ensure minimum height */
+  min-height: 40px;
+  background-color: #fff;
 }
 
 .loading {
   text-align: center;
   padding: 1rem;
-  color: #6c757d;
+  color: #6b7280;
+  font-size: 0.875rem;
 }
 
 .error {
-  color: #dc3545;
+  color: #dc2626;
+  font-size: 0.875rem;
   padding: 1rem;
   text-align: center;
   background-color: #f8d7da;
@@ -27,40 +30,23 @@
 
 .noRatings {
   text-align: center;
-  padding: 8px;
-  background-color: #f3f4f6;
-  border-radius: 6px;
-  margin: 8px 0;
-}
-.totalRatings {
   color: #6c757d;
-  font-size: 0.9rem;
+  padding: 8px;
+  margin: 8px 0;
+  background-color: #fff;
+}
+
+.totalRatings {
+  color: #6b7280;
+  font-size: 0.875rem;
   margin: 0;
 }
 
-.noRatings {
-  text-align: center;
-  color: #6c757d;
-}
 .ratePrompt {
   color: #2563eb;
   font-weight: 500;
   cursor: pointer;
   margin-top: 4px;
-}
-.totalRatings {
-  color: #6b7280;
-  font-size: 0.875rem;
-}
-
-.error {
-  color: #dc2626;
-  font-size: 0.875rem;
-}
-
-.loading {
-  color: #6b7280;
-  font-size: 0.875rem;
 }
 
 .ratingDetails {

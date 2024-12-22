@@ -129,8 +129,8 @@ function AppContent() {
                   <Route path="/logout" element={<Logout />} />
                   <Route path="/opportunities" element={<PublicRequests />} />
                   <Route path="/videos" element={<VideoList />} />
-                  <Route path="/profile/developer/:id" element={<PublicDevelopers />} />
-                  <Route path="/profile/developer/:id" element={<DeveloperProfileView />} />
+                  <Route path="/video_display/stream/:video_id" element={<VideoList />} />
+                  <Route path="/profile/developers/:id/public" element={<DeveloperProfileView />} />
                   <Route path="/creators" element={<PublicDevelopers />} />
                   <Route
                     path="/subscription/success"

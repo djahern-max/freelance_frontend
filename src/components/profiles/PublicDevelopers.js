@@ -189,7 +189,7 @@ const PublicDevelopers = () => {
 
                 <p className={styles.bio}>
                   {expandedBioId === developer.id ||
-                  developer.bio.length <= TRUNCATE_LENGTH
+                    developer.bio.length <= TRUNCATE_LENGTH
                     ? developer.bio
                     : `${developer.bio.slice(0, TRUNCATE_LENGTH)}...`}
                   {developer.bio.length > TRUNCATE_LENGTH && (
@@ -222,7 +222,7 @@ const PublicDevelopers = () => {
                       className={styles.contactButton}
                     >
                       <MessageSquare size={16} />
-                      <span>Send Request</span>
+                      <span>Give Business</span>
                     </button>
                   )}
                   {user?.user_type === 'client' && (

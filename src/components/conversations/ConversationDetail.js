@@ -430,19 +430,18 @@ const ConversationDetail = () => {
                           <div className={styles.messageText}>
                             {message.content}
 
+                            // Inside ConversationDetail.js, update the linked content section
+
                             {message.linked_content?.length > 0 && (
                               <div className={styles.linkedContent}>
                                 {message.linked_content.map((link) => (
                                   <div key={link.id} className={styles.linkItem}>
                                     {link.type === 'video' ? (
                                       <a
-                                        href={link.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
+                                        href="#"
                                         className={styles.videoLink}
                                         onClick={(e) => {
                                           e.preventDefault();
-                                          // If you have a video player route, use that
                                           navigate(`/video_display/stream/${link.content_id}`);
                                         }}
                                       >
@@ -450,11 +449,10 @@ const ConversationDetail = () => {
                                       </a>
                                     ) : link.type === 'profile' ? (
                                       <a
-                                        href={link.url}
+                                        href="#"
                                         className={styles.profileLink}
                                         onClick={(e) => {
                                           e.preventDefault();
-                                          // This should match your frontend route for developer profiles
                                           navigate(`/profile/developers/${link.content_id}/public`);
                                         }}
                                       >
