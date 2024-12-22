@@ -11,20 +11,22 @@
   margin-bottom: var(--spacing-md);
 }
 
-container{
-  background-color: #ebebeb;
+.container {
+  background-color: var(--color-background-main);
 }
 
 .inputWrapper {
   position: relative;
   flex: 1;
-  max-width: 300px; /* Set a max-width for better UI */
+  max-width: 300px;
+  /* Set a max-width for better UI */
 }
 
 .shareInput {
   width: 100%;
   padding: var(--spacing-sm) var(--spacing-md);
-  padding-left: var(--spacing-xl); /* Make room for @ symbol */
+  padding-left: var(--spacing-xl);
+  /* Make room for @ symbol */
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   font-size: var(--font-size-base);
@@ -95,11 +97,11 @@ container{
   border-radius: 50%;
 }
 
-.toggleInput:checked + .slider {
+.toggleInput:checked+.slider {
   background-color: var(--color-primary);
 }
 
-.toggleInput:checked + .slider:before {
+.toggleInput:checked+.slider:before {
   transform: translateX(20px);
 }
 

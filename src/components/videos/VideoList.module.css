@@ -3,7 +3,7 @@
   margin: 0 auto;
   padding: 2rem;
   min-height: 100vh;
-  background-color: #ebebeb;
+  background-color: var(--color-background-main);
 }
 
 .headerContainer {
@@ -39,7 +39,8 @@
 
 .uploadVideoButton:hover {
   background-color: #1d4ed8;
-  transform: scale(1.05); /* Slight zoom on hover */
+  transform: scale(1.05);
+  /* Slight zoom on hover */
 }
 
 .uploadVideoButton span {
@@ -70,22 +71,28 @@
   position: relative;
   width: 100%;
   height: 200px;
-  background: #f3f4f6; /* Changed from #000 to a lighter color */
+  background: #f3f4f6;
+  /* Changed from #000 to a lighter color */
   cursor: pointer;
   overflow: hidden;
-  border-radius: 8px 8px 0 0; /* Added to match card styling */
+  border-radius: 8px 8px 0 0;
+  /* Added to match card styling */
 }
 
 .thumbnailContainer:hover .thumbnail {
-  transform: scale(1.05); /* Slight zoom on hover */
+  transform: scale(1.05);
+  /* Slight zoom on hover */
 }
 
 .thumbnail {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Changed from contain to cover */
-  transition: transform 0.3s ease; /* Added smooth zoom effect on hover */
+  object-fit: cover;
+  /* Changed from contain to cover */
+  transition: transform 0.3s ease;
+  /* Added smooth zoom effect on hover */
 }
+
 .thumbnailPlaceholder {
   width: 100%;
   height: 100%;
@@ -115,12 +122,15 @@
 .thumbnailContainer:hover .playButton {
   opacity: 1;
 }
+
 .contentContainer {
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;  /* Add consistent spacing between elements */
+  gap: 0.5rem;
+  /* Add consistent spacing between elements */
 }
+
 .videoTitle {
   font-size: 1.25rem;
   font-weight: 600;
@@ -133,8 +143,10 @@
   font-size: 0.875rem;
   line-height: 1.5;
   margin-bottom: 1rem;
-  overflow: hidden; /* Ensure overflow hidden only for truncated content */
-  transition: max-height 0.3s ease; /* Smooth transition for toggling content */
+  overflow: hidden;
+  /* Ensure overflow hidden only for truncated content */
+  transition: max-height 0.3s ease;
+  /* Smooth transition for toggling content */
 }
 
 .description p {
@@ -142,27 +154,35 @@
 }
 
 .description.expanded {
-  overflow: visible; /* Show full content when expanded */
-  -webkit-line-clamp: unset; /* Disable truncation */
+  overflow: visible;
+  /* Show full content when expanded */
+  -webkit-line-clamp: unset;
+  /* Disable truncation */
   max-height: none;
 }
 
 .metadata {
   display: flex;
-  justify-content: space-between; /* Ensures spacing between date and like button */
-  align-items: center; /* Aligns items vertically */
+  justify-content: space-between;
+  /* Ensures spacing between date and like button */
+  align-items: center;
+  /* Aligns items vertically */
   margin-top: auto;
   padding-top: 1rem;
   border-top: 1px solid #e0e0e0;
-  font-size: 0.875rem; /* Adjust font size if needed */
-  color: #666; /* Match with the rest of the design */
+  font-size: 0.875rem;
+  /* Adjust font size if needed */
+  color: #666;
+  /* Match with the rest of the design */
 }
+
 .metaItem {
   /* Remove any existing space/gap */
   display: flex;
   align-items: center;
   color: #666;
 }
+
 .icon {
   color: #666;
 }
@@ -208,9 +228,12 @@
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  max-width: 400px; /* Restricts the width */
-  margin: 0 auto; /* Centers the card horizontally */
+  max-width: 400px;
+  /* Restricts the width */
+  margin: 0 auto;
+  /* Centers the card horizontally */
 }
+
 .emptyIcon {
   color: #9ca3af;
 }
@@ -272,12 +295,14 @@
 .modalVideo {
   width: 100%;
   aspect-ratio: 16/9;
-  display: block; /* Prevent any spacing issues */
+  display: block;
+  /* Prevent any spacing issues */
 }
 
 .modalInfo {
   padding: 1.5rem;
 }
+
 .closeButton {
   position: absolute;
   top: 1rem;
@@ -293,7 +318,8 @@
   color: white;
   cursor: pointer;
   transition: background-color 0.2s ease;
-  z-index: 1002; /* Ensure it's above the video */
+  z-index: 1002;
+  /* Ensure it's above the video */
   padding: 0;
 }
 
@@ -315,7 +341,8 @@
 .likeContainer {
   display: flex;
   align-items: center;
-  gap: 8px; /* Adds spacing between the like icon and number */
+  gap: 8px;
+  /* Adds spacing between the like icon and number */
 }
 
 .likeButton {
@@ -324,17 +351,20 @@
   gap: 6px;
   padding: 6px 12px;
   border: 1px solid #e0e0e0;
-  border-radius: 20px; /* Rounded corners */
+  border-radius: 20px;
+  /* Rounded corners */
   background: white;
   cursor: pointer;
   transition: all 0.2s ease;
   color: #666;
 }
+
 .likeButton:hover {
   background: #f5f5f5;
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
+
 .likeButton.liked {
   background: #e3f2fd;
   border-color: #2196f3;
@@ -379,7 +409,8 @@
 
 .likeButton,
 .requestButton {
-  height: 36px;  /* Set consistent height */
+  height: 36px;
+  /* Set consistent height */
   display: flex;
   align-items: center;
   gap: 6px;
@@ -396,10 +427,13 @@
   background-color: #f5f5f5;
   border: 1px solid #e0e0e0;
   color: #333;
-  border-radius: 4px;  /* Make it square instead of rounded */
+  border-radius: 4px;
+  /* Make it square instead of rounded */
   padding: 8px 16px;
-  margin: 12px 0;  /* Add margin for spacing */
-  width: 100%;  /* Make it full width */
+  margin: 12px 0;
+  /* Add margin for spacing */
+  width: 100%;
+  /* Make it full width */
   height: 40px;
   display: flex;
   align-items: center;
@@ -412,11 +446,12 @@
 .requestButton:hover {
   background-color: #e8e8e8;
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .requestButton .icon {
-  color: #333;  /* Make icon black to match text */
+  color: #333;
+  /* Make icon black to match text */
 }
 
 /* Add button loading state */
@@ -451,6 +486,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -463,7 +499,8 @@
 
   .headerContainer {
     display: flex;
-    justify-content: flex-end; /* Aligns button to the right */
+    justify-content: flex-end;
+    /* Aligns button to the right */
     padding: 1rem 0;
   }
 

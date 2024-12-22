@@ -1,6 +1,6 @@
 /* DeveloperProfile.module.css and ClientProfile.module.css */
-container{
-  background-color: #ebebeb;
+container {
+  background-color: var(--color-background-main);
 }
 
 .profileContainer {
@@ -194,7 +194,8 @@ container{
 .checkboxLabel {
   display: flex;
   align-items: center;
-  gap: 8px; /* Adjust the spacing as needed */
+  gap: 8px;
+  /* Adjust the spacing as needed */
 }
 
 .imageUploadPrompt {
@@ -242,6 +243,7 @@ container{
     transform: translateY(-10px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -252,7 +254,7 @@ container{
   .card {
     padding: var(--spacing-md);
   }
-  
+
   .grid {
     grid-template-columns: 1fr;
   }

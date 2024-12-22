@@ -1,5 +1,5 @@
-container{
-  background-color: #ebebeb;
+.container {
+  background-color: var(--color-background-main);
 }
 
 .navigation {

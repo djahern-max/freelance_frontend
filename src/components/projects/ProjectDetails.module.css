@@ -2,7 +2,7 @@
 .container {
   min-height: 100vh;
   background-color: var(--color-background);
-  background-color: #ebebeb;
+  background-color: var(--color-background-main);
 }
 
 .content {
@@ -15,21 +15,31 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
-  color: var(--color-text-primary); /* Change to a more prominent color */
-  background: var(--color-background-accent); /* Add a subtle background color */
-  border: 2px solid var(--color-border-primary); /* Add a border for emphasis */
+  color: var(--color-text-primary);
+  /* Change to a more prominent color */
+  background: var(--color-background-accent);
+  /* Add a subtle background color */
+  border: 2px solid var(--color-border-primary);
+  /* Add a border for emphasis */
   cursor: pointer;
-  padding: calc(var(--spacing-sm) + 2px); /* Slightly increase padding */
+  padding: calc(var(--spacing-sm) + 2px);
+  /* Slightly increase padding */
   margin-bottom: var(--spacing-lg);
-  border-radius: var(--radius-md); /* Increase the border radius slightly */
-  font-weight: bold; /* Make the text bold */
-  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth hover effects */
+  border-radius: var(--radius-md);
+  /* Increase the border radius slightly */
+  font-weight: bold;
+  /* Make the text bold */
+  transition: background-color 0.3s ease, color 0.3s ease;
+  /* Smooth hover effects */
 }
 
 .backButton:hover {
-  background: var(--color-background-hover); /* Highlight the background on hover */
-  color: var(--color-text-hover); /* Change text color on hover */
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Add a subtle shadow on hover */
+  background: var(--color-background-hover);
+  /* Highlight the background on hover */
+  color: var(--color-text-hover);
+  /* Change text color on hover */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  /* Add a subtle shadow on hover */
 }
 
 .projectHeader {
@@ -88,7 +98,7 @@
   outline-offset: 2px;
 }
 
-.conversationCard, 
+.conversationCard,
 .agreementCard {
   /* existing styles... */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
@@ -126,6 +136,7 @@
   color: var(--color-text-secondary);
   margin-bottom: var(--spacing-xs);
 }
+
 .statInfo p {
   font-size: var(--font-size-xl);
   font-weight: 600;
@@ -134,11 +145,14 @@
 
 /* Style for the "No data available yet" text */
 .statInfo p:not([data-numeric="true"]) {
-  font-size: 0.75rem; /* Very small text */
-  color: #1e40af; /* Dark blue */
+  font-size: 0.75rem;
+  /* Very small text */
+  color: #1e40af;
+  /* Dark blue */
   font-style: italic;
   font-weight: normal;
-  margin-top: 4px; /* Add a little spacing */
+  margin-top: 4px;
+  /* Add a little spacing */
 }
 
 

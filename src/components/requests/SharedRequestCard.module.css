@@ -1,6 +1,5 @@
-
 .container {
-  background-color: #ebebeb;
+  background-color: var(--color-background-main);
 }
 
 .card {

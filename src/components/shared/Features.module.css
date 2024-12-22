@@ -1,6 +1,7 @@
 .footer {
   background-color: #f8f8f8;
-  padding: 10px 20px; /* Reduced padding */
+  padding: 10px 20px;
+  /* Reduced padding */
   width: 100%;
   border-top: 1px solid #f8f8f8;
   position: fixed;
@@ -8,7 +9,8 @@
   left: 0;
   display: flex;
   justify-content: center;
-  height: 50px; /* Reduced height */
+  height: 50px;
+  /* Reduced height */
   box-sizing: border-box;
 }
 
@@ -19,7 +21,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px; /* Reduced spacing between items */
+  gap: 4px;
+  /* Reduced spacing between items */
 }
 
 .footerContent p {
@@ -37,7 +40,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 12px; /* Reduced padding */
+  padding: 6px 12px;
+  /* Reduced padding */
   background-color: #0066ff;
   color: white;
   border: none;
@@ -58,9 +62,11 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  gap: 16px; /* Reduced from var(--spacing-lg) */
-  background-color: #ebebeb;
+  gap: 16px;
+  /* Reduced from var(--spacing-lg) */
+  background-color: var(--color-background-main);
 }
+
 .introSection {
   text-align: center;
   margin-bottom: var(--spacing-xl);
@@ -81,7 +87,8 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: var(--spacing-md);
-  margin-bottom: 16px; /* Reduced from var(--spacing-md) */
+  margin-bottom: 16px;
+  /* Reduced from var(--spacing-md) */
 }
 
 .card {
@@ -115,9 +122,11 @@
 
 .title {
   font-size: var(--font-size-lg);
-  margin-bottom: var(--spacing-xs); /* Reduced spacing below title */
+  margin-bottom: var(--spacing-xs);
+  /* Reduced spacing below title */
   color: var(--color-text-primary);
 }
+
 .description {
   color: var(--color-text-secondary);
   font-size: var(--font-size-base);
@@ -128,11 +137,13 @@
   text-align: center;
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
-  margin-top: 16px; /* Reduced from var(--spacing-xl) */
+  margin-top: 16px;
+  /* Reduced from var(--spacing-xl) */
 }
 
 .landing-container {
-  min-height: calc(100vh - 50px); /* Accounts for footer height */
+  min-height: calc(100vh - 50px);
+  /* Accounts for footer height */
   display: flex;
   flex-direction: column;
   padding-bottom: 0;
@@ -152,10 +163,12 @@
 @media screen and (max-width: 599px) {
   .featureCards {
     grid-template-columns: 1fr;
-    margin-bottom: var(--spacing-sm); /* Further reduce margin for smaller screens */
+    margin-bottom: var(--spacing-sm);
+    /* Further reduce margin for smaller screens */
   }
 
   .footer {
-    height: 50px; /* Ensure footer height consistency */
+    height: 50px;
+    /* Ensure footer height consistency */
   }
 }

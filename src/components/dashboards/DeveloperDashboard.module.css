@@ -1,8 +1,6 @@
-
-
 .dashboardContainer {
   min-height: 100vh;
-  background-color: #ebebeb; /* Match ClientDashboard background */
+  background-color: var(--color-background-main);
 }
 
 .content {
@@ -22,32 +20,42 @@
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  padding: 0.4rem 0.8rem; /* Reduced padding for a skinnier button */
-  background-color: var(--color-primary); /* Primary color for background */
-  color: var(--color-background); /* White text */
-  border: 1px solid var(--color-border); /* Use global border color */
-  border-radius: 0.4rem; /* Slightly smaller radius for a compact look */
+  padding: 0.4rem 0.8rem;
+  /* Reduced padding for a skinnier button */
+  background-color: var(--color-primary);
+  /* Primary color for background */
+  color: var(--color-background);
+  /* White text */
+  border: 1px solid var(--color-border);
+  /* Use global border color */
+  border-radius: 0.4rem;
+  /* Slightly smaller radius for a compact look */
   cursor: pointer;
   font-size: 0.85rem;
   font-weight: 500;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* Subtle shadow for depth */
   transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 .headerCreateButton:hover {
-  background-color: var(--color-primary-dark); /* Darker shade on hover */
+  background-color: var(--color-primary-dark);
+  /* Darker shade on hover */
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
 }
 
 .headerCreateButton:active {
   background-color: var(--color-primary-dark);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Slightly subdued shadow */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  /* Slightly subdued shadow */
 }
 
 .buttonIcon {
-  width: 0.9rem; /* Adjusted icon size to fit better with smaller button */
+  width: 0.9rem;
+  /* Adjusted icon size to fit better with smaller button */
   height: 0.9rem;
-  color: var(--color-background); /* Match icon color with text */
+  color: var(--color-background);
+  /* Match icon color with text */
 }
 
 
@@ -81,9 +89,11 @@
   0% {
     content: ".";
   }
+
   33% {
     content: "..";
   }
+
   66% {
     content: "...";
   }
@@ -125,10 +135,13 @@
   align-items: center;
   gap: 1rem;
   padding: 1.5rem;
-  background-color: #ffffff; /* Match card background */
+  background-color: #ffffff;
+  /* Match card background */
   border-radius: 0.5rem;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px; /* Subtle shadow for depth */
-  border: 1px solid #e5e7eb; /* Light border */
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+  /* Subtle shadow for depth */
+  border: 1px solid #e5e7eb;
+  /* Light border */
   transition: transform 0.2s, box-shadow 0.2s;
   cursor: pointer;
 }
@@ -174,14 +187,16 @@
   margin: 0;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #6b7280; /* Light gray for subtext */
+  color: #6b7280;
+  /* Light gray for subtext */
 }
 
 .statInfo p {
   margin: 0;
   font-size: 1.5rem;
   font-weight: 600;
-  color: #1f2937; /* Darker text for emphasis */
+  color: #1f2937;
+  /* Darker text for emphasis */
 }
 
 .expandedSection {
@@ -203,10 +218,13 @@
 /* Actions Grid */
 .actionsGrid {
   display: grid;
-  grid-template-columns: 1fr; /* Change to single column for mobile */
+  grid-template-columns: 1fr;
+  /* Change to single column for mobile */
   gap: var(--spacing-md);
-  margin: var(--spacing-lg) 0; /* Add vertical margin */
-  padding: 0 var(--spacing-sm); /* Add horizontal padding */
+  margin: var(--spacing-lg) 0;
+  /* Add vertical margin */
+  padding: 0 var(--spacing-sm);
+  /* Add horizontal padding */
 }
 
 .actionButton {
@@ -223,8 +241,10 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
-  margin: var(--spacing-xs) 0; /* Add vertical margin */
-  height: 48px; /* Set consistent height */
+  margin: var(--spacing-xs) 0;
+  /* Add vertical margin */
+  height: 48px;
+  /* Set consistent height */
 }
 
 .actionButton:hover {
@@ -272,6 +292,7 @@
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
+
 /* Make sure buttons don't inherit the hover effect */
 .requestCard:hover .button {
   transform: none;
@@ -341,7 +362,8 @@
   align-items: center;
   justify-content: center;
   gap: var(--spacing-sm);
-  margin-top: 1rem; /* Add this line to create space above the button */
+  margin-top: 1rem;
+  /* Add this line to create space above the button */
 }
 
 .viewButton:hover {
@@ -384,7 +406,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: calc(100vh - 60px); /* Adjust based on your header height */
+  min-height: calc(100vh - 60px);
+  /* Adjust based on your header height */
 }
 
 /* Add these to your existing DeveloperDashboard.module.css */
@@ -486,6 +509,7 @@
   background-color: var(--color-primary);
   color: white;
 }
+
 .button:hover {
   background-color: var(--color-primary-dark);
 }
@@ -494,7 +518,8 @@
   background-color: #fecaca;
 }
 
-.startChatButton {  /* For the Start Conversation button */
+.startChatButton {
+  /* For the Start Conversation button */
   background-color: #f3f4f6;
   color: #374151;
 }
@@ -514,11 +539,13 @@
 }
 
 /* Animation for expanding/collapsing sections */
-.sharedRequests, .recentActivity{
+.sharedRequests,
+.recentActivity {
   animation: slideDown 0.3s ease-out;
 }
 
-.conversations, .projects {
+.conversations,
+.projects {
   width: 100%;
   box-sizing: border-box;
 }
@@ -528,6 +555,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -593,7 +621,8 @@
 .projectTitle {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md); /* Increased spacing between icon and title */
+  gap: var(--spacing-md);
+  /* Increased spacing between icon and title */
   font-weight: 500;
   font-size: var(--font-size-lg);
   color: var(--color-text-primary);
@@ -620,13 +649,15 @@
 .projectDetails {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md); /* Increased spacing between items */
+  gap: var(--spacing-md);
+  /* Increased spacing between items */
 }
 
 .detailItem {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md); /* Increased spacing between icon and text */
+  gap: var(--spacing-md);
+  /* Increased spacing between icon and text */
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
 }
@@ -656,6 +687,7 @@
   color: #6b7280;
   font-size: 0.875rem;
 }
+
 .timeInfo {
   color: #6b7280;
   font-size: 0.875rem;
@@ -757,7 +789,8 @@
   font-size: var(--font-size-sm);
 }
 
-.conversations, .projects {
+.conversations,
+.projects {
   background: white;
   border-radius: var(--radius-lg);
   padding: var(--spacing-lg);
@@ -766,13 +799,14 @@
   margin-bottom: var(--spacing-lg);
 }
 
-.conversations h2, .projects h2 {
+.conversations h2,
+.projects h2 {
   font-size: var(--font-size-lg);
   color: var(--color-text-primary);
   margin-bottom: var(--spacing-lg);
 }
 
-.conversationsList{
+.conversationsList {
   display: grid;
   gap: var(--spacing-md);
 }
@@ -824,7 +858,9 @@
   padding: 1rem;
 }
 
-.requestTitle, .agreementStatus, .requestDate {
+.requestTitle,
+.agreementStatus,
+.requestDate {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -841,6 +877,7 @@
   color: #4b5563;
   font-size: 0.875rem;
 }
+
 .iconUser,
 .iconMessage,
 .iconTime {
@@ -857,6 +894,7 @@
   background-color: #ecfdf5;
   color: #059669;
 }
+
 .agreementStatus {
   display: inline-flex;
   align-items: center;
@@ -880,6 +918,7 @@
     opacity: 0;
     transform: translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -945,6 +984,7 @@
   gap: 1rem;
   flex-wrap: wrap;
 }
+
 .clientInfo,
 .budgetInfo {
   display: flex;
@@ -1042,6 +1082,7 @@
 
 /* Tablet and smaller screens */
 @media (max-width: 768px) {
+
   /* Layout & Container styles */
   .tutorialHint {
     margin: var(--spacing-md) var(--spacing-sm);
@@ -1052,6 +1093,7 @@
   .projectBadge {
     display: none;
   }
+
   .content {
     padding: 1rem;
   }
@@ -1061,7 +1103,8 @@
   }
 
   .dashboardHeader {
-    display: none; /* This hides the button on mobile */
+    display: none;
+    /* This hides the button on mobile */
   }
 
   .dashboardTitle {
@@ -1114,7 +1157,7 @@
     opacity: 0;
     transition: opacity 0.2s ease;
   }
-  
+
   .statCard:hover .clickHint {
     opacity: 1;
   }
@@ -1154,6 +1197,7 @@
     width: 100%;
     margin-top: var(--spacing-lg);
   }
+
   .cardContent {
     display: flex;
     flex-direction: column;
@@ -1193,13 +1237,14 @@
   .button {
     width: 100%;
   }
-  
-  
+
+
   .requestMeta {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
   }
+
   .cardContent {
     padding: 1rem;
     gap: 0.75rem;
@@ -1237,6 +1282,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1282,6 +1328,7 @@
 
 /* Mobile phones and smaller screens */
 @media (max-width: 480px) {
+
   /* Text Sizes */
   .dashboardTitle {
     font-size: var(--font-size-lg);

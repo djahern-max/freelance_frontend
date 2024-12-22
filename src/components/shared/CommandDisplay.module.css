@@ -11,8 +11,8 @@
   margin-bottom: 16px;
 }
 
-container{
-  background-color: #ebebeb;
+.container {
+  background-color: var(--color-background-main);
 }
 
 .noteContent {
@@ -21,7 +21,8 @@ container{
   word-break: break-word;
   font-family: monospace;
   color: #333;
-  padding-right: 32px; /* Make space for the copy button */
+  padding-right: 32px;
+  /* Make space for the copy button */
 }
 
 .copyButton {

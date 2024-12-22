@@ -1,5 +1,3 @@
-@import "./variables.module.css";
-
 /* Reset and base styles */
 * {
   margin: 0;
@@ -12,7 +10,7 @@ html {
   background-color: var(--color-background-main);
 }
 
-body, 
+body,
 #root,
 .app-wrapper {
   min-height: 100vh;
@@ -33,7 +31,8 @@ body {
 #root {
   display: flex;
   flex-direction: column;
-  padding-bottom: 80px; /* height of footer plus padding */
+  padding-bottom: 80px;
+  /* height of footer plus padding */
 }
 
 /* Main container styles */
@@ -58,7 +57,12 @@ a:hover {
 }
 
 /* Typography */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: var(--color-text-primary);
   font-weight: 600;
   line-height: 1.2;
@@ -66,7 +70,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Reset lists */
-ul, ol {
+ul,
+ol {
   list-style: none;
 }
 
@@ -162,19 +167,23 @@ button {
 }
 
 .custom-toast-success {
-  border-left: 4px solid #10B981 !important; /* Green */
+  border-left: 4px solid #10B981 !important;
+  /* Green */
 }
 
 .custom-toast-error {
-  border-left: 4px solid #EF4444 !important; /* Red */
+  border-left: 4px solid #EF4444 !important;
+  /* Red */
 }
 
 .custom-toast-warning {
-  border-left: 4px solid #F59E0B !important; /* Yellow */
+  border-left: 4px solid #F59E0B !important;
+  /* Yellow */
 }
 
 .custom-toast-info {
-  border-left: 4px solid #3B82F6 !important; /* Blue */
+  border-left: 4px solid #3B82F6 !important;
+  /* Blue */
 }
 
 /* Toast content styles */
@@ -200,12 +209,13 @@ button {
 .Toastify__progress-bar {
   background: linear-gradient(to right, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2)) !important;
 }
+
 /* Media queries */
 @media (max-width: 768px) {
   .container {
     padding: 0 0.5rem;
   }
-  
+
   .app-content {
     margin-top: 50px;
     min-height: calc(100vh - 120px);
@@ -222,4 +232,14 @@ button {
   .min-h-screen {
     min-height: -webkit-fill-available;
   }
+}
+
+
+/* Add this temporarily at the bottom of your global.css */
+[style*="background"] {
+  outline: 3px solid red !important;
+}
+
+*[class*="module_"] {
+  outline: 1px solid blue;
 }

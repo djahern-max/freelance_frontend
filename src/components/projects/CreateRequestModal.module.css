@@ -11,8 +11,8 @@
   z-index: 1000;
 }
 
-container{
-  background-color: #ebebeb;
+.container {
+  background-color: var(--color-background-main);
 }
 
 .modal {
@@ -25,7 +25,8 @@ container{
 }
 
 .header {
-  margin-bottom: var(--spacing-xl); /* Increased spacing after header */
+  margin-bottom: var(--spacing-xl);
+  /* Increased spacing after header */
 }
 
 .title {
@@ -35,12 +36,14 @@ container{
 }
 
 .formGroup {
-  margin-bottom: var(--spacing-lg); /* Increased spacing between form groups */
+  margin-bottom: var(--spacing-lg);
+  /* Increased spacing between form groups */
 }
 
 .label {
   display: block;
-  margin-bottom: var(--spacing-sm); /* Added spacing below labels */
+  margin-bottom: var(--spacing-sm);
+  /* Added spacing below labels */
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
   font-weight: 500;
@@ -89,7 +92,8 @@ textarea.input {
 
 .buttonContainer {
   display: flex;
-  justify-content: center; /* Changed from flex-end to center */
+  justify-content: center;
+  /* Changed from flex-end to center */
   gap: var(--spacing-md);
   margin-top: var(--spacing-xl);
 }
@@ -161,12 +165,14 @@ textarea.input {
 
   .buttonContainer {
     flex-direction: column;
-    align-items: center; /* Added to ensure buttons stay centered when stacked */
+    align-items: center;
+    /* Added to ensure buttons stay centered when stacked */
   }
-  
+
   .submitButton,
   .cancelButton {
     width: 100%;
-    max-width: 200px; /* Maintain max-width even on mobile */
+    max-width: 200px;
+    /* Maintain max-width even on mobile */
   }
 }

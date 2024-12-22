@@ -1,7 +1,7 @@
 /* Container Layout */
 .dashboardContainer {
   min-height: 100vh;
-  background-color: #ebebeb;
+  background-color: var(--color-background-main);
 }
 
 .content {
@@ -28,7 +28,8 @@
 }
 
 .groupingMessage {
-  color: #0047AB;  /* Dark blue color */
+  color: #0047AB;
+  /* Dark blue color */
   font-size: 14px;
   font-weight: normal;
 }
@@ -38,32 +39,42 @@
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  padding: 0.4rem 0.8rem; /* Reduced padding for a skinnier button */
-  background-color: var(--color-primary); /* Primary color for background */
-  color: var(--color-background); /* White text */
-  border: 1px solid var(--color-border); /* Use global border color */
-  border-radius: 0.4rem; /* Slightly smaller radius for a compact look */
+  padding: 0.4rem 0.8rem;
+  /* Reduced padding for a skinnier button */
+  background-color: var(--color-primary);
+  /* Primary color for background */
+  color: var(--color-background);
+  /* White text */
+  border: 1px solid var(--color-border);
+  /* Use global border color */
+  border-radius: 0.4rem;
+  /* Slightly smaller radius for a compact look */
   cursor: pointer;
   font-size: 0.85rem;
   font-weight: 500;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* Subtle shadow for depth */
   transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 .headerCreateButton:hover {
-  background-color: var(--color-primary-dark); /* Darker shade on hover */
+  background-color: var(--color-primary-dark);
+  /* Darker shade on hover */
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
 }
 
 .headerCreateButton:active {
   background-color: var(--color-primary-dark);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Slightly subdued shadow */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  /* Slightly subdued shadow */
 }
 
 .buttonIcon {
-  width: 0.9rem; /* Adjusted icon size to fit better with smaller button */
+  width: 0.9rem;
+  /* Adjusted icon size to fit better with smaller button */
   height: 0.9rem;
-  color: var(--color-background); /* Match icon color with text */
+  color: var(--color-background);
+  /* Match icon color with text */
 }
 
 /* Stats Grid */
@@ -276,11 +287,13 @@
   background-color: #ecfdf5;
   color: #059669;
 }
+
 .itemDescription {
   color: #4a5568;
   margin: 12px 0;
   line-height: 1.5;
 }
+
 .itemDate {
   margin: 0;
   color: #999;
@@ -412,11 +425,13 @@
 }
 
 .groupingInstructions {
-  color: #0047AB; /* Dark blue color */
+  color: #0047AB;
+  /* Dark blue color */
   font-size: 14px;
   margin: 0.5rem 0 1.5rem 0;
   font-weight: normal;
-  padding-left: 2rem; /* Aligns with the content */
+  padding-left: 2rem;
+  /* Aligns with the content */
 }
 
 /* Animations */
@@ -425,6 +440,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -441,7 +457,8 @@
 
 .cardContent {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr; /* Three equal columns */
+  grid-template-columns: 1fr 1fr 1fr;
+  /* Three equal columns */
   align-items: center;
   width: 100%;
   gap: 2rem;
@@ -459,6 +476,7 @@
   gap: 0.75rem;
   padding: 0.5rem 0;
 }
+
 .cardSection:first-child {
   justify-content: flex-start;
 }
@@ -473,15 +491,18 @@
 
 /* Status-specific styles */
 .statusAccepted {
-  color: #10b981; /* Green color for accepted */
+  color: #10b981;
+  /* Green color for accepted */
 }
 
 .statusNegotiating {
-  color: #3b82f6; /* Blue color for negotiating */
+  color: #3b82f6;
+  /* Blue color for negotiating */
 }
 
 .statusDefault {
-  color: #6b7280; /* Gray for other statuses */
+  color: #6b7280;
+  /* Gray for other statuses */
 }
 
 /* Conversation Card */
@@ -516,7 +537,8 @@
   justify-content: flex-end;
 }
 
-.userSection, .messageSection {
+.userSection,
+.messageSection {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -549,6 +571,7 @@
   color: #4b5563;
   font-size: 0.875rem;
 }
+
 .messageCount {
   color: #6b7280;
   font-size: 0.875rem;
@@ -557,6 +580,7 @@
 .lastMessage {
   color: #666;
 }
+
 .timeInfo {
   color: #6b7280;
   font-size: 0.875rem;
@@ -575,7 +599,8 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
-  color: #007bff; /* Blue for status */
+  color: #007bff;
+  /* Blue for status */
   margin: 0.5rem 0;
 }
 
@@ -608,6 +633,7 @@
 .messageIcon {
   color: #666;
 }
+
 .cardIconFile {
   width: 1.25rem;
   height: 1.25rem;
@@ -706,11 +732,13 @@
   .statCard.active::after {
     transform: translateY(-50%) rotate(-135deg);
   }
+
   .cardContent {
     display: flex;
     flex-direction: column;
     gap: 1rem;
   }
+
   .cardMainInfo {
     display: flex;
     align-items: center;

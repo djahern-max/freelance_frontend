@@ -288,7 +288,7 @@ function App() {
   return (
     <Provider store={store}>
       <Router>
-        <div className="app-wrapper">
+        <div className="app-wrapper" style={{ backgroundColor: 'var(--color-background-main)' }}>
           <AppContent />
         </div>
       </Router>

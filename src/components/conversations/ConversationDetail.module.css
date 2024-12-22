@@ -39,7 +39,7 @@
   width: 100%;
   height: calc(100vh - 16px);
   /* Added 16px of bottom space */
-  background-color: #ebebeb;
+  background-color: var(--color-background-main);
   display: flex;
   flex-direction: column;
   overflow: hidden;

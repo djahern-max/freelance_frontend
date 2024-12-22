@@ -1,0 +1,12 @@
+/* src/styles/themes.css */
+:root {
+    --color-primary: #2563eb;
+    --color-primary-dark: #1d4ed8;
+    --color-secondary: #f3f4f6;
+    --color-accent: #f97316;
+    --color-text-primary: #111827;
+    --color-text-secondary: #6b7280;
+    --color-background-main: red;
+    --color-background: #ffffff;
+    /* ... rest of your variables ... */
+}

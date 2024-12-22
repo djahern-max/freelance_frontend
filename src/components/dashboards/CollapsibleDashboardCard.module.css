@@ -1,5 +1,5 @@
-.container{
-  background-color: #ebebeb;;
+.container {
+  background-color: var(--color-background-main);
 }
 
 .statCardContainer {
@@ -56,7 +56,8 @@
 }
 
 .expandedSection {
-  grid-column: 1 / -1; /* Make it span full width */
+  grid-column: 1 / -1;
+  /* Make it span full width */
   background: white;
   border-radius: var(--radius-lg);
   padding: var(--spacing-lg);
@@ -79,6 +80,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

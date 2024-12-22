@@ -2,17 +2,20 @@
 
 .mainContainer {
   min-height: 100vh;
-  background-color: #ebebeb;
+  background-color: var(--color-background-main);
   width: 100%;
   padding-bottom: 2rem;
 }
+
 .mainContent {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
-  padding-top: 80px; /* Add padding for the fixed header */
+  padding-top: 80px;
+  /* Add padding for the fixed header */
   width: 100%;
 }
+
 .headerContainer {
   display: flex;
   justify-content: space-between;
@@ -150,8 +153,10 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 1.5rem;  /* Add space between title and budget */
-  margin-bottom: 0.5rem;  /* Add some space below the header */
+  gap: 1.5rem;
+  /* Add space between title and budget */
+  margin-bottom: 0.5rem;
+  /* Add some space below the header */
 }
 
 .requestTitle {
@@ -159,7 +164,8 @@
   color: #1a1a1a;
   margin: 0;
   flex: 1;
-  line-height: 1.4;  /* Improve readability */
+  line-height: 1.4;
+  /* Improve readability */
 }
 
 .budget {
@@ -171,18 +177,24 @@
 }
 
 .budget {
-  font-size: 1.125rem;  /* Slightly larger font for visibility */
-  color: #2563eb;  /* Blue color for emphasis */
+  font-size: 1.125rem;
+  /* Slightly larger font for visibility */
+  color: #2563eb;
+  /* Blue color for emphasis */
   font-weight: 600;
-  white-space: nowrap;  /* Prevent price from wrapping */
-  padding-left: 0.5rem;  /* Add some space from the title */
+  white-space: nowrap;
+  /* Prevent price from wrapping */
+  padding-left: 0.5rem;
+  /* Add some space from the title */
 }
 
 .metaInfo {
   display: flex;
   align-items: center;
-  gap: 1.5rem; /* Adds spacing between items */
-  margin-top: 1rem; /* Adds space from the content above */
+  gap: 1.5rem;
+  /* Adds spacing between items */
+  margin-top: 1rem;
+  /* Adds space from the content above */
 }
 
 .metaItem {
@@ -338,7 +350,8 @@
   border-radius: 0.5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 100;
-  color: #22c55e; /* Green color */
+  color: #22c55e;
+  /* Green color */
   font-weight: 500;
 }
 
@@ -346,28 +359,37 @@
   animation: spin 1s linear infinite;
   width: 1rem;
   height: 1rem;
-  color: #22c55e; /* Green color for the spinner too */
+  color: #22c55e;
+  /* Green color for the spinner too */
 }
 
 .statusBadge {
-  display: inline-block; /* Prevent it from taking up full width */
-  max-width: fit-content; /* Ensure it only spans the necessary width */
-  padding: 0.3rem 1rem; /* Adjust padding for spacing */
-  border-radius: 20px; /* Keep rounded corners */
+  display: inline-block;
+  /* Prevent it from taking up full width */
+  max-width: fit-content;
+  /* Ensure it only spans the necessary width */
+  padding: 0.3rem 1rem;
+  /* Adjust padding for spacing */
+  border-radius: 20px;
+  /* Keep rounded corners */
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   color: white;
-  background-color: #6b7280; /* Default gray */
-  margin-top: 0.5rem; /* Add slight spacing from other elements */
+  background-color: #6b7280;
+  /* Default gray */
+  margin-top: 0.5rem;
+  /* Add slight spacing from other elements */
 }
 
 .statusBadge.open {
-  background-color: #10b981; /* Green for Open */
+  background-color: #10b981;
+  /* Green for Open */
 }
 
 .statusBadge.in_progress {
-  background-color: #f59e0b; /* Amber for In Progress */
+  background-color: #f59e0b;
+  /* Amber for In Progress */
 }
 
 .statusBadge.completed {
@@ -375,7 +397,8 @@
 }
 
 .statusBadge.cancelled {
-  background-color: #ef4444; /* Red for Cancelled */
+  background-color: #ef4444;
+  /* Red for Cancelled */
 }
 
 .cardActionsWrapper {
@@ -394,6 +417,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }

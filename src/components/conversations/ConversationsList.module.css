@@ -2,9 +2,11 @@
 
 .container {
   min-height: 100vh;
-  background-color: #ebebeb;
-  padding-top: 60px; /* Adjust based on your header's height */
+  background-color: var(--color-background-main);
+  padding-top: 60px;
+  /* Adjust based on your header's height */
 }
+
 .mainContent {
   max-width: 1200px;
   margin: 0 auto;

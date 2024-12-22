@@ -3,8 +3,8 @@
   margin-bottom: 1.5rem;
 }
 
-container{
-  background-color: #ebebeb;
+.container {
+  background-color: var(--color-background-main);
 }
 
 .tooltip {

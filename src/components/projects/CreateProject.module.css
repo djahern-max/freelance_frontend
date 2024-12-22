@@ -6,8 +6,9 @@
   align-items: center;
   background-color: var(--color-background);
   padding: var(--spacing-md);
-  padding-top: calc(60px + var(--spacing-md)); /* Account for header height */
-  background-color: #ebebeb;
+  padding-top: calc(60px + var(--spacing-md));
+  /* Account for header height */
+  background-color: var(--color-background-main);
 }
 
 
@@ -181,7 +182,8 @@ textarea.input {
 
 /* And update the submit button to ensure proper spacing */
 .submitButton {
-  background-color: #2563eb; /* Your blue color */
+  background-color: #2563eb;
+  /* Your blue color */
   color: white;
   padding: var(--spacing-sm);
   border: none;
@@ -191,13 +193,15 @@ textarea.input {
   cursor: pointer;
   transition: background-color 0.2s ease;
   width: 100%;
-  margin-bottom: var(--spacing-xs); /* Add space between buttons */
+  margin-bottom: var(--spacing-xs);
+  /* Add space between buttons */
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }

@@ -4,7 +4,7 @@
   justify-content: center;
   min-height: calc(100vh - 60px);
   padding: 2rem;
-  background-color: #ebebeb;
+  background-color: var(--color-background-main);
 }
 
 .uploadContainer {
@@ -229,6 +229,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }

@@ -1,134 +1,135 @@
 /* DevelopersEmptyState.module.css */
-container{
-  background-color: #ebebeb;;
+.container {
+  background-color: var(--color-background-main);
 }
+
 .wrapper {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.container {
+  max-width: 32rem;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.iconWrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.icon {
+  color: #2563eb;
+  opacity: 0.75;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1a1a1a;
+  margin: 0 0 1rem 0;
+}
+
+.description {
+  color: #6b7280;
+  font-size: 1rem;
+  line-height: 1.5;
+  margin: 0 0 1.5rem 0;
+}
+
+.actionWrapper {
+  margin: 1.5rem 0;
+}
+
+.primaryButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.primaryButton:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.primaryButton:active {
+  transform: translateY(0);
+}
+
+.footer {
+  color: #6b7280;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 1rem 0 0 0;
+  max-width: 24rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.alert {
+  background-color: #fee2e2;
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  padding: 1rem;
+  color: #991b1b;
+  max-width: 32rem;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.alertContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.retryButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #fff;
+  color: #991b1b;
+  border: 1px solid #991b1b;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.retryButton:hover {
+  background: #fff5f5;
+}
+
+.retryButton svg {
+  transition: transform 0.2s;
+}
+
+.retryButton:hover svg {
+  transform: rotate(180deg);
+}
+
+@media (max-width: 640px) {
   .container {
-    max-width: 32rem;
-    margin: 2rem auto;
-    padding: 2rem;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    text-align: center;
+    margin: 1rem;
+    padding: 1.5rem;
   }
-  
-  .iconWrapper {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 1.5rem;
-  }
-  
-  .icon {
-    color: #2563eb;
-    opacity: 0.75;
-  }
-  
-  .title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #1a1a1a;
-    margin: 0 0 1rem 0;
-  }
-  
-  .description {
-    color: #6b7280;
-    font-size: 1rem;
-    line-height: 1.5;
-    margin: 0 0 1.5rem 0;
-  }
-  
-  .actionWrapper {
-    margin: 1.5rem 0;
-  }
-  
-  .primaryButton {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: #2563eb;
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 6px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  
-  .primaryButton:hover {
-    background: #1d4ed8;
-    transform: translateY(-1px);
-  }
-  
-  .primaryButton:active {
-    transform: translateY(0);
-  }
-  
-  .footer {
-    color: #6b7280;
-    font-size: 0.875rem;
-    line-height: 1.5;
-    margin: 1rem 0 0 0;
-    max-width: 24rem;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  
-  .alert {
-    background-color: #fee2e2;
-    border: 1px solid #fca5a5;
-    border-radius: 8px;
-    padding: 1rem;
-    color: #991b1b;
-    max-width: 32rem;
-    margin: 0 auto;
-    width: 100%;
-  }
-  
-  .alertContent {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-  }
-  
-  .retryButton {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: #fff;
-    color: #991b1b;
-    border: 1px solid #991b1b;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-  }
-  
-  .retryButton:hover {
-    background: #fff5f5;
-  }
-  
-  .retryButton svg {
-    transition: transform 0.2s;
-  }
-  
-  .retryButton:hover svg {
-    transform: rotate(180deg);
-  }
-  
-  @media (max-width: 640px) {
-    .container {
-      margin: 1rem;
-      padding: 1.5rem;
-    }
-  }
+}

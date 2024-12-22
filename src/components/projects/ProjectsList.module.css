@@ -1,6 +1,6 @@
 .container {
   min-height: calc(100vh - 60px);
-  background-color: #ebebeb;
+  background-color: var(--color-background-main);
   width: 100%;
 
 }
@@ -133,12 +133,12 @@
     gap: var(--spacing-md);
     align-items: flex-start;
   }
-  
+
   .projectCard {
     flex-direction: column;
     gap: var(--spacing-md);
   }
-  
+
   .viewButton {
     width: 100%;
     justify-content: center;

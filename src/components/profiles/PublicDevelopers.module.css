@@ -1,275 +1,286 @@
 /* PublicDevelopers.module.css */
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem 1rem;
-    background-color: #ebebeb;;
-  }
-  
-  .title {
-    font-size: 2rem;
-    font-weight: bold;
-    margin-bottom: 2rem;
-    color: #333;
-  }
-  
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  background-color: var(--color-background-main);
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: visible;
+  /* Allow content to overflow */
+  height: auto;
+  /* Make height dynamic */
+  padding-bottom: 2rem;
+  /* Add space for longer content */
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.cardContent {
+  padding: 1.5rem;
+}
+
+.profileHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.profileImage {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profileImagePlaceholder {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #666;
+}
+
+.profileInfo {
+  margin-left: 1rem;
+}
+
+.username {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.25rem;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  color: #666;
+}
+
+.rating .icon {
+  color: #fbbf24;
+  margin-right: 0.25rem;
+}
+
+.stats {
+  margin-bottom: 1rem;
+}
+
+.statItem {
+  display: flex;
+  align-items: center;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.statItem .icon {
+  margin-right: 0.5rem;
+}
+
+.bio {
+  max-height: none;
+  /* Remove height restriction */
+  overflow: visible;
+  /* Show full content */
+  line-height: 1.8;
+  /* Adjust line spacing */
+}
+
+.skillsSection {
+  margin-bottom: 1.5rem;
+  /* Increase bottom spacing */
+  padding-top: 1rem;
+  /* Add space above the section */
+}
+
+.skillsTitle {
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  /* Adjust spacing below the title */
+  color: #333;
+  padding-left: 0.5rem;
+  /* Add some left padding */
+}
+
+.skillsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.skillTag {
+  background-color: #e1effe;
+  color: #1e40af;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+}
+
+.contactButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: #2563eb;
+  color: white;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.contactButton:hover {
+  background-color: #1d4ed8;
+}
+
+.loadingContainer,
+.errorContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+}
+
+.loadingText {
+  font-size: 1.125rem;
+  color: #666;
+}
+
+.errorMessage {
+  color: #dc2626;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 3rem 0;
+  color: #666;
+  font-size: 1.125rem;
+}
+
+
+.readMoreButton {
+  display: inline-block;
+  color: #2563eb;
+  background: white;
+  padding: 0 4px;
+  cursor: pointer;
+  border: none;
+  font-weight: 500;
+  margin-left: 4px;
+  position: relative;
+}
+
+.readMoreButton:hover {
+  text-decoration: underline;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+  outline: none;
+  /* Accessibility */
+}
+
+.modal:focus {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.modal {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 600px;
+  position: relative;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modalContent {
+  margin-top: 1rem;
+}
+
+.modalContent h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.modalContent p {
+  color: #4b5563;
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+
+.closeButton {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #666;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.closeButton:hover {
+  background: #f3f4f6;
+  color: #333;
+}
+
+@media (max-width: 768px) {
   .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-  }
-  
-  .card {
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    overflow: visible; /* Allow content to overflow */
-    height: auto; /* Make height dynamic */
-    padding-bottom: 2rem; /* Add space for longer content */
-  }
-  
-  .card:hover {
-    transform: translateY(-4px);
-  }
-  
-  .cardContent {
-    padding: 1.5rem;
-  }
-  
-  .profileHeader {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
-  }
-  
-  .profileImage {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    object-fit: cover;
-  }
-  
-  .profileImagePlaceholder {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background-color: #e5e7eb;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    color: #666;
-  }
-  
-  .profileInfo {
-    margin-left: 1rem;
-  }
-  
-  .username {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 0.25rem;
-  }
-  
-  .rating {
-    display: flex;
-    align-items: center;
-    color: #666;
-  }
-  
-  .rating .icon {
-    color: #fbbf24;
-    margin-right: 0.25rem;
-  }
-  
-  .stats {
-    margin-bottom: 1rem;
-  }
-  
-  .statItem {
-    display: flex;
-    align-items: center;
-    color: #666;
-    margin-bottom: 0.5rem;
-  }
-  
-  .statItem .icon {
-    margin-right: 0.5rem;
-  }
-  
-  .bio {
-    max-height: none; /* Remove height restriction */
-    overflow: visible; /* Show full content */
-    line-height: 1.8; /* Adjust line spacing */
-  }
-  
-  .skillsSection {
-    margin-bottom: 1.5rem; /* Increase bottom spacing */
-    padding-top: 1rem; /* Add space above the section */
-  }
-  
-  .skillsTitle {
-    font-weight: 600;
-    margin-bottom: 0.75rem; /* Adjust spacing below the title */
-    color: #333;
-    padding-left: 0.5rem; /* Add some left padding */
-  }
-  
-  .skillsList {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  
-  .skillTag {
-    background-color: #e1effe;
-    color: #1e40af;
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.875rem;
-  }
-  
-  .contactButton {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    background-color: #2563eb;
-    color: white;
-    padding: 0.75rem;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-  
-  .contactButton:hover {
-    background-color: #1d4ed8;
-  }
-  
-  .loadingContainer,
-  .errorContainer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 50vh;
-  }
-  
-  .loadingText {
-    font-size: 1.125rem;
-    color: #666;
-  }
-  
-  .errorMessage {
-    color: #dc2626;
-  }
-  
-  .emptyState {
-    text-align: center;
-    padding: 3rem 0;
-    color: #666;
-    font-size: 1.125rem;
+    grid-template-columns: 1fr;
   }
 
-  
-  .readMoreButton {
-    display: inline-block;
-    color: #2563eb;
-    background: white;
-    padding: 0 4px;
-    cursor: pointer;
-    border: none;
-    font-weight: 500;
-    margin-left: 4px;
-    position: relative;
-  }
-  
-  .readMoreButton:hover {
-    text-decoration: underline;
-  }
-  
-  .modalOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+  .container {
     padding: 1rem;
-    outline: none; /* Accessibility */
   }
-  
-  .modal:focus {
-    outline: 2px solid #2563eb;
-    outline-offset: 2px;
-  }
-  
-  .modal {
-    background: white;
-    border-radius: 12px;
-    padding: 2rem;
-    width: 100%;
-    max-width: 600px;
-    position: relative;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .modalContent {
-    margin-top: 1rem;
-  }
-  
-  .modalContent h3 {
+
+  .title {
     font-size: 1.5rem;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
   }
-  
-  .modalContent p {
-    color: #4b5563;
-    line-height: 1.8;
-    white-space: pre-wrap;
-  }
-  
-  .closeButton {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: #666;
-    cursor: pointer;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-  }
-  
-  .closeButton:hover {
-    background: #f3f4f6;
-    color: #333;
-  }
-  
-  @media (max-width: 768px) {
-    .grid {
-      grid-template-columns: 1fr;
-    }
-    
-    .container {
-      padding: 1rem;
-    }
-    
-    .title {
-      font-size: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-  }
+}
