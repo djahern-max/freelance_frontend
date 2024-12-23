@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { clearAuthData } from './authCleanup';
 
+
 if (process.env.NODE_ENV === 'development') {
   const originalConsoleError = console.error;
   console.error = (...args) => {
@@ -501,6 +502,8 @@ api.conversations = {
 
 
 
+
+
   async getDetail(id) {
     try {
       const response = await api.get(API_ROUTES.CONVERSATIONS.DETAIL(id));
@@ -544,6 +547,73 @@ api.conversations = {
       throw new Error(api.helpers.handleError(error));
     }
   },
+};
+
+
+// In api.js
+api.marketplace = {
+  async createProduct(productData) {
+    try {
+      const response = await api.post('/marketplace/products', productData);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating product:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async listProducts(params = {}) {
+    try {
+      const response = await api.get('/marketplace/products', { params });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async getProduct(id) {
+    try {
+      const response = await api.get(`/marketplace/products/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching product:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async updateProduct(id, productData) {
+    try {
+      const response = await api.put(`/marketplace/products/${id}`, productData);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating product:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async uploadProductFiles(productId, files) {
+    try {
+      const formData = new FormData();
+      files.forEach(file => {
+        formData.append('files', file);
+      });
+
+      const response = await api.post(
+        `/marketplace/products/files/${productId}?file_type=executable`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error uploading product files:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
+  }
 };
 
 

@@ -6,7 +6,7 @@ import {
   Search,
   UserCircle,
   UsersRound,
-  ShoppingCart,
+
   Video,
 } from 'lucide-react';
 import { useState } from 'react';
@@ -79,14 +79,8 @@ const Header = () => {
         icon: UsersRound,
         title: 'Creators',
         requiresAuth: false,
-      },
-      // Add the marketplace page
-      {
-        path: () => userType === 'developer' ? '/marketplace/upload' : '/marketplace',
-        icon: ShoppingCart,  // Just like your other Lucide icons
-        title: 'Marketplace',
-        requiresAuth: false,
       }
+
     ];
 
     return pages;

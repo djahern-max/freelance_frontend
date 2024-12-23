@@ -17,6 +17,8 @@ import SubscriptionDialog from '../payments/SubscriptionDialog';
 import Header from '../shared/Header';
 import DashboardSections from './DashboardSections';
 import styles from './DeveloperDashboard.module.css';
+import ListProductButton from '../marketplace/product/ListProductButton';
+
 
 // RequestCard component remains the same
 const RequestCard = ({ request, navigate }) => {
@@ -73,9 +75,8 @@ const SharedRequestCard = ({ request, onStartConversation, onView }) => {
 
   return (
     <div
-      className={`${styles.requestCard} ${
-        request.is_new ? styles.newRequest : ''
-      }`}
+      className={`${styles.requestCard} ${request.is_new ? styles.newRequest : ''
+        }`}
       onClick={handleCardClick}
       style={{ cursor: 'pointer' }}
     >
@@ -190,8 +191,8 @@ const ConversationCard = ({ conversation, navigate, user }) => {
             Last message:{' '}
             {formatTimeSince(
               conversation?.last_activity ||
-                conversation?.updated_at ||
-                conversation?.created_at
+              conversation?.updated_at ||
+              conversation?.created_at
             )}
           </span>
         </div>
@@ -615,13 +616,16 @@ const DeveloperDashboard = () => {
       <Header />
       <div className={styles.content}>
         <div className={styles.dashboardHeader}>
-          <button
-            onClick={() => navigate('/opportunities')}
-            className={styles.headerCreateButton}
-          >
-            <Plus size={24} className={styles.buttonIcon} />
-            Explore Open Tickets
-          </button>
+          <div className={styles.headerButtons}>
+            <button
+              onClick={() => navigate('/opportunities')}
+              className={styles.headerCreateButton}
+            >
+              <Plus size={24} className={styles.buttonIcon} />
+              Explore Open Tickets
+            </button>
+            <ListProductButton />
+          </div>
         </div>
 
         {!hasSeenTutorial && (

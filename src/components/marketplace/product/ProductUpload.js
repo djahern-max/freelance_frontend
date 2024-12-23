@@ -1,63 +1,58 @@
-// src/components/marketplace/product/ProductUpload.js
-import { useState } from 'react';
-import Alert from '../../shared/Alert';
-import Button from '../../shared/Button';
+// ProductUpload.js
+import React, { useState } from 'react';
+import { Upload } from 'lucide-react';
+import { uploadProductFiles } from '../../../utils/marketplaceService';
 import styles from './ProductUpload.module.css';
 
-const ProductUpload = ({ productId }) => {
+const ProductUpload = ({ productId, onUploadComplete }) => {
     const [files, setFiles] = useState([]);
     const [uploading, setUploading] = useState(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState('');
+    const [progress, setProgress] = useState(0);
+
+    const validateFiles = (selectedFiles) => {
+        const maxSize = 100 * 1024 * 1024; // 100MB
+        const allowedTypes = ['.exe', '.msi', '.zip'];
+
+        for (const file of selectedFiles) {
+            if (file.size > maxSize) {
+                throw new Error(`File ${file.name} exceeds 100MB size limit`);
+            }
+
+            const extension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
+            if (!allowedTypes.includes(extension)) {
+                throw new Error(`File ${file.name} has invalid type. Only .exe, .msi, and .zip allowed`);
+            }
+        }
+    };
 
     const handleFileChange = (e) => {
         const selectedFiles = Array.from(e.target.files);
-
-        // Validate file types
-        const validFiles = selectedFiles.filter(file =>
-            file.name.endsWith('.exe') || file.name.endsWith('.msi')
-        );
-
-        if (validFiles.length !== selectedFiles.length) {
-            setError('Only .exe and .msi files are allowed');
-            return;
+        try {
+            validateFiles(selectedFiles);
+            setFiles(selectedFiles);
+            setError('');
+        } catch (err) {
+            setError(err.message);
+            e.target.value = null;
         }
-
-        // Validate file sizes (100MB limit)
-        const maxSize = 100 * 1024 * 1024; // 100MB in bytes
-        const oversizedFiles = validFiles.filter(file => file.size > maxSize);
-
-        if (oversizedFiles.length > 0) {
-            setError('Files must be under 100MB');
-            return;
-        }
-
-        setFiles(validFiles);
-        setError(null);
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setUploading(true);
-        setError(null);
+    const handleUpload = async () => {
+        if (!files.length) {
+            setError('Please select files to upload');
+            return;
+        }
 
-        const formData = new FormData();
-        files.forEach(file => {
-            formData.append('files', file);
-        });
-        formData.append('file_type', 'executable');
+        setUploading(true);
+        setError('');
+        setProgress(0);
 
         try {
-            const response = await fetch(`/api/marketplace/products/files/${productId}`, {
-                method: 'POST',
-                body: formData,
-            });
-
-            if (!response.ok) {
-                throw new Error('Upload failed');
-            }
-
-            // Handle success
+            await uploadProductFiles(productId, files, 'executable');
+            onUploadComplete?.();
             setFiles([]);
+            setProgress(100);
         } catch (err) {
             setError(err.message);
         } finally {
@@ -66,47 +61,49 @@ const ProductUpload = ({ productId }) => {
     };
 
     return (
-        <div className={styles.container}>
-            <h2 className={styles.title}>Upload Product Files</h2>
+        <div className={styles.uploadContainer}>
+            <div
+                className={styles.uploadBox}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                    e.preventDefault();
+                    handleFileChange({ target: { files: e.dataTransfer.files } });
+                }}
+            >
+                <Upload className={styles.uploadIcon} />
+                <input
+                    type="file"
+                    onChange={handleFileChange}
+                    accept=".exe,.msi,.zip"
+                    multiple
+                    className={styles.fileInput}
+                    disabled={uploading}
+                />
+                <p className={styles.uploadText}>
+                    {files.length > 0
+                        ? `Selected: ${files.map(f => f.name).join(', ')}`
+                        : 'Drag & drop files or click to browse\nWindows: .exe, .msi\nMac: zipped application (.zip)'}
+                </p>
+            </div>
 
-            {error && (
-                <Alert message={error} type="error" />
+            {error && <div className={styles.error}>{error}</div>}
+
+            {uploading && progress > 0 && (
+                <div className={styles.progressBar}>
+                    <div
+                        className={styles.progressFill}
+                        style={{ width: `${progress}%` }}
+                    />
+                </div>
             )}
 
-            <form onSubmit={handleSubmit} className={styles.form}>
-                <div className={styles.dropZone}>
-                    <input
-                        type="file"
-                        multiple
-                        accept=".exe,.msi"
-                        onChange={handleFileChange}
-                        className={styles.fileInput}
-                    />
-                    <p className={styles.helpText}>
-                        Drag and drop your executable files here or click to browse.
-                        Maximum file size: 100MB
-                    </p>
-                </div>
-
-                {files.length > 0 && (
-                    <div className={styles.fileList}>
-                        <h3 className={styles.fileListTitle}>Selected Files:</h3>
-                        <ul className={styles.fileListItems}>
-                            {files.map((file, index) => (
-                                <li key={index} className={styles.fileItem}>
-                                    {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
-
-                <Button
-                    label={uploading ? 'Uploading...' : 'Upload Files'}
-                    disabled={files.length === 0 || uploading}
-                    className={styles.submitButton}
-                />
-            </form>
+            <button
+                onClick={handleUpload}
+                disabled={uploading || !files.length}
+                className={styles.uploadButton}
+            >
+                {uploading ? 'Uploading...' : 'Upload Files'}
+            </button>
         </div>
     );
 };
