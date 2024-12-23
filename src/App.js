@@ -35,6 +35,9 @@ import Header from './components/shared/Header';
 import VideoList from './components/videos/VideoList';
 import VideoUpload from './components/videos/VideoUpload';
 import DeveloperProfileView from './components/profiles/DeveloperProfileView';
+import ProductList from './components/marketplace/product/ProductList';
+import ProductDetail from './components/marketplace/product/ProductDetail';
+import ProductUpload from './components/marketplace/product/ProductUpload';
 import { login } from './redux/authSlice';
 import { store } from './redux/store';
 import './styles/global.css';
@@ -139,6 +142,39 @@ function AppContent() {
                   <Route
                     path="/subscription/success"
                     element={<SubscriptionSuccess />}
+                  />
+                  {/* Marketplace routes */}
+                  <Route
+                    path="/marketplace"
+                    element={
+                      <ProtectedRoute>
+                        <ProductList />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/marketplace/products/:productId"
+                    element={
+                      <ProtectedRoute>
+                        <ProductDetail />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/marketplace/upload"
+                    element={
+                      <ProtectedRoute userType="developer">
+                        <ProductUpload />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/marketplace/purchase/success"
+                    element={
+                      <ProtectedRoute>
+                        <SubscriptionSuccess />
+                      </ProtectedRoute>
+                    }
                   />
                   <Route
                     path="/agreements/request/:requestId"

@@ -45,8 +45,15 @@
   color: var(--color-primary);
 }
 
+/* Add to your Header.module.css */
 .iconImage {
   transition: all 0.2s ease;
+  width: 24px;
+  height: 24px;
+}
+
+.icon:hover .iconImage {
+  transform: scale(1.1);
 }
 
 .icon.active {
@@ -163,6 +170,11 @@
     height: 40px;
   }
 
+  .iconImage {
+    width: 20px;
+    height: 20px;
+  }
+
   .leftSection {
     gap: var(--spacing-md);
   }
@@ -193,6 +205,11 @@
 
   .notificationContainer {
     margin: 0 4px;
+  }
+
+  .iconImage {
+    width: 18px;
+    height: 18px;
   }
 }
 

@@ -6,6 +6,7 @@ import {
   Search,
   UserCircle,
   UsersRound,
+  ShoppingCart,
   Video,
 } from 'lucide-react';
 import { useState } from 'react';
@@ -79,18 +80,26 @@ const Header = () => {
         title: 'Creators',
         requiresAuth: false,
       },
+      // Add the marketplace page
+      {
+        path: () => userType === 'developer' ? '/marketplace/upload' : '/marketplace',
+        icon: ShoppingCart,  // Just like your other Lucide icons
+        title: 'Marketplace',
+        requiresAuth: false,
+      }
     ];
 
     return pages;
   };
 
+  // Update the handleNavigation function to handle function paths
   const handleNavigation = (path) => {
-    const page = getPages().find((p) => p.path === path);
+    const page = getPages().find((p) => p.path === path || (typeof path === 'function' && p.path === path));
     if (page?.requiresAuth && !isAuthenticated) {
-      navigate('/login', { state: { from: path } });
+      navigate('/login', { state: { from: typeof path === 'function' ? path() : path } });
       return;
     }
-    navigate(path);
+    navigate(typeof path === 'function' ? path() : path);
   };
 
   const navigationItems = getPages().filter((page) => {
@@ -120,17 +129,17 @@ const Header = () => {
     },
     ...(isAuthenticated
       ? [
-          {
-            icon: UserCircle,
-            title: 'Profile',
-            onClick: () => navigate('/profile'),
-          },
-          {
-            icon: LogOut,
-            title: 'Logout',
-            onClick: handleLogout,
-          },
-        ]
+        {
+          icon: UserCircle,
+          title: 'Profile',
+          onClick: () => navigate('/profile'),
+        },
+        {
+          icon: LogOut,
+          title: 'Logout',
+          onClick: handleLogout,
+        },
+      ]
       : []),
   ];
 
