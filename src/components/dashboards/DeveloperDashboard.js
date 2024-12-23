@@ -617,6 +617,7 @@ const DeveloperDashboard = () => {
       <div className={styles.content}>
         <div className={styles.dashboardHeader}>
           <div className={styles.headerButtons}>
+            <ListProductButton />
             <button
               onClick={() => navigate('/opportunities')}
               className={styles.headerCreateButton}
@@ -624,7 +625,6 @@ const DeveloperDashboard = () => {
               <Plus size={24} className={styles.buttonIcon} />
               Explore Open Tickets
             </button>
-            <ListProductButton />
           </div>
         </div>
 
