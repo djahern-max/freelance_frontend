@@ -6,6 +6,7 @@ import {
   Search,
   UserCircle,
   UsersRound,
+  Bot,
 
   Video,
 } from 'lucide-react';
@@ -69,9 +70,9 @@ const Header = () => {
         requiresAuth: false,
       },
       {
-        path: '/videos',
-        icon: Video,
-        title: 'Videos',
+        path: '/marketplace/products',
+        icon: Bot,
+        title: 'Marketplace',
         requiresAuth: false,
       },
       {
@@ -79,7 +80,13 @@ const Header = () => {
         icon: UsersRound,
         title: 'Creators',
         requiresAuth: false,
-      }
+      },
+      {
+        path: '/videos',
+        icon: Video,
+        title: 'Videos',
+        requiresAuth: false,
+      },
 
     ];
 

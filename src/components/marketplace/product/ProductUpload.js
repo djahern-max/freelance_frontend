@@ -1,14 +1,14 @@
-// ProductUpload.js
 import React, { useState } from 'react';
 import { Upload } from 'lucide-react';
 import { uploadProductFiles } from '../../../utils/marketplaceService';
 import styles from './ProductUpload.module.css';
 
-const ProductUpload = ({ productId, onUploadComplete }) => {
+const ProductUpload = ({ productId, onUploadComplete, status = 'draft' }) => {
     const [files, setFiles] = useState([]);
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState('');
     const [progress, setProgress] = useState(0);
+    const [version, setVersion] = useState('1.0.0');
 
     const validateFiles = (selectedFiles) => {
         const maxSize = 100 * 1024 * 1024; // 100MB
@@ -49,7 +49,11 @@ const ProductUpload = ({ productId, onUploadComplete }) => {
         setProgress(0);
 
         try {
-            await uploadProductFiles(productId, files, 'executable');
+            const formData = new FormData();
+            files.forEach(file => formData.append('files', file));
+            formData.append('version', version);
+
+            await uploadProductFiles(productId, formData, 'executable');
             onUploadComplete?.();
             setFiles([]);
             setProgress(100);
@@ -62,6 +66,23 @@ const ProductUpload = ({ productId, onUploadComplete }) => {
 
     return (
         <div className={styles.uploadContainer}>
+            {status === 'published' && (
+                <div className={styles.versionControl}>
+                    <label htmlFor="version" className={styles.versionLabel}>
+                        Version:
+                        <input
+                            type="text"
+                            id="version"
+                            value={version}
+                            onChange={(e) => setVersion(e.target.value)}
+                            className={styles.versionInput}
+                            pattern="\d+\.\d+\.\d+"
+                            title="Please use semantic versioning (e.g., 1.0.0)"
+                        />
+                    </label>
+                </div>
+            )}
+
             <div
                 className={styles.uploadBox}
                 onDragOver={(e) => e.preventDefault()}

@@ -1,7 +1,8 @@
-import { Search, Users2, Video } from 'lucide-react';
+import { Search, Users2, Video, Bot } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { selectIsAuthenticated } from '../../redux/authSlice';
+import ExecutableDisplay from '../marketplace/product/ProductListing'; // Add this import
 import styles from './Features.module.css';
 
 const Features = () => {
@@ -9,34 +10,38 @@ const Features = () => {
   const navigate = useNavigate();
 
   const features = [
+
     {
       icon: Search,
       title: 'Opportunities',
       path: '/opportunities',
-
       requiresAuth: false,
     },
     {
-      icon: Video,
-      title: 'Videos',
-      path: '/videos',
-
+      icon: Bot,
+      title: 'Automation Tools',
+      path: '/marketplace/products',
       requiresAuth: false,
     },
     {
       icon: Users2,
       title: 'Creators',
       path: '/creators',
-
+      requiresAuth: false,
+    },
+    {
+      icon: Video,
+      title: 'Videos',
+      path: '/videos',
       requiresAuth: false,
     },
   ];
 
   const handleNavigation = (feature) => {
-    // Simply navigate to the path - authentication will be handled at the component level
     navigate(feature.path);
   };
 
+  // Rest of your component remains the same
   return (
     <div className={styles.container}>
       <section className={styles.features}>

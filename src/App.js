@@ -133,8 +133,11 @@ function AppContent() {
                   <Route path="/video_display/stream/:video_id" element={<VideoList />} />
                   <Route path="/profile/developers/:id/public" element={<DeveloperProfileView />} />
                   <Route path="/creators" element={<PublicDevelopers />} />
+                  {/* Marketplace routes */}
                   <Route path="/marketplace" element={<ProductListing />} />
+                  <Route path="/marketplace/products" element={<ProductListing filter="executable" />} />
                   <Route path="/marketplace/products/:productId" element={<ProductPurchase />} />
+
                   <Route
                     path="/subscription/success"
                     element={<SubscriptionSuccess />}

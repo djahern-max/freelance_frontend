@@ -32,6 +32,8 @@
 }
 
 .productCard {
+    background-color: white;
+    /* Added this line */
     border: 1px solid #e5e7eb;
     border-radius: 0.5rem;
     overflow: hidden;
@@ -137,4 +139,39 @@
 
 .viewButton:hover {
     background-color: #1d4ed8;
+}
+
+/* Style for the search input */
+input[type="text"]::placeholder {
+    color: black;
+    background: white;
+    opacity: 1;
+    /* Firefox requires this */
+}
+
+/* Style for the dropdown */
+select {
+    color: black;
+    background: white;
+}
+
+/* Style for the dropdown options */
+select option {
+    color: black;
+    background: white;
+}
+
+/* Style for the search input */
+input[type="text"] {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    padding: 8px 12px;
+    width: 100%;
+}
+
+input[type="text"]::placeholder {
+    color: #6b7280;
+    /* A medium gray color for placeholder */
+    opacity: 1;
 }
