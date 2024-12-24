@@ -260,7 +260,7 @@ const VideoList = () => {
                   }}
                 >
                   <MessageSquare size={16} className={styles.icon} />
-                  <span>Give Business</span>
+                  <span>Send Me a Request</span>
                 </button>
               )}
 

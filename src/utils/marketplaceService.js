@@ -1,6 +1,19 @@
 // src/utils/marketplaceService.js
 import { API_BASE_URL } from './constants';
 
+const handleResponse = async (response) => {
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || 'API request failed');
+    }
+    return response.json();
+};
+
+const getAuthHeaders = () => ({
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${localStorage.getItem('token')}`
+});
+
 export const createProduct = async (productData) => {
     try {
         const response = await fetch(`${API_BASE_URL}/marketplace/products`, {
@@ -74,4 +87,18 @@ export const getProduct = async (productId) => {
     } catch (error) {
         throw new Error(error.message || 'Error fetching product');
     }
+};
+
+export const listProducts = async (filter) => {
+    const params = new URLSearchParams(filter);
+    const response = await fetch(`${API_BASE_URL}/marketplace/products?${params}`);
+    return handleResponse(response);
+};
+
+export const purchaseProduct = async (productId) => {
+    const response = await fetch(`${API_BASE_URL}/marketplace/products/${productId}/purchase`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+    });
+    return handleResponse(response);
 };

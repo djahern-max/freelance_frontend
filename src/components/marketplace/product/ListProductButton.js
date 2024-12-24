@@ -23,13 +23,15 @@ const ListProductButton = () => {
                         className={styles.dialogContent}
                         onClick={e => e.stopPropagation()}
                     >
-                        <button
-                            onClick={() => setIsDialogOpen(false)}
-                            className={styles.exitButton}
-                        >
-                            <X className={styles.exitIcon} />
-                        </button>
-                        <h2 className={styles.dialogTitle}>Create New Product</h2>
+                        <div className={styles.dialogHeader}>
+                            <h2 className={styles.dialogTitle}>Create New Product</h2>
+                            <button
+                                onClick={() => setIsDialogOpen(false)}
+                                className={styles.closeButton}
+                            >
+                                <X className={styles.closeIcon} />
+                            </button>
+                        </div>
                         <CreateProductForm onSuccess={() => setIsDialogOpen(false)} />
                     </div>
                 </div>

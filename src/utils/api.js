@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { clearAuthData } from './authCleanup';
+import * as marketplaceService from './marketplaceService';
 
 
 if (process.env.NODE_ENV === 'development') {

@@ -92,7 +92,7 @@ const DeveloperProfileView = () => {
                             className={styles.sendBusinessButton}
                         >
                             <MessageSquare size={16} />
-                            <span>Give Business</span>
+                            <span>Send Me A Request</span>
                         </button>
                     )}
                 </div>

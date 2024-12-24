@@ -222,7 +222,7 @@ const PublicDevelopers = () => {
                       className={styles.contactButton}
                     >
                       <MessageSquare size={16} />
-                      <span>Give Business</span>
+                      <span>Send Me a Request</span>
                     </button>
                   )}
                   {user?.user_type === 'client' && (

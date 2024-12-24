@@ -1,3 +1,4 @@
+/* ListProductButton.module.css */
 .container {
     display: flex;
     justify-content: flex-end;
@@ -7,12 +8,9 @@
 .listButton {
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 0.5rem;
     background-color: var(--color-primary);
-    /* Facebook's secondary button color */
     color: white;
-    /* Facebook's text color */
     padding: 0.75rem 1.25rem;
     border-radius: 6px;
     border: none;
@@ -22,25 +20,9 @@
     font-weight: 500;
 }
 
-.listButton:hover {
-    background-color: #D8DADF;
-    /* Facebook's secondary button hover state */
-}
-
-.listButton:active {
-    background-color: #CCD0D5;
-    /* Facebook's secondary button active state */
-    transform: none;
-    /* Remove transform as Facebook doesn't use it */
-    box-shadow: none;
-    /* Remove shadow as Facebook doesn't use it */
-}
-
 .icon {
     width: 1.25rem;
     height: 1.25rem;
-    color: white
-        /* Match text color for consistency */
 }
 
 .dialogOverlay {
@@ -49,7 +31,8 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.75);
+    /* Increased opacity from 0.4 to 0.75 */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -58,86 +41,45 @@
 
 .dialogContent {
     background-color: white;
-    padding: 1.5rem;
-    border-radius: 0.5rem;
-    width: 90%;
-    max-width: 32rem;
+    width: 95%;
+    max-width: 800px;
     max-height: 90vh;
     overflow-y: auto;
-    position: relative;
+    border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.exitButton {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0.25rem;
+.dialogHeader {
     display: flex;
     align-items: center;
-    justify-content: center;
-}
-
-.exitIcon {
-    width: 1.25rem;
-    height: 1.25rem;
-    color: var(--text-primary);
-    transition: color 0.2s;
-}
-
-.exitButton:hover .exitIcon {
-    color: var(--error-color);
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
 }
 
 .dialogTitle {
     font-size: 1.25rem;
     font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 1rem;
-    padding-right: 2rem;
+    color: #111827;
 }
 
-.dialogDescription {
-    color: var(--text-secondary);
-    margin-bottom: 1rem;
-}
-
-.checklistCard {
-    background-color: var(--background-secondary);
-    padding: 1rem;
-    border-radius: 0.375rem;
-    margin-bottom: 1rem;
-}
-
-.checklist {
-    list-style-type: disc;
-    padding-left: 1.5rem;
-    color: var(--text-primary);
-}
-
-.checklist li {
-    margin-bottom: 0.5rem;
-}
-
-.continueButton {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    background-color: var(--primary-color);
-    color: white;
+.closeButton {
+    padding: 0.5rem;
     border: none;
-    border-radius: 0.375rem;
-    font-weight: 500;
+    background: none;
     cursor: pointer;
-    transition: background-color 0.2s;
+    color: #6b7280;
+    transition: color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.continueButton:hover {
-    background-color: var(--primary-color-dark);
+.closeButton:hover {
+    color: #111827;
 }
 
-.formContainer {
-    margin-top: 1rem;
+.closeIcon {
+    width: 1.25rem;
+    height: 1.25rem;
 }

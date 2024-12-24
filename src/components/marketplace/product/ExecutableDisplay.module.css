@@ -1,0 +1,134 @@
+.container {
+    width: 100%;
+    max-width: 1024px;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 16rem;
+}
+
+.header {
+    background: var(--background-white);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 1.5rem;
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.description {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+.metaGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.metaItem {
+    padding: 0.5rem;
+}
+
+.metaTitle {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.requirements {
+    margin-bottom: 1.5rem;
+}
+
+.requirementsText {
+    background: var(--background-light);
+    padding: 1rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    white-space: pre-wrap;
+}
+
+.downloadSection {
+    margin: 1.5rem 0;
+}
+
+.downloadButton {
+    width: 100%;
+}
+
+@media (min-width: 640px) {
+    .downloadButton {
+        width: auto;
+    }
+}
+
+.sectionTitle {
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.installGuide {
+    margin-top: 2rem;
+}
+
+.guideContent {
+    line-height: 1.6;
+}
+
+.docLink {
+    margin-top: 1rem;
+}
+
+.link {
+    color: var(--primary);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+@media (min-width: 640px) {
+    .statsGrid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.statsCard {
+    background: var(--background-white);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+}
+
+.statsNumber {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.statsLabel {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}

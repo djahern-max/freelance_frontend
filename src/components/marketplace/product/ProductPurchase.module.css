@@ -1,0 +1,197 @@
+/* ProductPurchase.module.css */
+.container {
+    max-width: 64rem;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.card {
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.cardContent {
+    padding: 1.5rem;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ratingIcon {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #fbbf24;
+}
+
+.category {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    text-transform: capitalize;
+}
+
+.description {
+    margin-bottom: 2rem;
+}
+
+.shortDesc {
+    color: #4b5563;
+}
+
+.longDesc {
+    margin-top: 1rem;
+}
+
+.section {
+    border-top: 1px solid #e5e7eb;
+    padding: 1.5rem 0;
+}
+
+.sectionTitle {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.developerProfile {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.avatar {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 9999px;
+}
+
+.developerInfo h3 {
+    font-weight: 500;
+}
+
+.developerInfo p {
+    color: #4b5563;
+}
+
+.videoGrid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .videoGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.videoCard {
+    position: relative;
+}
+
+.videoPreview {
+    aspect-ratio: 16/9;
+    background: #f3f4f6;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.playIcon {
+    width: 3rem;
+    height: 3rem;
+    color: #2563eb;
+}
+
+.videoTitle {
+    margin-top: 0.5rem;
+    font-weight: 500;
+}
+
+.priceSection {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+.priceInfo {
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.fee {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.total {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-top: 0.5rem;
+}
+
+.purchaseButton {
+    padding: 0.75rem 1.5rem;
+    background-color: #2563eb;
+    color: white;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.purchaseButton:hover:not(:disabled) {
+    background-color: #1d4ed8;
+}
+
+.purchaseButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.error {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #fef2f2;
+    color: #dc2626;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.loading {
+    text-align: center;
+    padding: 2rem 0;
+}
+
+.errorContainer {
+    text-align: center;
+    padding: 2rem 0;
+    color: #dc2626;
+}
+
+.errorIcon {
+    width: 3rem;
+    height: 3rem;
+    margin: 0 auto 1rem;
+}

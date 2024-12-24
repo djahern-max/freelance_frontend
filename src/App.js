@@ -34,6 +34,8 @@ import Header from './components/shared/Header';
 import VideoList from './components/videos/VideoList';
 import VideoUpload from './components/videos/VideoUpload';
 import DeveloperProfileView from './components/profiles/DeveloperProfileView';
+import ProductListing from './components/marketplace/product/ProductListing';
+import ProductPurchase from './components/marketplace/product/ProductPurchase';
 import { login } from './redux/authSlice';
 import { store } from './redux/store';
 import './styles/global.css';
@@ -131,6 +133,8 @@ function AppContent() {
                   <Route path="/video_display/stream/:video_id" element={<VideoList />} />
                   <Route path="/profile/developers/:id/public" element={<DeveloperProfileView />} />
                   <Route path="/creators" element={<PublicDevelopers />} />
+                  <Route path="/marketplace" element={<ProductListing />} />
+                  <Route path="/marketplace/products/:productId" element={<ProductPurchase />} />
                   <Route
                     path="/subscription/success"
                     element={<SubscriptionSuccess />}
