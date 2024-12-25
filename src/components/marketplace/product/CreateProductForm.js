@@ -4,7 +4,7 @@ import { selectToken, selectIsAuthenticated } from '../../../redux/authSlice';
 import api from '../../../utils/api';
 import styles from './CreateProductForm.module.css';
 
-const CreateProductForm = ({ onSuccess }) => {  // Changed from onClose to onSuccess
+const CreateProductForm = ({ onSuccess }) => {
     const token = useSelector(selectToken);
     const isAuthenticated = useSelector(selectIsAuthenticated);
 
@@ -13,7 +13,8 @@ const CreateProductForm = ({ onSuccess }) => {  // Changed from onClose to onSuc
         description: '',
         long_description: '',
         price: '',
-        category: 'automation'
+        category: 'automation',
+        status: 'DRAFT' // Added status field defaulting to DRAFT
     });
 
     const [files, setFiles] = useState([]);
@@ -53,7 +54,7 @@ const CreateProductForm = ({ onSuccess }) => {  // Changed from onClose to onSuc
                 await api.marketplace.uploadProductFiles(product.id, files);
             }
 
-            onSuccess();  // Changed from onClose to onSuccess
+            onSuccess();
         } catch (err) {
             setError(err.message);
         } finally {
@@ -168,6 +169,28 @@ const CreateProductForm = ({ onSuccess }) => {  // Changed from onClose to onSuc
                         <option value="content_creation">Content Creation</option>
                         <option value="other">Other</option>
                     </select>
+                </div>
+
+                {/* Added Product Status Section */}
+                <div className={styles.formGroup}>
+                    <label htmlFor="status">Product Status</label>
+                    <div className={styles.statusContainer}>
+                        <select
+                            id="status"
+                            name="status"
+                            value={formData.status}
+                            onChange={handleChange}
+                            required
+                        >
+                            <option value="DRAFT">Draft - Not visible in marketplace</option>
+                            <option value="PUBLISHED">Published - Visible and available for purchase</option>
+                        </select>
+                        <p className={styles.statusHelp}>
+                            {formData.status === 'DRAFT'
+                                ? "Draft products are only visible to you and can be edited before publishing."
+                                : "Published products are immediately visible in the marketplace and available for purchase."}
+                        </p>
+                    </div>
                 </div>
 
                 {error && (

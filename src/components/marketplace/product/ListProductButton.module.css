@@ -68,15 +68,21 @@
     border: none;
     background: none;
     cursor: pointer;
-    color: #6b7280;
-    transition: color 0.2s ease;
+    color: var(--color-text-secondary);
+    /* Light Grey */
+    transition: color 0.2s ease, background-color 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: var(--radius-md);
+    /* Optional for hover background */
 }
 
 .closeButton:hover {
-    color: #111827;
+    color: var(--color-primary);
+    /* Blue on hover */
+    background-color: var(--color-secondary);
+    /* Slight background change */
 }
 
 .closeIcon {

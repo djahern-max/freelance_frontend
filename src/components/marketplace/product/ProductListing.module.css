@@ -48,16 +48,20 @@
     padding: 1rem;
 }
 
+
 .productHeader {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 0.75rem;
+    margin-bottom: 12px;
 }
 
 .productTitle {
-    font-size: 1.125rem;
+    display: flex;
+    align-items: center;
+    font-size: 1.1rem;
     font-weight: 600;
+    margin: 0;
 }
 
 .rating {
@@ -174,4 +178,86 @@ input[type="text"]::placeholder {
     color: #6b7280;
     /* A medium gray color for placeholder */
     opacity: 1;
+}
+
+.fileInfo {
+    margin: 12px 0;
+    padding: 8px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+.fileIcon {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.fileDetails {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 4px;
+    padding: 4px 0;
+}
+
+.fileName {
+    font-size: 0.9em;
+    color: #333;
+    flex: 1;
+}
+
+.fileName {
+    font-size: 0.875rem;
+    color: #4a5568;
+    margin-right: 8px;
+}
+
+.fileSize {
+    font-size: 0.75rem;
+    color: #718096;
+}
+
+.fileIcon {
+    margin-bottom: 4px;
+    color: #4a5568;
+}
+
+.fileHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.downloadStatus {
+    font-size: 0.75rem;
+    color: #718096;
+    background-color: #edf2f7;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.fileMainInfo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.fileVersion {
+    font-size: 0.75rem;
+    color: #718096;
+    background-color: #edf2f7;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.fileType {
+    font-size: 0.75rem;
+    color: #4a5568;
+    text-transform: uppercase;
+    margin-right: 8px;
 }

@@ -1,7 +1,8 @@
+// components/marketplace/product/ProductPurchase.js
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { Star, Tag, PlayCircle, AlertCircle } from 'lucide-react';
+import { Tag } from 'lucide-react';
 import api from '../../../utils/api';
 import { selectIsAuthenticated } from '../../../redux/authSlice';
 import styles from './ProductPurchase.module.css';
@@ -17,19 +18,22 @@ const ProductPurchase = () => {
     const [error, setError] = useState('');
 
     useEffect(() => {
+        const fetchProduct = async () => {
+            try {
+                setLoading(true);
+                const data = await api.marketplace.getProduct(productId);
+                console.log('Product data:', data); // Debug log
+                setProduct(data);
+            } catch (error) {
+                console.error('Error fetching product:', error);
+                setError('Failed to load product details');
+            } finally {
+                setLoading(false);
+            }
+        };
+
         fetchProduct();
     }, [productId]);
-
-    const fetchProduct = async () => {
-        try {
-            const data = await api.marketplace.getProduct(productId);
-            setProduct(data);
-        } catch (error) {
-            setError('Failed to load product details');
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handlePurchase = async () => {
         if (!isAuthenticated) {
@@ -44,7 +48,9 @@ const ProductPurchase = () => {
             const response = await api.marketplace.purchaseProduct(productId);
             window.location.href = response.url;
         } catch (error) {
+            console.error('Purchase error:', error);
             setError('Failed to initiate purchase. Please try again.');
+        } finally {
             setPurchasing(false);
         }
     };
@@ -53,16 +59,20 @@ const ProductPurchase = () => {
         return <div className={styles.loading}>Loading...</div>;
     }
 
-    if (error || !product) {
+    if (error) {
         return (
             <div className={styles.errorContainer}>
-                <AlertCircle className={styles.errorIcon} />
-                {error || 'Product not found'}
+                {error}
             </div>
         );
     }
 
-    const totalPrice = product.price * 1.05;
+    if (!product) {
+        return <div className={styles.errorContainer}>Product not found</div>;
+    }
+
+    const platformFee = product.price * 0.05;
+    const total = product.price + platformFee;
 
     return (
         <div className={styles.container}>
@@ -70,82 +80,45 @@ const ProductPurchase = () => {
                 <div className={styles.cardContent}>
                     <div className={styles.header}>
                         <h1 className={styles.title}>{product.name}</h1>
-                        <div className={styles.rating}>
-                            <Star className={styles.ratingIcon} />
-                            <span>{product.rating?.toFixed(1) || 'New'}</span>
-                        </div>
+                        <span className={styles.badge}>New</span>
                     </div>
 
                     <div className={styles.category}>
-                        <Tag />
+                        <Tag className={styles.categoryIcon} />
                         <span>{product.category}</span>
                     </div>
 
                     <div className={styles.description}>
-                        <p className={styles.shortDesc}>{product.description}</p>
-                        <div className={styles.longDesc}>{product.long_description}</div>
+                        <p>{product.description}</p>
+                        {product.long_description && (
+                            <p className={styles.longDesc}>{product.long_description}</p>
+                        )}
                     </div>
 
-                    {product.profile_visible && product.developer && (
-                        <div className={styles.section}>
-                            <h2 className={styles.sectionTitle}>About the Developer</h2>
-                            <div className={styles.developerProfile}>
-                                <img
-                                    src={product.developer.avatar_url || '/placeholder-avatar.png'}
-                                    alt={product.developer.display_name}
-                                    className={styles.avatar}
-                                />
-                                <div className={styles.developerInfo}>
-                                    <h3>{product.developer.display_name}</h3>
-                                    <p>{product.developer.bio}</p>
-                                </div>
+                    <div className={styles.priceSection}>
+                        <div className={styles.priceInfo}>
+                            <div className={styles.priceRow}>
+                                <span>Price:</span>
+                                <span>${product.price.toFixed(2)}</span>
+                            </div>
+                            <div className={styles.feeRow}>
+                                <span>Platform fee (5%):</span>
+                                <span>${platformFee.toFixed(2)}</span>
+                            </div>
+                            <div className={styles.totalRow}>
+                                <span>Total:</span>
+                                <span>${total.toFixed(2)}</span>
                             </div>
                         </div>
-                    )}
 
-                    {product.related_videos?.length > 0 && (
-                        <div className={styles.section}>
-                            <h2 className={styles.sectionTitle}>Product Videos</h2>
-                            <div className={styles.videoGrid}>
-                                {product.related_videos.map((video) => (
-                                    <div key={video.id} className={styles.videoCard}>
-                                        <div className={styles.videoPreview}>
-                                            <PlayCircle className={styles.playIcon} />
-                                        </div>
-                                        <p className={styles.videoTitle}>{video.title}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    <div className={styles.section}>
-                        <div className={styles.priceSection}>
-                            <div className={styles.priceInfo}>
-                                <p>Price: ${product.price.toFixed(2)}</p>
-                                <p className={styles.fee}>
-                                    Platform fee (5%): ${(product.price * 0.05).toFixed(2)}
-                                </p>
-                                <p className={styles.total}>
-                                    Total: ${totalPrice.toFixed(2)}
-                                </p>
-                            </div>
-                            <button
-                                onClick={handlePurchase}
-                                disabled={purchasing}
-                                className={styles.purchaseButton}
-                            >
-                                {purchasing ? 'Processing...' : 'Purchase Now'}
-                            </button>
-                        </div>
+                        <button
+                            onClick={handlePurchase}
+                            disabled={purchasing}
+                            className={styles.purchaseButton}
+                        >
+                            {purchasing ? 'Processing...' : 'Purchase Now'}
+                        </button>
                     </div>
-
-                    {error && (
-                        <div className={styles.error}>
-                            <AlertCircle />
-                            {error}
-                        </div>
-                    )}
                 </div>
             </div>
         </div>

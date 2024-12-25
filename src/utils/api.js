@@ -75,6 +75,12 @@ export const API_ROUTES = {
     LIST: '/snagged-requests/',
     REMOVE: (id) => `/snagged-requests/${id}`
   },
+  MARKETPLACE: {
+    PRODUCTS: '/marketplace/products',
+    PRODUCT_DETAIL: (id) => `/marketplace/products/${id}`,
+    PURCHASE: (id) => `/marketplace/products/${id}/purchase`,
+    FILES: (id) => `/marketplace/products/files/${id}`,
+  },
 };
 
 // Helper function to check if a route is public
@@ -271,10 +277,17 @@ api.helpers = {
     // Return user-friendly error messages based on status code
     switch (error.response.status) {
       case 400:
-        return (
-          error.response.data?.detail ||
-          'Invalid request. Please check your input.'
-        );
+        if (error.config.url.includes('/marketplace/products')) {
+          if (error.response.data?.detail?.includes('insufficient_funds')) {
+            return 'Insufficient funds for purchase.';
+          }
+          if (error.response.data?.detail?.includes('already_purchased')) {
+            return 'You have already purchased this product.';
+          }
+        }
+        return error.response.data?.detail || 'Invalid request. Please check your input.';
+
+
       case 401:
         return 'Please log in to continue';
       case 403:
@@ -555,7 +568,7 @@ api.conversations = {
 api.marketplace = {
   async createProduct(productData) {
     try {
-      const response = await api.post('/marketplace/products', productData);
+      const response = await api.post(API_ROUTES.MARKETPLACE.PRODUCTS, productData);
       return response.data;
     } catch (error) {
       console.error('Error creating product:', error);
@@ -565,7 +578,7 @@ api.marketplace = {
 
   async listProducts(params = {}) {
     try {
-      const response = await api.get('/marketplace/products', { params });
+      const response = await api.get(API_ROUTES.MARKETPLACE.PRODUCTS, { params });
       return response.data;
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -575,7 +588,7 @@ api.marketplace = {
 
   async getProduct(id) {
     try {
-      const response = await api.get(`/marketplace/products/${id}`);
+      const response = await api.get(API_ROUTES.MARKETPLACE.PRODUCT_DETAIL(id));
       return response.data;
     } catch (error) {
       console.error('Error fetching product:', error);
@@ -585,10 +598,22 @@ api.marketplace = {
 
   async updateProduct(id, productData) {
     try {
-      const response = await api.put(`/marketplace/products/${id}`, productData);
+      const response = await api.put(API_ROUTES.MARKETPLACE.PRODUCT_DETAIL(id), productData);
       return response.data;
     } catch (error) {
       console.error('Error updating product:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async purchaseProduct(productId) {
+    try {
+      console.log('Initiating product purchase:', productId);
+      const response = await api.post(API_ROUTES.MARKETPLACE.PURCHASE(productId));
+      console.log('Purchase response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error purchasing product:', error);
       throw new Error(api.helpers.handleError(error));
     }
   },
@@ -601,7 +626,7 @@ api.marketplace = {
       });
 
       const response = await api.post(
-        `/marketplace/products/files/${productId}?file_type=executable`,
+        API_ROUTES.MARKETPLACE.FILES(productId) + '?file_type=executable',
         formData,
         {
           headers: {
@@ -616,6 +641,7 @@ api.marketplace = {
     }
   }
 };
+
 
 
 // Add snagged requests methods
