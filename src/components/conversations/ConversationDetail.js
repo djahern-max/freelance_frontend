@@ -17,6 +17,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import api from '../../utils/api';
 import styles from './ConversationDetail.module.css';
+import SubscriptionDialog from '../payments/SubscriptionDialog';
 
 const ConversationDetail = () => {
   // 1. Hooks and constants first
@@ -31,16 +32,15 @@ const ConversationDetail = () => {
   const [requestDetails, setRequestDetails] = useState(null);
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [showAgreement, setShowAgreement] = useState(false);
+
   const [agreement, setAgreement] = useState(null);
-  const [isSubmittingAgreement, setIsSubmittingAgreement] = useState(false);
-  const [isAcceptingAgreement, setIsAcceptingAgreement] = useState(false);
-  const [showAgreementForm, setShowAgreementForm] = useState(false);
-  const [price, setPrice] = useState('');
-  const [terms, setTerms] = useState('');
+
+
   const [showAgreementModal, setShowAgreementModal] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
-  const lastSeenAgreementRef = useRef(null);
+
+  const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
+  const [pendingMessage, setPendingMessage] = useState(null);
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
@@ -77,81 +77,9 @@ const ConversationDetail = () => {
     }
   }, [id]);
 
-  const fetchAgreement = useCallback(async () => {
-    // Early return if no request_id (good to keep)
-    if (!conversation?.request_id) return;
 
-    try {
-      console.log('Fetching agreement for request:', conversation.request_id);
-      const response = await api.get(
-        `/agreements/request/${conversation.request_id}`
-      );
 
-      // If we get a response, handle the agreement
-      if (response.data) {
-        console.log('Fetched agreement:', response.data);
-        setAgreement(response.data);
 
-        // Update conversation status to negotiating if needed
-        if (conversation.status !== 'negotiating') {
-          try {
-            await api.patch(`/conversations/${id}`, {
-              status: 'negotiating',
-            });
-            fetchConversation(); // Refresh conversation data
-          } catch (updateErr) {
-            console.error('Error updating conversation status:', updateErr);
-            // Continue with the agreement data even if status update fails
-          }
-        }
-      } else {
-        // Handle case where response exists but no data
-        console.log('No agreement data found');
-        setAgreement(null);
-      }
-    } catch (err) {
-      // Handle different error cases
-      if (err.response?.status === 404) {
-        // No agreement exists yet - normal case
-        console.log('No agreement exists for this request yet');
-        setAgreement(null);
-      } else {
-        // Log other errors that might need attention
-        console.error('Error fetching agreement:', err);
-        setAgreement(null);
-
-        // Optionally set an error state if you want to show error feedback
-        // setError('Unable to fetch agreement details');
-      }
-    }
-  }, [conversation?.request_id, id, conversation?.status, fetchConversation]);
-
-  // Polling effects for agreement
-  // Single polling effect for agreement updates
-  useEffect(() => {
-    if (!conversation?.request_id || !token) return;
-
-    // Initial fetch
-    fetchAgreement();
-
-    // Set up polling only when needed
-    const shouldPoll = ['negotiating', 'agreed'].includes(conversation.status);
-    const intervalId = shouldPoll
-      ? setInterval(() => {
-        // Use a function to ensure we're working with fresh state
-        fetchAgreement().catch((err) => {
-          console.error('Polling error:', err);
-          // Optionally show user-friendly error
-          toast.error('Error updating agreement status');
-        });
-      }, 5000)
-      : null;
-
-    // Cleanup
-    return () => {
-      if (intervalId) clearInterval(intervalId);
-    };
-  }, [conversation?.request_id, conversation?.status, token, fetchAgreement]);
 
   // Polling effects
   useEffect(() => {
@@ -161,20 +89,7 @@ const ConversationDetail = () => {
     return () => clearInterval(intervalId);
   }, [id, token, fetchConversation]);
 
-  useEffect(() => {
-    if (
-      agreement &&
-      user.id !== agreement.proposed_by &&
-      lastSeenAgreementRef.current !== agreement.id &&
-      agreement.status === 'proposed'
-    ) {
-      toast.info('A new agreement has been proposed!', {
-        autoClose: false,
-        onClick: () => setShowAgreementModal(true),
-      });
-      lastSeenAgreementRef.current = agreement.id;
-    }
-  }, [agreement, user.id]);
+
 
   const sendSystemMessage = async (content) => {
     try {
@@ -191,81 +106,6 @@ const ConversationDetail = () => {
     }
   };
 
-  const handleAgreementClick = (e) => {
-    if (e.target.tagName.toLowerCase() === 'button') {
-      return;
-    }
-
-    if (agreement) {
-      setShowAgreementModal(true);
-    } else if (user.userType === 'developer' || user.userType === 'client') {
-      setShowAgreementForm(true);
-    }
-  };
-
-  const createAgreement = async (e) => {
-    e.preventDefault();
-    setIsSubmittingAgreement(true);
-    try {
-      // Update conversation status using api instance
-      await api.patch(`/conversations/${id}`, {
-        status: 'negotiating',
-      });
-
-      // Create agreement using api.agreements helper
-      const response = await api.agreements.create({
-        request_id: conversation.request_id,
-        price: Number(price),
-        terms,
-        developer_id:
-          user.userType === 'developer'
-            ? user.id
-            : conversation.starter_user_id,
-        client_id:
-          user.userType === 'client' ? user.id : conversation.recipient_user_id,
-        status: 'proposed',
-        proposed_by: user.id,
-      });
-
-      // Maintain all your existing state updates
-      setAgreement(response.data);
-      setShowAgreement(false);
-      setShowAgreementForm(false);
-      toast.success('Agreement proposed successfully!');
-      await fetchConversation();
-    } catch (err) {
-      console.error('Failed to create agreement:', err);
-      toast.error(err.response?.data?.detail || 'Failed to create agreement.');
-    } finally {
-      setIsSubmittingAgreement(false);
-    }
-  };
-
-  const acceptAgreement = async () => {
-    setIsAcceptingAgreement(true);
-    try {
-      await axios.post(
-        `${apiUrl}/agreements/${agreement.id}/accept`,
-        {
-          accepted_by: user.id,
-          accepted_at: new Date().toISOString(),
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      await fetchAgreement();
-      toast.success('Agreement accepted!');
-      await sendSystemMessage(
-        `${user.username} has accepted the work agreement.`
-      );
-    } catch (err) {
-      console.error('Failed to accept agreement:', err);
-      toast.error('Failed to accept agreement.');
-    } finally {
-      setIsAcceptingAgreement(false);
-    }
-  };
 
   const handleProposal = async (accept) => {
     try {
@@ -303,6 +143,7 @@ const ConversationDetail = () => {
     if (!newMessage.trim()) return;
 
     try {
+      // Try to send message directly without checking subscription first
       await axios.post(
         `${apiUrl}/conversations/${id}/messages`,
         { content: newMessage.trim() },
@@ -313,8 +154,14 @@ const ConversationDetail = () => {
       setNewMessage('');
       await fetchConversation();
     } catch (err) {
-      console.error('Failed to send message:', err);
-      toast.error('Failed to send message.');
+      if (err.response?.status === 402 && user.userType === 'developer') {
+        // Only show subscription dialog for developers when backend requires it
+        setShowSubscriptionDialog(true);
+        setPendingMessage(newMessage.trim());
+      } else {
+        console.error('Failed to send message:', err);
+        toast.error('Failed to send message.');
+      }
     }
   };
 
@@ -627,52 +474,46 @@ const ConversationDetail = () => {
                     {new Date(agreement.accepted_at).toLocaleDateString()}
                   </p>
                 )}
-                <div className={styles.modalActions}>
-                  {agreement.status === 'accepted' ? (
-                    <button
-                      onClick={() => {
-                        setShowAgreementModal(false);
-                        setShowAgreementForm(true);
-                        setPrice(agreement.price.toString());
-                        setTerms(agreement.terms);
-                      }}
-                      className={styles.modifyButton}
-                    >
-                      Request Change Order
-                    </button>
-                  ) : agreement.status === 'proposed' &&
-                    user.id !== agreement.proposed_by ? (
-                    <>
-                      <button
-                        onClick={acceptAgreement}
-                        className={styles.acceptButton}
-                        disabled={isAcceptingAgreement}
-                      >
-                        {isAcceptingAgreement
-                          ? 'Accepting...'
-                          : 'Accept Agreement'}
-                      </button>
-                      <button
-                        onClick={() => {
-                          setShowAgreementModal(false);
-                          setShowAgreementForm(true);
-                          setPrice(agreement.price.toString());
-                          setTerms(agreement.terms);
-                        }}
-                        className={styles.modifyButton}
-                      >
-                        Counter Proposal
-                      </button>
-                    </>
-                  ) : null}
-                </div>
+
               </div>
             </div>
           </div>
         </div>
       )}
+
+      <SubscriptionDialog
+        isOpen={showSubscriptionDialog}
+        onClose={() => {
+          setShowSubscriptionDialog(false);
+          setPendingMessage(null);
+        }}
+        returnUrl={`/conversations/${id}`}  // Add this as a prop
+        onSuccess={async () => {
+          setShowSubscriptionDialog(false);
+          if (pendingMessage) {
+            try {
+              await axios.post(
+                `${apiUrl}/conversations/${id}/messages`,
+                { content: pendingMessage },
+                {
+                  headers: { Authorization: `Bearer ${token}` },
+                }
+              );
+              setNewMessage('');
+              setPendingMessage(null);
+              await fetchConversation();
+            } catch (err) {
+              console.error('Failed to send message after subscription:', err);
+              toast.error('Failed to send message.');
+            }
+          }
+        }}
+      />
+
     </div>
   );
-};
+}
+
+
 
 export default ConversationDetail;
