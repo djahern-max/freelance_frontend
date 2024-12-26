@@ -1,7 +1,8 @@
+// DeveloperProfileView.js
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { MessageSquare } from 'lucide-react';
+import { MessageSquare, ArrowLeft } from 'lucide-react';
 import { toast } from 'react-toastify';
 import api from '../../utils/api';
 import styles from './DeveloperProfileView.module.css';
@@ -37,23 +38,6 @@ const DeveloperProfileView = () => {
         fetchProfile();
     }, [id]);
 
-    const handleSendRequest = () => {
-        if (!isAuthenticated) {
-            setShowAuthDialog(true);
-            return;
-        }
-
-        if (user?.userType === 'developer') {
-            toast.info('As a creator, you cannot send requests to other creators.');
-            return;
-        }
-
-        setSelectedCreator({
-            id: profile.user_id,
-            username: profile.username || `Creator #${profile.user_id}`
-        });
-    };
-
     const handleRequestSent = (creatorUsername) => {
         toast.success(
             <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -78,6 +62,23 @@ const DeveloperProfileView = () => {
         setSelectedCreator(null);
     };
 
+    const handleSendRequest = () => {
+        if (!isAuthenticated) {
+            setShowAuthDialog(true);
+            return;
+        }
+
+        if (user?.userType === 'developer') {
+            toast.info('As a creator, you cannot send requests to other creators.');
+            return;
+        }
+
+        setSelectedCreator({
+            id: profile.user_id,
+            username: profile.username || `Creator #${profile.user_id}`
+        });
+    };
+
     if (loading) return <div>Loading profile...</div>;
     if (error) return <div>{error}</div>;
     if (!profile) return <div>Profile not found</div>;
@@ -86,16 +87,25 @@ const DeveloperProfileView = () => {
         <div className={styles.container}>
             <div className={styles.profileCard}>
                 <div className={styles.headerSection}>
+                    <button
+                        onClick={() => navigate(-1)}
+                        className={styles.backButton}
+                    >
+                        <ArrowLeft size={20} />
+                        <span>Back</span>
+                    </button>
+
                     {user?.userType !== 'developer' && (
                         <button
                             onClick={handleSendRequest}
-                            className={styles.sendBusinessButton}
+                            className={styles.sendRequestButton}
                         >
                             <MessageSquare size={16} />
                             <span>Send Me A Request</span>
                         </button>
                     )}
                 </div>
+
                 {profile.profile_image_url && (
                     <img
                         src={profile.profile_image_url}

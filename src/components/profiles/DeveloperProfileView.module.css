@@ -1,3 +1,4 @@
+/* DeveloperProfileView.module.css */
 .container {
     padding: 20px;
     max-width: 800px;
@@ -11,6 +12,53 @@
     padding: 24px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     position: relative;
+}
+
+.headerSection {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.backButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: none;
+    border: none;
+    border-radius: 6px;
+    color: var(--color-text-secondary, #4b5563);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.backButton:hover {
+    background-color: var(--color-background-hover, #e5e7eb);
+}
+
+.sendRequestButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: #2563eb;
+    /* Blue-600 */
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sendRequestButton:hover {
+    background-color: #1d4ed8;
+    /* Blue-700 */
 }
 
 .profileImage {
@@ -40,29 +88,4 @@
 .bio {
     margin-top: 16px;
     line-height: 1.5;
-}
-
-.headerSection {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 20px;
-}
-
-.sendBusinessButton {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    background-color: var(--color-background-light, #f3f4f6);
-    border: none;
-    border-radius: 6px;
-    color: var(--color-text-secondary, #4b5563);
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.sendBusinessButton:hover {
-    background-color: var(--color-background-hover, #e5e7eb);
 }
