@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { selectToken, selectIsAuthenticated } from '../../../redux/authSlice';
+import { X } from 'lucide-react'; // Import X icon for close button
 import api from '../../../utils/api';
 import styles from './CreateProductForm.module.css';
 
-const CreateProductForm = ({ onSuccess }) => {
+const CreateProductForm = ({ onSuccess, onClose }) => {
     const token = useSelector(selectToken);
     const isAuthenticated = useSelector(selectIsAuthenticated);
 
@@ -14,7 +15,7 @@ const CreateProductForm = ({ onSuccess }) => {
         long_description: '',
         price: '',
         category: 'automation',
-        status: 'DRAFT' // Added status field defaulting to DRAFT
+        status: 'DRAFT'
     });
 
     const [files, setFiles] = useState([]);
@@ -64,6 +65,14 @@ const CreateProductForm = ({ onSuccess }) => {
 
     return (
         <div className={styles.formWrapper}>
+            <button
+                onClick={onClose}
+                className={styles.closeButton}
+                aria-label="Close form"
+            >
+                <X size={16} />
+            </button>
+
             <form onSubmit={handleSubmit} className={styles.form}>
                 <div className={styles.formGroup}>
                     <label>Upload Executable Files (.exe, .msi)</label>

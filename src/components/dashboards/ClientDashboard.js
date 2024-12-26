@@ -21,6 +21,7 @@ import RequestGroupingToolbar from '../requests/RequestGroupingToolbar';
 import Header from '../shared/Header';
 import styles from './ClientDashboard.module.css';
 import DashboardSections from './DashboardSections';
+import MarketplaceProductsSection from '../marketplace/product/MarketplaceProductsSection';
 
 const ClientDashboard = () => {
   const [dashboardData, setDashboardData] = useState({
@@ -144,9 +145,8 @@ const ClientDashboard = () => {
                             {conversation.request_title || 'Untitled Request'}
                           </span>
                           <span
-                            className={`${styles.status} ${
-                              styles[conversation.status]
-                            }`}
+                            className={`${styles.status} ${styles[conversation.status]
+                              }`}
                           >
                             {conversation.status || 'active'}
                           </span>
@@ -362,8 +362,8 @@ const ClientDashboard = () => {
       // Sort the requests by created_at in descending order (newest first)
       const sortedRequests = Array.isArray(response.data)
         ? [...response.data].sort(
-            (a, b) => new Date(b.created_at) - new Date(a.created_at)
-          )
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        )
         : [];
 
       setDashboardData((prev) => ({
@@ -625,6 +625,12 @@ const ClientDashboard = () => {
             onSubmit={handleCreateRequest}
           />
         )}
+      </div>
+
+      <div className={styles.content}>
+        {/* Other sections */}
+        <MarketplaceProductsSection />
+
       </div>
 
       {/* {showFeatureTour && (

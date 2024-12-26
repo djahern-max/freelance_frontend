@@ -80,6 +80,10 @@ export const API_ROUTES = {
     PRODUCT_DETAIL: (id) => `/marketplace/products/${id}`,
     PURCHASE: (id) => `/marketplace/products/${id}/purchase`,
     FILES: (id) => `/marketplace/products/files/${id}`,
+    VERIFY_PURCHASE: (sessionId) => `/marketplace/purchase/verify/${sessionId}`,
+    UPLOAD_FILES: (id) => `/marketplace/products/${id}/files`,
+    GET_FILES_INFO: (id) => `/marketplace/products/${id}/files/info`,
+    REVIEWS: (id) => `/marketplace/products/${id}/reviews`,
   },
 };
 
@@ -626,7 +630,7 @@ api.marketplace = {
       });
 
       const response = await api.post(
-        API_ROUTES.MARKETPLACE.FILES(productId) + '?file_type=executable',
+        `${API_ROUTES.MARKETPLACE.FILES(productId)}?file_type=executable`,
         formData,
         {
           headers: {
@@ -639,9 +643,28 @@ api.marketplace = {
       console.error('Error uploading product files:', error);
       throw new Error(api.helpers.handleError(error));
     }
+  },
+
+  async getProductDownloadUrl(productId) {
+    try {
+      const response = await api.get(API_ROUTES.MARKETPLACE.FILES(productId));
+      return response.data;
+    } catch (error) {
+      console.error('Error getting product download URL:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async verifyPurchase(sessionId) {
+    try {
+      const response = await api.get(`/marketplace/purchase/verify/${sessionId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error verifying purchase:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
   }
 };
-
 
 
 // Add snagged requests methods

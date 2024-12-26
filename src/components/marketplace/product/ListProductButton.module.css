@@ -9,20 +9,30 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background-color: var(--color-primary);
-    color: white;
+    background-color: var(--color-secondary, #f3f4f6);
+    /* Light Gray */
+    color: var(--color-text-primary, #111827);
+    /* Dark Text */
     padding: 0.75rem 1.25rem;
-    border-radius: 6px;
-    border: none;
+    border-radius: var(--radius-md, 6px);
+    border: 1px solid var(--color-border, #d1d5db);
+    /* Border for clarity */
     cursor: pointer;
     transition: background-color 0.2s ease;
-    font-size: 0.875rem;
+    font-size: var(--font-size-sm, 0.875rem);
     font-weight: 500;
+}
+
+.listButton:hover {
+    background-color: var(--color-border, #d1d5db);
+    /* Slightly darker gray on hover */
 }
 
 .icon {
     width: 1.25rem;
     height: 1.25rem;
+    stroke: var(--color-text-secondary, #6b7280);
+    /* Ensure icon color is not blue */
 }
 
 .dialogOverlay {
@@ -64,25 +74,19 @@
 }
 
 .closeButton {
-    padding: 0.5rem;
-    border: none;
     background: none;
-    cursor: pointer;
+    border: none;
     color: var(--color-text-secondary);
-    /* Light Grey */
+    /* Dark Gray */
     transition: color 0.2s ease, background-color 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     border-radius: var(--radius-md);
-    /* Optional for hover background */
 }
 
 .closeButton:hover {
-    color: var(--color-primary);
-    /* Blue on hover */
     background-color: var(--color-secondary);
-    /* Slight background change */
+    /* Light Gray on hover */
+    color: var(--color-text-secondary);
+    /* Dark Gray */
 }
 
 .closeIcon {

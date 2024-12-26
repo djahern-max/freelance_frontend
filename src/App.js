@@ -36,6 +36,7 @@ import VideoUpload from './components/videos/VideoUpload';
 import DeveloperProfileView from './components/profiles/DeveloperProfileView';
 import ProductListing from './components/marketplace/product/ProductListing';
 import ProductPurchase from './components/marketplace/product/ProductPurchase';
+import PurchaseSuccessPage from './components/marketplace/product/PurchaseSuccessPage';
 import { login } from './redux/authSlice';
 import { store } from './redux/store';
 import './styles/global.css';
@@ -137,6 +138,7 @@ function AppContent() {
                   <Route path="/marketplace" element={<ProductListing />} />
                   <Route path="/marketplace/products" element={<ProductListing filter="executable" />} />
                   <Route path="/marketplace/products/:productId" element={<ProductPurchase />} />
+                  <Route path="/marketplace/purchase/success" element={<PurchaseSuccessPage />} />
 
                   <Route
                     path="/subscription/success"

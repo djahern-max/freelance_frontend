@@ -1,90 +1,74 @@
-import { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import ratingService from '../../utils/ratingService';
-import StarRating from '../shared/StarRating';
+// PurchaseSuccessPage.js
+import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { verifyPurchase } from '../../utils/marketplaceService';
+import ProductDownload from '../marketplace/product/ProductDownload';
 import styles from './DeveloperRatingSection.module.css';
 
-const DeveloperRatingSection = ({ developerId }) => {
-  const [ratingState, setRatingState] = useState({
-    averageRating: 0,
-    totalRatings: 0,
-    userRating: null,
-    loading: true,
-    error: null,
-  });
 
-  const user = useSelector((state) => state.auth.user);
-
-  const loadRatings = useCallback(async () => {
-    if (!developerId) return;
-
-    try {
-      setRatingState((prev) => ({ ...prev, loading: true, error: null }));
-      const ratingStats = await ratingService.getDeveloperRating(developerId);
-
-      setRatingState({
-        averageRating: ratingStats.average_rating ?? 0,
-        totalRatings: ratingStats.total_ratings ?? 0,
-        userRating: null,
-        loading: false,
-        error: null,
-      });
-    } catch (error) {
-      setRatingState((prev) => ({
-        ...prev,
-        loading: false,
-        error: 'Unable to load ratings',
-      }));
-    }
-  }, [developerId]);
+const PurchaseSuccessPage = () => {
+  const [searchParams] = useSearchParams();
+  const [verificationStatus, setVerificationStatus] = useState('pending');
+  const [productId, setProductId] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    loadRatings();
-  }, [loadRatings]);
+    const sessionId = searchParams.get('session_id');
+    if (sessionId) {
+      verifyPurchaseAndGetProduct(sessionId);
+    }
+  }, [searchParams]);
 
-  const handleRate = async (stars) => {
+  const verifyPurchaseAndGetProduct = async (sessionId) => {
     try {
-      const response = await ratingService.rateDeveloper(developerId, {
-        stars,
-        comment: '',
-      });
-
-      setRatingState((prev) => ({
-        ...prev,
-        averageRating: response.average_rating,
-        totalRatings: response.total_ratings,
-        userRating: stars,
-      }));
-    } catch (error) {
-      setRatingState((prev) => ({
-        ...prev,
-        error: 'Unable to submit rating',
-      }));
+      const result = await verifyPurchase(sessionId);
+      if (result.success) {
+        setProductId(result.product_id);
+        setVerificationStatus('success');
+      } else {
+        setVerificationStatus('failed');
+        setError('Purchase verification failed');
+      }
+    } catch (err) {
+      setVerificationStatus('failed');
+      setError(err.message);
     }
   };
 
-  if (!developerId || ratingState.loading) {
-    return <div className={styles.loading}>Loading...</div>;
+  if (verificationStatus === 'pending') {
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.spinner}></div>
+      </div>
+    );
   }
 
-  if (ratingState.error) {
-    return <div className={styles.error}>{ratingState.error}</div>;
+  if (verificationStatus === 'failed') {
+    return (
+      <div className={styles.container}>
+        <div className={styles.error}>
+          <span className={styles.errorIcon}>⚠️</span>
+          <p>{error || 'Failed to verify purchase'}</p>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className={styles.container}>
-      <StarRating
-        rating={ratingState.averageRating}
-        totalRatings={ratingState.totalRatings}
-        interactive={true}
-        onRate={handleRate}
-        userRating={ratingState.userRating}
-      />
-      {ratingState.totalRatings === 0 && (
-        <p className={styles.noRatings}>Be the first to rate this developer</p>
-      )}
+      <div className={styles.card}>
+        <div className={styles.cardHeader}>
+          <h1 className={styles.successTitle}>Purchase Successful!</h1>
+        </div>
+        <div className={styles.cardContent}>
+          <p className={styles.successMessage}>
+            Thank you for your purchase. You can now download your product files below.
+          </p>
+          {productId && <ProductDownload productId={productId} />}
+        </div>
+      </div>
     </div>
   );
 };
 
-export default DeveloperRatingSection;
+export default PurchaseSuccessPage;

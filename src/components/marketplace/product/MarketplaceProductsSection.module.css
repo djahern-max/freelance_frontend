@@ -1,0 +1,122 @@
+/* src/components/marketplace/product/MarketplaceProductsSection.module.css */
+.section {
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 20px 0;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.icon {
+    color: #2563eb;
+    width: 24px;
+    height: 24px;
+}
+
+.productsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.productCard {
+    padding: 20px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #f9fafb;
+}
+
+.productTitle {
+    margin: 0 0 10px 0;
+    font-size: 1.2rem;
+    color: #1f2937;
+}
+
+.productDescription {
+    margin: 0 0 15px 0;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.loadingContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #2563eb;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.errorContainer {
+    padding: 20px;
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    color: #dc2626;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.errorIcon {
+    font-size: 1.2rem;
+}
+
+.emptyState {
+    text-align: center;
+    padding: 40px;
+    color: #6b7280;
+}
+
+.emptyIcon {
+    width: 48px;
+    height: 48px;
+    color: #9ca3af;
+    margin-bottom: 16px;
+}
+
+.browseButton {
+    margin-top: 16px;
+    padding: 8px 16px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+.browseButton:hover {
+    background: #1d4ed8;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

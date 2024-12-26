@@ -1,4 +1,3 @@
-// src/utils/marketplaceService.js
 import { API_BASE_URL } from './constants';
 
 const handleResponse = async (response) => {
@@ -18,19 +17,10 @@ export const createProduct = async (productData) => {
     try {
         const response = await fetch(`${API_BASE_URL}/marketplace/products`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            },
+            headers: getAuthHeaders(),
             body: JSON.stringify(productData)
         });
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.detail || 'Failed to create product');
-        }
-
-        return response.json();
+        return handleResponse(response);
     } catch (error) {
         throw new Error(error.message || 'Error creating product');
     }
@@ -38,31 +28,21 @@ export const createProduct = async (productData) => {
 
 export const uploadProductFiles = async (productId, files, fileType) => {
     const formData = new FormData();
-
-    // Add each file to form data
     files.forEach(file => {
         formData.append('files', file);
     });
-
-    // Add file type parameter
     formData.append('file_type', fileType);
 
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:8000/marketplace/products/files/${productId}?file_type=${fileType}`, {
+        const response = await fetch(`${API_BASE_URL}/marketplace/products/files/${productId}?file_type=${fileType}`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`
             },
             body: formData
         });
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.detail || 'Failed to upload files');
-        }
-
-        return await response.json();
+        return handleResponse(response);
     } catch (error) {
         console.error('Error uploading files:', error);
         throw new Error(error.message || 'Failed to upload files');
@@ -73,17 +53,9 @@ export const getProduct = async (productId) => {
     try {
         const response = await fetch(`${API_BASE_URL}/marketplace/products/${productId}`, {
             method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
+            headers: getAuthHeaders()
         });
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.detail || 'Failed to fetch product');
-        }
-
-        return response.json();
+        return handleResponse(response);
     } catch (error) {
         throw new Error(error.message || 'Error fetching product');
     }
@@ -91,14 +63,82 @@ export const getProduct = async (productId) => {
 
 export const listProducts = async (filter) => {
     const params = new URLSearchParams(filter);
-    const response = await fetch(`${API_BASE_URL}/marketplace/products?${params}`);
-    return handleResponse(response);
+    try {
+        const response = await fetch(`${API_BASE_URL}/marketplace/products?${params}`);
+        return handleResponse(response);
+    } catch (error) {
+        throw new Error(error.message || 'Error listing products');
+    }
 };
 
 export const purchaseProduct = async (productId) => {
-    const response = await fetch(`${API_BASE_URL}/marketplace/products/${productId}/purchase`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-    });
-    return handleResponse(response);
+    try {
+        const response = await fetch(`${API_BASE_URL}/marketplace/products/${productId}/purchase`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+        });
+        return handleResponse(response);
+    } catch (error) {
+        throw new Error(error.message || 'Error processing purchase');
+    }
 };
+
+export const getProductDownloadUrl = async (productId) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/marketplace/products/files/${productId}`, {
+            headers: getAuthHeaders()
+        });
+        const data = await response.json();
+        console.log('Download URL Response:', data); // Debug log
+        if (!response.ok) throw new Error(data.detail || 'Failed to get download URL');
+        return data;
+    } catch (error) {
+        throw new Error(error.message || 'Error getting download URL');
+    }
+};
+
+export const verifyPurchase = async (sessionId) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/marketplace/purchase/verify/${sessionId}`, {
+            headers: getAuthHeaders()
+        });
+        return handleResponse(response);
+    } catch (error) {
+        throw new Error(error.message || 'Error verifying purchase');
+    }
+};
+
+export const getProductFiles = async (productId) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/marketplace/products/${productId}/files/info`, {
+            headers: getAuthHeaders()
+        });
+        return handleResponse(response);
+    } catch (error) {
+        throw new Error(error.message || 'Error getting file information');
+    }
+};
+
+export const downloadProductFile = async (url) => {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Download failed');
+        return response.blob();
+    } catch (error) {
+        throw new Error(error.message || 'Error downloading file');
+    }
+};
+
+const marketplaceService = {
+    createProduct,
+    uploadProductFiles,
+    getProduct,
+    listProducts,
+    purchaseProduct,
+    getProductDownloadUrl,
+    verifyPurchase,
+    getProductFiles,
+    downloadProductFile
+};
+
+export default marketplaceService;
