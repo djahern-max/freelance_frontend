@@ -77,7 +77,7 @@ const SubscriptionSuccess = () => {
     // Wait a short moment before verifying to allow webhook processing
     const verificationTimeout = setTimeout(
       verifySubscriptionAndCreateConversation,
-      2000
+      5000
     );
     return () => clearTimeout(verificationTimeout);
   }, [navigate]);
