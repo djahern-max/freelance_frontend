@@ -1,23 +1,20 @@
 /* src/components/payments/StripePayment.module.css */
 .paymentContainer {
-    width: 100%;
+    padding: 20px;
     max-width: 500px;
     margin: 0 auto;
-    padding: 20px;
 }
 
 .paymentCard {
     background: white;
+    padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 24px;
 }
 
 .cardTitle {
-    font-size: 1.5rem;
-    font-weight: 600;
     margin-bottom: 20px;
-    color: #333;
+    text-align: center;
 }
 
 .paymentForm {
@@ -27,10 +24,10 @@
 }
 
 .cardElementContainer {
-    padding: 16px;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    background-color: #f8fafc;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background: #f8f9fa;
 }
 
 .cardElement {
@@ -38,24 +35,22 @@
 }
 
 .errorMessage {
-    padding: 12px;
-    background-color: #fef2f2;
-    border: 1px solid #fee2e2;
-    border-radius: 6px;
-    color: #dc2626;
-    font-size: 0.875rem;
+    color: #dc3545;
+    font-size: 14px;
+    padding: 10px;
+    background: #fff3f3;
+    border-radius: 4px;
 }
 
 .submitButton {
-    width: 100%;
     padding: 12px;
-    background-color: #3b82f6;
+    background: #5469d4;
     color: white;
     border: none;
-    border-radius: 6px;
-    font-weight: 500;
+    border-radius: 4px;
+    font-size: 16px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background 0.2s ease;
 }
 
 .submitButton:hover {
@@ -63,8 +58,12 @@
 }
 
 .submitButton:disabled {
-    opacity: 0.5;
+    background: #93a3e8;
     cursor: not-allowed;
+}
+
+.submitButton.loading {
+    background: #93a3e8;
 }
 
 .loading {

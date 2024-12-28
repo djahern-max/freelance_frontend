@@ -1,17 +1,24 @@
-// src/components/payments/StripePayment.js
 import React, { useState } from 'react';
-import { Elements } from '@stripe/stripe-js';
+import { Elements, CardElement, useStripe, useElements } from '@stripe/stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import styles from './StripePayment.module.css';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
-const StripePayment = ({ amount, onSuccess, onError }) => {
+// Separate checkout form component that uses the hooks
+const CheckoutForm = ({ amount, onSuccess, onError }) => {
+    const stripe = useStripe();
+    const elements = useElements();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+
+        if (!stripe || !elements) {
+            return;
+        }
+
         setLoading(true);
         setError(null);
 
@@ -20,6 +27,7 @@ const StripePayment = ({ amount, onSuccess, onError }) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
                 body: JSON.stringify({ amount }),
             });
@@ -30,21 +38,25 @@ const StripePayment = ({ amount, onSuccess, onError }) => {
                 throw new Error(data.message || 'Payment failed');
             }
 
-            const stripe = await stripePromise;
-            const { error: stripeError } = await stripe.confirmCardPayment(data.clientSecret, {
-                payment_method: {
-                    card: elements.getElement('card'),
-                    billing_details: {
-                        name: 'Customer Name',
+            const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(
+                data.clientSecret,
+                {
+                    payment_method: {
+                        card: elements.getElement(CardElement),
+                        billing_details: {
+                            name: 'Customer Name',
+                        },
                     },
-                },
-            });
+                }
+            );
 
             if (stripeError) {
                 throw new Error(stripeError.message);
             }
 
-            onSuccess?.();
+            if (paymentIntent.status === 'succeeded') {
+                onSuccess?.();
+            }
         } catch (err) {
             setError(err.message);
             onError?.(err);
@@ -54,32 +66,52 @@ const StripePayment = ({ amount, onSuccess, onError }) => {
     };
 
     return (
+        <form onSubmit={handleSubmit} className={styles.paymentForm}>
+            <div className={styles.cardElementContainer}>
+                <CardElement
+                    options={{
+                        style: {
+                            base: {
+                                fontSize: '16px',
+                                color: '#424770',
+                                '::placeholder': {
+                                    color: '#aab7c4',
+                                },
+                            },
+                            invalid: {
+                                color: '#9e2146',
+                            },
+                        },
+                    }}
+                />
+            </div>
+
+            {error && (
+                <div className={styles.errorMessage}>
+                    {error}
+                </div>
+            )}
+
+            <button
+                type="submit"
+                disabled={loading || !stripe}
+                className={`${styles.submitButton} ${loading ? styles.loading : ''}`}
+            >
+                {loading ? 'Processing...' : `Pay $${(amount / 100).toFixed(2)}`}
+            </button>
+        </form>
+    );
+};
+
+// Main component that wraps the checkout form with Elements provider
+const StripePayment = (props) => {
+    return (
         <div className={styles.paymentContainer}>
             <div className={styles.paymentCard}>
                 <h2 className={styles.cardTitle}>Payment Details</h2>
-                <form onSubmit={handleSubmit} className={styles.paymentForm}>
-                    <div className={styles.cardElementContainer}>
-                        <Elements stripe={stripePromise}>
-                            <div className={styles.cardElement}>
-                                {/* Stripe Elements will be inserted here */}
-                            </div>
-                        </Elements>
-                    </div>
-
-                    {error && (
-                        <div className={styles.errorMessage}>
-                            {error}
-                        </div>
-                    )}
-
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className={`${styles.submitButton} ${loading ? styles.loading : ''}`}
-                    >
-                        {loading ? 'Processing...' : `Pay $${(amount / 100).toFixed(2)}`}
-                    </button>
-                </form>
+                <Elements stripe={stripePromise}>
+                    <CheckoutForm {...props} />
+                </Elements>
             </div>
         </div>
     );

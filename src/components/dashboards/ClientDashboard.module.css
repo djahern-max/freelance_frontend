@@ -37,30 +37,20 @@
 .headerCreateButton {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  padding: 0.4rem 0.8rem;
-  /* Reduced padding for a skinnier button */
-  background-color: var(--color-primary);
-  /* Primary color for background */
-  color: var(--color-background);
-  /* White text */
-  border: 1px solid var(--color-border);
-  /* Use global border color */
-  border-radius: 0.4rem;
-  /* Slightly smaller radius for a compact look */
+  gap: 0.5rem;
+  background-color: #4285f4;
+  color: white;
+  padding: 0.75rem 1.25rem;
+  border-radius: 6px;
+  border: none;
   cursor: pointer;
-  font-size: 0.85rem;
+  transition: background-color 0.2s ease;
+  font-size: 0.875rem;
   font-weight: 500;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  /* Subtle shadow for depth */
-  transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 .headerCreateButton:hover {
-  background-color: var(--color-primary-dark);
-  /* Darker shade on hover */
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+  background-color: #3367d6;
 }
 
 .headerCreateButton:active {
@@ -70,11 +60,9 @@
 }
 
 .buttonIcon {
-  width: 0.9rem;
-  /* Adjusted icon size to fit better with smaller button */
-  height: 0.9rem;
-  color: var(--color-background);
-  /* Match icon color with text */
+  width: 1.25rem;
+  height: 1.25rem;
+  stroke: white;
 }
 
 /* Stats Grid */

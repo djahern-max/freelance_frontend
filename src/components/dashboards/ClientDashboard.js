@@ -3,6 +3,7 @@ import {
   Clock,
   FolderOpen,
   Inbox,
+  PlusCircle,
   Plus,
   Share2,
   User,
@@ -608,7 +609,7 @@ const ClientDashboard = () => {
             onClick={() => setShowCreateModal(true)}
             className={styles.headerCreateButton}
           >
-            <Plus size={24} className={styles.buttonIcon} />
+            <PlusCircle size={20} className={styles.buttonIcon} />
             Create Ticket
           </button>
         </div>
