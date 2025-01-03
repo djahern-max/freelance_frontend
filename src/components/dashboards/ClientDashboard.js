@@ -626,17 +626,10 @@ const ClientDashboard = () => {
             onSubmit={handleCreateRequest}
           />
         )}
-      </div>
 
-      <div className={styles.content}>
-        {/* Other sections */}
+        {/* Remove the extra content div wrapping and adjust margins */}
         <MarketplaceProductsSection />
-
       </div>
-
-      {/* {showFeatureTour && (
-        <FeatureTour onComplete={() => setShowFeatureTour(false)} />
-      )} */}
     </div>
   );
 };

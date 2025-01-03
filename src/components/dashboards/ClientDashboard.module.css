@@ -70,8 +70,17 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
+  /* Reduce from 2rem to 1rem */
 }
+
+.marketplaceTitle {
+  margin-top: 1rem;
+  /* Add small top margin */
+  margin-bottom: 1rem;
+  /* Add consistent bottom margin */
+}
+
 
 .statCard {
   display: flex;

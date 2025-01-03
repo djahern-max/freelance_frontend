@@ -19,7 +19,7 @@ const Features = () => {
     },
     {
       icon: Bot,
-      title: 'Automation Tools',
+      title: 'Agents',
       path: '/marketplace/products',
       requiresAuth: false,
     },
