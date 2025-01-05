@@ -18,9 +18,9 @@ const PublicRequestCard = ({
             e.stopPropagation();
             onSnag(request.id);
           }}
-          title="Snag this request"
+          title="Send Sales Pitch"
         >
-          <span className={styles.snagText}>Snag It</span>
+          <span className={styles.snagText}>Connect</span>
         </span>
       );
     }
