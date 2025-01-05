@@ -1,25 +1,43 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Play, ArrowLeft } from 'lucide-react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { ArrowLeft, MessageSquare } from 'lucide-react';
 import { toast } from 'react-toastify';
+import { useSelector } from 'react-redux';
 import api from '../../utils/api';
 import styles from './SharedVideo.module.css';
+import CreateRequestModal from '../requests/CreateRequestModal';
+import AuthDialog from '../auth/AuthDialog';
 
 const SharedVideo = () => {
     const [video, setVideo] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [selectedCreator, setSelectedCreator] = useState(null);
+    const [showAuthDialog, setShowAuthDialog] = useState(false);
     const { shareToken } = useParams();
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const user = useSelector((state) => state.auth.user);
+    const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
     useEffect(() => {
         const fetchSharedVideo = async () => {
             try {
-                const response = await api.get(`/videos/shared/${shareToken}`);
+                const response = await api.get(`/shared/videos/${shareToken}`);
                 setVideo(response.data);
             } catch (err) {
                 console.error('Error fetching shared video:', err);
-                setError('Video not found or no longer available');
-                toast.error('Error loading video');
+
+                if (shareToken && shareToken.endsWith('.mp4')) {
+                    setVideo({
+                        title: 'Shared Video',
+                        file_path: `https://ryzevideosv3.nyc3.digitaloceanspaces.com/${shareToken}`
+                    });
+                } else {
+                    setError('Video not found or no longer available');
+                    toast.error('Error loading video');
+                }
             } finally {
                 setLoading(false);
             }
@@ -34,10 +52,52 @@ const SharedVideo = () => {
         window.history.back();
     };
 
+    const handleSendRequest = () => {
+        if (!isAuthenticated) {
+            setShowAuthDialog(true);
+            return;
+        }
+
+        if (user?.userType === 'developer') {
+            toast.info('As a creator, you cannot send requests to other creators.');
+            return;
+        }
+
+        setSelectedCreator({
+            id: video.user_id,
+            username: video.user?.full_name || video.user?.username || `Creator #${video.user_id}`,
+            videoId: video.id,
+        });
+    };
+
+    const handleRequestSent = (creatorUsername) => {
+        toast.success(
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ fontWeight: 'bold', marginBottom: '4px' }}>
+                    Request Sent Successfully
+                </span>
+                <span>
+                    Your request has been shared with {creatorUsername}. They will be
+                    notified and can review it shortly.
+                </span>
+            </div>,
+            {
+                position: 'top-center',
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            }
+        );
+        setSelectedCreator(null);
+    };
+
     if (loading) {
         return (
             <div className={styles.container}>
-                <div className={styles.loadingSpinner}></div>
+                <div className={styles.loadingSpinner} />
             </div>
         );
     }
@@ -82,6 +142,18 @@ const SharedVideo = () => {
                     </video>
                 </div>
 
+                <div className={styles.actionButtons}>
+                    {user?.userType !== 'developer' && (
+                        <button
+                            className={styles.requestButton}
+                            onClick={handleSendRequest}
+                        >
+                            <MessageSquare size={16} className={styles.icon} />
+                            <span>Send Me a Request</span>
+                        </button>
+                    )}
+                </div>
+
                 {video.description && (
                     <div className={styles.description}>
                         <p>{video.description}</p>
@@ -100,11 +172,33 @@ const SharedVideo = () => {
                         </a>
                     </div>
                 )}
-
-                <div className={styles.metadata}>
-                    <span>Uploaded: {new Date(video.upload_date).toLocaleDateString()}</span>
-                </div>
             </div>
+
+            <AuthDialog
+                isOpen={showAuthDialog}
+                onClose={() => setShowAuthDialog(false)}
+                onLogin={() => navigate('/login', { state: { from: location.pathname } })}
+                onRegister={() => navigate('/register', { state: { from: location.pathname } })}
+            />
+
+            {selectedCreator && (
+                <CreateRequestModal
+                    onClose={() => setSelectedCreator(null)}
+                    onSubmit={async (formData) => {
+                        try {
+                            await api.post('/requests/', {
+                                ...formData,
+                                developer_id: selectedCreator.id,
+                                video_id: selectedCreator.videoId,
+                            });
+                            handleRequestSent(selectedCreator.username);
+                        } catch (error) {
+                            toast.error('Failed to send request');
+                            console.error('Request error:', error);
+                        }
+                    }}
+                />
+            )}
         </div>
     );
 };
