@@ -36,7 +36,7 @@ const SnagTicketModal = ({
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
         <div className={styles.modalHeader}>
-          <h2 className={styles.modalTitle}>Snag This Request</h2>
+          <h2 className={styles.modalTitle}>Send Sales Pitch</h2>
           <button onClick={onClose} className={styles.closeButton}>
             <X size={20} />
           </button>
