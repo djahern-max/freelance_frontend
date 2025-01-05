@@ -6,9 +6,10 @@ import {
   Search,
   UserCircle,
   UsersRound,
-  Bot,
+  CheckCircle,
 
   Video,
+  Check,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -71,8 +72,8 @@ const Header = () => {
       },
       {
         path: '/marketplace/products',
-        icon: Bot,
-        title: 'Marketplace',
+        icon: CheckCircle,
+        title: 'Solutions',
         requiresAuth: false,
       },
       {

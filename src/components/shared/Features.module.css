@@ -85,10 +85,10 @@
 
 .featureCards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: var(--spacing-md);
   margin-bottom: 16px;
-  /* Reduced from var(--spacing-md) */
+  /* Default: 4 columns for large screens */
+  grid-template-columns: repeat(4, 1fr);
 }
 
 .card {
@@ -150,6 +150,12 @@
   margin-bottom: 0;
 }
 
+@media (max-width: 1024px) {
+  .featureCards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
   .featureCards {
     grid-template-columns: 1fr;
@@ -157,6 +163,12 @@
 
   .introSection h1 {
     font-size: 2rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .featureCards {
+    grid-template-columns: 1fr;
   }
 }
 

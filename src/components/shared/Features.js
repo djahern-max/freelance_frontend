@@ -1,4 +1,4 @@
-import { Search, Users2, Video, Bot } from 'lucide-react';
+import { Search, Users2, Video, Bot, CheckCircle } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { selectIsAuthenticated } from '../../redux/authSlice';
@@ -18,8 +18,8 @@ const Features = () => {
       requiresAuth: false,
     },
     {
-      icon: Bot,
-      title: 'Agents',
+      icon: CheckCircle,
+      title: 'Solutions',
       path: '/marketplace/products',
       requiresAuth: false,
     },
