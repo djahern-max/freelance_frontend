@@ -8,6 +8,115 @@ import AuthDialog from '../auth/AuthDialog';
 import CreateRequestModal from '../requests/CreateRequestModal';
 import VideoEmptyState from './VideoEmptyState';
 import styles from './VideoList.module.css';
+import ShareButton from './ShareButton';
+
+const VideoItem = ({
+  video,
+  onVideoClick,
+  isAuthenticated,
+  onVote,
+  onSendRequest,
+  expandedDescriptions,
+  toggleDescription,
+  user,
+  formatDate
+}) => {
+  return (
+    <div className={styles.videoCard}>
+      <div
+        className={styles.thumbnailContainer}
+        onClick={() => onVideoClick(video)}
+      >
+        {video.thumbnail_path ? (
+          <>
+            <img
+              src={video.thumbnail_path}
+              alt={video.title || 'Video Thumbnail'}
+              className={styles.thumbnail}
+            />
+            <div className={styles.playButton}>
+              <Play size={24} />
+            </div>
+          </>
+        ) : (
+          <div className={styles.thumbnailPlaceholder}>
+            <Play size={32} className={styles.playButton} />
+          </div>
+        )}
+      </div>
+      <div className={styles.contentContainer}>
+        <h2 className={styles.videoTitle}>
+          {video.title || 'Untitled Video'}
+        </h2>
+
+        <div className={styles.actionButtons}>
+          {user?.userType !== 'developer' && (
+            <button
+              className={styles.requestButton}
+              onClick={(e) => {
+                e.stopPropagation();
+                onSendRequest(video);
+              }}
+            >
+              <MessageSquare size={16} className={styles.icon} />
+              <span>Send Me a Request</span>
+            </button>
+          )}
+
+          <div className={styles.videoItem}>
+            <ShareButton
+              videoId={video?.id}
+              projectUrl={video?.project_url}
+            />
+          </div>
+        </div>
+
+        {video.description && (
+          <div className={styles.description}>
+            <p>
+              {expandedDescriptions.has(video.id)
+                ? video.description
+                : `${video.description.substring(0, 100)}${video.description.length > 100 ? '...' : ''
+                }`}
+            </p>
+            {video.description.length > 100 && (
+              <button
+                className={styles.readMoreButton}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleDescription(video.id);
+                }}
+              >
+                {expandedDescriptions.has(video.id) ? 'Show Less' : 'Read More'}
+              </button>
+            )}
+          </div>
+        )}
+
+        <div className={styles.metadata}>
+          <span>{formatDate(video.upload_date)}</span>
+          <div className={styles.likeContainer}>
+            <button
+              className={`${styles.likeButton} ${video.liked_by_user ? styles.liked : ''
+                }`}
+              onClick={(e) => {
+                e.stopPropagation();
+                onVote(video.id, video.liked_by_user);
+              }}
+            >
+              <ThumbsUp
+                size={16}
+                className={styles.icon}
+                fill={video.liked_by_user ? 'currentColor' : 'none'}
+              />
+              <span>{video.likes}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const VideoList = () => {
   const [videos, setVideos] = useState([]);
@@ -75,19 +184,7 @@ const VideoList = () => {
     }
   };
 
-  const handleVideoClick = (video) => {
-    if (!isAuthenticated) {
-      setSelectedVideo(video);
-      setShowAuthDialog(true);
-      return;
-    }
-    if (!video || !video.file_path) {
-      console.error('Invalid video data:', video);
-      return;
-    }
-    setSelectedVideo({ ...video, streamUrl: video.file_path });
-    setShowVideoModal(true);
-  };
+
 
   const toggleDescription = (videoId) => {
     setExpandedDescriptions((prev) => {
@@ -191,6 +288,22 @@ const VideoList = () => {
     setSelectedCreator(null);
   };
 
+
+  const handleVideoClick = (video) => {
+    if (!isAuthenticated) {
+      setSelectedVideo(video);
+      setShowAuthDialog(true);
+      return;
+    }
+    if (!video || !video.file_path) {
+      console.error('Invalid video data:', video);
+      return;
+    }
+    setSelectedVideo({ ...video, streamUrl: video.file_path });
+    setShowVideoModal(true);
+  };
+
+  // Your existing empty state check
   if (error || !videos || videos.length === 0) {
     return (
       <div className={styles.container}>
@@ -220,98 +333,23 @@ const VideoList = () => {
           </button>
         )}
       </div>
-
       <div className={styles.grid}>
         {videos.map((video) => (
-          <div key={video.id || Math.random()} className={styles.videoCard}>
-            <div
-              className={styles.thumbnailContainer}
-              onClick={() => handleVideoClick(video)}
-            >
-              {video.thumbnail_path ? (
-                <>
-                  <img
-                    src={video.thumbnail_path}
-                    alt={video.title || 'Video Thumbnail'}
-                    className={styles.thumbnail}
-                  />
-                  <div className={styles.playButton}>
-                    <Play size={24} />
-                  </div>
-                </>
-              ) : (
-                <div className={styles.thumbnailPlaceholder}>
-                  <Play size={32} className={styles.playButton} />
-                </div>
-              )}
-            </div>
-
-            <div className={styles.contentContainer}>
-              <h2 className={styles.videoTitle}>
-                {video.title || 'Untitled Video'}
-              </h2>
-
-              {user?.userType !== 'developer' && (
-                <button
-                  className={styles.requestButton}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleSendRequest(video);
-                  }}
-                >
-                  <MessageSquare size={16} className={styles.icon} />
-                  <span>Send Me a Request</span>
-                </button>
-              )}
-
-              {video.description && (
-                <div className={styles.description}>
-                  <p>
-                    {expandedDescriptions.has(video.id)
-                      ? video.description
-                      : `${video.description.substring(0, 100)}${video.description.length > 100 ? '...' : ''
-                      }`}
-                  </p>
-                  {video.description.length > 100 && (
-                    <button
-                      className={styles.readMoreButton}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleDescription(video.id);
-                      }}
-                    >
-                      {expandedDescriptions.has(video.id)
-                        ? 'Show Less'
-                        : 'Read More'}
-                    </button>
-                  )}
-                </div>
-              )}
-
-              <div className={styles.metadata}>
-                <span>{formatDate(video.upload_date)}</span>
-                <div className={styles.likeContainer}>
-                  <button
-                    className={`${styles.likeButton} ${video.liked_by_user ? styles.liked : ''
-                      }`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleVote(video.id, video.liked_by_user);
-                    }}
-                  >
-                    <ThumbsUp
-                      size={16}
-                      className={styles.icon}
-                      fill={video.liked_by_user ? 'currentColor' : 'none'}
-                    />
-                    <span>{video.likes}</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+          <VideoItem
+            key={video.id || Math.random()}
+            video={video}
+            onVideoClick={handleVideoClick}
+            isAuthenticated={isAuthenticated}
+            onVote={handleVote}
+            onSendRequest={handleSendRequest}
+            expandedDescriptions={expandedDescriptions}
+            toggleDescription={toggleDescription}
+            user={user}
+            formatDate={formatDate}
+          />
         ))}
       </div>
+
 
       {showVideoModal && selectedVideo && (
         <div className={styles.modal}>
@@ -406,6 +444,6 @@ const VideoList = () => {
       )}
     </div>
   );
-};
+}
 
 export default VideoList;

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { verifyPurchase } from '../../utils/marketplaceService';
-import ProductDownload from '../marketplace/product/ProductDownload';
+
 import styles from './DeveloperRatingSection.module.css';
 
 
@@ -64,7 +64,7 @@ const PurchaseSuccessPage = () => {
           <p className={styles.successMessage}>
             Thank you for your purchase. You can now download your product files below.
           </p>
-          {productId && <ProductDownload productId={productId} />}
+
         </div>
       </div>
     </div>

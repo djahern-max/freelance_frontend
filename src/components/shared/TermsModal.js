@@ -9,8 +9,7 @@ const TermsModal = ({ isOpen, onClose }) => {
         <h2 className={styles.title}>Terms and Conditions</h2>
         <div className={styles.content}>
           <p>
-            Welcome to RYZE.ai, a platform owned and operated by 12X, Inc.
-            ("we," "us," "our"). By registering for and using our platform, you
+            Welcome to RYZE.ai ("we," "us," "our"). By registering for and using our platform, you
             ("user," "you") agree to abide by these Terms of Agreement. Please
             read them carefully, as they define your rights, responsibilities,
             and the limitations of our liability.
@@ -28,10 +27,9 @@ const TermsModal = ({ isOpen, onClose }) => {
           <h3>2. Financial Transactions</h3>
           <p>
             All financial transactions and exchanges of funds between users are
-            conducted outside of the RYZE.ai platform. RYZE.ai and 12X, Inc. do
-            not facilitate, process, or monitor payments between users. Users
-            are fully responsible for ensuring timely payment and adherence to
-            agreed terms.
+            conducted outside of the RYZE.ai platform. RYZE.ai does not facilitate,
+            process, or monitor payments between users. Users are fully responsible
+            for ensuring timely payment and adherence to agreed terms.
           </p>
 
           <h3>3. User Responsibilities</h3>
@@ -45,17 +43,16 @@ const TermsModal = ({ isOpen, onClose }) => {
               regulations in your jurisdiction.
             </li>
             <li>
-              You agree to indemnify and hold RYZE.ai and 12X, Inc. harmless
-              from any claims, damages, or disputes arising from your use of the
-              platform.
+              You agree to indemnify and hold RYZE.ai harmless from any claims,
+              damages, or disputes arising from your use of the platform.
             </li>
           </ul>
 
           <h3>4. Limitations of Liability</h3>
           <p>
-            RYZE.ai and 12X, Inc. are not liable for user actions, disputes, or
-            agreements. We are also not responsible for damages resulting from
-            the use of the platform, interruptions in service, or errors.
+            RYZE.ai is not liable for user actions, disputes, or agreements.
+            We are also not responsible for damages resulting from the use of
+            the platform, interruptions in service, or errors.
           </p>
 
           <h3>5. Acceptance of Terms</h3>

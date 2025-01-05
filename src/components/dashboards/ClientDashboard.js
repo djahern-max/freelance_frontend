@@ -22,7 +22,7 @@ import RequestGroupingToolbar from '../requests/RequestGroupingToolbar';
 import Header from '../shared/Header';
 import styles from './ClientDashboard.module.css';
 import DashboardSections from './DashboardSections';
-import MarketplaceProductsSection from '../marketplace/product/MarketplaceProductsSection';
+
 
 const ClientDashboard = () => {
   const [dashboardData, setDashboardData] = useState({
@@ -627,8 +627,7 @@ const ClientDashboard = () => {
           />
         )}
 
-        {/* Remove the extra content div wrapping and adjust margins */}
-        <MarketplaceProductsSection />
+
       </div>
     </div>
   );

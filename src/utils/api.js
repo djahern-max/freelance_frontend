@@ -23,6 +23,10 @@ if (process.env.NODE_ENV === 'development') {
 
 // API Routes constants
 export const API_ROUTES = {
+  VIDEOS: {
+    DISPLAY: '/video_display',
+    SHARE: (id) => `/videos/${id}/share`,
+  },
   RATINGS: {
     DEVELOPER: (id) => `/ratings/developer/${id}`,
     USER_RATING: (id) => `/ratings/developer/${id}/user-rating`,
@@ -453,6 +457,30 @@ api.agreements = {
       throw new Error(api.helpers.handleError(error));
     }
   },
+};
+
+api.videos = {
+  async shareVideo(videoId, projectUrl) {
+    try {
+      const response = await api.post(API_ROUTES.VIDEOS.SHARE(videoId), {
+        project_url: projectUrl
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error sharing video:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async getDisplayVideos() {
+    try {
+      const response = await api.get(API_ROUTES.VIDEOS.DISPLAY);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching videos:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
+  }
 };
 
 // Add the ratings methods as a separate object

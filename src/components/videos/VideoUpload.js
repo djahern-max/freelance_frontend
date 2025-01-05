@@ -19,6 +19,7 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
   const [messageType, setMessageType] = useState(null);
   const [preview, setPreview] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
+  const [projectUrl, setProjectUrl] = useState('');
 
   const navigate = useNavigate();
 
@@ -201,6 +202,18 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Enter video description"
+              disabled={uploading}
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>Project URL (Optional)</label>
+            <input
+              type="url"
+              className={styles.input}
+              value={projectUrl}
+              onChange={(e) => setProjectUrl(e.target.value)}
+              placeholder="Enter project URL (optional)"
               disabled={uploading}
             />
           </div>

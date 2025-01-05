@@ -17,7 +17,7 @@ import SubscriptionDialog from '../payments/SubscriptionDialog';
 import Header from '../shared/Header';
 import DashboardSections from './DashboardSections';
 import styles from './DeveloperDashboard.module.css';
-import ListProductButton from '../marketplace/product/ListProductButton';
+
 
 
 // RequestCard component remains the same
@@ -617,7 +617,7 @@ const DeveloperDashboard = () => {
       <div className={styles.content}>
         <div className={styles.dashboardHeader}>
           <div className={styles.headerButtons}>
-            <ListProductButton />
+
             <button
               onClick={() => navigate('/opportunities')}
               className={styles.headerCreateButton}
