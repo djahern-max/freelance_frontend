@@ -24,20 +24,12 @@ const SharedVideo = () => {
     useEffect(() => {
         const fetchSharedVideo = async () => {
             try {
-                const response = await api.get(`/shared/videos/${shareToken}`);
-                setVideo(response.data);
+                const response = await api.videos.getSharedVideo(shareToken);
+                setVideo(response);
             } catch (err) {
                 console.error('Error fetching shared video:', err);
-
-                if (shareToken && shareToken.endsWith('.mp4')) {
-                    setVideo({
-                        title: 'Shared Video',
-                        file_path: `https://ryzevideosv3.nyc3.digitaloceanspaces.com/${shareToken}`
-                    });
-                } else {
-                    setError('Video not found or no longer available');
-                    toast.error('Error loading video');
-                }
+                setError('Video not found or no longer available');
+                toast.error('Error loading video');
             } finally {
                 setLoading(false);
             }

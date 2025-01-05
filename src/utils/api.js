@@ -26,6 +26,7 @@ export const API_ROUTES = {
   VIDEOS: {
     DISPLAY: '/video_display',
     SHARE: (id) => `/videos/${id}/share`,
+    SHARED: (token) => `/video_display/shared/${token}`,
   },
   RATINGS: {
     DEVELOPER: (id) => `/ratings/developer/${id}`,
@@ -468,6 +469,16 @@ api.videos = {
       return response.data;
     } catch (error) {
       console.error('Error sharing video:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async getSharedVideo(shareToken) {
+    try {
+      const response = await api.get(API_ROUTES.VIDEOS.SHARED(shareToken));
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching shared video:', error);
       throw new Error(api.helpers.handleError(error));
     }
   },

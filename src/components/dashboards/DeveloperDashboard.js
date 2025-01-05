@@ -617,13 +617,20 @@ const DeveloperDashboard = () => {
       <div className={styles.content}>
         <div className={styles.dashboardHeader}>
           <div className={styles.headerButtons}>
-
             <button
               onClick={() => navigate('/opportunities')}
               className={styles.headerCreateButton}
             >
               <Plus size={24} className={styles.buttonIcon} />
               Explore Open Tickets
+            </button>
+
+            <button
+              onClick={() => navigate('/projects/publish')}
+              className={`${styles.headerCreateButton} ${styles.publishButton}`}
+            >
+              <Plus size={24} className={styles.buttonIcon} />
+              Publish Project
             </button>
           </div>
         </div>

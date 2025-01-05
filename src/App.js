@@ -35,6 +35,7 @@ import VideoList from './components/videos/VideoList';
 import VideoUpload from './components/videos/VideoUpload';
 import DeveloperProfileView from './components/profiles/DeveloperProfileView';
 import SharedVideo from './components/videos/SharedVideo';
+import ProjectShowcase from './components/projects/ProjectShowcase';
 
 
 
@@ -137,6 +138,7 @@ function AppContent() {
                   <Route path="/creators" element={<PublicDevelopers />} />
                   <Route path="/shared/videos/:shareToken" element={<SharedVideo />} />
                   <Route path="/shared/videos/:shareToken" element={<SharedVideo />} />
+                  <Route path="/showcase" element={<ProjectShowcase />} />
                   {/* Marketplace routes */}
 
 

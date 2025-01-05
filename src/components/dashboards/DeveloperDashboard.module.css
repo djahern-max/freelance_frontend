@@ -1133,6 +1133,21 @@
   /* Reduce bottom margin */
 }
 
+.publishButton {
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+}
+
+.publishButton:hover {
+  background-color: #4338ca;
+}
+
+.publishButton .buttonIcon {
+  color: white;
+}
+
+
 /* Add this to DeveloperDashboard.module.css */
 @media (min-width: 900px) {
   .statsGrid {
@@ -1295,6 +1310,17 @@
     width: 100%;
     justify-content: flex-start;
   }
+
+  .headerButtons {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .headerCreateButton,
+  .publishButton {
+    width: 100%;
+  }
+
 }
 
 

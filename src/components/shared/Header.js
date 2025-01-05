@@ -71,11 +71,12 @@ const Header = () => {
         requiresAuth: false,
       },
       {
-        path: '/marketplace/products',
+        path: '/showcase',
         icon: CheckCircle,
         title: 'Solutions',
         requiresAuth: false,
       },
+
       {
         path: '/creators',
         icon: UsersRound,
