@@ -28,7 +28,9 @@ export const API_ROUTES = {
     CREATE: '/project-showcase/',
     DETAIL: (id) => `/project-showcase/${id}`,
     DEVELOPER: (id) => `/project-showcase/developer/${id}`,
-
+    // Fix these routes by removing 'showcase' from the path
+    RATING: (id) => `/project-showcase/${id}/rating`,
+    USER_RATING: (id) => `/project-showcase/${id}/user-rating`
   },
   VIDEOS: {
     DISPLAY: '/video_display',
@@ -648,7 +650,6 @@ api.snaggedRequests = {
 };
 
 api.showcase = {
-
   async create(showcaseData) {
     try {
       const response = await api.post(API_ROUTES.SHOWCASE.CREATE, showcaseData, {
@@ -682,8 +683,47 @@ api.showcase = {
     } catch (error) {
       throw new Error(api.helpers.handleError(error));
     }
+  },
+
+  async getRating(showcaseId) {
+    try {
+      const response = await api.get(API_ROUTES.SHOWCASE.RATING(showcaseId));
+      return response.data;
+    } catch (error) {
+      if (error.response?.status === 404) {
+        return {
+          average_rating: 0,
+          total_ratings: 0
+        };
+      }
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async getUserRating(showcaseId) {
+    try {
+      const response = await api.get(API_ROUTES.SHOWCASE.USER_RATING(showcaseId));
+      return response.data;
+    } catch (error) {
+      if (error.response?.status === 404) {
+        return null;
+      }
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async submitRating(showcaseId, rating) {
+    try {
+      const response = await api.post(API_ROUTES.SHOWCASE.RATING(showcaseId), {
+        stars: rating
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(api.helpers.handleError(error));
+    }
   }
 };
+
 
 
 

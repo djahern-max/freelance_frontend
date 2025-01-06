@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
-import { Star, MessageSquare } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { MessageSquare } from 'lucide-react';
 import api from '../../utils/api';
 import { toast } from 'react-toastify';
 import styles from './ShowcaseCard.module.css';
 import { useSelector } from 'react-redux';
 import ReadmePage from './ReadmePage';
+import StarRating from '../shared/StarRating';
+import CreateRequestModal from '../requests/CreateRequestModal';
+
 
 const ShowcaseCard = ({ showcase, isOwner }) => {
     const [expanded, setExpanded] = useState(false);
@@ -13,8 +16,31 @@ const ShowcaseCard = ({ showcase, isOwner }) => {
     const [totalRatings, setTotalRatings] = useState(0);
     const [loading, setLoading] = useState(false);
     const [showReadme, setShowReadme] = useState(false);
+    const [showRequestModal, setShowRequestModal] = useState(false);
     const user = useSelector((state) => state.auth.user);
     const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+
+    useEffect(() => {
+        const fetchRatings = async () => {
+            try {
+                // Use the api.showcase methods
+                const ratingData = await api.showcase.getRating(showcase.id);
+                setAverageRating(ratingData.average_rating || 0);
+                setTotalRatings(ratingData.total_ratings || 0);
+
+                if (isAuthenticated) {
+                    const userRatingData = await api.showcase.getUserRating(showcase.id);
+                    if (userRatingData) {
+                        setUserRating(userRatingData.stars);
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching ratings:', error);
+            }
+        };
+
+        fetchRatings();
+    }, [showcase.id, isAuthenticated]);
 
     const handleRating = async (rating) => {
         if (!isAuthenticated) {
@@ -22,10 +48,22 @@ const ShowcaseCard = ({ showcase, isOwner }) => {
             return;
         }
 
+        if (isOwner) {
+            toast.error('You cannot rate your own project');
+            return;
+        }
+
         try {
             setLoading(true);
-            // TODO: Implement rating endpoint in backend
-            toast.info('Rating feature coming soon!');
+            // Use the correct endpoint for rating submission
+            const response = await api.showcase.submitRating(showcase.id, rating);
+
+            if (response.data) {
+                setUserRating(rating);
+                setAverageRating(response.data.average_rating);
+                setTotalRatings(response.data.total_ratings);
+                toast.success('Rating submitted successfully!');
+            }
         } catch (error) {
             console.error('Error submitting rating:', error);
             toast.error('Failed to submit rating');
@@ -34,24 +72,32 @@ const ShowcaseCard = ({ showcase, isOwner }) => {
         }
     };
 
-    const handleContactDeveloper = async () => {
+    const handleContactDeveloper = () => {
         if (!isAuthenticated) {
             toast.error('Please login to contact the developer');
             return;
         }
 
-        try {
-            await api.conversations.create({
-                developer_id: showcase.developer_id,
-                message: `I'm interested in your project "${showcase.title}"`,
-                includeShowcase: true,
-                showcaseId: showcase.id
-            });
-            toast.success('Message sent to developer!');
-        } catch (error) {
-            console.error('Error contacting developer:', error);
-            toast.error('Failed to contact developer');
+        if (user?.userType === 'developer') {
+            toast.info('As a developer, you cannot send requests to other developers.');
+            return;
         }
+
+        setShowRequestModal(true);
+    };
+
+    const handleRequestSent = () => {
+        toast.success(
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ fontWeight: 'bold', marginBottom: '4px' }}>
+                    Request Sent Successfully
+                </span>
+                <span>
+                    Your request has been shared with the developer. They will be notified shortly.
+                </span>
+            </div>
+        );
+        setShowRequestModal(false);
     };
 
     return (
@@ -83,16 +129,11 @@ const ShowcaseCard = ({ showcase, isOwner }) => {
                 </div>
 
                 <div className={styles.ratingContainer}>
-                    <div className={styles.stars}>
-                        {[1, 2, 3, 4, 5].map((star) => (
-                            <Star
-                                key={star}
-                                size={20}
-                                className={`${styles.star} ${star <= userRating ? styles.starFilled : styles.starEmpty}`}
-                                onClick={() => !loading && handleRating(star)}
-                            />
-                        ))}
-                    </div>
+                    <StarRating
+                        value={userRating}
+                        onChange={handleRating}
+                        disabled={loading || isOwner}
+                    />
                     <span className={styles.ratingInfo}>
                         ({averageRating.toFixed(1)} • {totalRatings} ratings)
                     </span>
@@ -151,6 +192,26 @@ const ShowcaseCard = ({ showcase, isOwner }) => {
                     </button>
                 )}
             </div>
+
+            {showRequestModal && (
+                <CreateRequestModal
+                    creatorId={String(showcase.developer_id)}
+                    onClose={() => setShowRequestModal(false)}
+                    onSubmit={async (formData) => {
+                        try {
+                            await api.post('/requests/', {
+                                ...formData,
+                                developer_id: showcase.developer_id,
+                                showcase_id: showcase.id
+                            });
+                            handleRequestSent();
+                        } catch (error) {
+                            console.error('Request error:', error);
+                            toast.error('Failed to send request');
+                        }
+                    }}
+                />
+            )}
         </div>
     );
 };

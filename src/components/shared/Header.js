@@ -7,13 +7,11 @@ import {
   UserCircle,
   UsersRound,
   CheckCircle,
-
   Video,
-  Check,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import AuthDialog from '../auth/AuthDialog';
 import FeedbackModal from '../feedback/FeedbackModal';
 import SharedRequestNotification from '../requests/SharedRequestNotification';
@@ -27,137 +25,77 @@ const Header = () => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const userType = useSelector((state) => state.auth.userType);
   const navigate = useNavigate();
-  const location = useLocation();
 
-  const handleLoginClick = () => {
-    setShowAuthDialog(true);
-  };
-
-  const handleAuthDialogClose = () => {
-    setShowAuthDialog(false);
-  };
-
-  const handleLoginRedirect = () => {
-    setShowAuthDialog(false);
-    navigate('/login');
-  };
-
-  const handleRegisterRedirect = () => {
-    setShowAuthDialog(false);
-    navigate('/register');
-  };
-
-  const handleLogout = () => {
-    dispatch({ type: 'LOGOUT' });
-    navigate('/login');
-  };
-
-  const getDashboardPath = () => {
-    return userType === 'client' ? '/client-dashboard' : '/developer-dashboard';
-  };
-
-  const getPages = () => {
-    const pages = [
-      {
-        path: getDashboardPath(),
-        icon: LayoutDashboard,
-        title: 'Dashboard',
-        requiresAuth: true,
-      },
-      {
-        path: '/opportunities',
-        icon: Search,
-        title: 'Opportunities',
-        requiresAuth: false,
-      },
-      {
-        path: '/showcase',
-        icon: CheckCircle,
-        title: 'Solutions',
-        requiresAuth: false,
-      },
-
-      {
-        path: '/creators',
-        icon: UsersRound,
-        title: 'Creators',
-        requiresAuth: false,
-      },
-      {
-        path: '/videos',
-        icon: Video,
-        title: 'Videos',
-        requiresAuth: false,
-      },
-
-    ];
-
-    return pages;
-  };
-
-  // Update the handleNavigation function to handle function paths
-  const handleNavigation = (path) => {
-    const page = getPages().find((p) => p.path === path || (typeof path === 'function' && p.path === path));
-    if (page?.requiresAuth && !isAuthenticated) {
-      navigate('/login', { state: { from: typeof path === 'function' ? path() : path } });
-      return;
+  // Define navigation items
+  const navigationItems = [
+    {
+      path: '/opportunities',
+      icon: Search,
+      title: 'Opportunities'
+    },
+    {
+      path: '/showcase',
+      icon: CheckCircle,
+      title: 'Solutions'
+    },
+    {
+      path: '/creators',
+      icon: UsersRound,
+      title: 'Creators'
+    },
+    {
+      path: '/videos',
+      icon: Video,
+      title: 'Videos'
     }
-    navigate(typeof path === 'function' ? path() : path);
-  };
+  ];
 
-  const navigationItems = getPages().filter((page) => {
-    const currentPath = location.pathname.split('?')[0];
-    return (
-      (!page.requiresAuth || (page.requiresAuth && isAuthenticated)) &&
-      page.path !== currentPath &&
-      !(
-        userType === 'client' &&
-        currentPath === '/requests' &&
-        page.path === '/client-dashboard'
-      ) &&
-      !(
-        page.path === getDashboardPath() &&
-        (currentPath === '/client-dashboard' ||
-          currentPath === '/developer-dashboard' ||
-          currentPath === '/requests')
-      )
-    );
-  });
+  // Only add Dashboard if user is authenticated
+  if (isAuthenticated) {
+    navigationItems.unshift({
+      path: userType === 'client' ? '/client-dashboard' : '/developer-dashboard',
+      icon: LayoutDashboard,
+      title: 'Dashboard'
+    });
+  }
 
   const menuItems = [
     {
       icon: MessageSquareMore,
       title: 'Feedback',
-      onClick: () => setShowFeedbackModal(true),
+      onClick: () => setShowFeedbackModal(true)
     },
     ...(isAuthenticated
       ? [
         {
           icon: UserCircle,
           title: 'Profile',
-          onClick: () => navigate('/profile'),
+          onClick: () => navigate('/profile')
         },
         {
           icon: LogOut,
           title: 'Logout',
-          onClick: handleLogout,
-        },
+          onClick: () => {
+            dispatch({ type: 'LOGOUT' });
+            navigate('/login');
+          }
+        }
       ]
-      : []),
+      : [])
   ];
 
   return (
     <header className={styles.header}>
       <div className={styles.iconBar}>
         <div className={styles.leftSection}>
-          {navigationItems.map((page) => (
+          {navigationItems.map((item) => (
             <div
-              key={page.path}
+              key={item.path}
               className={styles.icon}
-              onClick={() => handleNavigation(page.path)}
-              title={page.title}
+              onClick={() => navigate(item.path)}
+              title={item.title}
             >
-              <page.icon
+              <item.icon
                 className={styles.iconImage}
                 size={24}
                 strokeWidth={1.5}
@@ -189,7 +127,10 @@ const Header = () => {
           </div>
 
           {!isAuthenticated && (
-            <button className={styles.signInButton} onClick={handleLoginClick}>
+            <button
+              className={styles.signInButton}
+              onClick={() => setShowAuthDialog(true)}
+            >
               <LogIn size={20} />
               <span>Sign In</span>
             </button>
@@ -207,9 +148,15 @@ const Header = () => {
 
       <AuthDialog
         isOpen={showAuthDialog}
-        onClose={handleAuthDialogClose}
-        onLogin={handleLoginRedirect}
-        onRegister={handleRegisterRedirect}
+        onClose={() => setShowAuthDialog(false)}
+        onLogin={() => {
+          setShowAuthDialog(false);
+          navigate('/login');
+        }}
+        onRegister={() => {
+          setShowAuthDialog(false);
+          navigate('/register');
+        }}
       />
     </header>
   );
