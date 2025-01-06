@@ -1,0 +1,110 @@
+/* src/components/developerProjects/PublishProject.module.css */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background: white;
+    padding: 24px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    color: #333;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.formGroup label {
+    font-weight: 500;
+    color: #555;
+}
+
+.input,
+.textarea {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.input:focus,
+.textarea:focus {
+    outline: none;
+    border-color: #6366f1;
+}
+
+.textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.buttonGroup {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.cancelButton,
+.submitButton {
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.cancelButton {
+    background: white;
+    border: 1px solid #ddd;
+    color: #666;
+}
+
+.submitButton {
+    background: #6366f1;
+    border: none;
+    color: white;
+}
+
+.submitButton:hover {
+    background: #4f46e5;
+}
+
+.submitButton:disabled {
+    background: #a5b4fc;
+    cursor: not-allowed;
+}
+
+.error {
+    background: #fee2e2;
+    color: #dc2626;
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+}

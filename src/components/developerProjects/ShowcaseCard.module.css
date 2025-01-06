@@ -1,0 +1,62 @@
+.card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.description {
+    color: #4a5568;
+    margin-bottom: 16px;
+    line-height: 1.5;
+}
+
+.toggleButton {
+    color: #0066cc;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-size: 0.875rem;
+    margin-bottom: 16px;
+}
+
+.toggleButton:hover {
+    color: #0052a3;
+}
+
+.details {
+    border-top: 1px solid #e2e8f0;
+    padding-top: 16px;
+}
+
+.ratingContainer {
+    margin-bottom: 16px;
+}
+
+.videoSection,
+.readmeSection {
+    margin-top: 16px;
+}
+
+.readmeSection h4 {
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.readmeContent {
+    background: #f7fafc;
+    padding: 12px;
+    border-radius: 4px;
+    white-space: pre-wrap;
+    font-size: 0.875rem;
+    font-family: monospace;
+}

@@ -9,7 +9,7 @@ import {
   User,
 } from 'lucide-react';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
@@ -17,7 +17,7 @@ import SubscriptionDialog from '../payments/SubscriptionDialog';
 import Header from '../shared/Header';
 import DashboardSections from './DashboardSections';
 import styles from './DeveloperDashboard.module.css';
-
+import PublishProject from '../developerProjects/PublishProject';
 
 
 // RequestCard component remains the same
@@ -25,8 +25,10 @@ const RequestCard = ({ request, navigate }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const maxLength = 150;
   const needsTruncation = request.content.length > maxLength;
-  const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
-  const [pendingRequest, setPendingRequest] = useState(null);
+  const [showPublishModal, setShowPublishModal] = useState(false);
+
+
+
 
   return (
     <div className={styles.requestCard}>
@@ -205,15 +207,18 @@ const DeveloperDashboard = () => {
   const [activeRequests, setActiveRequests] = useState([]);
   const [conversations, setConversations] = useState([]);
   const [sharedRequests, setSharedRequests] = useState([]);
-  const [snaggedRequests, setSnaggedRequests] = useState([]); // Add this line
-  const [loading, setLoading] = useState(true);
+  const [snaggedRequests, setSnaggedRequests] = useState([]);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+  // Add this line
+  const [showPublishModal, setShowPublishModal] = useState(false);
+
   const [hasSeenTutorial, setHasSeenTutorial] = useState(() => {
     return localStorage.getItem('dashboardTutorialSeen') === 'true';
   });
 
   const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
-  const [pendingRequest, setPendingRequest] = useState(null);
+  const [setPendingRequest] = useState(null);
 
   const navigate = useNavigate();
   const auth = useSelector((state) => state.auth);
@@ -235,10 +240,7 @@ const DeveloperDashboard = () => {
     }
   };
 
-  // Move this calculation before the sections array
-  const activeProjects = conversations.filter(
-    (c) => c.agreement_status && c.agreement_status.toLowerCase() === 'accepted'
-  );
+
 
   // Now define sections after activeProjects is defined
   const sections = [
@@ -344,10 +346,7 @@ const DeveloperDashboard = () => {
             )}
           </div>
         );
-    }
 
-    switch (sectionId) {
-      // ... other cases ...
 
       case 'snagged':
         return (
@@ -429,7 +428,9 @@ const DeveloperDashboard = () => {
     }
   };
 
-  const fetchDashboardData = async () => {
+
+
+  const fetchDashboardData = useCallback(async () => {
     try {
       // Get conversations
       const conversationsRes = await api.get('/conversations/user/list');
@@ -543,7 +544,11 @@ const DeveloperDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.userType, navigate, auth.token]);
+
+
+
+
 
   useEffect(() => {
     if (auth.token) {
@@ -554,7 +559,7 @@ const DeveloperDashboard = () => {
       setError('Authentication required');
       setLoading(false);
     }
-  }, [auth, navigate]);
+  }, [auth.token, fetchDashboardData]);
 
   useEffect(() => {
     if (!hasSeenTutorial) {
@@ -611,45 +616,65 @@ const DeveloperDashboard = () => {
     // Don't start conversation here - it will happen in SubscriptionSuccess component
   };
 
+  const handlePublishClick = () => {
+    setShowPublishModal(true);
+  };
+
+  // Add this before your return statement
+  const handleClosePublishModal = () => {
+    setShowPublishModal(false);
+  };
+
   return (
     <div className={styles.dashboardContainer}>
       <Header />
-      <div className={styles.content}>
-        <div className={styles.dashboardHeader}>
-          <div className={styles.headerButtons}>
-            <button
-              onClick={() => navigate('/opportunities')}
-              className={styles.headerCreateButton}
-            >
-              <Plus size={24} className={styles.buttonIcon} />
-              Explore Open Tickets
-            </button>
+      {loading ? (
+        <div className={styles.loadingState}>Loading dashboard...</div>
+      ) : error ? (
+        <div className={styles.errorState}>{error}</div>
+      ) : (
+        <>
+          <div className={styles.content}>
+            <div className={styles.dashboardHeader}>
+              <div className={styles.headerButtons}>
+                <button
+                  onClick={() => navigate('/opportunities')}
+                  className={styles.headerCreateButton}
+                >
+                  <Plus size={24} className={styles.buttonIcon} />
+                  Explore Open Tickets
+                </button>
 
-            <button
-              onClick={() => navigate('/projects/publish')}
-              className={`${styles.headerCreateButton} ${styles.publishButton}`}
-            >
-              <Plus size={24} className={styles.buttonIcon} />
-              Publish Project
-            </button>
+                <button
+                  onClick={handlePublishClick}
+                  className="publish-project-button" // Add your appropriate class
+                >
+                  Publish Project
+                </button>
+
+                {showPublishModal && (
+                  <PublishProject onClose={handleClosePublishModal} />
+                )}
+              </div>
+            </div>
+
+            {!hasSeenTutorial && (
+              <div className={styles.tutorialHint}>
+                Click any card to view more details
+              </div>
+            )}
+            <DashboardSections sections={sections} renderSection={renderSection} />
           </div>
-        </div>
 
-        {!hasSeenTutorial && (
-          <div className={styles.tutorialHint}>
-            Click any card to view more details
-          </div>
-        )}
-        <DashboardSections sections={sections} renderSection={renderSection} />
-      </div>
-
-      <SubscriptionDialog
-        isOpen={showSubscriptionDialog}
-        onClose={handleSubscriptionDialogClose}
-        onSuccess={handleSubscriptionSuccess}
-      />
+          <SubscriptionDialog
+            isOpen={showSubscriptionDialog}
+            onClose={handleSubscriptionDialogClose}
+            onSuccess={handleSubscriptionSuccess}
+          />
+        </>
+      )}
     </div>
   );
-};
+}
 
 export default DeveloperDashboard;

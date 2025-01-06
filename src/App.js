@@ -35,7 +35,9 @@ import VideoList from './components/videos/VideoList';
 import VideoUpload from './components/videos/VideoUpload';
 import DeveloperProfileView from './components/profiles/DeveloperProfileView';
 import SharedVideo from './components/videos/SharedVideo';
-import ProjectShowcase from './components/projects/ProjectShowcase';
+import ShowcaseList from './components/developerProjects/ShowcaseList';
+import ShowcaseForm from './components/developerProjects/ShowcaseForm';
+
 
 
 
@@ -138,7 +140,10 @@ function AppContent() {
                   <Route path="/creators" element={<PublicDevelopers />} />
                   <Route path="/shared/videos/:shareToken" element={<SharedVideo />} />
                   <Route path="/shared/videos/:shareToken" element={<SharedVideo />} />
-                  <Route path="/showcase" element={<ProjectShowcase />} />
+                  <Route
+                    path="/showcase/developer/:developerId"
+                    element={<ShowcaseList />}
+                  />
                   {/* Marketplace routes */}
 
 
@@ -260,6 +265,7 @@ function AppContent() {
                     }
                   />
 
+
                   {/* Dashboard redirect based on user type */}
                   <Route
                     path="/dashboard"
@@ -275,6 +281,42 @@ function AppContent() {
                             replace
                           />
                         )}
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/developer-dashboard"
+                    element={
+                      <ProtectedRoute userType="developer">
+                        <DeveloperDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* Add new showcase routes here */}
+                  <Route
+                    path="/showcase"
+                    element={
+                      <ProtectedRoute userType="developer">
+                        <ShowcaseList />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  <Route
+                    path="/showcase/new"
+                    element={
+                      <ProtectedRoute userType="developer">
+                        <ShowcaseForm />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  <Route
+                    path="/showcase/:showcaseId/edit"
+                    element={
+                      <ProtectedRoute userType="developer">
+                        <ShowcaseForm />
                       </ProtectedRoute>
                     }
                   />
