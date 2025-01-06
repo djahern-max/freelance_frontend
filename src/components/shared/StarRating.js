@@ -1,97 +1,62 @@
+import React, { useState } from 'react';
 import { Star } from 'lucide-react';
-import { useCallback, useState } from 'react';
 import styles from './StarRating.module.css';
 
 const StarRating = ({
-  rating,
-  totalRatings,
-  interactive = false,
-  onRate = null,
-  userRating = null,
-  size = 24,
+  currentRating = 0,
+  averageRating = 0,
+  totalRatings = 0,
+  onRate,
+  readOnly = false
 }) => {
   const [hoverRating, setHoverRating] = useState(0);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleRate = useCallback(
-    async (selectedRating) => {
-      if (!interactive || !onRate || isSubmitting) return;
+  const handleStarClick = (rating) => {
+    if (!readOnly && onRate) {
+      onRate(rating);
+    }
+  };
 
-      setIsSubmitting(true);
-      try {
-        setHoverRating(selectedRating);
-        await onRate(selectedRating);
-      } finally {
-        setIsSubmitting(false);
-      }
-    },
-    [interactive, onRate, isSubmitting]
-  );
-
-  const renderStarSet = (
-    value,
-    isInteractive = false,
-    label = '',
-    showCount = false
-  ) => (
-    <div className={styles.starSetContainer}>
-      <div className={styles.starSetLabel}>{label}</div>
+  const renderStars = (rating, isInteractive = false) => {
+    return (
       <div className={styles.starsRow}>
-        {Array.from({ length: 5 }, (_, index) => {
-          const starValue = index + 1;
-          const isFilled =
-            starValue <=
-            (isInteractive ? hoverRating || userRating || 0 : value);
-
-          return (
-            <button
-              key={starValue}
-              type="button"
-              onClick={() => isInteractive && handleRate(starValue)}
-              onMouseEnter={() => isInteractive && setHoverRating(starValue)}
-              onMouseLeave={() => isInteractive && setHoverRating(0)}
-              className={`${styles.starButton} ${
-                !isInteractive ? styles.nonInteractive : ''
-              } ${isSubmitting ? styles.submitting : ''}`}
-              disabled={!isInteractive || isSubmitting}
-              aria-label={`Rate ${starValue} star${starValue !== 1 ? 's' : ''}`}
-            >
-              <Star
-                className={`${styles.star} ${isFilled ? styles.filled : ''}`}
-                size={size}
-              />
-            </button>
-          );
-        })}
+        {[1, 2, 3, 4, 5].map((star) => (
+          <Star
+            key={star}
+            size={20}
+            className={`${styles.star} 
+                            ${isInteractive ? styles.interactive : ''} 
+                            ${star <= (isInteractive ? (hoverRating || currentRating) : rating)
+                ? styles.filled
+                : styles.empty}`
+            }
+            onMouseEnter={() => isInteractive && setHoverRating(star)}
+            onMouseLeave={() => isInteractive && setHoverRating(0)}
+            onClick={() => isInteractive && handleStarClick(star)}
+          />
+        ))}
       </div>
-      {showCount && (
-        <div className={styles.ratingCount}>
-          ({totalRatings} {totalRatings === 1 ? 'rating' : 'ratings'})
-        </div>
-      )}
-    </div>
-  );
+    );
+  };
 
   return (
-    <div className={styles.container}>
-      {userRating ? (
-        <>
-          {renderStarSet(userRating, true, 'Your rating')}
-          <div className={styles.divider} />
-          {renderStarSet(rating, false, 'Average rating', true)}
-        </>
-      ) : (
-        <>
-          {renderStarSet(rating, true)}
-          <div className={styles.averageRating}>
-            {rating.toFixed(1)} avg from {totalRatings}{' '}
-            {totalRatings === 1 ? 'rating' : 'ratings'}
-          </div>
-        </>
+    <div className={styles.ratingContainer}>
+      {!readOnly && (
+        <div className={styles.starsRow}>
+          {renderStars(currentRating, true)}
+          <span className={styles.ratingText}>
+            {currentRating > 0 ? `Your rating: ${currentRating}` : 'Rate this'}
+          </span>
+        </div>
       )}
-      {interactive && !userRating && (
-        <div className={styles.ratingHelp}>Click a star to rate</div>
-      )}
+      <div className={styles.starsRow}>
+        {renderStars(averageRating)}
+        <span className={styles.ratingText}>
+          {averageRating > 0
+            ? `${averageRating.toFixed(1)} (${totalRatings} rating${totalRatings !== 1 ? 's' : ''})`
+            : 'No ratings yet'}
+        </span>
+      </div>
     </div>
   );
 };

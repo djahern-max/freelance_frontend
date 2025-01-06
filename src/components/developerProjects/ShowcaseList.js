@@ -14,7 +14,6 @@ const ShowcaseList = () => {
     const currentUser = useSelector(state => state.auth.user);
     const navigate = useNavigate();
 
-    // Use the developerId from params or fall back to current user's ID
     const targetDeveloperId = developerId || (currentUser?.id?.toString());
 
     useEffect(() => {
@@ -34,14 +33,18 @@ const ShowcaseList = () => {
             setLoading(true);
             setError(null);
             console.log('Fetching showcases for developer:', targetDeveloperId);
-            const response = await api.showcase.list(targetDeveloperId);
+            const response = await api.get(`/project-showcase/developer/${targetDeveloperId}`);
             console.log('Fetched showcases:', response);
-            setShowcases(response || []);
+
+            // Ensure we're setting an array, even if empty
+            setShowcases(Array.isArray(response.data) ? response.data : []);
+
         } catch (err) {
             console.error('Error fetching showcases:', err);
             const errorMessage = err?.response?.data?.detail || err.message || 'Failed to fetch showcases';
             setError(errorMessage);
             toast.error(errorMessage);
+            setShowcases([]); // Set empty array on error
         } finally {
             setLoading(false);
         }
@@ -51,6 +54,8 @@ const ShowcaseList = () => {
         navigate('/showcase/new');
     };
 
+    const isOwnProfile = currentUser?.id === parseInt(targetDeveloperId);
+
     if (loading) {
         return (
             <div className={styles.loadingContainer}>
@@ -59,23 +64,9 @@ const ShowcaseList = () => {
         );
     }
 
-    const isOwnProfile = currentUser?.id === parseInt(targetDeveloperId);
-
     return (
         <div className={styles.container}>
-            <div className={styles.header}>
-                <h2 className={styles.title}>
-                    {isOwnProfile ? 'My Project Showcases' : 'Project Showcases'}
-                </h2>
-                {isOwnProfile && (
-                    <button
-                        onClick={handleAddNew}
-                        className={styles.addButton}
-                    >
-                        Add New Showcase
-                    </button>
-                )}
-            </div>
+
 
             {error ? (
                 <div className={styles.errorContainer}>
