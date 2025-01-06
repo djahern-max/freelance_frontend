@@ -24,10 +24,11 @@ if (process.env.NODE_ENV === 'development') {
 // API Routes constants
 export const API_ROUTES = {
   SHOWCASE: {
-    LIST: '/project-showcase/',  // Changed from /showcase/
-    CREATE: '/project-showcase/',  // Changed from /showcase/
-    DETAIL: (id) => `/project-showcase/${id}`,  // Changed from /showcase/
-    DEVELOPER: (id) => `/project-showcase/developer/${id}`,  // Changed from /showcase/
+    LIST: '/project-showcase/',
+    CREATE: '/project-showcase/',
+    DETAIL: (id) => `/project-showcase/${id}`,
+    DEVELOPER: (id) => `/project-showcase/developer/${id}`,
+
   },
   VIDEOS: {
     DISPLAY: '/video_display',
@@ -647,9 +648,9 @@ api.snaggedRequests = {
 };
 
 api.showcase = {
+
   async create(showcaseData) {
     try {
-      // Always use the provided FormData directly
       const response = await api.post(API_ROUTES.SHOWCASE.CREATE, showcaseData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -681,26 +682,10 @@ api.showcase = {
     } catch (error) {
       throw new Error(api.helpers.handleError(error));
     }
-  },
-
-  async update(id, showcaseData) {
-    try {
-      const response = await api.put(API_ROUTES.SHOWCASE.DETAIL(id), showcaseData);
-      return response.data;
-    } catch (error) {
-      throw new Error(api.helpers.handleError(error));
-    }
-  },
-
-  async delete(id) {
-    try {
-      const response = await api.delete(API_ROUTES.SHOWCASE.DETAIL(id));
-      return response.data;
-    } catch (error) {
-      throw new Error(api.helpers.handleError(error));
-    }
   }
 };
+
+
 
 // Token management
 api.setToken = (token) => {

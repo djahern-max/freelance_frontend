@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Star, MessageSquare } from 'lucide-react';
 import api from '../../utils/api';
 import { toast } from 'react-toastify';
 import styles from './ShowcaseCard.module.css';
+import { useSelector } from 'react-redux';
+import ReadmePage from './ReadmePage';
 
 const ShowcaseCard = ({ showcase, isOwner }) => {
     const [expanded, setExpanded] = useState(false);
@@ -10,54 +12,44 @@ const ShowcaseCard = ({ showcase, isOwner }) => {
     const [averageRating, setAverageRating] = useState(0);
     const [totalRatings, setTotalRatings] = useState(0);
     const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        fetchRatings();
-    }, [showcase.id]);
-
-    const fetchRatings = async () => {
-        try {
-            const response = await api.get(`/project-showcase/showcase/${showcase.id}/rating`);
-            setAverageRating(response.data.average_rating);
-            setTotalRatings(response.data.total_ratings);
-
-            const userRatingResponse = await api.get(`/project-showcase/showcase/${showcase.id}/user-rating`);
-            if (userRatingResponse.data) {
-                setUserRating(userRatingResponse.data.rating);
-            }
-        } catch (error) {
-            console.error('Error fetching ratings:', error);
-        }
-    };
+    const [showReadme, setShowReadme] = useState(false);
+    const user = useSelector((state) => state.auth.user);
+    const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
     const handleRating = async (rating) => {
+        if (!isAuthenticated) {
+            toast.error('Please login to rate this project');
+            return;
+        }
+
         try {
             setLoading(true);
-            const response = await api.post(`/project-showcase/showcase/${showcase.id}`, {
-                rating: rating
-            });
-
-            setUserRating(rating);
-            setAverageRating(response.data.average_rating);
-            setTotalRatings(response.data.total_ratings);
-            toast.success('Rating submitted successfully!');
+            // TODO: Implement rating endpoint in backend
+            toast.info('Rating feature coming soon!');
         } catch (error) {
-            toast.error('Failed to submit rating');
             console.error('Error submitting rating:', error);
+            toast.error('Failed to submit rating');
         } finally {
             setLoading(false);
         }
     };
 
     const handleContactDeveloper = async () => {
+        if (!isAuthenticated) {
+            toast.error('Please login to contact the developer');
+            return;
+        }
+
         try {
-            await api.post(`/conversations/developer/${showcase.developer_id}`, {
+            await api.conversations.create({
+                developer_id: showcase.developer_id,
                 message: `I'm interested in your project "${showcase.title}"`,
                 includeShowcase: true,
                 showcaseId: showcase.id
             });
             toast.success('Message sent to developer!');
         } catch (error) {
+            console.error('Error contacting developer:', error);
             toast.error('Failed to contact developer');
         }
     };
@@ -96,8 +88,7 @@ const ShowcaseCard = ({ showcase, isOwner }) => {
                             <Star
                                 key={star}
                                 size={20}
-                                className={`${styles.star} ${star <= userRating ? styles.starFilled : styles.starEmpty
-                                    }`}
+                                className={`${styles.star} ${star <= userRating ? styles.starFilled : styles.starEmpty}`}
                                 onClick={() => !loading && handleRating(star)}
                             />
                         ))}
@@ -108,14 +99,21 @@ const ShowcaseCard = ({ showcase, isOwner }) => {
                 </div>
 
                 {showcase.readme_url && (
-                    <a
-                        href={showcase.readme_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.link}
-                    >
-                        View README
-                    </a>
+                    <div className={styles.readmeSection}>
+                        <button
+                            onClick={() => setShowReadme(true)}
+                            className={styles.readmeButton}
+                        >
+                            View README
+                        </button>
+                    </div>
+                )}
+
+                {showReadme && (
+                    <ReadmePage
+                        showcase={showcase}
+                        onClose={() => setShowReadme(false)}
+                    />
                 )}
             </div>
 
@@ -142,13 +140,14 @@ const ShowcaseCard = ({ showcase, isOwner }) => {
                     </a>
                 )}
 
-                {!isOwner && (
+                {!isOwner && user?.userType === 'client' && (
                     <button
                         onClick={handleContactDeveloper}
                         className={styles.contactButton}
+                        disabled={loading}
                     >
-                        <MessageSquare className={styles.icon} />
-                        Contact Developer
+                        <MessageSquare size={16} className={styles.icon} />
+                        Send Request
                     </button>
                 )}
             </div>
