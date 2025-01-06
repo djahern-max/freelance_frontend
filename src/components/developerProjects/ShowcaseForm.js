@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import ImageUpload from '../profiles/ImageUpload';  // Changed from named to default import
 import Alert from '../shared/Alert';
 import styles from './ShowcaseForm.module.css';
 
@@ -8,26 +9,25 @@ const ShowcaseForm = () => {
     const [formData, setFormData] = useState({
         title: '',
         description: '',
-        readme: '',
-        video_ids: []
+        project_url: '',
+        repository_url: '',
+        demo_url: '',
+        video_ids: [],
+        developer_profile_id: null
     });
+    const [readmeFile, setReadmeFile] = useState(null);
+    const [imageFile, setImageFile] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [availableVideos, setAvailableVideos] = useState([]);
     const navigate = useNavigate();
     const { showcaseId } = useParams();
     const currentUser = useSelector(state => state.auth.user);
-
-    useEffect(() => {
-        if (showcaseId) {
-            fetchShowcase();
-        }
-        fetchUserVideos();
-    }, [showcaseId]);
+    const developerProfile = useSelector(state => state.profile.developerProfile);
 
     const fetchShowcase = async () => {
         try {
-            const response = await fetch(`/api/showcase/${showcaseId}`);
+            const response = await fetch(`/api/project-showcase/${showcaseId}`);
             if (!response.ok) throw new Error('Failed to fetch showcase');
             const data = await response.json();
             setFormData(data);
@@ -47,22 +47,65 @@ const ShowcaseForm = () => {
         }
     };
 
+    useEffect(() => {
+        if (showcaseId) {
+            fetchShowcase();
+        }
+        fetchUserVideos();
+        if (developerProfile) {
+            setFormData(prev => ({
+                ...prev,
+                developer_profile_id: developerProfile.id
+            }));
+        }
+    }, [showcaseId, developerProfile]);
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const handleVideoToggle = (videoId) => {
+        setFormData(prev => ({
+            ...prev,
+            video_ids: prev.video_ids.includes(videoId)
+                ? prev.video_ids.filter(id => id !== videoId)
+                : [...prev.video_ids, videoId]
+        }));
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
 
         try {
-            const url = showcaseId
-                ? `/api/showcase/${showcaseId}`
-                : '/api/showcase';
+            const formPayload = new FormData();
 
+            // Append files
+            if (imageFile) {
+                formPayload.append('image_file', imageFile);
+            }
+            if (readmeFile) {
+                formPayload.append('readme_file', readmeFile);
+            }
+
+            // Append other form data
+            Object.keys(formData).forEach(key => {
+                if (key === 'video_ids') {
+                    formPayload.append(key, JSON.stringify(formData[key]));
+                } else {
+                    formPayload.append(key, formData[key]);
+                }
+            });
+
+            const url = showcaseId ? `/api/project-showcase/${showcaseId}` : '/api/project-showcase';
             const response = await fetch(url, {
                 method: showcaseId ? 'PUT' : 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
+                body: formPayload
             });
 
             if (!response.ok) throw new Error('Failed to save showcase');
@@ -74,26 +117,6 @@ const ShowcaseForm = () => {
         }
     };
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
-
-    const handleVideoToggle = (videoId) => {
-        setFormData(prev => {
-            const newVideoIds = prev.video_ids.includes(videoId)
-                ? prev.video_ids.filter(id => id !== videoId)
-                : [...prev.video_ids, videoId];
-            return {
-                ...prev,
-                video_ids: newVideoIds
-            };
-        });
-    };
-
     return (
         <div className={styles.container}>
             <h2 className={styles.title}>
@@ -103,6 +126,14 @@ const ShowcaseForm = () => {
             {error && <Alert type="error" message={error} />}
 
             <form onSubmit={handleSubmit} className={styles.form}>
+                <div className={styles.formGroup}>
+                    <label>Project Image</label>
+                    <ImageUpload
+                        onImageSelect={file => setImageFile(file)}
+                        previewUrl={formData.image_url}
+                    />
+                </div>
+
                 <div className={styles.formGroup}>
                     <label htmlFor="title">Title</label>
                     <input
@@ -128,13 +159,47 @@ const ShowcaseForm = () => {
                 </div>
 
                 <div className={styles.formGroup}>
-                    <label htmlFor="readme">README</label>
-                    <textarea
-                        id="readme"
-                        name="readme"
-                        value={formData.readme}
+                    <label htmlFor="project_url">Project URL</label>
+                    <input
+                        type="url"
+                        id="project_url"
+                        name="project_url"
+                        value={formData.project_url}
                         onChange={handleInputChange}
-                        rows={8}
+                        placeholder="https://..."
+                    />
+                </div>
+
+                <div className={styles.formGroup}>
+                    <label htmlFor="repository_url">Repository URL</label>
+                    <input
+                        type="url"
+                        id="repository_url"
+                        name="repository_url"
+                        value={formData.repository_url}
+                        onChange={handleInputChange}
+                        placeholder="https://github.com/..."
+                    />
+                </div>
+
+                <div className={styles.formGroup}>
+                    <label htmlFor="demo_url">Demo URL</label>
+                    <input
+                        type="url"
+                        id="demo_url"
+                        name="demo_url"
+                        value={formData.demo_url}
+                        onChange={handleInputChange}
+                        placeholder="https://..."
+                    />
+                </div>
+
+                <div className={styles.formGroup}>
+                    <label>README File</label>
+                    <input
+                        type="file"
+                        accept=".md"
+                        onChange={e => setReadmeFile(e.target.files[0])}
                     />
                 </div>
 
@@ -151,7 +216,7 @@ const ShowcaseForm = () => {
                                     <input
                                         type="checkbox"
                                         checked={formData.video_ids.includes(video.id)}
-                                        onChange={() => { }}
+                                        readOnly
                                     />
                                     <span>{video.title}</span>
                                 </div>
@@ -165,6 +230,7 @@ const ShowcaseForm = () => {
                         type="button"
                         onClick={() => navigate(-1)}
                         className={styles.cancelButton}
+                        disabled={loading}
                     >
                         Cancel
                     </button>

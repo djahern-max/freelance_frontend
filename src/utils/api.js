@@ -23,6 +23,12 @@ if (process.env.NODE_ENV === 'development') {
 
 // API Routes constants
 export const API_ROUTES = {
+  SHOWCASE: {
+    LIST: '/project-showcase/',  // Changed from /showcase/
+    CREATE: '/project-showcase/',  // Changed from /showcase/
+    DETAIL: (id) => `/project-showcase/${id}`,  // Changed from /showcase/
+    DEVELOPER: (id) => `/project-showcase/developer/${id}`,  // Changed from /showcase/
+  },
   VIDEOS: {
     DISPLAY: '/video_display',
     SHARE: (id) => `/videos/${id}/share`,
@@ -596,103 +602,6 @@ api.conversations = {
 };
 
 
-// In api.js
-api.marketplace = {
-  async createProduct(productData) {
-    try {
-      const response = await api.post(API_ROUTES.MARKETPLACE.PRODUCTS, productData);
-      return response.data;
-    } catch (error) {
-      console.error('Error creating product:', error);
-      throw new Error(api.helpers.handleError(error));
-    }
-  },
-
-  async listProducts(params = {}) {
-    try {
-      const response = await api.get(API_ROUTES.MARKETPLACE.PRODUCTS, { params });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching products:', error);
-      throw new Error(api.helpers.handleError(error));
-    }
-  },
-
-  async getProduct(id) {
-    try {
-      const response = await api.get(API_ROUTES.MARKETPLACE.PRODUCT_DETAIL(id));
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching product:', error);
-      throw new Error(api.helpers.handleError(error));
-    }
-  },
-
-  async updateProduct(id, productData) {
-    try {
-      const response = await api.put(API_ROUTES.MARKETPLACE.PRODUCT_DETAIL(id), productData);
-      return response.data;
-    } catch (error) {
-      console.error('Error updating product:', error);
-      throw new Error(api.helpers.handleError(error));
-    }
-  },
-
-  async purchaseProduct(productId) {
-    try {
-      console.log('Initiating product purchase:', productId);
-      const response = await api.post(API_ROUTES.MARKETPLACE.PURCHASE(productId));
-      console.log('Purchase response:', response.data);
-      return response.data;
-    } catch (error) {
-      console.error('Error purchasing product:', error);
-      throw new Error(api.helpers.handleError(error));
-    }
-  },
-
-  async uploadProductFiles(productId, files) {
-    try {
-      const formData = new FormData();
-      files.forEach(file => {
-        formData.append('files', file);
-      });
-
-      const response = await api.post(
-        `${API_ROUTES.MARKETPLACE.FILES(productId)}?file_type=executable`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
-      return response.data;
-    } catch (error) {
-      console.error('Error uploading product files:', error);
-      throw new Error(api.helpers.handleError(error));
-    }
-  },
-
-  async getProductDownloadUrl(productId) {
-    try {
-      const response = await api.get(API_ROUTES.MARKETPLACE.FILES(productId));
-      return response.data;
-    } catch (error) {
-      console.error('Error getting product download URL:', error);
-      throw new Error(api.helpers.handleError(error));
-    }
-  },
-
-  async verifyPurchase(sessionId) {
-    try {
-      const response = await api.get(`/marketplace/purchase/verify/${sessionId}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error verifying purchase:', error);
-      throw new Error(api.helpers.handleError(error));
-    }
-  }
-};
 
 
 // Add snagged requests methods
@@ -715,6 +624,7 @@ api.snaggedRequests = {
     }
   },
 
+
   async list() {
     try {
       const response = await api.get(API_ROUTES.SNAGGED_REQUESTS.LIST);
@@ -731,6 +641,62 @@ api.snaggedRequests = {
       return response.data;
     } catch (error) {
       console.error('Error removing snagged request:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
+  }
+};
+
+api.showcase = {
+  async create(showcaseData) {
+    try {
+      // Always use the provided FormData directly
+      const response = await api.post(API_ROUTES.SHOWCASE.CREATE, showcaseData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error creating showcase:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async list(developerId) {
+    try {
+      const response = await api.get(API_ROUTES.SHOWCASE.DEVELOPER(developerId));
+      return response.data;
+    } catch (error) {
+      if (error.response?.status === 404) {
+        return [];
+      }
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async getDetail(id) {
+    try {
+      const response = await api.get(API_ROUTES.SHOWCASE.DETAIL(id));
+      return response.data;
+    } catch (error) {
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async update(id, showcaseData) {
+    try {
+      const response = await api.put(API_ROUTES.SHOWCASE.DETAIL(id), showcaseData);
+      return response.data;
+    } catch (error) {
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async delete(id) {
+    try {
+      const response = await api.delete(API_ROUTES.SHOWCASE.DETAIL(id));
+      return response.data;
+    } catch (error) {
       throw new Error(api.helpers.handleError(error));
     }
   }
