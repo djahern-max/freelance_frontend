@@ -30,11 +30,15 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  align-items: stretch;
 }
 
 .showcaseCard {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   background-color: white;
   border-radius: 8px;
   overflow: hidden;
@@ -75,26 +79,34 @@
 
 .contentContainer {
   padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 56.25%);
+  /* Subtract image height */
 }
 
 .showcaseTitle {
   font-size: 1.25rem;
   font-weight: 600;
   color: #111827;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
+  /* Reduced from 1rem */
 }
 
 .description {
   color: #4B5563;
   font-size: 0.875rem;
   line-height: 1.5;
-  margin: 1rem 0;
+  margin: 0.75rem 0;
+  flex-grow: 1;
+  /* Allow description to take available space */
 }
 
 .actionButtons {
   display: flex;
-  gap: 1rem;
-  margin: 1rem 0;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 0.75rem 0;
 }
 
 .requestButton {
@@ -121,14 +133,15 @@
 }
 
 .metadata {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 1rem;
-  padding-top: 1rem;
+  margin-top: auto;
+  /* Push to bottom */
+  padding-top: 0.75rem;
   border-top: 1px solid #E5E7EB;
   font-size: 0.875rem;
   color: #6B7280;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .ratingOverview {
@@ -149,35 +162,98 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: #2563EB;
+  padding: 0.5rem 1rem;
+  background-color: #EEF2FF;
+  color: #4F46E5;
+  border: 1px solid #E0E7FF;
+  border-radius: 6px;
   font-size: 0.875rem;
+  font-weight: 500;
   text-decoration: none;
+  transition: all 0.2s ease;
 }
 
 .repoLink:hover {
-  text-decoration: underline;
+  background-color: #E0E7FF;
+  color: #4338CA;
+  text-decoration: none;
+}
+
+.repoLink svg {
+  width: 16px;
+  height: 16px;
+  color: #6366F1;
 }
 
 .rating {
   margin: 1rem 0;
 }
 
+.links {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  /* Two equal columns */
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.readmeButton {
+  background-color: #F3F4F6;
+  color: #374151;
+  border: 1px solid #E5E7EB;
+}
+
+.readmeButton:hover {
+  background-color: #E5E7EB;
+  color: #1F2937;
+}
+
+.readmeButton svg {
+  width: 16px;
+  height: 16px;
+  color: #6B7280;
+}
+
+.readmeButton,
+.repoLink {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.repoLink {
+  background-color: #EEF2FF;
+  color: #4F46E5;
+  border: 1px solid #E0E7FF;
+  text-decoration: none;
+}
+
+.repoLink:hover {
+  background-color: #E0E7FF;
+  color: #4338CA;
+}
+
 /* Responsive adjustments */
 @media (max-width: 640px) {
-  .container {
-    padding: 1rem;
+  .links {
+    grid-template-columns: 1fr;
+  }
+
+  .readmeButton,
+  .repoLink {
+    width: 100%;
+    justify-content: center;
   }
 
   .grid {
     grid-template-columns: 1fr;
-  }
-
-  .actionButtons {
-    flex-direction: column;
-  }
-
-  .requestButton {
-    width: 100%;
-    justify-content: center;
   }
 }

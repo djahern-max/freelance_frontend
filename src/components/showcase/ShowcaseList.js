@@ -12,6 +12,8 @@ import styles from './ShowcaseList.module.css';
 import ShareButton from '../videos/ShareButton';
 import ReadmeModal from './ReadmeModal';
 import ShowcaseRating from './ShowcaseRating';
+import { Edit } from 'lucide-react';
+
 
 const ShowcaseItem = ({
   showcase,
@@ -22,6 +24,41 @@ const ShowcaseItem = ({
   formatDate
 }) => {
   const [showReadmeModal, setShowReadmeModal] = useState(false);
+  const isOwner = user && showcase.developer_id === user.id;
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const MAX_LENGTH = 150;
+  const hasLongDescription = showcase.description?.length > MAX_LENGTH;
+
+  const renderDescription = () => {
+    if (!showcase.description) return null;
+
+    if (!hasLongDescription) {
+      return <p className={styles.description}>{showcase.description}</p>;
+    }
+
+    return (
+      <div className={styles.description}>
+        <p>
+          {isExpanded
+            ? showcase.description
+            : `${showcase.description.substring(0, MAX_LENGTH)}...`}
+        </p>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsExpanded(!isExpanded);
+          }}
+          className={styles.readMoreButton}
+        >
+          {isExpanded ? 'Read Less' : 'Read More'}
+        </button>
+      </div>
+    );
+  };
+
+
+  const navigate = useNavigate();
 
   return (
     <div className={styles.showcaseCard}>
@@ -42,9 +79,24 @@ const ShowcaseItem = ({
         )}
       </div>
       <div className={styles.contentContainer}>
-        <h2 className={styles.showcaseTitle}>
-          {showcase.title || 'Untitled Project'}
-        </h2>
+        <div className={styles.headerActions}>
+          <h2 className={styles.showcaseTitle}>
+            {showcase.title || 'Untitled Project'}
+          </h2>
+          {isOwner && (
+            <button
+              onClick={(e) => {
+                e.preventDefault(); // Prevent any default behavior
+                e.stopPropagation(); // Prevent event bubbling
+                navigate(`/showcase/${showcase.id}/edit`); // Navigate to edit route
+              }}
+              className={styles.editButton}
+            >
+              <Edit size={16} />
+              <span>Edit</span>
+            </button>
+          )}
+        </div>
 
         {/* Replace DeveloperRatingSection with ShowcaseRating */}
         <div className={styles.rating}>
@@ -76,13 +128,15 @@ const ShowcaseItem = ({
           </div>
         </div>
 
-        {showcase.description && (
+        {/* {showcase.description && (
           <p className={styles.description}>
             {showcase.description.length > 150
               ? `${showcase.description.substring(0, 150)}...`
               : showcase.description}
           </p>
-        )}
+        )} */}
+
+        {renderDescription()}
 
         <div className={styles.links}>
           {showcase.repository_url && (

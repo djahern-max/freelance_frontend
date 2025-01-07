@@ -1,39 +1,51 @@
+/* General Page Container */
 .pageContainer {
     max-width: 800px;
+    min-height: 100vh;
     margin: 0 auto;
+    background-color: #f9fafb;
     padding: 2rem;
 }
 
+/* Form Container */
 .formContainer {
+    max-width: 800px;
+    margin: 0 auto;
     background-color: white;
     border-radius: 8px;
-    padding: 2rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
 }
 
+/* Back Button */
 .backButton {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    border: none;
-    background: transparent;
-    color: #666;
+    background: none;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    color: #4b5563;
+    font-size: 0.875rem;
     cursor: pointer;
-    transition: color 0.2s ease;
+    transition: all 0.2s ease;
 }
 
 .backButton:hover {
+    background-color: #f3f4f6;
     color: #333;
 }
 
+/* Titles */
 .title {
     font-size: 1.5rem;
     font-weight: 600;
-    color: #333;
+    color: #111827;
     margin: 1.5rem 0;
 }
 
+/* Form Layout */
 .uploadForm {
     display: flex;
     flex-direction: column;
@@ -47,10 +59,12 @@
 }
 
 .label {
+    font-size: 0.875rem;
     font-weight: 500;
-    color: #4B5563;
+    color: #374151;
 }
 
+/* Shared Input Styles */
 .input,
 .textarea {
     width: 100%;
@@ -61,11 +75,6 @@
     transition: border-color 0.2s ease;
 }
 
-.textarea {
-    min-height: 120px;
-    resize: vertical;
-}
-
 .input:focus,
 .textarea:focus {
     outline: none;
@@ -73,61 +82,80 @@
     box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
 }
 
+/* Textarea Specific */
+.textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* File Upload Buttons */
 .uploadButtons {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
-    flex-wrap: wrap;
+    margin: 1rem 0;
 }
 
 .uploadButton {
-    flex: 1;
-    min-width: 200px;
-    padding: 1.5rem;
-    border: 2px dashed #D1D5DB;
-    border-radius: 8px;
-    background: transparent;
-    cursor: pointer;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.75rem;
+    justify-content: center;
+    padding: 1.5rem;
+    border: 2px dashed #D1D5DB;
+    border-radius: 6px;
+    background: none;
+    cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .uploadButton:hover {
     border-color: #2563EB;
-    background-color: rgba(37, 99, 235, 0.05);
+    background-color: #f8fafc;
+}
+
+.uploadButton span {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
 }
 
 .uploadRequirements {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.25rem;
     margin-top: 0.5rem;
+    text-align: center;
 }
 
 .uploadRequirements small {
-    color: #6B7280;
+    display: block;
+    color: #6b7280;
     font-size: 0.75rem;
+    line-height: 1.25;
 }
 
-.preview {
+/* Preview Container */
+.previewContainer {
     margin-top: 1rem;
-    border-radius: 8px;
-    overflow: hidden;
-    border: 1px solid #D1D5DB;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 1rem;
 }
 
 .imagePreview {
-    width: 100%;
+    max-width: 100%;
     max-height: 400px;
     object-fit: contain;
+    border-radius: 4px;
 }
 
 .readmePreview {
+    font-family: monospace;
+    white-space: pre-wrap;
     padding: 1rem;
-    background-color: #F9FAFB;
+    background-color: #f9fafb;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    max-height: 300px;
+    overflow-y: auto;
 }
 
 .readmePreview h3 {
@@ -136,13 +164,12 @@
 }
 
 .readmePreview pre {
-    white-space: pre-wrap;
-    font-family: monospace;
     font-size: 0.875rem;
     line-height: 1.5;
     color: #1F2937;
 }
 
+/* Submit Button */
 .submitButtonContainer {
     display: flex;
     justify-content: flex-end;
@@ -168,10 +195,11 @@
 }
 
 .submitButton:disabled {
-    opacity: 0.7;
+    opacity: 0.5;
     cursor: not-allowed;
 }
 
+/* Spinner Animation */
 .spinner {
     width: 16px;
     height: 16px;
@@ -187,7 +215,7 @@
     }
 }
 
-/* Message styles */
+/* Message Styles */
 .error,
 .success,
 .loading {
@@ -214,7 +242,7 @@
     border: 1px solid #BFDBFE;
 }
 
-/* Responsive adjustments */
+/* Responsive Adjustments */
 @media (max-width: 640px) {
     .pageContainer {
         padding: 1rem;

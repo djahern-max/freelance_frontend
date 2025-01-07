@@ -38,6 +38,7 @@ import SharedVideo from './components/videos/SharedVideo';
 import ShowcaseList from './components/showcase/ShowcaseList';
 import ShowcaseForm from './components/showcase/ShowcaseForm';
 import SharedShowcase from './components/showcase/SharedShowcase';
+import EditShowcaseForm from './components/showcase/EditShowcaseForm';
 
 
 
@@ -151,7 +152,7 @@ function AppContent() {
                     </ProtectedRoute>
                   } />
                   <Route path="/showcase/:showcaseId" element={<SharedShowcase />} />
-
+                  <Route path="/showcase/:id/edit" element={<EditShowcaseForm />} />
 
 
 
