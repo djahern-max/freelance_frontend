@@ -107,9 +107,7 @@ const ProjectDetails = () => {
             <div className={styles.statInfo}>
               <h3>Active Requests</h3>
               <p data-numeric={requests.length > 0}>
-                {requests.length > 0
-                  ? requests.filter((req) => req.status === 'open').length
-                  : 'No data available yet'}
+                {requests.filter((req) => req.status === 'open').length}
               </p>
             </div>
           </div>
@@ -128,9 +126,7 @@ const ProjectDetails = () => {
             <div className={styles.statInfo}>
               <h3>Active Conversations</h3>
               <p data-numeric={conversations.length > 0}>
-                {conversations.length > 0
-                  ? conversations.length
-                  : 'No data available yet'}
+                {conversations.length}
               </p>
             </div>
           </div>
@@ -144,10 +140,12 @@ const ProjectDetails = () => {
             <Users className={styles.icon} />
             <div className={styles.statInfo}>
               <h3>Team Members</h3>
-              <p data-numeric={project?.team_members?.length > 0}>
-                {project?.team_members?.length > 0
-                  ? project.team_members.length
-                  : 'No data available yet'}
+              <p data-numeric={true}>
+                {/* Get unique participants from conversations, excluding the client */}
+                {Array.from(new Set(conversations.flatMap(conv =>
+                  (conv.messages?.filter(msg => msg.user_type !== 'client') || [])
+                    .map(msg => msg.user_id)
+                ))).length || 'No data available yet'}
               </p>
             </div>
           </div>
@@ -161,17 +159,23 @@ const ProjectDetails = () => {
             <Clock className={styles.icon} />
             <div className={styles.statInfo}>
               <h3>Last Activity</h3>
-              <p data-numeric={!!project?.last_activity}>
-                {project?.last_activity
-                  ? new Date(project.last_activity).toLocaleDateString()
+              <p data-numeric={true} className={styles.smallDate}>
+                {/* Get the most recent message timestamp */}
+                {conversations.length > 0
+                  ? new Date(Math.max(...conversations.map(conv =>
+                    conv.messages?.length
+                      ? new Date(conv.messages[conv.messages.length - 1].created_at)
+                      : 0
+                  ))).toLocaleDateString('en-US', {
+                    month: 'numeric',
+                    day: 'numeric',
+                    year: 'numeric'
+                  })
                   : 'No data available yet'}
               </p>
             </div>
           </div>
         </div>
-
-
-
 
         <div className={styles.quickActions}>
           <button

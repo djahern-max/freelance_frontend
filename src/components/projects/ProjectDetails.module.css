@@ -434,6 +434,13 @@
   scroll-margin-top: 2rem;
 }
 
+.includesNote {
+  display: block;
+  font-size: 12px;
+  font-style: italic;
+  color: #6b7280;
+  margin-top: -4px;
+}
 
 @media (max-width: 768px) {
   .projectHeader {
