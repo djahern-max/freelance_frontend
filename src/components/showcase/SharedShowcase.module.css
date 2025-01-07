@@ -1,34 +1,58 @@
+/* SharedShowcase.module.css */
 .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.loadingSpinner {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
+    min-height: 300px;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.errorCard {
+    background: #fff;
+    border-radius: 8px;
     padding: 2rem;
-    background-color: #f8f9fa;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .showcaseCard {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 1024px;
-    padding: 2rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
 }
 
 .header {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.title {
-    font-size: 1.875rem;
-    font-weight: 600;
-    margin: 0;
-    color: #111827;
-    flex-grow: 1;
+    padding: 1.5rem;
+    border-bottom: 1px solid #eee;
 }
 
 .backButton {
@@ -37,27 +61,35 @@
     gap: 0.5rem;
     padding: 0.5rem 1rem;
     border: none;
-    background-color: #f3f4f6;
-    border-radius: 6px;
+    background: none;
+    color: #666;
     cursor: pointer;
-    font-size: 0.875rem;
-    color: #4b5563;
-    transition: all 0.2s ease;
+    transition: color 0.2s;
 }
 
 .backButton:hover {
-    background-color: #e5e7eb;
-    color: #111827;
+    color: #333;
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+    margin-left: 1rem;
+}
+
+.mainContent {
+    padding: 1.5rem;
 }
 
 .imageWrapper {
     position: relative;
     width: 100%;
-    height: 400px;
+    aspect-ratio: 16/9;
+    background: #f5f5f5;
     border-radius: 8px;
     overflow: hidden;
     margin-bottom: 2rem;
-    background-color: #f3f4f6;
 }
 
 .showcaseImage {
@@ -72,16 +104,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #9ca3af;
-    background: linear-gradient(45deg, #f3f4f6 0%, #e5e7eb 100%);
-}
-
-.rating {
-    margin-bottom: 1.5rem;
-    padding: 1rem;
-    background-color: #f8fafc;
-    border-radius: 8px;
-    border: 1px solid #e2e8f0;
+    color: #999;
 }
 
 .actionButtons {
@@ -90,178 +113,297 @@
     margin-bottom: 2rem;
 }
 
-.requestButton {
+.requestButton,
+.shareButton {
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 0.5rem;
     padding: 0.75rem 1.5rem;
-    background-color: #2563eb;
-    color: white;
-    border: none;
     border-radius: 6px;
+    border: none;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 0.875rem;
+    transition: all 0.2s;
+}
+
+.requestButton {
+    background: #3498db;
+    color: white;
 }
 
 .requestButton:hover {
-    background-color: #1d4ed8;
-    transform: translateY(-1px);
+    background: #2980b9;
+}
+
+.shareButton {
+    background: #f8f9fa;
+    color: #333;
+    border: 1px solid #dee2e6;
+}
+
+.shareButton:hover {
+    background: #e9ecef;
+}
+
+.developerSection {
+    margin: 2rem 0;
+}
+
+.developerCard {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.developerImage {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.developerInfo {
+    flex: 1;
+}
+
+.developerInfo h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.developerInfo p {
+    margin: 0 0 1rem 0;
+    color: #666;
+}
+
+.developerStats {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.developerStats span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #666;
+}
+
+.profileButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    background: white;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.profileButton:hover {
+    background: #f8f9fa;
 }
 
 .description {
-    margin-bottom: 2rem;
+    margin: 2rem 0;
 }
 
 .description h2 {
     font-size: 1.25rem;
     font-weight: 600;
     margin-bottom: 1rem;
-    color: #111827;
 }
 
 .description p {
-    color: #4b5563;
+    color: #666;
     line-height: 1.6;
+}
+
+.videos {
+    margin: 2rem 0;
+}
+
+.videos h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.videoGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.videoCard {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.videoThumbnailWrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #f5f5f5;
+}
+
+.videoThumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.videoPlaceholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+}
+
+.videoCard h3 {
+    margin: 1rem;
     font-size: 1rem;
+    font-weight: 600;
+}
+
+.videoCard p {
+    margin: 0 1rem 1rem;
+    color: #666;
+    font-size: 0.875rem;
 }
 
 .links {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
-    margin-bottom: 2rem;
+    margin: 2rem 0;
 }
 
 .link {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.75rem 1rem;
-    background-color: #f3f4f6;
-    color: #4b5563;
-    text-decoration: none;
+    padding: 0.75rem 1.5rem;
     border-radius: 6px;
-    font-size: 0.875rem;
-    transition: all 0.2s ease;
+    background: #f8f9fa;
+    color: #333;
+    text-decoration: none;
+    border: 1px solid #dee2e6;
+    transition: all 0.2s;
 }
 
 .link:hover {
-    background-color: #e5e7eb;
-    color: #111827;
-    transform: translateY(-1px);
+    background: #e9ecef;
 }
 
 .readme {
-    margin-bottom: 2rem;
-    padding: 1.5rem;
-    background-color: #f8fafc;
-    border-radius: 8px;
-    border: 1px solid #e2e8f0;
+    margin: 2rem 0;
 }
 
 .readme h2 {
     font-size: 1.25rem;
     font-weight: 600;
-    margin-bottom: 1rem;
-    color: #111827;
+    margin-bottom: 1.5rem;
 }
 
 .readmeContent {
-    color: #4b5563;
-    line-height: 1.6;
-    font-size: 0.875rem;
-    white-space: pre-wrap;
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 1px solid #dee2e6;
 }
 
-.videos {
-    margin-top: 2rem;
+.readmeContent :global(h1) {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 1.5rem 0 1rem;
 }
 
-.videos h2 {
+.readmeContent :global(h2) {
     font-size: 1.25rem;
     font-weight: 600;
-    margin-bottom: 1rem;
-    color: #111827;
+    margin: 1.25rem 0 0.875rem;
 }
 
-.videoGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1.5rem;
+.readmeContent :global(h3) {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 1rem 0 0.75rem;
 }
 
-.videoCard {
-    border-radius: 8px;
-    overflow: hidden;
-    background: white;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease;
+.readmeContent :global(p) {
+    margin: 0.75rem 0;
+    line-height: 1.6;
+    color: #333;
 }
 
-.videoCard:hover {
-    transform: translateY(-2px);
+.readmeContent :global(ul),
+.readmeContent :global(ol) {
+    margin: 0.75rem 0;
+    padding-left: 1.5rem;
 }
 
-.videoThumbnail {
-    width: 100%;
-    aspect-ratio: 16/9;
-    object-fit: cover;
+.readmeContent :global(li) {
+    margin: 0.5rem 0;
 }
 
-.videoCard h3 {
+.readmeContent :global(pre) {
+    background: #f8f9fa;
     padding: 1rem;
-    margin: 0;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+
+.readmeContent :global(code) {
+    background: #f8f9fa;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
     font-size: 0.875rem;
-    font-weight: 500;
-    color: #111827;
 }
 
-.loadingSpinner {
-    width: 40px;
-    height: 40px;
-    border: 3px solid #f3f4f6;
-    border-top: 3px solid #2563eb;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-.errorCard {
-    background: white;
-    border-radius: 8px;
-    padding: 2rem;
-    text-align: center;
-    max-width: 400px;
-}
-
-.errorCard h2 {
-    color: #dc2626;
-    margin-bottom: 1rem;
-}
-
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
+/* Responsive styles */
 @media (max-width: 768px) {
     .container {
         padding: 1rem;
     }
 
-    .showcaseCard {
-        padding: 1rem;
+    .developerCard {
+        flex-direction: column;
     }
 
-    .imageWrapper {
-        height: 250px;
+    .developerImage {
+        width: 80px;
+        height: 80px;
+    }
+
+    .developerStats {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .actionButtons {
+        flex-direction: column;
+    }
+
+    .requestButton,
+    .shareButton {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .videoGrid {
+        grid-template-columns: 1fr;
     }
 
     .links {
@@ -272,8 +414,19 @@
         width: 100%;
         justify-content: center;
     }
+}
 
-    .videoGrid {
-        grid-template-columns: 1fr;
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
     }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.showcaseCard {
+    animation: fadeIn 0.3s ease-in-out;
 }

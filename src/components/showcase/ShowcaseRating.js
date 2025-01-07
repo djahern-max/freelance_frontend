@@ -18,7 +18,7 @@ const ShowcaseRating = ({ showcaseId, initialRating = 0 }) => {
     useEffect(() => {
         fetchRatings();
         if (isAuthenticated) {
-            fetchUserRating();
+            // fetchUserRating();
         }
     }, [showcaseId, isAuthenticated]);
 
@@ -32,16 +32,16 @@ const ShowcaseRating = ({ showcaseId, initialRating = 0 }) => {
         }
     };
 
-    const fetchUserRating = async () => {
-        try {
-            const response = await api.get(`/project-showcase/${showcaseId}/user-rating`);
-            setUserRating(response.data.stars);
-        } catch (error) {
-            if (error.response?.status !== 404) {
-                console.error('Error fetching user rating:', error);
-            }
-        }
-    };
+    // const fetchUserRating = async () => {
+    //     try {
+    //         const response = await api.get(`/project-showcase/${showcaseId}/user-rating`);
+    //         setUserRating(response.data.stars);
+    //     } catch (error) {
+    //         if (error.response?.status !== 404) {
+    //             console.error('Error fetching user rating:', error);
+    //         }
+    //     }
+    // };
 
     const handleRating = async (rating) => {
         if (!isAuthenticated) {

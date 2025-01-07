@@ -28,9 +28,9 @@ export const API_ROUTES = {
     CREATE: '/project-showcase/',
     DETAIL: (id) => `/project-showcase/${id}`,
     DEVELOPER: (id) => `/project-showcase/developer/${id}`,
-    // Fix these routes by removing 'showcase' from the path
     RATING: (id) => `/project-showcase/${id}/rating`,
-    USER_RATING: (id) => `/project-showcase/${id}/user-rating`
+    SHARE: (id) => `/project-showcase/${id}/share`
+
   },
   VIDEOS: {
     DISPLAY: '/video_display',
@@ -38,7 +38,7 @@ export const API_ROUTES = {
   },
   RATINGS: {
     DEVELOPER: (id) => `/ratings/developer/${id}`,
-    USER_RATING: (id) => `/ratings/developer/${id}/user-rating`,
+
     DEVELOPER_RATING: (id) => `/ratings/developer/${id}/rating`, // Add this new route
   },
   PROFILE: {
@@ -481,6 +481,8 @@ api.videos = {
     }
   },
 
+
+
   async getDisplayVideos() {
     try {
       const response = await api.get(API_ROUTES.VIDEOS.DISPLAY);
@@ -491,6 +493,8 @@ api.videos = {
     }
   }
 };
+
+
 
 // Add the ratings methods as a separate object
 
@@ -650,9 +654,46 @@ api.snaggedRequests = {
 };
 
 api.showcase = {
+  async shareShowcase(showcaseId, projectUrl) {
+    try {
+      const response = await api.post(`/project-showcase/${showcaseId}/share`, {
+        project_url: projectUrl
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error sharing showcase:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
   async create(showcaseData) {
     try {
-      const response = await api.post(API_ROUTES.SHOWCASE.CREATE, showcaseData, {
+      const formData = new FormData();
+
+      // Handle basic fields
+      const basicFields = ['title', 'description', 'project_url', 'repository_url', 'demo_url'];
+      basicFields.forEach(field => {
+        if (showcaseData[field]) {
+          formData.append(field, showcaseData[field]);
+        }
+      });
+
+      // Handle files
+      if (showcaseData.image_file) {
+        formData.append('image_file', showcaseData.image_file);
+      }
+      if (showcaseData.readme_file) {
+        formData.append('readme_file', showcaseData.readme_file);
+      }
+
+      // Handle linked content (videos and profile)
+      if (showcaseData.linked_content) {
+        formData.append('linked_content', JSON.stringify(showcaseData.linked_content));
+      }
+
+      console.log('Creating showcase with data:', Object.fromEntries(formData.entries()));
+
+      const response = await api.post(API_ROUTES.SHOWCASE.CREATE, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -679,8 +720,10 @@ api.showcase = {
   async getDetail(id) {
     try {
       const response = await api.get(API_ROUTES.SHOWCASE.DETAIL(id));
+      console.log('Fetched showcase detail:', response.data);
       return response.data;
     } catch (error) {
+      console.error('Error fetching showcase detail:', error);
       throw new Error(api.helpers.handleError(error));
     }
   },
@@ -723,7 +766,6 @@ api.showcase = {
     }
   }
 };
-
 
 
 

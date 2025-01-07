@@ -128,7 +128,7 @@ const PublicRequests = () => {
       console.log('Snag request successful:', result);
 
       setShowSnagModal(false);
-      toast.success('Request snagged successfully!', {
+      toast.success('Request sent successfully!', {
         position: 'top-right',
         autoClose: 5000,
         hideProgressBar: true

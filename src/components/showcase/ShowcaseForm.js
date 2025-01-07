@@ -1,4 +1,4 @@
-import { Upload, X, FileText, Link as LinkIcon } from 'lucide-react';
+import { Upload, X, FileText, Link as LinkIcon, Video } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -18,10 +18,30 @@ const ShowcaseForm = ({ projectId, onUploadSuccess }) => {
     const [messageType, setMessageType] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
     const [readmePreview, setReadmePreview] = useState(null);
+    const [userVideos, setUserVideos] = useState([]);
+    const [selectedVideos, setSelectedVideos] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [includeProfile, setIncludeProfile] = useState(false);
 
     const navigate = useNavigate();
     const imageInputRef = useRef(null);
     const readmeInputRef = useRef(null);
+
+    useEffect(() => {
+        const fetchUserVideos = async () => {
+            try {
+                const response = await api.get('/video_display/my-videos');
+                setUserVideos(response.data.user_videos || []);
+            } catch (err) {
+                console.error('Error fetching videos:', err);
+                toast.error('Failed to load your videos');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUserVideos();
+    }, []);
 
     const showMessage = (text, type) => {
         setMessage(text);
@@ -42,7 +62,6 @@ const ShowcaseForm = ({ projectId, onUploadSuccess }) => {
                 return;
             }
 
-            // Check file size - 5MB limit
             if (file.size > 5 * 1024 * 1024) {
                 showMessage('Image must be under 5MB', 'error');
                 return;
@@ -72,7 +91,6 @@ const ShowcaseForm = ({ projectId, onUploadSuccess }) => {
                 return;
             }
 
-            // Check file size - 1MB limit for README
             if (file.size > 1024 * 1024) {
                 showMessage('README must be under 1MB', 'error');
                 return;
@@ -111,12 +129,14 @@ const ShowcaseForm = ({ projectId, onUploadSuccess }) => {
         const formData = new FormData();
         formData.append('title', title);
         formData.append('description', description);
+        formData.append('include_profile', includeProfile);
 
         if (projectUrl) formData.append('project_url', projectUrl);
         if (repositoryUrl) formData.append('repository_url', repositoryUrl);
         if (demoUrl) formData.append('demo_url', demoUrl);
         if (imageFile) formData.append('image_file', imageFile);
         if (readmeFile) formData.append('readme_file', readmeFile);
+        if (selectedVideos.length > 0) formData.append('video_ids', JSON.stringify(selectedVideos));
 
         try {
             const response = await api.post('/project-showcase/', formData, {
@@ -134,6 +154,8 @@ const ShowcaseForm = ({ projectId, onUploadSuccess }) => {
             setReadmeFile(null);
             setImagePreview(null);
             setReadmePreview(null);
+            setSelectedVideos([]);
+            setIncludeProfile(false);
 
             showMessage('Project showcase created successfully!', 'success');
 
@@ -141,7 +163,6 @@ const ShowcaseForm = ({ projectId, onUploadSuccess }) => {
                 onUploadSuccess(response.data);
             }
 
-            // Navigate to the showcase page
             navigate(`/showcase/${response.data.id}`);
         } catch (err) {
             console.error('Error creating showcase:', err);
@@ -222,24 +243,57 @@ const ShowcaseForm = ({ projectId, onUploadSuccess }) => {
                             disabled={uploading}
                         />
                     </div>
-                    <div className={styles.submitButtonContainer}>
-                        <button
-                            type="submit"
-                            className={styles.submitButton}
-                            disabled={uploading}
-                        >
-                            {uploading ? (
-                                <>
-                                    <span className={styles.spinner} />
-                                    Creating...
-                                </>
-                            ) : (
-                                <>
-                                    <LinkIcon className="mr-2" />
-                                    Create Showcase
-                                </>
-                            )}
-                        </button>
+
+                    {/* Video Selection Section */}
+                    <div className={styles.formGroup}>
+                        <label className={styles.label}>Link Relevant Videos</label>
+                        {loading ? (
+                            <div>Loading your videos...</div>
+                        ) : userVideos.length === 0 ? (
+                            <div className={styles.noVideos}>
+                                <p>You haven't uploaded any videos yet.</p>
+                                <button
+                                    onClick={() => navigate('/videos/upload')}
+                                    className={styles.uploadVideoButton}
+                                >
+                                    <Video size={16} />
+                                    Upload Video
+                                </button>
+                            </div>
+                        ) : (
+                            <div className={styles.videoList}>
+                                {userVideos.map((video) => (
+                                    <label key={video.id} className={styles.checkboxLabel}>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedVideos.includes(video.id)}
+                                            onChange={(e) => {
+                                                setSelectedVideos((prev) =>
+                                                    e.target.checked
+                                                        ? [...prev, video.id]
+                                                        : prev.filter((id) => id !== video.id)
+                                                );
+                                            }}
+                                            className={styles.checkbox}
+                                        />
+                                        <span>{video.title}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Profile Link Section */}
+                    <div className={styles.formGroup}>
+                        <label className={styles.checkboxLabel}>
+                            <input
+                                type="checkbox"
+                                checked={includeProfile}
+                                onChange={(e) => setIncludeProfile(e.target.checked)}
+                                className={styles.checkbox}
+                            />
+                            <span>Include my profile link in showcase</span>
+                        </label>
                     </div>
 
                     <div className={styles.uploadButtons}>
@@ -310,13 +364,31 @@ const ShowcaseForm = ({ projectId, onUploadSuccess }) => {
                         </div>
                     )}
 
+                    <div className={styles.submitButtonContainer}>
+                        <button
+                            type="submit"
+                            className={styles.submitButton}
+                            disabled={uploading}
+                        >
+                            {uploading ? (
+                                <>
+                                    <span className={styles.spinner} />
+                                    Creating...
+                                </>
+                            ) : (
+                                <>
+                                    <LinkIcon className="mr-2" />
+                                    Create Showcase
+                                </>
+                            )}
+                        </button>
+                    </div>
+
                     {message && (
                         <div className={styles[messageType]}>
                             {message}
                         </div>
                     )}
-
-
                 </form>
             </div>
         </div>

@@ -1,13 +1,13 @@
+// SharedShowcase.js
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, MessageSquare, Star, ExternalLink, Code, Play } from 'lucide-react';
+import { ArrowLeft, MessageSquare, Star, ExternalLink, Code, Play, Share2, User } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 import api from '../../utils/api';
 import styles from './SharedShowcase.module.css';
 import CreateRequestModal from '../requests/CreateRequestModal';
 import AuthDialog from '../auth/AuthDialog';
-import DeveloperRatingSection from '../profiles/DeveloperRatingSection';
 
 const SharedShowcase = () => {
     const [showcase, setShowcase] = useState(null);
@@ -16,6 +16,8 @@ const SharedShowcase = () => {
     const [selectedCreator, setSelectedCreator] = useState(null);
     const [showAuthDialog, setShowAuthDialog] = useState(false);
     const [readmeContent, setReadmeContent] = useState(null);
+    const [copied, setCopied] = useState(false);
+
     const { showcaseId } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
@@ -27,9 +29,20 @@ const SharedShowcase = () => {
         const fetchShowcase = async () => {
             try {
                 const response = await api.get(`/project-showcase/${showcaseId}`);
-                setShowcase(response.data);
+                console.log('Showcase raw data:', response.data);
+                console.log('Linked content:', response.data.linked_content);
+                if (response.data.linked_content) {
+                    console.log('Videos:', response.data.linked_content.filter(content => content.type === 'video'));
+                    console.log('Has profile:', response.data.linked_content.some(content => content.type === 'profile'));
+                }
 
-                // If there's a readme_url, fetch the content
+                const showcaseData = {
+                    ...response.data,
+                    linked_content: response.data.linked_content || []
+                };
+
+                setShowcase(showcaseData);
+
                 if (response.data.readme_url) {
                     const readmeResponse = await api.get(`/project-showcase/${showcaseId}/readme`);
                     setReadmeContent(readmeResponse.data.content);
@@ -47,9 +60,18 @@ const SharedShowcase = () => {
             fetchShowcase();
         }
     }, [showcaseId]);
+    const handleShare = async () => {
+        try {
+            const deployedUrl = process.env.REACT_APP_FRONTEND_URL || window.location.origin;
+            const shareUrl = `${deployedUrl}/showcase/${showcaseId}`;
 
-    const handleBack = () => {
-        window.history.back();
+            await navigator.clipboard.writeText(shareUrl);
+            setCopied(true);
+            toast.success('Link copied to clipboard!');
+            setTimeout(() => setCopied(false), 2000);
+        } catch (err) {
+            toast.error('Failed to copy link');
+        }
     };
 
     const handleSendRequest = () => {
@@ -69,10 +91,19 @@ const SharedShowcase = () => {
         });
     };
 
+    const handleViewProfile = () => {
+        if (showcase?.developer_profile?.id) {
+            navigate(`/developers/${showcase.developer_profile.user_id}/public`);
+        }
+    };
+
     if (loading) {
         return (
             <div className={styles.container}>
-                <div className={styles.loadingSpinner} />
+                <div className={styles.loadingSpinner}>
+                    <div className={styles.spinner}></div>
+                    <p>Loading project...</p>
+                </div>
             </div>
         );
     }
@@ -83,7 +114,7 @@ const SharedShowcase = () => {
                 <div className={styles.errorCard}>
                     <h2>Error</h2>
                     <p>{error}</p>
-                    <button onClick={handleBack} className={styles.backButton}>
+                    <button onClick={() => window.history.back()} className={styles.backButton}>
                         <ArrowLeft size={16} />
                         Go Back
                     </button>
@@ -97,113 +128,178 @@ const SharedShowcase = () => {
     return (
         <div className={styles.container}>
             <div className={styles.showcaseCard}>
-                <div className={styles.header}>
-                    <button onClick={handleBack} className={styles.backButton}>
+                <header className={styles.header}>
+                    <button onClick={() => window.history.back()} className={styles.backButton}>
                         <ArrowLeft size={16} />
                         Back
                     </button>
                     <h1 className={styles.title}>{showcase.title}</h1>
-                </div>
+                </header>
 
-                <div className={styles.imageWrapper}>
-                    {showcase.image_url ? (
-                        <img
-                            src={showcase.image_url}
-                            alt={showcase.title}
-                            className={styles.showcaseImage}
-                        />
-                    ) : (
-                        <div className={styles.imagePlaceholder}>
-                            <Code size={48} />
-                        </div>
-                    )}
-                </div>
+                <div className={styles.mainContent}>
+                    <div className={styles.imageWrapper}>
+                        {showcase.image_url ? (
+                            <img
+                                src={showcase.image_url}
+                                alt={showcase.title}
+                                className={styles.showcaseImage}
+                            />
+                        ) : (
+                            <div className={styles.imagePlaceholder}>
+                                <Code size={48} />
+                            </div>
+                        )}
+                    </div>
 
-                <div className={styles.rating}>
-                    <DeveloperRatingSection developerId={showcase.developer_id} />
-                </div>
-
-                <div className={styles.actionButtons}>
-                    {user?.userType !== 'developer' && (
+                    <div className={styles.actionButtons}>
+                        {user?.userType !== 'developer' && (
+                            <button
+                                className={styles.requestButton}
+                                onClick={handleSendRequest}
+                            >
+                                <MessageSquare size={16} />
+                                Contact Creator
+                            </button>
+                        )}
                         <button
-                            className={styles.requestButton}
-                            onClick={handleSendRequest}
+                            className={styles.shareButton}
+                            onClick={handleShare}
                         >
-                            <MessageSquare size={16} className={styles.icon} />
-                            <span>Send Me a Request</span>
+                            <Share2 size={16} />
+                            {copied ? 'Copied!' : 'Share Project'}
                         </button>
-                    )}
-                </div>
-
-                <div className={styles.description}>
-                    <h2>About This Project</h2>
-                    <p>{showcase.description}</p>
-                </div>
-
-                <div className={styles.links}>
-                    {showcase.project_url && (
-                        <a
-                            href={showcase.project_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={styles.link}
-                        >
-                            <ExternalLink size={16} />
-                            View Live Project
-                        </a>
-                    )}
-
-                    {showcase.repository_url && (
-                        <a
-                            href={showcase.repository_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={styles.link}
-                        >
-                            <Code size={16} />
-                            View Repository
-                        </a>
-                    )}
-
-                    {showcase.demo_url && (
-                        <a
-                            href={showcase.demo_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={styles.link}
-                        >
-                            <Play size={16} />
-                            Watch Demo
-                        </a>
-                    )}
-                </div>
-
-                {readmeContent && (
-                    <div className={styles.readme}>
-                        <h2>README</h2>
-                        <div className={styles.readmeContent}>
-                            {readmeContent}
-                        </div>
                     </div>
-                )}
 
-                {showcase.videos?.length > 0 && (
-                    <div className={styles.videos}>
-                        <h2>Project Videos</h2>
-                        <div className={styles.videoGrid}>
-                            {showcase.videos.map((video) => (
-                                <div key={video.id} className={styles.videoCard}>
+                    {showcase?.linked_content?.filter(content => content.type === 'video')?.length > 0 && (
+                        <section className={styles.videos}>
+                            <h2>Project Videos</h2>
+                            <div className={styles.videoGrid}>
+                                {showcase.linked_content
+                                    .filter(content => content.type === 'video')
+                                    .map((video) => (
+                                        <div
+                                            key={video.content_id}
+                                            className={styles.videoCard}
+                                            onClick={() => navigate(`/video_display/stream/${video.content_id}`)}
+                                        >
+                                            <div className={styles.videoThumbnailWrapper}>
+                                                {video.thumbnail_path ? (
+                                                    <img
+                                                        src={video.thumbnail_path}
+                                                        alt={video.title}
+                                                        className={styles.videoThumbnail}
+                                                    />
+                                                ) : (
+                                                    <div className={styles.videoPlaceholder}>
+                                                        <Play size={32} />
+                                                    </div>
+                                                )}
+                                                <div className={styles.videoOverlay}>
+                                                    <Play size={24} className={styles.playIcon} />
+                                                </div>
+                                            </div>
+                                            <h3>{video.title}</h3>
+                                            {video.description && <p>{video.description}</p>}
+                                        </div>
+                                    ))}
+                            </div>
+                        </section>
+                    )}
+
+                    {/* Profile Section - Only show if profile was included */}
+                    {showcase?.linked_content?.some(content => content.type === 'profile') && (
+                        <section className={styles.developerSection}>
+                            <h2>Developer Info</h2>
+                            <div className={styles.developerCard}>
+                                {showcase.developer_profile?.profile_image_url && (
                                     <img
-                                        src={video.thumbnail_path}
-                                        alt={video.title}
-                                        className={styles.videoThumbnail}
+                                        src={showcase.developer_profile.profile_image_url}
+                                        alt="Developer"
+                                        className={styles.developerImage}
                                     />
-                                    <h3>{video.title}</h3>
+                                )}
+                                <div className={styles.developerInfo}>
+                                    <h3>{showcase.developer?.username}</h3>
+                                    <p>{showcase.developer_profile?.bio}</p>
+                                    <div className={styles.developerStats}>
+                                        {showcase.developer_profile?.experience_years && (
+                                            <span>
+                                                <strong>Experience:</strong>
+                                                {showcase.developer_profile.experience_years} years
+                                            </span>
+                                        )}
+                                        {showcase.developer_profile?.rating && (
+                                            <span>
+                                                <Star size={16} />
+                                                {showcase.developer_profile.rating.toFixed(1)}
+                                            </span>
+                                        )}
+                                        {showcase.developer_profile?.success_rate && (
+                                            <span>
+                                                <strong>Success:</strong>
+                                                {showcase.developer_profile.success_rate}%
+                                            </span>
+                                        )}
+                                    </div>
+                                    <button
+                                        className={styles.profileButton}
+                                        onClick={() => navigate(`/profile/developers/${showcase.developer_profile.user_id}/public`)}
+                                    >
+                                        <User size={16} />
+                                        View Full Profile
+                                    </button>
                                 </div>
-                            ))}
-                        </div>
+                            </div>
+                        </section>
+                    )}
+
+
+                    <div className={styles.links}>
+                        {showcase.project_url && (
+                            <a
+                                href={showcase.project_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={styles.link}
+                            >
+                                <ExternalLink size={16} />
+                                View Live Project
+                            </a>
+                        )}
+                        {showcase.repository_url && (
+                            <a
+                                href={showcase.repository_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={styles.link}
+                            >
+                                <Code size={16} />
+                                View Repository
+                            </a>
+                        )}
+                        {showcase.demo_url && (
+                            <a
+                                href={showcase.demo_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={styles.link}
+                            >
+                                <Play size={16} />
+                                View Demo
+                            </a>
+                        )}
                     </div>
-                )}
+
+                    {readmeContent && (
+                        <section className={styles.readme}>
+                            <h2>README</h2>
+                            <div
+                                className={styles.readmeContent}
+                                dangerouslySetInnerHTML={{ __html: readmeContent }}
+                            />
+                        </section>
+                    )}
+                </div>
             </div>
 
             <AuthDialog

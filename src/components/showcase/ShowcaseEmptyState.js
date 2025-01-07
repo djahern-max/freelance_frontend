@@ -18,6 +18,43 @@ const ShowcaseEmptyState = ({
     });
   };
 
+  const renderContent = () => {
+    if (!isAuthenticated) {
+      return {
+        title: 'Explore Developer Projects',
+        description: 'Sign up to explore developer projects and share your own work.',
+        action: (
+          <button className={styles.primaryButton} onClick={handleSignUp}>
+            <UserPlus size={20} />
+            <span>Sign Up Now</span>
+          </button>
+        )
+      };
+    }
+
+    if (userType === 'client') {
+      return {
+        title: 'Developer Showcases',
+        description: 'Coming Soon.',
+        // No action button for clients since they can't create showcases
+      };
+    }
+
+    return {
+      title: 'No Project Showcases Yet',
+      description: 'Share your best projects with the community and attract potential clients.',
+      action: (
+        <button className={styles.primaryButton} onClick={onCreateShowcase}>
+          <PlusCircle size={20} />
+          <span>Create Your First Showcase</span>
+        </button>
+      ),
+      footer: 'Share your projects to showcase your skills and attract potential clients'
+    };
+  };
+
+  const content = renderContent();
+
   return (
     <div className={styles.wrapper}>
       {error && (
@@ -37,36 +74,17 @@ const ShowcaseEmptyState = ({
           <Briefcase className={styles.icon} size={48} />
         </div>
 
-        <h2 className={styles.title}>
-          {isAuthenticated
-            ? 'No Project Showcases Yet'
-            : 'Explore Developer Projects'}
-        </h2>
+        <h2 className={styles.title}>{content.title}</h2>
+        <p className={styles.description}>{content.description}</p>
 
-        <p className={styles.description}>
-          {isAuthenticated
-            ? 'Share your best projects with the community and attract potential clients.'
-            : 'Sign up to explore developer projects and share your own work.'}
-        </p>
+        {content.action && (
+          <div className={styles.actionWrapper}>
+            {content.action}
+          </div>
+        )}
 
-        <div className={styles.actionWrapper}>
-          {!isAuthenticated ? (
-            <button className={styles.primaryButton} onClick={handleSignUp}>
-              <UserPlus size={20} />
-              <span>Sign Up Now</span>
-            </button>
-          ) : (
-            <button className={styles.primaryButton} onClick={onCreateShowcase}>
-              <PlusCircle size={20} />
-              <span>Create Your First Showcase</span>
-            </button>
-          )}
-        </div>
-
-        {userType === 'developer' && isAuthenticated && (
-          <p className={styles.footer}>
-            Share your projects to showcase your skills and attract potential clients
-          </p>
+        {content.footer && (
+          <p className={styles.footer}>{content.footer}</p>
         )}
       </div>
     </div>

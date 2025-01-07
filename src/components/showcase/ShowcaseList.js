@@ -9,7 +9,7 @@ import CreateRequestModal from '../requests/CreateRequestModal';
 import DeveloperRatingSection from '../profiles/DeveloperRatingSection';
 import ShowcaseEmptyState from './ShowcaseEmptyState';
 import styles from './ShowcaseList.module.css';
-import ShareButton from '../videos/ShareButton';
+
 import ReadmeModal from './ReadmeModal';
 import ShowcaseRating from './ShowcaseRating';
 import { Edit } from 'lucide-react';
@@ -98,6 +98,27 @@ const ShowcaseItem = ({
           )}
         </div>
 
+        {showcase.developer_id && (
+          <div className={styles.developerInfo}>
+            <span className={styles.developerLabel}>Creator: </span>
+            <span
+              className={styles.developerName}
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/developers/${showcase.developer_id}`);
+              }}
+            >
+              {showcase.developer?.username || `Developer #${showcase.developer_id}`}
+            </span>
+          </div>
+        )}
+
+
+
+        {renderDescription()}
+
+
+
         {/* Replace DeveloperRatingSection with ShowcaseRating */}
         <div className={styles.rating}>
           <ShowcaseRating
@@ -120,23 +141,11 @@ const ShowcaseItem = ({
             </button>
           )}
 
-          <div className={styles.showcaseItem}>
-            <ShareButton
-              showcaseId={showcase?.id}
-              projectUrl={showcase?.project_url}
-            />
-          </div>
+
         </div>
 
-        {/* {showcase.description && (
-          <p className={styles.description}>
-            {showcase.description.length > 150
-              ? `${showcase.description.substring(0, 150)}...`
-              : showcase.description}
-          </p>
-        )} */}
 
-        {renderDescription()}
+
 
         <div className={styles.links}>
           {showcase.repository_url && (

@@ -20,12 +20,14 @@ import styles from './DeveloperDashboard.module.css';
 
 
 
+
 // RequestCard component remains the same
 const RequestCard = ({ request, navigate }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const maxLength = 150;
   const needsTruncation = request.content.length > maxLength;
-
+  const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState('');
 
 
 
@@ -210,15 +212,13 @@ const DeveloperDashboard = () => {
   const [snaggedRequests, setSnaggedRequests] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  // Add this line
-
-
   const [hasSeenTutorial, setHasSeenTutorial] = useState(() => {
     return localStorage.getItem('dashboardTutorialSeen') === 'true';
   });
-
   const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
-  const [setPendingRequest] = useState(null);
+  const [pendingRequest, setPendingRequest] = useState(null);  // Fixed this line
+  const [pendingNavigation, setPendingNavigation] = useState('');
+
 
   const navigate = useNavigate();
   const auth = useSelector((state) => state.auth);
@@ -616,6 +616,29 @@ const DeveloperDashboard = () => {
     // Don't start conversation here - it will happen in SubscriptionSuccess component
   };
 
+  const handleShowcaseClick = async () => {
+    try {
+      // Check subscription status
+      const subscriptionResponse = await api.get('/payments/subscription-status');
+      if (subscriptionResponse.data.status === 'active') {
+        // If subscribed, navigate to showcase create
+        navigate('/showcase/create');
+      } else {
+        // If not subscribed, show subscription dialog
+        setPendingNavigation('/showcase/create');
+        setShowSubscriptionDialog(true);
+      }
+    } catch (error) {
+      console.error('Error checking subscription:', error);
+      if (error.response?.status === 403) {
+        setPendingNavigation('/showcase/create');
+        setShowSubscriptionDialog(true);
+      }
+    }
+  };
+
+
+
 
 
 
@@ -629,6 +652,8 @@ const DeveloperDashboard = () => {
       ) : (
         <>
           <div className={styles.content}>
+
+
             <div className={styles.dashboardHeader}>
               <div className={styles.headerButtons}>
                 <button
@@ -639,9 +664,15 @@ const DeveloperDashboard = () => {
                   Explore Open Tickets
                 </button>
 
+                <button
+                  onClick={handleShowcaseClick}
+                  className={styles.headerCreateButton}
+                >
+                  <Plus size={24} className={styles.buttonIcon} />
+                  Showcase Project
+                </button>
               </div>
             </div>
-
             {!hasSeenTutorial && (
               <div className={styles.tutorialHint}>
                 Click any card to view more details

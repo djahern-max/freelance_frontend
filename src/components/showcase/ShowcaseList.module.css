@@ -1,54 +1,62 @@
+/* ShowcaseList.module.css */
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1.5rem;
 }
 
 .headerContainer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 2rem;
+  padding: 0 0.5rem;
 }
 
 .createShowcaseButton {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem 1.25rem;
   background-color: #2563EB;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-weight: 500;
+  font-size: 0.9375rem;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.1);
 }
 
 .createShowcaseButton:hover {
   background-color: #1D4ED8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   gap: 1.5rem;
   align-items: stretch;
+  padding: 0.5rem;
 }
 
 .showcaseCard {
   display: flex;
   flex-direction: column;
-  height: 100%;
   background-color: white;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .showcaseCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
 }
 
 .imageContainer {
@@ -56,8 +64,8 @@
   width: 100%;
   padding-top: 56.25%;
   /* 16:9 aspect ratio */
-  background-color: #F3F4F6;
-  cursor: pointer;
+  background-color: #F8FAFC;
+  overflow: hidden;
 }
 
 .thumbnail {
@@ -67,6 +75,11 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.showcaseCard:hover .thumbnail {
+  transform: scale(1.05);
 }
 
 .thumbnailPlaceholder {
@@ -74,74 +87,164 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: #9CA3AF;
+  color: #94A3B8;
+  background: rgba(148, 163, 184, 0.1);
+  padding: 1.5rem;
+  border-radius: 50%;
 }
 
 .contentContainer {
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  height: calc(100% - 56.25%);
-  /* Subtract image height */
+  gap: 1rem;
+  flex: 1;
+}
+
+.headerActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
 }
 
 .showcaseTitle {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #111827;
-  margin-bottom: 0.5rem;
-  /* Reduced from 1rem */
+  color: #0F172A;
+  margin: 0;
+  flex: 1;
+  line-height: 1.4;
+}
+
+.editButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #F1F5F9;
+  color: #475569;
+  border: 1px solid #E2E8F0;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.editButton:hover {
+  background-color: #E2E8F0;
+  color: #334155;
 }
 
 .description {
-  color: #4B5563;
+  color: #475569;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.readMoreButton {
+  background: none;
+  border: none;
+  color: #2563EB;
+  padding: 0;
+  margin-top: 0.5rem;
+  cursor: pointer;
   font-size: 0.875rem;
-  line-height: 1.5;
-  margin: 0.75rem 0;
-  flex-grow: 1;
-  /* Allow description to take available space */
+  font-weight: 500;
+}
+
+.readMoreButton:hover {
+  text-decoration: underline;
+}
+
+.rating {
+  margin: 0.5rem 0;
 }
 
 .actionButtons {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin: 0.75rem 0;
+  gap: 1rem;
+  margin: 0.5rem 0;
 }
 
 .requestButton {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background-color: #2563EB;
+  padding: 0.625rem 1.25rem;
+  background-color: #6b7280;
   color: white;
   border: none;
-  border-radius: 6px;
-  font-size: 0.875rem;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.1);
 }
 
 .requestButton:hover {
   background-color: #1D4ED8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
 }
 
-.icon {
-  width: 16px;
-  height: 16px;
+.links {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin: 0.5rem 0;
+}
+
+.repoLink,
+.readmeButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.repoLink {
+  background-color: #EEF2FF;
+  color: #4F46E5;
+  border: 1px solid #E0E7FF;
+  text-decoration: none;
+}
+
+.repoLink:hover {
+  background-color: #E0E7FF;
+  color: #4338CA;
+}
+
+.readmeButton {
+  background-color: #F8FAFC;
+  color: #475569;
+  border: 1px solid #E2E8F0;
+}
+
+.readmeButton:hover {
+  background-color: #F1F5F9;
+  color: #334155;
 }
 
 .metadata {
-  margin-top: auto;
-  /* Push to bottom */
-  padding-top: 0.75rem;
-  border-top: 1px solid #E5E7EB;
-  font-size: 0.875rem;
-  color: #6B7280;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-top: 1rem;
+  margin-top: auto;
+  border-top: 1px solid #E2E8F0;
+  font-size: 0.875rem;
+  color: #64748B;
 }
 
 .ratingOverview {
@@ -155,132 +258,43 @@
 }
 
 .ratingCount {
-  color: #9CA3AF;
+  color: #94A3B8;
 }
 
-.repoLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background-color: #EEF2FF;
-  color: #4F46E5;
-  border: 1px solid #E0E7FF;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  text-decoration: none;
-  transition: all 0.2s ease;
-}
-
-.repoLink:hover {
-  background-color: #E0E7FF;
-  color: #4338CA;
-  text-decoration: none;
-}
-
-.repoLink svg {
-  width: 16px;
-  height: 16px;
-  color: #6366F1;
-}
-
-.rating {
-  margin: 1rem 0;
-}
-
-.links {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  /* Two equal columns */
-  gap: 0.75rem;
-  margin: 1rem 0;
-}
-
-.readmeButton {
-  background-color: #F3F4F6;
-  color: #374151;
-  border: 1px solid #E5E7EB;
-}
-
-.readmeButton:hover {
-  background-color: #E5E7EB;
-  color: #1F2937;
-}
-
-.readmeButton svg {
-  width: 16px;
-  height: 16px;
-  color: #6B7280;
-}
-
-.readmeButton,
-.repoLink {
-  width: 100%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.repoLink {
-  background-color: #EEF2FF;
-  color: #4F46E5;
-  border: 1px solid #E0E7FF;
-  text-decoration: none;
-}
-
-.repoLink:hover {
-  background-color: #E0E7FF;
-  color: #4338CA;
-}
-
-.headerActions {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1rem;
-}
-
-.editButton {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background-color: #F3F4F6;
-  color: #374151;
-  border: 1px solid #E5E7EB;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.editButton:hover {
-  background-color: #E5E7EB;
-  color: #1F2937;
-}
-
-/* Responsive adjustments */
-@media (max-width: 640px) {
-  .links {
-    grid-template-columns: 1fr;
-  }
-
-  .readmeButton,
-  .repoLink {
-    width: 100%;
-    justify-content: center;
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
   }
 
   .grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .links {
+    grid-template-columns: 1fr;
+  }
+
+  .headerActions {
+    flex-direction: column;
+  }
+
+  .editButton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .actionButtons {
+    flex-direction: column;
+  }
+
+  .requestButton {
+    width: 100%;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }

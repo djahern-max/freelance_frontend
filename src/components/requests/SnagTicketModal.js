@@ -109,7 +109,7 @@ const SnagTicketModal = ({
               className={styles.submitButton}
               disabled={isLoading || !message.trim()}
             >
-              {isLoading ? 'Snagging Request...' : 'Snag Request'}
+              {isLoading ? 'Snagging Request...' : 'Submit'}
             </button>
           </div>
         </form>

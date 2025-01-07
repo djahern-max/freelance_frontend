@@ -22,6 +22,8 @@
   display: flex;
   justify-content: flex-start;
   background: transparent;
+  margin-bottom: .9rem;
+  /* Add this line */
 }
 
 .groupingInfo {
@@ -36,25 +38,30 @@
 }
 
 .headerCreateButton {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  border-radius: 6px;
+  border-radius: 8px;
   font-weight: 500;
-  font-size: 15px;
-  background: #0866ff;
-  border: none;
-  color: white;
+  font-size: 14px;
+  background: white;
+  border: 1px solid #e4e6eb;
+  color: #050505;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 1px 2px rgba(8, 102, 255, 0.2);
 }
 
 .headerCreateButton:hover {
-  background: #0557d5;
+  background: #f5f5f5;
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(8, 102, 255, 0.3);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.headerCreateButton .buttonIcon {
+  width: 20px;
+  height: 20px;
+  color: #050505;
 }
 
 .headerCreateButton:active {
@@ -66,7 +73,7 @@
 .buttonIcon {
   width: 20px;
   height: 20px;
-  color: white;
+  color: #050505;
 }
 
 /* Stats Grid */
