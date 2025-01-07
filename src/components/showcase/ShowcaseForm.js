@@ -222,6 +222,25 @@ const ShowcaseForm = ({ projectId, onUploadSuccess }) => {
                             disabled={uploading}
                         />
                     </div>
+                    <div className={styles.submitButtonContainer}>
+                        <button
+                            type="submit"
+                            className={styles.submitButton}
+                            disabled={uploading}
+                        >
+                            {uploading ? (
+                                <>
+                                    <span className={styles.spinner} />
+                                    Creating...
+                                </>
+                            ) : (
+                                <>
+                                    <LinkIcon className="mr-2" />
+                                    Create Showcase
+                                </>
+                            )}
+                        </button>
+                    </div>
 
                     <div className={styles.uploadButtons}>
                         <button
@@ -297,25 +316,7 @@ const ShowcaseForm = ({ projectId, onUploadSuccess }) => {
                         </div>
                     )}
 
-                    <div className={styles.submitButtonContainer}>
-                        <button
-                            type="submit"
-                            className={styles.submitButton}
-                            disabled={uploading}
-                        >
-                            {uploading ? (
-                                <>
-                                    <span className={styles.spinner} />
-                                    Creating...
-                                </>
-                            ) : (
-                                <>
-                                    <LinkIcon className="mr-2" />
-                                    Create Showcase
-                                </>
-                            )}
-                        </button>
-                    </div>
+
                 </form>
             </div>
         </div>

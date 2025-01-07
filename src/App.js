@@ -121,14 +121,7 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
-        {/* Showcase routes */}
-        <Route path="/showcase" element={<ShowcaseList />} />
-        <Route path="/showcase/create" element={
-          <ProtectedRoute userType="developer">
-            <ShowcaseForm />
-          </ProtectedRoute>
-        } />
-        <Route path="/showcase/:showcaseId" element={<SharedShowcase />} />
+
 
         <Route
           path="*"
@@ -150,7 +143,14 @@ function AppContent() {
                   <Route path="/shared/videos/:shareToken" element={<SharedVideo />} />
                   <Route path="/shared/videos/:shareToken" element={<SharedVideo />} />
 
-                  {/* Marketplace routes */}
+                  {/* Showcase routes */}
+                  <Route path="/showcase" element={<ShowcaseList />} />
+                  <Route path="/showcase/create" element={
+                    <ProtectedRoute userType="developer">
+                      <ShowcaseForm />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/showcase/:showcaseId" element={<SharedShowcase />} />
 
 
 

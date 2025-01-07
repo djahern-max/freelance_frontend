@@ -109,6 +109,13 @@ const ShowcaseItem = ({
               <span>View README</span>
             </button>
           )}
+
+          {showReadmeModal && (
+            <ReadmeModal
+              showcaseId={showcase.id}
+              onClose={() => setShowReadmeModal(false)}
+            />
+          )}
         </div>
 
         <div className={styles.metadata}>
@@ -123,12 +130,7 @@ const ShowcaseItem = ({
         </div>
       </div>
 
-      {showReadmeModal && (
-        <ReadmeModal
-          content={showcase.readme_url}
-          onClose={() => setShowReadmeModal(false)}
-        />
-      )}
+
     </div>
   );
 };
@@ -247,7 +249,7 @@ const ShowcaseList = () => {
             onClick={() => navigate('/showcase/create')}
           >
             <PlusCircle size={16} />
-            <span>Create Showcase</span>
+            <span>Add Project</span>
           </button>
         )}
       </div>

@@ -54,3 +54,9 @@
     font-size: 0.875rem;
     color: #6B7280;
 }
+
+.averageStarActive {
+    color: #60A5FA;
+    fill: #60A5FA;
+    opacity: 0.7;
+}

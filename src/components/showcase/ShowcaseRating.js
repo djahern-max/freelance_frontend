@@ -84,8 +84,8 @@ const ShowcaseRating = ({ showcaseId, initialRating = 0 }) => {
                             <Star
                                 size={24}
                                 className={`${styles.star} ${(hoveredRating ? star <= hoveredRating : star <= userRating)
-                                        ? styles.starActive
-                                        : ''
+                                    ? styles.starActive
+                                    : ''
                                     }`}
                             />
                         </button>
@@ -101,13 +101,10 @@ const ShowcaseRating = ({ showcaseId, initialRating = 0 }) => {
                         <Star
                             key={star}
                             size={24}
-                            className={`${styles.star} ${star <= Math.round(averageRating) ? styles.starActive : ''
+                            className={`${styles.star} ${star <= Math.round(averageRating) ? styles.averageStarActive : ''
                                 }`}
                         />
                     ))}
-                    <span className={styles.ratingCount}>
-                        ({averageRating.toFixed(1)} / {totalRatings} ratings)
-                    </span>
                 </div>
             </div>
         </div>

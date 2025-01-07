@@ -1,11 +1,10 @@
-// ReadmeModal.js
-import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
+import React, { useEffect, useState } from 'react';
+import { X, FileText } from 'lucide-react';
+import { createPortal } from 'react-dom';
 import api from '../../utils/api';
 import styles from './ReadmeModal.module.css';
 
-const ReadmeModal = ({ readmeUrl, onClose }) => {
+const ReadmeModal = ({ showcaseId, onClose }) => {
     const [content, setContent] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -13,36 +12,56 @@ const ReadmeModal = ({ readmeUrl, onClose }) => {
     useEffect(() => {
         const fetchReadme = async () => {
             try {
-                const response = await api.get(readmeUrl);
-                setContent(response.data);
-            } catch (err) {
+                setLoading(true);
+                const response = await api.get(`/project-showcase/${showcaseId}/readme`, {
+                    params: { format: 'html' }
+                });
+                setContent(response.data.content);
+                setError(null);
+            } catch (error) {
+                console.error('Error fetching README:', error);
                 setError('Failed to load README content');
-                console.error('README fetch error:', err);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchReadme();
-    }, [readmeUrl]);
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [showcaseId]);
 
-    return (
-        <div className={styles.modalOverlay} onClick={onClose}>
-            <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
-                <button className={styles.closeButton} onClick={onClose}>
-                    <X size={24} />
-                </button>
+    return createPortal(
+        <div className={styles.overlay} onClick={onClose}>
+            <div className={styles.modal} onClick={e => e.stopPropagation()}>
+                <div className={styles.header}>
+                    <div className={styles.headerTitle}>
+                        <FileText className={styles.headerIcon} />
+                        <h2>README</h2>
+                    </div>
+                    <button onClick={onClose} className={styles.closeButton}>
+                        <X size={20} />
+                    </button>
+                </div>
                 <div className={styles.content}>
-                    {loading && <div className={styles.loading}>Loading...</div>}
-                    {error && <div className={styles.error}>{error}</div>}
-                    {!loading && !error && (
-                        <div className={styles.markdown}>
-                            <ReactMarkdown>{content}</ReactMarkdown>
+                    {loading ? (
+                        <div className={styles.loadingContainer}>
+                            <div className={styles.spinner} />
                         </div>
+                    ) : error ? (
+                        <div className={styles.error}>{error}</div>
+                    ) : (
+                        <div
+                            className={styles.markdown}
+                            dangerouslySetInnerHTML={{ __html: content }}
+                        />
                     )}
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 
