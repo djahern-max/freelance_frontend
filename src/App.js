@@ -35,8 +35,9 @@ import VideoList from './components/videos/VideoList';
 import VideoUpload from './components/videos/VideoUpload';
 import DeveloperProfileView from './components/profiles/DeveloperProfileView';
 import SharedVideo from './components/videos/SharedVideo';
-import ShowcaseList from './components/developerProjects/ShowcaseList';
-import ShowcaseForm from './components/developerProjects/ShowcaseForm';
+import ShowcaseList from './components/showcase/ShowcaseList';
+import ShowcaseForm from './components/showcase/ShowcaseForm';
+import SharedShowcase from './components/showcase/SharedShowcase';
 
 
 
@@ -120,6 +121,14 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
+        {/* Showcase routes */}
+        <Route path="/showcase" element={<ShowcaseList />} />
+        <Route path="/showcase/create" element={
+          <ProtectedRoute userType="developer">
+            <ShowcaseForm />
+          </ProtectedRoute>
+        } />
+        <Route path="/showcase/:showcaseId" element={<SharedShowcase />} />
 
         <Route
           path="*"
@@ -140,10 +149,7 @@ function AppContent() {
                   <Route path="/creators" element={<PublicDevelopers />} />
                   <Route path="/shared/videos/:shareToken" element={<SharedVideo />} />
                   <Route path="/shared/videos/:shareToken" element={<SharedVideo />} />
-                  <Route
-                    path="/showcase/developer/:developerId"
-                    element={<ShowcaseList />}
-                  />
+
                   {/* Marketplace routes */}
 
 
@@ -293,33 +299,8 @@ function AppContent() {
                     }
                   />
 
-                  {/* Add new showcase routes here */}
-                  <Route
-                    path="/showcase"
-                    element={
-                      <ProtectedRoute userType="developer">
-                        <ShowcaseList />
-                      </ProtectedRoute>
-                    }
-                  />
 
-                  <Route
-                    path="/showcase/new"
-                    element={
-                      <ProtectedRoute userType="developer">
-                        <ShowcaseForm />
-                      </ProtectedRoute>
-                    }
-                  />
 
-                  <Route
-                    path="/showcase/:showcaseId/edit"
-                    element={
-                      <ProtectedRoute userType="developer">
-                        <ShowcaseForm />
-                      </ProtectedRoute>
-                    }
-                  />
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
               </div>

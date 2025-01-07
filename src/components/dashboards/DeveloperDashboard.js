@@ -17,7 +17,7 @@ import SubscriptionDialog from '../payments/SubscriptionDialog';
 import Header from '../shared/Header';
 import DashboardSections from './DashboardSections';
 import styles from './DeveloperDashboard.module.css';
-import PublishProject from '../developerProjects/PublishProject';
+
 
 
 // RequestCard component remains the same
@@ -25,7 +25,7 @@ const RequestCard = ({ request, navigate }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const maxLength = 150;
   const needsTruncation = request.content.length > maxLength;
-  const [showPublishModal, setShowPublishModal] = useState(false);
+
 
 
 
@@ -211,7 +211,7 @@ const DeveloperDashboard = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   // Add this line
-  const [showPublishModal, setShowPublishModal] = useState(false);
+
 
   const [hasSeenTutorial, setHasSeenTutorial] = useState(() => {
     return localStorage.getItem('dashboardTutorialSeen') === 'true';
@@ -616,14 +616,8 @@ const DeveloperDashboard = () => {
     // Don't start conversation here - it will happen in SubscriptionSuccess component
   };
 
-  const handlePublishClick = () => {
-    setShowPublishModal(true);
-  };
 
-  // Add this before your return statement
-  const handleClosePublishModal = () => {
-    setShowPublishModal(false);
-  };
+
 
   return (
     <div className={styles.dashboardContainer}>
@@ -645,16 +639,6 @@ const DeveloperDashboard = () => {
                   Explore Open Tickets
                 </button>
 
-                <button
-                  onClick={handlePublishClick}
-                  className="publish-project-button" // Add your appropriate class
-                >
-                  Publish Project
-                </button>
-
-                {showPublishModal && (
-                  <PublishProject onClose={handleClosePublishModal} />
-                )}
               </div>
             </div>
 

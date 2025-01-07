@@ -391,8 +391,13 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.createButton .buttonIcon {
-  color: #050505;
+.headerCreateButton:hover .buttonIcon {
+  color: #111827;
+}
+
+.buttonIcon {
+  width: 20px;
+  height: 20px;
 }
 
 .viewAllButton {

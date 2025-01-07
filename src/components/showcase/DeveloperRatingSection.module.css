@@ -1,0 +1,60 @@
+/* DeveloperRatingSection.module.css */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.starsContainer {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.starButton {
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.starButton:focus {
+    outline: none;
+}
+
+.starButton:hover {
+    transform: scale(1.1);
+}
+
+.starButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.star {
+    transition: all 0.2s ease;
+}
+
+.starEmpty {
+    fill: transparent;
+    color: #d1d5db;
+}
+
+.starFilled {
+    fill: #facc15;
+    color: #facc15;
+}
+
+.metrics {
+    font-size: 0.875rem;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.dot {
+    color: #9ca3af;
+}

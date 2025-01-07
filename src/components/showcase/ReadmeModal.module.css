@@ -1,0 +1,111 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background-color: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.closeButton {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: #6B7280;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.closeButton:hover {
+    background-color: #F3F4F6;
+    color: #374151;
+}
+
+.content {
+    padding: 2rem;
+    overflow-y: auto;
+    max-height: calc(90vh - 4rem);
+}
+
+.loading {
+    text-align: center;
+    padding: 2rem;
+    color: #6B7280;
+}
+
+.error {
+    text-align: center;
+    padding: 2rem;
+    color: #DC2626;
+}
+
+.markdown {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: #374151;
+}
+
+.markdown h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.markdown h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.markdown p {
+    margin-bottom: 1rem;
+}
+
+.markdown code {
+    background-color: #F3F4F6;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+.markdown pre {
+    background-color: #F3F4F6;
+    padding: 1rem;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+
+.markdown ul,
+.markdown ol {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+}
+
+.markdown li {
+    margin-bottom: 0.5rem;
+}

@@ -1,3 +1,4 @@
+// DashboardSections.js
 import { useEffect, useState } from 'react';
 import styles from './DashboardSections.module.css';
 
@@ -51,6 +52,7 @@ const DashboardSections = ({
     <div className={styles.container}>
       {showTutorial && !hasSeenTutorial && (
         <div className={styles.tutorialHint}>
+          <span>💡</span>
           Click any card to view more details
         </div>
       )}
@@ -60,15 +62,16 @@ const DashboardSections = ({
           <div
             key={id}
             onClick={() => toggleSection(id)}
-            className={`${styles.statCard} ${
-              expandedSections[id] ? styles.active : ''
-            }`}
+            className={`${styles.card} ${expandedSections[id] ? styles.active : ''
+              }`}
           >
-            <Icon className={styles.icon} />
-            <div className={styles.statInfo}>
-              <h3>{title}</h3>
-              <p>{count}</p>
+            <div className={styles.countWrapper}>
+              {count > 0 && <span className={styles.count}>{count}</span>}
             </div>
+            <div className={styles.iconWrapper}>
+              <Icon className={styles.icon} strokeWidth={1.5} />
+            </div>
+            <h3 className={styles.title}>{title}</h3>
           </div>
         ))}
       </div>
