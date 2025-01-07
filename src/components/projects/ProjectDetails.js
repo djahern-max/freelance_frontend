@@ -92,8 +92,6 @@ const ProjectDetails = () => {
 
         {error && <div className={styles.error}>{error}</div>}
 
-        {/* Replace the existing statsGrid div with this */}
-
         <div className={styles.statsGrid}>
           <div
             className={styles.statCard}
@@ -203,34 +201,23 @@ const ProjectDetails = () => {
         <div className={styles.tabsContainer}>
           <div className={styles.tabsList}>
             <button
-              className={`${styles.tabButton} ${activeTab === 'requests' ? styles.activeTab : ''
-                }`}
+              className={`${styles.tabButton} ${activeTab === 'requests' ? styles.activeTab : ''}`}
               onClick={() => setActiveTab('requests')}
             >
               Requests
             </button>
             <button
-              className={`${styles.tabButton} ${activeTab === 'conversations' ? styles.activeTab : ''
-                }`}
+              className={`${styles.tabButton} ${activeTab === 'conversations' ? styles.activeTab : ''}`}
               onClick={() => setActiveTab('conversations')}
             >
               Conversations
             </button>
-            {/* <button
-              className={`${styles.tabButton} ${
-                activeTab === 'agreements' ? styles.activeTab : ''
-              }`}
-              onClick={() => setActiveTab('agreements')}
-            >
-              Terms of Agreement
-            </button> */}
           </div>
 
-          <div id="conversations-section" className={styles.tabContent}>
-            {activeTab === 'conversations' && (
-
-
-              <div className={styles.requestsTab}>
+          <div className={styles.tabContent}>
+            {/* Requests Tab */}
+            {activeTab === 'requests' && (
+              <div id="requests-section" className={styles.requestsTab}>
                 {requests.length > 0 ? (
                   <div className={styles.requestsList}>
                     {requests.map((request) => (
@@ -264,9 +251,9 @@ const ProjectDetails = () => {
               </div>
             )}
 
-            {/* Replace the conversations tab content with this */}
+            {/* Conversations Tab */}
             {activeTab === 'conversations' && (
-              <div className={styles.conversationsTab}>
+              <div id="conversations-section" className={styles.conversationsTab}>
                 {conversations.length > 0 ? (
                   <div className={styles.conversationsList}>
                     {conversations.map((conversation) => (
@@ -332,8 +319,6 @@ const ProjectDetails = () => {
                 )}
               </div>
             )}
-
-
           </div>
         </div>
       </div>
