@@ -7,6 +7,7 @@ import { fetchShowcases, deleteShowcase } from '../../redux/showcaseSlice';
 import ShowcaseRating from './ShowcaseRating';
 import ReadmeModal from './ReadmeModal';
 import styles from './ShowcaseList.module.css';
+import ReactDOM from 'react-dom';
 
 const ShowcaseList = () => {
   const dispatch = useDispatch();
@@ -17,6 +18,13 @@ const ShowcaseList = () => {
   const [allShowcases, setAllShowcases] = useState([]);
   const [page, setPage] = useState(0);
   const ITEMS_PER_FETCH = 12;
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDescription, setSelectedDescription] = useState(null);
+
+
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
+  };
 
   const observer = useRef();
   const lastShowcaseRef = useRef();
@@ -149,22 +157,42 @@ const ShowcaseList = () => {
               </div>
               <div className={styles.content}>
                 <h3 className={styles.title}>{showcase.title}</h3>
-                <p className={styles.description}>{showcase.description}</p>
 
-                {showcase.developer_profile && (
-                  <div className={styles.profileSection}>
-                    <p className={styles.sectionHeading}>Creator</p>
-                    <Link to={`/profile/developers/${showcase.developer_id}/public`} className={styles.profileLink}>
-                      <img
-                        src={showcase.developer_profile.profile_image_url}
-                        alt="Developer"
-                        className={styles.profileImage}
-                      />
-                      <span>{showcase.developer_profile.user.username}</span>
-                    </Link>
-                  </div>
-                )}
+                {/* Truncated Description */}
+                <div className={styles.descriptionWrapper}>
+                  <p className={styles.description}>
+                    {showcase.description.substring(0, 100)}...
+                  </p>
+                  {showcase.description.length > 100 && (
+                    <button
+                      onClick={() => setSelectedDescription(showcase.description)}
+                      className={styles.readMoreButton}
+                    >
+                      Read More
+                    </button>
+                  )}
+                </div>
 
+                {/* Modal for Full Description */}
+                {selectedDescription &&
+                  ReactDOM.createPortal(
+                    <div className={styles.modalOverlay} onClick={toggleModal}>
+                      <div
+                        className={styles.modalContent}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <h3 className={styles.modalTitle}>Full Description</h3>
+                        <p className={styles.modalDescription}>{selectedDescription}</p>
+                        <button
+                          onClick={() => setSelectedDescription(null)}
+                          className={styles.closeButton}
+                        >
+                          Close
+                        </button>
+                      </div>
+                    </div>,
+                    document.body // Mount modal directly to the body
+                  )}
                 {showcase.videos?.length > 0 && (
                   <div className={styles.videoSection}>
                     <p className={styles.sectionHeading}>RELATED Videos</p>
