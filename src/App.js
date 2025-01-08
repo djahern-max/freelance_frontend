@@ -145,14 +145,38 @@ function AppContent() {
                   <Route path="/shared/videos/:shareToken" element={<SharedVideo />} />
 
                   {/* Showcase routes */}
-                  <Route path="/showcase" element={<ShowcaseList />} />
-                  <Route path="/showcase/create" element={
-                    <ProtectedRoute userType="developer">
-                      <ShowcaseForm />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/showcase/:showcaseId" element={<SharedShowcase />} />
-                  <Route path="/showcase/:id/edit" element={<EditShowcaseForm />} />
+                  <Route
+                    path="/showcase"
+                    element={
+                      <ProtectedRoute>
+                        <ShowcaseList />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/showcase/create"
+                    element={
+                      <ProtectedRoute userType="developer" requiresSubscription={true}>
+                        <ShowcaseForm />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/showcase/:showcaseId"
+                    element={
+                      <ProtectedRoute>
+                        <SharedShowcase />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/showcase/:id/edit"
+                    element={
+                      <ProtectedRoute userType="developer" requiresSubscription={true}>
+                        <EditShowcaseForm />
+                      </ProtectedRoute>
+                    }
+                  />
 
 
 

@@ -1,4 +1,4 @@
-import { MessageSquare, Star, PlusCircle, Briefcase, Code, FileText } from 'lucide-react';
+import { MessageSquare, Star, Plus, Briefcase, Code, FileText } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -8,8 +8,8 @@ import AuthDialog from '../auth/AuthDialog';
 import CreateRequestModal from '../requests/CreateRequestModal';
 import DeveloperRatingSection from '../profiles/DeveloperRatingSection';
 import ShowcaseEmptyState from './ShowcaseEmptyState';
+import SubscriptionDialog from '../payments/SubscriptionDialog';
 import styles from './ShowcaseList.module.css';
-
 import ReadmeModal from './ReadmeModal';
 import ShowcaseRating from './ShowcaseRating';
 import { Edit } from 'lucide-react';
@@ -204,6 +204,7 @@ const ShowcaseList = () => {
   const [error, setError] = useState(null);
   const [selectedShowcase, setSelectedShowcase] = useState(null);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
   const [selectedCreator, setSelectedCreator] = useState(null);
 
   const location = useLocation();
@@ -233,6 +234,38 @@ const ShowcaseList = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    fetchShowcases();
+  }, []);
+
+  const handleCreateProject = async () => {
+    if (!isAuthenticated) {
+      setShowAuthDialog(true);
+      return;
+    }
+
+    try {
+      // Check subscription status
+      const response = await api.get('/payments/subscription-status');
+
+      if (response.data.status !== 'active') {
+        setShowSubscriptionDialog(true);
+        return;
+      }
+
+      // If authenticated and has subscription, navigate to create page
+      navigate('/showcase/create');
+    } catch (error) {
+      console.error('Error checking subscription:', error);
+      toast.error('Unable to verify subscription status. Please try again.');
+    }
+  };
+
+  const handleSubscriptionSuccess = () => {
+    setShowSubscriptionDialog(false);
+    navigate('/showcase/create');
   };
 
   useEffect(() => {
@@ -294,7 +327,7 @@ const ShowcaseList = () => {
         <ShowcaseEmptyState
           isAuthenticated={isAuthenticated}
           userType={user?.userType}
-          onCreateShowcase={() => navigate('/showcase/create')}
+          onCreateShowcase={handleCreateProject}
           onSignUp={() => setShowAuthDialog(true)}
           error={error}
           onRetry={fetchShowcases}
@@ -309,9 +342,9 @@ const ShowcaseList = () => {
         {isAuthenticated && user?.userType === 'developer' && (
           <button
             className={styles.createShowcaseButton}
-            onClick={() => navigate('/showcase/create')}
+            onClick={handleCreateProject}
           >
-            <PlusCircle size={16} />
+            <Plus size={16} />
             <span>Add Project</span>
           </button>
         )}
@@ -343,6 +376,12 @@ const ShowcaseList = () => {
         onRegister={() =>
           navigate('/register', { state: { from: location.pathname } })
         }
+      />
+
+      <SubscriptionDialog
+        isOpen={showSubscriptionDialog}
+        onClose={() => setShowSubscriptionDialog(false)}
+        onSuccess={handleSubscriptionSuccess}
       />
 
       {selectedCreator && (
