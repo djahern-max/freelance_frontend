@@ -111,6 +111,51 @@ const ShowcaseForm = ({ projectId, onUploadSuccess }) => {
         }
     };
 
+    const VideoSelectionSection = ({ selectedVideos, userVideos, onVideoSelect }) => {
+        return (
+            <div className={styles.videoSelectionContainer}>
+                <div className={styles.videoSelectionScroll}>
+                    <div className={styles.videoSelectionGrid}>
+                        {userVideos.map(video => {
+                            const isSelected = selectedVideos.includes(video.id);
+                            return (
+                                <div
+                                    key={video.id}
+                                    className={`${styles.videoCard} ${isSelected ? styles.selectedVideo : ''}`}
+                                    onClick={() => onVideoSelect(video.id)}
+                                >
+                                    <div className={styles.thumbnailContainer}>
+                                        <img
+                                            src={video.thumbnail_path}
+                                            alt={video.title}
+                                            className={styles.thumbnail}
+                                        />
+                                        <div className={`${styles.videoOverlay} ${isSelected ? styles.selectedOverlay : ''}`}>
+                                            <div className={styles.checkboxWrapper}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={isSelected}
+                                                    onChange={() => onVideoSelect(video.id)}
+                                                    className={styles.videoCheckbox}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                />
+                                            </div>
+                                            <span className={styles.videoTitle}>{video.title}</span>
+                                        </div>
+                                    </div>
+                                    {isSelected && (
+                                        <div className={styles.selectedBadge}>
+                                            Selected
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            </div>
+        );
+    };
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!title.trim()) {
@@ -245,6 +290,7 @@ const ShowcaseForm = ({ projectId, onUploadSuccess }) => {
                     </div>
 
                     {/* Video Selection Section */}
+                    {/* Video Selection Section */}
                     <div className={styles.formGroup}>
                         <label className={styles.label}>Link Relevant Videos</label>
                         {loading ? (
@@ -261,28 +307,19 @@ const ShowcaseForm = ({ projectId, onUploadSuccess }) => {
                                 </button>
                             </div>
                         ) : (
-                            <div className={styles.videoList}>
-                                {userVideos.map((video) => (
-                                    <label key={video.id} className={styles.checkboxLabel}>
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedVideos.includes(video.id)}
-                                            onChange={(e) => {
-                                                setSelectedVideos((prev) =>
-                                                    e.target.checked
-                                                        ? [...prev, video.id]
-                                                        : prev.filter((id) => id !== video.id)
-                                                );
-                                            }}
-                                            className={styles.checkbox}
-                                        />
-                                        <span>{video.title}</span>
-                                    </label>
-                                ))}
-                            </div>
+                            <VideoSelectionSection
+                                selectedVideos={selectedVideos}
+                                userVideos={userVideos}
+                                onVideoSelect={(videoId) => {
+                                    setSelectedVideos(prev =>
+                                        prev.includes(videoId)
+                                            ? prev.filter(id => id !== videoId)
+                                            : [...prev, videoId]
+                                    );
+                                }}
+                            />
                         )}
                     </div>
-
                     {/* Profile Link Section */}
                     <div className={styles.formGroup}>
                         <label className={styles.checkboxLabel}>

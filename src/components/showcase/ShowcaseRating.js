@@ -37,17 +37,6 @@ const ShowcaseRating = ({ showcaseId, initialRating = 0 }) => {
         }
     };
 
-    // const fetchUserRating = async () => {
-    //     try {
-    //         const response = await api.get(`/project-showcase/${showcaseId}/user-rating`);
-    //         setUserRating(response.data.stars);
-    //     } catch (error) {
-    //         if (error.response?.status !== 404) {
-    //             console.error('Error fetching user rating:', error);
-    //         }
-    //     }
-    // };
-
     const fetchRatings = async () => {
         try {
             const response = await api.get(`/project-showcase/${showcaseId}/ratings`);
