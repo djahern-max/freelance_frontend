@@ -1,79 +1,121 @@
+// src/redux/showcaseSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '../utils/api';
+import axios from 'axios';
 
-// Async Thunks
-export const fetchShowcases = createAsyncThunk(
-    'showcase/fetchShowcases',
-    async (_, { rejectWithValue }) => {
-        try {
-            const response = await api.get('/project-showcase/');
-            return response.data;
-        } catch (error) {
-            return rejectWithValue(api.helpers.handleError(error));
-        }
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+
+export const createShowcase = createAsyncThunk(
+    'showcase/create',
+    async (formData) => {
+        const response = await axios.post(`${API_URL}/project-showcase/`, formData, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            }
+        });
+        return response.data;
     }
 );
 
-export const createShowcase = createAsyncThunk(
-    'showcase/createShowcase',
-    async (showcaseData, { rejectWithValue }) => {
-        try {
-            const response = await api.showcase.create(showcaseData);
-            return response;
-        } catch (error) {
-            return rejectWithValue(api.helpers.handleError(error));
-        }
+export const fetchShowcases = createAsyncThunk(
+    'showcase/fetchAll',
+    async ({ skip = 0, limit = 100 }) => {
+        const response = await axios.get(
+            `${API_URL}/project-showcase/?skip=${skip}&limit=${limit}`,
+            {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                }
+            }
+        );
+        return response.data;
+    }
+);
+
+export const fetchShowcase = createAsyncThunk(
+    'showcase/fetchOne',
+    async (id) => {
+        const response = await axios.get(`${API_URL}/project-showcase/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            }
+        });
+        return response.data;
     }
 );
 
 export const updateShowcase = createAsyncThunk(
-    'showcase/updateShowcase',
-    async ({ id, data }, { rejectWithValue }) => {
-        try {
-            const response = await api.put(`/project-showcase/${id}`, data);
-            return response.data;
-        } catch (error) {
-            return rejectWithValue(api.helpers.handleError(error));
-        }
+    'showcase/update',
+    async ({ id, data }) => {
+        const response = await axios.put(
+            `${API_URL}/project-showcase/${id}`,
+            data,
+            {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json',
+                }
+            }
+        );
+        return response.data;
     }
 );
 
-export const fetchShowcaseById = createAsyncThunk(
-    'showcase/fetchShowcaseById',
-    async (id, { rejectWithValue }) => {
-        try {
-            const response = await api.showcase.getDetail(id);
-            return response;
-        } catch (error) {
-            return rejectWithValue(api.helpers.handleError(error));
-        }
+export const updateShowcaseFiles = createAsyncThunk(
+    'showcase/updateFiles',
+    async ({ id, formData }) => {
+        const response = await axios.put(
+            `${API_URL}/project-showcase/${id}/files`,
+            formData,
+            {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                }
+            }
+        );
+        return response.data;
     }
 );
 
 export const rateShowcase = createAsyncThunk(
-    'showcase/rateShowcase',
-    async ({ showcaseId, rating }, { rejectWithValue }) => {
-        try {
-            const response = await api.showcase.submitRating(showcaseId, rating);
-            return response;
-        } catch (error) {
-            return rejectWithValue(api.helpers.handleError(error));
-        }
+    'showcase/rate',
+    async ({ id, stars }) => {
+        const response = await axios.post(
+            `${API_URL}/project-showcase/${id}/rating`,
+            { stars },
+            {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json',
+                }
+            }
+        );
+        return response.data;
+    }
+);
+
+export const deleteShowcase = createAsyncThunk(
+    'showcase/delete',
+    async (id) => {
+        await axios.delete(`${API_URL}/project-showcase/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            }
+        });
+        return id;
     }
 );
 
 const showcaseSlice = createSlice({
     name: 'showcase',
     initialState: {
-        items: [],
+        showcases: [],
         currentShowcase: null,
         loading: false,
         error: null,
-        createStatus: 'idle',
-        updateStatus: 'idle'
+        totalCount: 0,
     },
     reducers: {
-        clearError: (state) => {
+        clearShowcaseError: (state) => {
             state.error = null;
         },
         clearCurrentShowcase: (state) => {
@@ -82,95 +124,71 @@ const showcaseSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            // Fetch showcases
+            // Create showcase
+            .addCase(createShowcase.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(createShowcase.fulfilled, (state, action) => {
+                state.loading = false;
+                state.showcases.unshift(action.payload);
+                state.currentShowcase = action.payload;
+            })
+            .addCase(createShowcase.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            })
+
+            // Fetch all showcases
             .addCase(fetchShowcases.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
             .addCase(fetchShowcases.fulfilled, (state, action) => {
                 state.loading = false;
-                state.items = action.payload;
+                state.showcases = action.payload;
             })
             .addCase(fetchShowcases.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload;
+                state.error = action.error.message;
             })
-            // Create showcase
-            .addCase(createShowcase.pending, (state) => {
-                state.createStatus = 'loading';
+
+            // Fetch single showcase
+            .addCase(fetchShowcase.pending, (state) => {
+                state.loading = true;
                 state.error = null;
             })
-            .addCase(createShowcase.fulfilled, (state, action) => {
-                state.createStatus = 'succeeded';
-                state.items.unshift(action.payload);
+            .addCase(fetchShowcase.fulfilled, (state, action) => {
+                state.loading = false;
+                state.currentShowcase = action.payload;
             })
-            .addCase(createShowcase.rejected, (state, action) => {
-                state.createStatus = 'failed';
-                state.error = action.payload;
+            .addCase(fetchShowcase.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
             })
+
             // Update showcase
-            .addCase(updateShowcase.pending, (state) => {
-                state.updateStatus = 'loading';
-                state.error = null;
-            })
             .addCase(updateShowcase.fulfilled, (state, action) => {
-                state.updateStatus = 'succeeded';
-                state.items = state.items.map(item =>
-                    item.id === action.payload.id ? action.payload : item
-                );
+                state.loading = false;
+                const index = state.showcases.findIndex(s => s.id === action.payload.id);
+                if (index !== -1) {
+                    state.showcases[index] = action.payload;
+                }
                 if (state.currentShowcase?.id === action.payload.id) {
                     state.currentShowcase = action.payload;
                 }
             })
-            .addCase(updateShowcase.rejected, (state, action) => {
-                state.updateStatus = 'failed';
-                state.error = action.payload;
-            })
-            // Fetch single showcase
-            .addCase(fetchShowcaseById.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(fetchShowcaseById.fulfilled, (state, action) => {
-                state.loading = false;
-                state.currentShowcase = action.payload;
-            })
-            .addCase(fetchShowcaseById.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            })
-            // Rate showcase
-            .addCase(rateShowcase.fulfilled, (state, action) => {
-                const { showcaseId, averageRating, totalRatings } = action.payload;
-                state.items = state.items.map(item => {
-                    if (item.id === showcaseId) {
-                        return {
-                            ...item,
-                            average_rating: averageRating,
-                            total_ratings: totalRatings
-                        };
-                    }
-                    return item;
-                });
-                if (state.currentShowcase?.id === showcaseId) {
-                    state.currentShowcase = {
-                        ...state.currentShowcase,
-                        average_rating: averageRating,
-                        total_ratings: totalRatings
-                    };
+
+            // Delete showcase
+            .addCase(deleteShowcase.fulfilled, (state, action) => {
+                state.showcases = state.showcases.filter(s => s.id !== action.payload);
+                if (state.currentShowcase?.id === action.payload) {
+                    state.currentShowcase = null;
                 }
             });
-    }
+    },
 });
 
-// Selectors
-export const selectAllShowcases = (state) => state.showcase.items;
-export const selectCurrentShowcase = (state) => state.showcase.currentShowcase;
-export const selectShowcaseLoading = (state) => state.showcase.loading;
-export const selectShowcaseError = (state) => state.showcase.error;
-export const selectCreateStatus = (state) => state.showcase.createStatus;
-export const selectUpdateStatus = (state) => state.showcase.updateStatus;
-
-export const { clearError, clearCurrentShowcase } = showcaseSlice.actions;
+export const { clearShowcaseError, clearCurrentShowcase } = showcaseSlice.actions;
 
 export default showcaseSlice.reducer;

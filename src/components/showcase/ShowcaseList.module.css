@@ -1,305 +1,161 @@
+/* src/components/showcase/ShowcaseList.module.css */
 .container {
+  padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1.5rem;
 }
 
-.headerContainer {
-  padding: 16px;
+.header {
   display: flex;
-  justify-content: flex-start;
-  background: transparent;
-  margin-bottom: 0.9rem;
-}
-
-.createShowcaseButton {
-  display: inline-flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.createButton {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background-color: #0066cc;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
   font-weight: 500;
-  font-size: 14px;
-  background: white;
-  border: 1px solid #e4e6eb;
-  color: #050505;
-  cursor: pointer;
-  transition: all 0.2s;
+  transition: background-color 0.2s;
 }
 
-.createShowcaseButton:hover {
-  background: #f5f5f5;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.createShowcaseButton .buttonIcon {
-  width: 20px;
-  height: 20px;
-  color: #050505;
-}
-
-.createShowcaseButton:active {
-  background-color: var(--color-primary-dark);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-
-.createShowcaseButton:hover {
-  background-color: #1D4ED8;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+.createButton:hover {
+  background-color: #0052a3;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 1.5rem;
-  align-items: stretch;
-  padding: 0.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
 }
 
-.showcaseCard {
-  display: flex;
-  flex-direction: column;
+.card {
   background-color: white;
-  border-radius: 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.showcaseCard:hover {
+.card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .imageContainer {
   position: relative;
-  width: 100%;
   padding-top: 56.25%;
   /* 16:9 aspect ratio */
-  background-color: #F8FAFC;
-  overflow: hidden;
+  background-color: #f0f0f0;
 }
 
-.thumbnail {
+.image {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
 }
 
-.showcaseCard:hover .thumbnail {
-  transform: scale(1.05);
-}
-
-.thumbnailPlaceholder {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: #94A3B8;
-  background: rgba(148, 163, 184, 0.1);
+.content {
   padding: 1.5rem;
-  border-radius: 50%;
 }
 
-.contentContainer {
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  flex: 1;
-}
-
-.headerActions {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
-}
-
-.showcaseTitle {
+.title {
+  margin: 0 0 1rem;
   font-size: 1.25rem;
-  font-weight: 600;
-  color: #0F172A;
-  margin: 0;
-  flex: 1;
-  line-height: 1.4;
-}
-
-.editButton {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background-color: #F1F5F9;
-  color: #475569;
-  border: 1px solid #E2E8F0;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-
-.editButton:hover {
-  background-color: #E2E8F0;
-  color: #334155;
+  color: #333;
 }
 
 .description {
-  color: #475569;
-  font-size: 0.9375rem;
-  line-height: 1.6;
-  margin: 0;
-}
-
-.readMoreButton {
-  background: none;
-  border: none;
-  color: #2563EB;
-  padding: 0;
-  margin-top: 0.5rem;
-  cursor: pointer;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.readMoreButton:hover {
-  text-decoration: underline;
-}
-
-.rating {
-  margin: 0.5rem 0;
-}
-
-.actionButtons {
-  display: flex;
-  gap: 1rem;
-  margin: 0.5rem 0;
-}
-
-.requestButton {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.625rem 1.25rem;
-  background-color: #6b7280;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.9375rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.1);
-}
-
-.requestButton:hover {
-  background-color: #1D4ED8;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+  margin: 0 0 1rem;
+  color: #666;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .links {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem;
-  margin: 0.5rem 0;
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
-.fullWidth {
-  grid-column: 1 / -1;
-  /* Makes the element span all columns */
-}
-
-.repoLink,
-.readmeButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.625rem 1rem;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  width: 100%;
-}
-
-.repoLink {
-  background-color: #EEF2FF;
-  color: #4F46E5;
-  border: 1px solid #E0E7FF;
+.link {
+  color: #0066cc;
   text-decoration: none;
-}
-
-.repoLink:hover {
-  background-color: #E0E7FF;
-  color: #4338CA;
-}
-
-.readmeButton {
-  background-color: #F8FAFC;
-  color: #475569;
-  border: 1px solid #E2E8F0;
-}
-
-.readmeButton:hover {
-  background-color: #F1F5F9;
-  color: #334155;
-}
-
-.metadata {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 1rem;
-  margin-top: auto;
-  border-top: 1px solid #E2E8F0;
   font-size: 0.875rem;
-  color: #64748B;
 }
 
-.ratingOverview {
+.link:hover {
+  text-decoration: underline;
+}
+
+.actions {
   display: flex;
-  align-items: center;
   gap: 0.5rem;
+  margin-top: 1rem;
 }
 
-.starIcon {
-  color: #F59E0B;
-}
-
-.ratingCount {
-  color: #94A3B8;
-}
-
-.ratingSection {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  margin: 1rem 0;
-}
-
-.ratingLabel {
-  color: #64748B;
+.actionButton {
+  flex: 1;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 4px;
   font-size: 0.875rem;
-  margin-bottom: 0.25rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  background-color: #f0f0f0;
 }
 
-.ratingStars {
-  display: flex;
-  justify-content: center;
-  gap: 0.25rem;
+.actionButton:hover {
+  background-color: #e0e0e0;
+}
+
+.deleteButton {
+  background-color: #fff2f2;
+  color: #d32f2f;
+}
+
+.deleteButton:hover {
+  background-color: #ffcfcf;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.error {
+  text-align: center;
+  padding: 2rem;
+  color: #d32f2f;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 4rem 2rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.emptyState h2 {
+  margin: 0 0 1rem;
+  color: #333;
+}
+
+.emptyState p {
+  margin: 0 0 2rem;
+  color: #666;
 }
 
 @media (max-width: 768px) {
@@ -307,44 +163,13 @@
     padding: 1rem;
   }
 
-  .headerContainer {
-    padding: 12px;
-  }
-
-  .createShowcaseButton {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .grid {
-    grid-template-columns: 1fr;
+  .header {
+    flex-direction: column;
     gap: 1rem;
+    text-align: center;
   }
 
-  .links {
-    grid-template-columns: 1fr;
-  }
-
-  .headerActions {
-    flex-direction: column;
-  }
-
-  .editButton {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .actionButtons {
-    flex-direction: column;
-  }
-
-  .requestButton {
-    width: 100%;
-  }
-}
-
-@media (min-width: 769px) and (max-width: 1024px) {
   .grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
   }
 }

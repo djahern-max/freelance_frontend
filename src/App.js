@@ -35,6 +35,7 @@ import VideoList from './components/videos/VideoList';
 import VideoUpload from './components/videos/VideoUpload';
 import DeveloperProfileView from './components/profiles/DeveloperProfileView';
 import SharedVideo from './components/videos/SharedVideo';
+// Showcase-related imports
 import ShowcaseList from './components/showcase/ShowcaseList';
 import ShowcaseForm from './components/showcase/ShowcaseForm';
 import SharedShowcase from './components/showcase/SharedShowcase';
@@ -154,7 +155,7 @@ function AppContent() {
                     }
                   />
                   <Route
-                    path="/showcase/create"
+                    path="/showcase/new"
                     element={
                       <ProtectedRoute userType="developer" requiresSubscription={true}>
                         <ShowcaseForm />
@@ -162,15 +163,11 @@ function AppContent() {
                     }
                   />
                   <Route
-                    path="/showcase/:showcaseId"
-                    element={
-                      <ProtectedRoute>
-                        <SharedShowcase />
-                      </ProtectedRoute>
-                    }
+                    path="/showcase/:id"
+                    element={<SharedShowcase />}
                   />
                   <Route
-                    path="/showcase/:id/edit"
+                    path="/showcase/edit/:id"
                     element={
                       <ProtectedRoute userType="developer" requiresSubscription={true}>
                         <EditShowcaseForm />

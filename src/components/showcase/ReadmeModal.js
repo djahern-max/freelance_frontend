@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { X, FileText } from 'lucide-react';
-import { createPortal } from 'react-dom';
-import api from '../../utils/api';
+// src/components/showcase/ReadmeModal.js
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import styles from './ReadmeModal.module.css';
 
-const ReadmeModal = ({ showcaseId, onClose }) => {
+const ReadmeModal = ({ showcase, onClose }) => {
     const [content, setContent] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -12,44 +11,45 @@ const ReadmeModal = ({ showcaseId, onClose }) => {
     useEffect(() => {
         const fetchReadme = async () => {
             try {
-                setLoading(true);
-                const response = await api.get(`/project-showcase/${showcaseId}/readme`, {
-                    params: { format: 'html' }
-                });
+                const response = await axios.get(
+                    `${process.env.REACT_APP_API_URL}/project-showcase/${showcase.id}/readme?format=html`,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    }
+                );
                 setContent(response.data.content);
-                setError(null);
-            } catch (error) {
-                console.error('Error fetching README:', error);
-                setError('Failed to load README content');
-            } finally {
                 setLoading(false);
+            } catch (err) {
+                setError('Failed to load README content');
+                setLoading(false);
+                console.error('Error fetching README:', err);
             }
         };
 
         fetchReadme();
-        document.body.style.overflow = 'hidden';
-        return () => {
-            document.body.style.overflow = 'unset';
-        };
-    }, [showcaseId]);
+    }, [showcase.id]);
 
-    return createPortal(
-        <div className={styles.overlay} onClick={onClose}>
-            <div className={styles.modal} onClick={e => e.stopPropagation()}>
+    const handleOverlayClick = (e) => {
+        if (e.target === e.currentTarget) {
+            onClose();
+        }
+    };
+
+    return (
+        <div className={styles.overlay} onClick={handleOverlayClick}>
+            <div className={styles.modal}>
                 <div className={styles.header}>
-                    <div className={styles.headerTitle}>
-                        <FileText className={styles.headerIcon} />
-                        <h2>README</h2>
-                    </div>
-                    <button onClick={onClose} className={styles.closeButton}>
-                        <X size={20} />
+                    <h2>{showcase.title} - README</h2>
+                    <button className={styles.closeButton} onClick={onClose}>
+                        ×
                     </button>
                 </div>
+
                 <div className={styles.content}>
                     {loading ? (
-                        <div className={styles.loadingContainer}>
-                            <div className={styles.spinner} />
-                        </div>
+                        <div className={styles.loading}>Loading README...</div>
                     ) : error ? (
                         <div className={styles.error}>{error}</div>
                     ) : (
@@ -60,8 +60,7 @@ const ReadmeModal = ({ showcaseId, onClose }) => {
                     )}
                 </div>
             </div>
-        </div>,
-        document.body
+        </div>
     );
 };
 

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { clearAuthData } from './authCleanup';
-import * as marketplaceService from './marketplaceService';
+
 
 
 if (process.env.NODE_ENV === 'development') {
@@ -29,7 +29,12 @@ export const API_ROUTES = {
     DETAIL: (id) => `/project-showcase/${id}`,
     DEVELOPER: (id) => `/project-showcase/developer/${id}`,
     RATING: (id) => `/project-showcase/${id}/rating`,
-    SHARE: (id) => `/project-showcase/${id}/share`
+    USER_RATING: (id) => `/project-showcase/${id}/user-rating`,
+    SHARE: (id) => `/project-showcase/${id}/share`,
+    README: (id) => `/project-showcase/${id}/readme`,
+    FILES: (id) => `/project-showcase/${id}/files`,
+    VIDEOS: (id) => `/project-showcase/${id}/videos`,
+    PROFILE: (id) => `/project-showcase/${id}/profile`
 
   },
   VIDEOS: {
@@ -304,6 +309,15 @@ api.helpers = {
         }
         return error.response.data?.detail || 'Invalid request. Please check your input.';
 
+      case 400:
+        if (error.config.url.includes('/project-showcase')) {
+          if (error.response.data?.detail?.includes('cannot_rate_own')) {
+            return 'You cannot rate your own showcase.';
+          }
+          if (error.response.data?.detail?.includes('invalid_video_ids')) {
+            return 'One or more selected videos are invalid.';
+          }
+        }
 
       case 401:
         return 'Please log in to continue';
@@ -654,14 +668,11 @@ api.snaggedRequests = {
 };
 
 api.showcase = {
-  async shareShowcase(showcaseId, projectUrl) {
+  async list() {
     try {
-      const response = await api.post(`/project-showcase/${showcaseId}/share`, {
-        project_url: projectUrl
-      });
+      const response = await api.get(API_ROUTES.SHOWCASE.LIST);
       return response.data;
     } catch (error) {
-      console.error('Error sharing showcase:', error);
       throw new Error(api.helpers.handleError(error));
     }
   },
@@ -671,9 +682,9 @@ api.showcase = {
       const formData = new FormData();
 
       // Handle basic fields
-      const basicFields = ['title', 'description', 'project_url', 'repository_url', 'demo_url'];
+      const basicFields = ['title', 'description', 'project_url', 'repository_url', 'demo_url', 'include_profile'];
       basicFields.forEach(field => {
-        if (showcaseData[field]) {
+        if (showcaseData[field] !== undefined) {
           formData.append(field, showcaseData[field]);
         }
       });
@@ -686,12 +697,10 @@ api.showcase = {
         formData.append('readme_file', showcaseData.readme_file);
       }
 
-      // Handle linked content (videos and profile)
-      if (showcaseData.linked_content) {
-        formData.append('linked_content', JSON.stringify(showcaseData.linked_content));
+      // Handle video IDs
+      if (showcaseData.selected_video_ids) {
+        formData.append('selected_video_ids', JSON.stringify(showcaseData.selected_video_ids));
       }
-
-      console.log('Creating showcase with data:', Object.fromEntries(formData.entries()));
 
       const response = await api.post(API_ROUTES.SHOWCASE.CREATE, formData, {
         headers: {
@@ -700,19 +709,23 @@ api.showcase = {
       });
       return response.data;
     } catch (error) {
-      console.error('Error creating showcase:', error);
       throw new Error(api.helpers.handleError(error));
     }
   },
 
-  async list(developerId) {
+  async update(id, data) {
     try {
-      const response = await api.get(API_ROUTES.SHOWCASE.DEVELOPER(developerId));
+      if (data instanceof FormData) {
+        const response = await api.put(API_ROUTES.SHOWCASE.FILES(id), data, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        return response.data;
+      }
+      const response = await api.put(API_ROUTES.SHOWCASE.DETAIL(id), data);
       return response.data;
     } catch (error) {
-      if (error.response?.status === 404) {
-        return [];
-      }
       throw new Error(api.helpers.handleError(error));
     }
   },
@@ -720,10 +733,26 @@ api.showcase = {
   async getDetail(id) {
     try {
       const response = await api.get(API_ROUTES.SHOWCASE.DETAIL(id));
-      console.log('Fetched showcase detail:', response.data);
       return response.data;
     } catch (error) {
-      console.error('Error fetching showcase detail:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async getReadme(id, format = 'html') {
+    try {
+      const response = await api.get(`${API_ROUTES.SHOWCASE.README(id)}?format=${format}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async submitRating(showcaseId, rating) {
+    try {
+      const response = await api.post(API_ROUTES.SHOWCASE.RATING(showcaseId), { stars: rating });
+      return response.data;
+    } catch (error) {
       throw new Error(api.helpers.handleError(error));
     }
   },
@@ -734,10 +763,7 @@ api.showcase = {
       return response.data;
     } catch (error) {
       if (error.response?.status === 404) {
-        return {
-          average_rating: 0,
-          total_ratings: 0
-        };
+        return { average_rating: 0, total_ratings: 0 };
       }
       throw new Error(api.helpers.handleError(error));
     }
@@ -755,11 +781,9 @@ api.showcase = {
     }
   },
 
-  async submitRating(showcaseId, rating) {
+  async delete(id) {
     try {
-      const response = await api.post(API_ROUTES.SHOWCASE.RATING(showcaseId), {
-        stars: rating
-      });
+      const response = await api.delete(API_ROUTES.SHOWCASE.DETAIL(id));
       return response.data;
     } catch (error) {
       throw new Error(api.helpers.handleError(error));

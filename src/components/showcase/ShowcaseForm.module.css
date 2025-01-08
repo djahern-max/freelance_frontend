@@ -1,73 +1,32 @@
-.pageContainer {
-    max-width: 1200px;
+/* src/components/showcase/ShowcaseForm.module.css */
+.form {
+    max-width: 800px;
     margin: 0 auto;
     padding: 2rem;
-}
-
-.formContainer {
-    background-color: white;
+    background-color: #ffffff;
     border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    padding: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.backButton {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: none;
-    border: 1px solid #e2e8f0;
-    border-radius: 4px;
-    color: #4a5568;
-    cursor: pointer;
-    font-size: 0.875rem;
-    transition: all 0.2s;
-}
-
-.backButton:hover {
-    background-color: #f7fafc;
-}
-
-.title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #2d3748;
-    margin: 1.5rem 0;
-}
-
-.uploadForm {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.inputGroup {
+.formGroup {
     margin-bottom: 1.5rem;
 }
 
-.label {
+.formGroup label {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 500;
-    color: #4a5568;
+    color: #333;
 }
 
 .input,
 .textarea {
     width: 100%;
     padding: 0.75rem;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #ddd;
     border-radius: 4px;
-    font-size: 0.875rem;
+    font-size: 1rem;
     transition: border-color 0.2s;
-}
-
-.input:focus,
-.textarea:focus {
-    outline: none;
-    border-color: #4299e1;
-    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
 }
 
 .textarea {
@@ -75,347 +34,78 @@
     resize: vertical;
 }
 
-.checkboxLabel {
-    display: flex;
-    align-items: center;
-    margin: 8px 0;
-    cursor: pointer;
-    font-size: 0.875rem;
-    color: #4a5568;
+.input:focus,
+.textarea:focus {
+    outline: none;
+    border-color: #0066cc;
+    box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.1);
 }
 
-.checkbox {
-    margin-right: 8px;
-    width: 16px;
-    height: 16px;
-    border-radius: 4px;
-    border: 1px solid #e2e8f0;
-    cursor: pointer;
-}
-
-.videoList {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 8px;
-    max-height: 200px;
-    overflow-y: auto;
-    padding: 8px;
-    border: 1px solid #e2e8f0;
-    border-radius: 4px;
-}
-
-.formGroup {
-    margin-bottom: 1.5rem;
-}
-
-.uploadButtons {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.uploadButton {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 1.5rem;
-    border: 2px dashed #e2e8f0;
-    border-radius: 8px;
-    background: none;
-    cursor: pointer;
-    transition: all 0.2s;
-    flex: 1;
-}
-
-.uploadButton:hover {
-    border-color: #4299e1;
-    background-color: #f7fafc;
-}
-
-.uploadRequirements {
-    margin-top: 0.5rem;
-    text-align: center;
-}
-
-.uploadRequirements small {
+.fileInput {
     display: block;
-    color: #718096;
-    font-size: 0.75rem;
-    line-height: 1.25;
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px dashed #ddd;
+    border-radius: 4px;
+    background-color: #f8f8f8;
+    cursor: pointer;
 }
 
-.preview {
-    margin-top: 1.5rem;
-    border: 1px solid #e2e8f0;
+.fileInput:hover {
+    border-color: #0066cc;
+    background-color: #f0f7ff;
+}
+
+.imagePreview {
+    margin-top: 1rem;
     border-radius: 4px;
     overflow: hidden;
 }
 
-.imagePreview {
+.imagePreview img {
     max-width: 100%;
     height: auto;
     display: block;
 }
 
 .readmePreview {
+    margin-top: 1rem;
     padding: 1rem;
-    background-color: #f7fafc;
-}
-
-.readmePreview h3 {
-    margin-bottom: 0.5rem;
-    font-size: 1rem;
-    font-weight: 600;
-}
-
-.readmePreview pre {
+    background-color: #f6f8fa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
     font-family: monospace;
-    white-space: pre-wrap;
-    word-wrap: break-word;
     font-size: 0.875rem;
-    line-height: 1.5;
-}
-
-.submitButtonContainer {
-    margin-top: 2rem;
-    display: flex;
-    justify-content: flex-end;
+    overflow-x: auto;
 }
 
 .submitButton {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
-    background-color: #4299e1;
+    width: 100%;
+    padding: 1rem;
+    background-color: #0066cc;
     color: white;
     border: none;
     border-radius: 4px;
+    font-size: 1rem;
     font-weight: 500;
     cursor: pointer;
     transition: background-color 0.2s;
 }
 
 .submitButton:hover {
-    background-color: #3182ce;
+    background-color: #0052a3;
 }
 
 .submitButton:disabled {
-    background-color: #a0aec0;
+    background-color: #ccc;
     cursor: not-allowed;
 }
 
-.spinner {
-    width: 16px;
-    height: 16px;
-    border: 2px solid #ffffff;
-    border-top-color: transparent;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
-
 .error {
-    padding: 0.75rem;
-    background-color: #fed7d7;
-    border: 1px solid #f56565;
-    border-radius: 4px;
-    color: #c53030;
     margin-bottom: 1rem;
-}
-
-.success {
     padding: 0.75rem;
-    background-color: #c6f6d5;
-    border: 1px solid #48bb78;
+    background-color: #fff2f2;
+    border: 1px solid #ffcfcf;
     border-radius: 4px;
-    color: #2f855a;
-    margin-bottom: 1rem;
-}
-
-.loading {
-    padding: 0.75rem;
-    background-color: #e2e8f0;
-    border: 1px solid #a0aec0;
-    border-radius: 4px;
-    color: #4a5568;
-    margin-bottom: 1rem;
-}
-
-.noVideos {
-    text-align: center;
-    padding: 2rem;
-    background-color: #f7fafc;
-    border-radius: 4px;
-}
-
-.uploadVideoButton {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background-color: #4299e1;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 0.875rem;
-    cursor: pointer;
-    margin-top: 1rem;
-    transition: background-color 0.2s;
-}
-
-.uploadVideoButton:hover {
-    background-color: #3182ce;
-}
-
-.videoSelectionGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.videoCard {
-    position: relative;
-    border-radius: 0.5rem;
-    overflow: hidden;
-    background: #f8f9fa;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: all 0.2s ease-in-out;
-}
-
-.selectedVideo {
-    border-color: #2563eb;
-    /* Blue border for selected state */
-    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
-}
-
-.thumbnailContainer {
-    position: relative;
-    aspect-ratio: 16/9;
-}
-
-.thumbnail {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.videoOverlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.4);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.2s;
-    padding: 1rem;
-}
-
-.checkboxWrapper {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: white;
-    border-radius: 50%;
-    padding: 2px;
-}
-
-.selectedOverlay {
-    opacity: 1;
-    background: rgba(37, 99, 235, 0.3);
-}
-
-.videoCard:hover .videoOverlay {
-    opacity: 1;
-}
-
-.videoCheckbox {
-    margin: 0;
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-}
-
-.videoTitle {
-    color: white;
-    text-align: center;
-    font-size: 0.875rem;
-    font-weight: 500;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-    margin-top: auto;
-}
-
-
-.selectedBadge {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background: #2563eb;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 500;
-}
-
-.videoSelectionContainer {
-    position: relative;
-    width: 100%;
-    max-height: 400px;
-    /* Adjust this value based on your needs */
-    border: 1px solid #e5e7eb;
-    border-radius: 0.5rem;
-    background: #fff;
-    margin: 1rem 0;
-}
-
-.videoSelectionScroll {
-    overflow-y: auto;
-    max-height: 100%;
-    padding: 1rem;
-    /* Custom scrollbar styles */
-    scrollbar-width: thin;
-    scrollbar-color: #94a3b8 #e2e8f0;
-}
-
-/* Custom scrollbar styles for webkit browsers */
-.videoSelectionScroll::-webkit-scrollbar {
-    width: 6px;
-}
-
-.videoSelectionScroll::-webkit-scrollbar-track {
-    background: #e2e8f0;
-    border-radius: 3px;
-}
-
-.videoSelectionScroll::-webkit-scrollbar-thumb {
-    background-color: #94a3b8;
-    border-radius: 3px;
-}
-
-.videoSelectionScroll::-webkit-scrollbar-thumb:hover {
-    background-color: #64748b;
-}
-
-.videoSelectionGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
+    color: #d32f2f;
 }
