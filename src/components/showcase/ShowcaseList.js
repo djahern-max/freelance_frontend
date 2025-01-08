@@ -1,4 +1,4 @@
-import { MessageSquare, Star, Plus, Briefcase, Code, FileText } from 'lucide-react';
+import { MessageSquare, Star, Plus, Briefcase, Code, FileText, ExternalLink } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -13,7 +13,6 @@ import styles from './ShowcaseList.module.css';
 import ReadmeModal from './ReadmeModal';
 import ShowcaseRating from './ShowcaseRating';
 import { Edit } from 'lucide-react';
-
 
 const ShowcaseItem = ({
   showcase,
@@ -57,15 +56,11 @@ const ShowcaseItem = ({
     );
   };
 
-
   const navigate = useNavigate();
 
   return (
     <div className={styles.showcaseCard}>
-      <div
-        className={styles.imageContainer}
-        onClick={() => onShowcaseClick(showcase)}
-      >
+      <div className={styles.imageContainer} onClick={() => onShowcaseClick(showcase)}>
         {showcase.image_url ? (
           <img
             src={showcase.image_url}
@@ -86,9 +81,9 @@ const ShowcaseItem = ({
           {isOwner && (
             <button
               onClick={(e) => {
-                e.preventDefault(); // Prevent any default behavior
-                e.stopPropagation(); // Prevent event bubbling
-                navigate(`/showcase/${showcase.id}/edit`); // Navigate to edit route
+                e.preventDefault();
+                e.stopPropagation();
+                navigate(`/showcase/${showcase.id}/edit`);
               }}
               className={styles.editButton}
             >
@@ -113,18 +108,27 @@ const ShowcaseItem = ({
           </div>
         )}
 
-
-
         {renderDescription()}
 
+        <div className={styles.ratingSection}>
+          {/* <div className={styles.ratingLabel}>Your Rating:</div> */}
+          <div className={styles.ratingStars}>
+            <ShowcaseRating
+              showcaseId={showcase.id}
+              initialRating={showcase.average_rating}
+            />
+          </div>
+        </div>
 
-
-        {/* Replace DeveloperRatingSection with ShowcaseRating */}
-        <div className={styles.rating}>
-          <ShowcaseRating
-            showcaseId={showcase.id}
-            initialRating={showcase.average_rating}
-          />
+        <div className={styles.ratingSection}>
+          <div className={styles.ratingLabel}>Average Rating:</div>
+          <div className={styles.ratingStars}>
+            <Star size={16} className={styles.starIcon} />
+            <span>{showcase.average_rating?.toFixed(1) || '0.0'}</span>
+            <span className={styles.ratingCount}>
+              ({showcase.total_ratings || 0} ratings)
+            </span>
+          </div>
         </div>
 
         <div className={styles.actionButtons}>
@@ -140,14 +144,23 @@ const ShowcaseItem = ({
               <span>Send Me a Request</span>
             </button>
           )}
-
-
         </div>
 
-
-
-
         <div className={styles.links}>
+          {showcase.project_url && (
+
+            <a
+              href={showcase.project_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.repoLink}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <ExternalLink size={16} />
+              <span>Live Project</span>
+            </a>
+          )}
+
           {showcase.repository_url && (
             <a
               href={showcase.repository_url}
@@ -166,7 +179,7 @@ const ShowcaseItem = ({
                 e.stopPropagation();
                 setShowReadmeModal(true);
               }}
-              className={styles.readmeButton}
+              className={`${styles.readmeButton} ${styles.fullWidth}`}
             >
               <FileText size={16} />
               <span>View README</span>
@@ -192,8 +205,6 @@ const ShowcaseItem = ({
           </div>
         </div>
       </div>
-
-
     </div>
   );
 };
@@ -268,10 +279,6 @@ const ShowcaseList = () => {
     navigate('/showcase/create');
   };
 
-  useEffect(() => {
-    fetchShowcases();
-  }, []);
-
   const formatDate = (dateString) => {
     try {
       if (!dateString) return 'Date unavailable';
@@ -318,8 +325,6 @@ const ShowcaseList = () => {
     }
     navigate(`/showcase/${showcase.id}`);
   };
-
-
 
   if (error || !showcases || showcases.length === 0) {
     return (
