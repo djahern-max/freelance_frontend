@@ -47,11 +47,15 @@ const ShowcaseList = () => {
     return (
       <div className={styles.emptyState}>
         <h2>No showcases yet</h2>
-        <p>Create your first showcase to display your work!</p>
-        {user && user.userType === 'developer' && (
-          <Link to="/showcase/new" className={styles.createButton}>
-            Create Showcase
-          </Link>
+        {user && user.userType === 'developer' ? (
+          <>
+            <p>Create your first showcase to display your work!</p>
+            <Link to="/showcase/new" className={styles.createButton}>
+              Create Showcase
+            </Link>
+          </>
+        ) : (
+          <p>Check back later to see new showcases!</p>
         )}
       </div>
     );

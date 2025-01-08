@@ -6,10 +6,10 @@ import { createShowcase, updateShowcase, updateShowcaseFiles } from '../../redux
 import LinkedContent from './LinkedContent';
 import styles from './ShowcaseForm.module.css';
 
-const ShowcaseForm = ({ showcase, isEditing = false }) => {
+const ShowcaseForm = ({ isEditing = false }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { loading, error } = useSelector((state) => state.showcase);
+    const { loading, error, currentShowcase } = useSelector((state) => state.showcase);
 
     const [formData, setFormData] = useState({
         title: '',
@@ -27,18 +27,19 @@ const ShowcaseForm = ({ showcase, isEditing = false }) => {
     });
 
     const [showLinkedContent, setShowLinkedContent] = useState(false);
+    const [createdShowcase, setCreatedShowcase] = useState(null);
 
     useEffect(() => {
-        if (showcase && isEditing) {
+        if (currentShowcase && isEditing) {
             setFormData({
-                title: showcase.title || '',
-                description: showcase.description || '',
-                project_url: showcase.project_url || '',
-                repository_url: showcase.repository_url || '',
-                demo_url: showcase.demo_url || ''
+                title: currentShowcase.title || '',
+                description: currentShowcase.description || '',
+                project_url: currentShowcase.project_url || '',
+                repository_url: currentShowcase.repository_url || '',
+                demo_url: currentShowcase.demo_url || ''
             });
         }
-    }, [showcase, isEditing]);
+    }, [currentShowcase, isEditing]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -56,7 +57,6 @@ const ShowcaseForm = ({ showcase, isEditing = false }) => {
                 [name]: files[0]
             }));
 
-            // Create preview
             if (name === 'image_file') {
                 const reader = new FileReader();
                 reader.onloadend = () => {
@@ -83,39 +83,16 @@ const ShowcaseForm = ({ showcase, isEditing = false }) => {
         e.preventDefault();
 
         try {
-            let showcaseData;
-
-            if (isEditing && showcase) {
-                // Handle file updates separately if files have changed
-                if (formData.image_file || formData.readme_file) {
-                    const fileFormData = new FormData();
-                    if (formData.image_file) fileFormData.append('image_file', formData.image_file);
-                    if (formData.readme_file) fileFormData.append('readme_file', formData.readme_file);
-                    await dispatch(updateShowcaseFiles({ id: showcase.id, formData: fileFormData })).unwrap();
+            const submitData = new FormData();
+            Object.keys(formData).forEach(key => {
+                if (formData[key] !== null && formData[key] !== undefined && formData[key] !== '') {
+                    submitData.append(key, formData[key]);
                 }
+            });
 
-                // Update other fields
-                const updateData = {
-                    title: formData.title,
-                    description: formData.description,
-                    project_url: formData.project_url,
-                    repository_url: formData.repository_url,
-                    demo_url: formData.demo_url
-                };
-                showcaseData = await dispatch(updateShowcase({ id: showcase.id, data: updateData })).unwrap();
-            } else {
-                // Create new showcase
-                const submitData = new FormData();
-                Object.keys(formData).forEach(key => {
-                    if (formData[key] !== null && formData[key] !== undefined) {
-                        submitData.append(key, formData[key]);
-                    }
-                });
-
-                showcaseData = await dispatch(createShowcase(submitData)).unwrap();
-            }
-
-            if (showcaseData) {
+            const response = await dispatch(createShowcase(submitData)).unwrap();
+            if (response && response.id) {
+                setCreatedShowcase(response);
                 setShowLinkedContent(true);
             }
         } catch (err) {
@@ -130,21 +107,10 @@ const ShowcaseForm = ({ showcase, isEditing = false }) => {
     if (showLinkedContent && !loading) {
         return (
             <div className={styles.container}>
-                <h2 className={styles.linkedContentTitle}>
-                    {isEditing ? 'Update Linked Content' : 'Add Content to Your Showcase'}
-                </h2>
                 <LinkedContent
-                    showcase={showcase || formData}
+                    showcase={createdShowcase}
                     onComplete={handleFinish}
                 />
-                <div className={styles.linkedContentActions}>
-                    <button
-                        onClick={handleFinish}
-                        className={styles.finishButton}
-                    >
-                        Finish
-                    </button>
-                </div>
             </div>
         );
     }

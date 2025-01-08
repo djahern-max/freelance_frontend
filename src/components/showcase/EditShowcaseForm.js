@@ -79,21 +79,23 @@ const EditShowcaseForm = () => {
     }
 
     return (
-        <div className={styles.container}>
-            <div className={styles.header}>
-                <h1>Edit Showcase</h1>
-                <button
-                    onClick={() => navigate('/showcase')}
-                    className={styles.cancelButton}
-                >
-                    Cancel
-                </button>
-            </div>
+        <div className={styles.wrapper}>
+            <div className={styles.container}>
+                <div className={styles.header}>
+                    <h1>Edit Showcase</h1>
+                    <button
+                        onClick={() => navigate('/showcase')}
+                        className={styles.cancelButton}
+                    >
+                        Cancel
+                    </button>
+                </div>
 
-            <ShowcaseForm
-                showcase={currentShowcase}
-                isEditing={true}
-            />
+                <ShowcaseForm
+                    showcase={currentShowcase}
+                    isEditing={true}
+                />
+            </div>
         </div>
     );
 };

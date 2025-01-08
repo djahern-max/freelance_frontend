@@ -685,6 +685,7 @@ const DeveloperDashboard = () => {
             isOpen={showSubscriptionDialog}
             onClose={handleSubscriptionDialogClose}
             onSuccess={handleSubscriptionSuccess}
+            returnUrl={localStorage.getItem('pending_showcase_navigation') || '/showcase/create'}
           />
         </>
       )}

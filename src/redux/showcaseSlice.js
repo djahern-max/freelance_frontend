@@ -171,27 +171,6 @@ export const deleteShowcase = createAsyncThunk(
     }
 );
 
-export const linkVideos = createAsyncThunk(
-    'showcase/linkVideos',
-    async ({ id, videoIds }, { getState, rejectWithValue }) => {
-        try {
-            const response = await axios.put(
-                `${API_URL}/project-showcase/${id}/videos`,
-                videoIds,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        'Content-Type': 'application/json',
-                    }
-                }
-            );
-            return response.data;
-        } catch (error) {
-            return rejectWithValue(error.response?.data || error.message);
-        }
-    }
-);
-
 export const linkProfile = createAsyncThunk(
     'showcase/linkProfile',
     async (id, { rejectWithValue }) => {
@@ -207,10 +186,41 @@ export const linkProfile = createAsyncThunk(
             );
             return response.data;
         } catch (error) {
-            return rejectWithValue(error.response?.data || error.message);
+            // Handle different error formats
+            const errorMessage = error.response?.data?.detail?.[0]?.msg ||
+                error.response?.data?.detail ||
+                error.response?.data?.message ||
+                'Failed to link profile';
+            return rejectWithValue(errorMessage);
         }
     }
 );
+
+export const linkVideos = createAsyncThunk(
+    'showcase/linkVideos',
+    async ({ id, videoIds }, { rejectWithValue }) => {
+        try {
+            const response = await axios.put(
+                `${API_URL}/project-showcase/${id}/videos`,
+                videoIds,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json',
+                    }
+                }
+            );
+            return response.data;
+        } catch (error) {
+            const errorMessage = error.response?.data?.detail?.[0]?.msg ||
+                error.response?.data?.detail ||
+                error.response?.data?.message ||
+                'Failed to link videos';
+            return rejectWithValue(errorMessage);
+        }
+    }
+);
+
 
 const showcaseSlice = createSlice({
     name: 'showcase',
@@ -219,7 +229,6 @@ const showcaseSlice = createSlice({
         currentShowcase: null,
         loading: false,
         error: null,
-        totalCount: 0,
     },
     reducers: {
         clearShowcaseError: (state) => {
@@ -243,10 +252,10 @@ const showcaseSlice = createSlice({
             })
             .addCase(createShowcase.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload || action.error.message;
+                state.error = action.payload;
             })
 
-            // Fetch all showcases
+            // Fetch showcases
             .addCase(fetchShowcases.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -257,7 +266,7 @@ const showcaseSlice = createSlice({
             })
             .addCase(fetchShowcases.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload || action.error.message;
+                state.error = action.payload;
             })
 
             // Fetch single showcase
@@ -271,33 +280,47 @@ const showcaseSlice = createSlice({
             })
             .addCase(fetchShowcase.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload || action.error.message;
+                state.error = action.payload;
             })
 
-            // Update showcase files
-            .addCase(updateShowcaseFiles.fulfilled, (state, action) => {
+            // Link profile
+            .addCase(linkProfile.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(linkProfile.fulfilled, (state, action) => {
                 state.loading = false;
-                const showcase = state.showcases.find(s => s.id === action.payload.id);
-                if (showcase) {
-                    Object.assign(showcase, action.payload);
-                }
                 if (state.currentShowcase?.id === action.payload.id) {
                     state.currentShowcase = action.payload;
                 }
+                const index = state.showcases.findIndex(s => s.id === action.payload.id);
+                if (index !== -1) {
+                    state.showcases[index] = action.payload;
+                }
+            })
+            .addCase(linkProfile.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             })
 
-            // Rate showcase
-            .addCase(rateShowcase.fulfilled, (state, action) => {
+            // Link videos
+            .addCase(linkVideos.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(linkVideos.fulfilled, (state, action) => {
                 state.loading = false;
-                const showcase = state.showcases.find(s => s.id === action.payload.id);
-                if (showcase) {
-                    showcase.average_rating = action.payload.average_rating;
-                    showcase.total_ratings = action.payload.total_ratings;
-                }
                 if (state.currentShowcase?.id === action.payload.id) {
-                    state.currentShowcase.average_rating = action.payload.average_rating;
-                    state.currentShowcase.total_ratings = action.payload.total_ratings;
+                    state.currentShowcase = action.payload;
                 }
+                const index = state.showcases.findIndex(s => s.id === action.payload.id);
+                if (index !== -1) {
+                    state.showcases[index] = action.payload;
+                }
+            })
+            .addCase(linkVideos.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             })
 
             // Update showcase
@@ -317,7 +340,7 @@ const showcaseSlice = createSlice({
             })
             .addCase(updateShowcase.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload || action.error.message;
+                state.error = action.payload;
             })
 
             // Delete showcase
@@ -334,47 +357,9 @@ const showcaseSlice = createSlice({
             })
             .addCase(deleteShowcase.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload || action.error.message;
-            })
-            .addCase(linkVideos.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(linkVideos.fulfilled, (state, action) => {
-                state.loading = false;
-                const index = state.showcases.findIndex(s => s.id === action.payload.id);
-                if (index !== -1) {
-                    state.showcases[index] = action.payload;
-                }
-                if (state.currentShowcase?.id === action.payload.id) {
-                    state.currentShowcase = action.payload;
-                }
-            })
-            .addCase(linkVideos.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload || action.error.message;
-            })
-
-            // Link profile
-            .addCase(linkProfile.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(linkProfile.fulfilled, (state, action) => {
-                state.loading = false;
-                const index = state.showcases.findIndex(s => s.id === action.payload.id);
-                if (index !== -1) {
-                    state.showcases[index] = action.payload;
-                }
-                if (state.currentShowcase?.id === action.payload.id) {
-                    state.currentShowcase = action.payload;
-                }
-            })
-            .addCase(linkProfile.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload || action.error.message;
+                state.error = action.payload;
             });
-    },
+    }
 });
 
 export const { clearShowcaseError, clearCurrentShowcase } = showcaseSlice.actions;

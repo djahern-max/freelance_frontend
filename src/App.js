@@ -146,14 +146,8 @@ function AppContent() {
                   <Route path="/shared/videos/:shareToken" element={<SharedVideo />} />
 
                   {/* Showcase routes */}
-                  <Route
-                    path="/showcase"
-                    element={
-                      <ProtectedRoute>
-                        <ShowcaseList />
-                      </ProtectedRoute>
-                    }
-                  />
+                  {/* Showcase routes */}
+                  <Route path="/showcase" element={<ProtectedRoute><ShowcaseList /></ProtectedRoute>} />
                   <Route
                     path="/showcase/new"
                     element={
@@ -163,14 +157,21 @@ function AppContent() {
                     }
                   />
                   <Route
-                    path="/showcase/:id"
-                    element={<SharedShowcase />}
-                  />
-                  <Route
                     path="/showcase/edit/:id"
                     element={
                       <ProtectedRoute userType="developer" requiresSubscription={true}>
                         <EditShowcaseForm />
+                      </ProtectedRoute>
+                    }
+                  />
+                  {/* This should come last */}
+                  <Route path="/showcase/:id" element={<SharedShowcase />} />
+
+                  <Route
+                    path="/showcase/edit/:id"
+                    element={
+                      <ProtectedRoute userType="developer" requiresSubscription={true}>
+                        <ShowcaseForm isEditing />
                       </ProtectedRoute>
                     }
                   />

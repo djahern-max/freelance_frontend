@@ -1,40 +1,41 @@
 // src/components/showcase/SharedShowcase.js
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import axios from 'axios';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import api from '../../utils/api';
 import ShowcaseRating from './ShowcaseRating';
 import ReadmeModal from './ReadmeModal';
 import styles from './SharedShowcase.module.css';
 
 const SharedShowcase = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [showcase, setShowcase] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showReadme, setShowReadme] = useState(false);
 
     useEffect(() => {
+        // Prevent the component from trying to fetch with invalid IDs
+        if (id === 'create' || id === 'edit') {
+            navigate('/showcase');
+            return;
+        }
+
         const fetchShowcase = async () => {
             try {
-                const response = await axios.get(
-                    `${process.env.REACT_APP_API_URL}/project-showcase/${id}`,
-                    {
-                        headers: {
-                            'Authorization': `Bearer ${localStorage.getItem('token')}`
-                        }
-                    }
-                );
-                setShowcase(response.data);
-                setLoading(false);
+                setLoading(true);
+                const data = await api.showcase.getDetail(id);
+                setShowcase(data);
             } catch (err) {
-                setError('Failed to load showcase');
-                setLoading(false);
                 console.error('Error fetching showcase:', err);
+                setError(err.message || 'Failed to load showcase');
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchShowcase();
-    }, [id]);
+    }, [id, navigate]);
 
     if (loading) {
         return (
@@ -50,7 +51,9 @@ const SharedShowcase = () => {
             <div className={styles.error}>
                 <h2>Error Loading Showcase</h2>
                 <p>{error}</p>
-                <Link to="/" className={styles.homeLink}>Return to Home</Link>
+                <Link to="/showcase" className={styles.homeLink}>
+                    Return to Showcases
+                </Link>
             </div>
         );
     }
@@ -60,7 +63,9 @@ const SharedShowcase = () => {
             <div className={styles.notFound}>
                 <h2>Showcase Not Found</h2>
                 <p>The showcase you're looking for doesn't exist or has been removed.</p>
-                <Link to="/" className={styles.homeLink}>Return to Home</Link>
+                <Link to="/showcase" className={styles.homeLink}>
+                    Return to Showcases
+                </Link>
             </div>
         );
     }
@@ -69,31 +74,39 @@ const SharedShowcase = () => {
         <div className={styles.container}>
             <div className={styles.header}>
                 <h1>{showcase.title}</h1>
-                <div className={styles.developerInfo}>
-                    <img
-                        src={showcase.developer_profile.profile_image_url}
-                        alt={showcase.developer.username}
-                        className={styles.developerImage}
-                    />
-                    <div className={styles.developerDetails}>
-                        <span className={styles.developerName}>
-                            {showcase.developer.username}
-                        </span>
-                        <span className={styles.developerBio}>
-                            {showcase.developer_profile.bio}
-                        </span>
+                {showcase.developer_profile && (
+                    <div className={styles.developerInfo}>
+                        {showcase.developer_profile.profile_image_url && (
+                            <img
+                                src={showcase.developer_profile.profile_image_url}
+                                alt={showcase.developer.username}
+                                className={styles.developerImage}
+                            />
+                        )}
+                        <div className={styles.developerDetails}>
+                            <span className={styles.developerName}>
+                                {showcase.developer.username}
+                            </span>
+                            {showcase.developer_profile.bio && (
+                                <span className={styles.developerBio}>
+                                    {showcase.developer_profile.bio}
+                                </span>
+                            )}
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
 
             <div className={styles.content}>
-                <div className={styles.imageSection}>
-                    <img
-                        src={showcase.image_url}
-                        alt={showcase.title}
-                        className={styles.showcaseImage}
-                    />
-                </div>
+                {showcase.image_url && (
+                    <div className={styles.imageSection}>
+                        <img
+                            src={showcase.image_url}
+                            alt={showcase.title}
+                            className={styles.showcaseImage}
+                        />
+                    </div>
+                )}
 
                 <div className={styles.details}>
                     <p className={styles.description}>{showcase.description}</p>
@@ -140,12 +153,14 @@ const SharedShowcase = () => {
                         />
                     </div>
 
-                    <button
-                        onClick={() => setShowReadme(true)}
-                        className={styles.readmeButton}
-                    >
-                        View README
-                    </button>
+                    {showcase.readme_url && (
+                        <button
+                            onClick={() => setShowReadme(true)}
+                            className={styles.readmeButton}
+                        >
+                            View README
+                        </button>
+                    )}
 
                     {showcase.videos && showcase.videos.length > 0 && (
                         <div className={styles.videoSection}>
@@ -153,11 +168,13 @@ const SharedShowcase = () => {
                             <div className={styles.videoGrid}>
                                 {showcase.videos.map((video) => (
                                     <div key={video.id} className={styles.videoCard}>
-                                        <img
-                                            src={video.thumbnail_path}
-                                            alt={video.title}
-                                            className={styles.videoThumbnail}
-                                        />
+                                        {video.thumbnail_path && (
+                                            <img
+                                                src={video.thumbnail_path}
+                                                alt={video.title}
+                                                className={styles.videoThumbnail}
+                                            />
+                                        )}
                                         <div className={styles.videoInfo}>
                                             <h4>{video.title}</h4>
                                             <p>{video.description}</p>

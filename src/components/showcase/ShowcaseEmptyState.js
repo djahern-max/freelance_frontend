@@ -3,29 +3,57 @@ import {
   PlusCircle,
   RefreshCw,
   UserPlus,
-  Search,     // Added
-  CreditCard  // Added
+  Search,
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useState } from 'react';
+import api from '../../utils/api';
 import styles from './ShowcaseEmptyState.module.css';
+import SubscriptionDialog from '../payments/SubscriptionDialog';
 
 const ShowcaseEmptyState = ({
   isAuthenticated,
   userType,
-  onCreateShowcase,
   error,
   onRetry,
   isLoading
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const subscriptionStatus = useSelector(state => state.auth.subscriptionStatus);
+  const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
 
   const handleSignUp = () => {
     navigate('/register', {
       state: { from: location.pathname },
     });
+  };
+
+  const handleCreateShowcase = async () => {
+    try {
+      // Try to access showcase creation
+      const response = await api.get('/showcase/check-access');
+      navigate('/showcase/create');
+    } catch (error) {
+      console.error('Error accessing showcase:', error);
+      if (error.response?.status === 402 || error.response?.status === 403) {
+        // Store the pending navigation
+        localStorage.setItem('pending_showcase_navigation', '/showcase/create');
+        setShowSubscriptionDialog(true);
+      } else {
+        // Handle other errors
+        console.error('Unexpected error:', error);
+      }
+    }
+  };
+
+  const handleSubscriptionDialogClose = () => {
+    setShowSubscriptionDialog(false);
+    localStorage.removeItem('pending_showcase_navigation');
+  };
+
+  const handleSubscriptionSuccess = () => {
+    setShowSubscriptionDialog(false);
+    // Don't navigate here - it will happen in SubscriptionSuccess component
   };
 
   const renderContent = () => {
@@ -50,7 +78,6 @@ const ShowcaseEmptyState = ({
       return {
         title: 'Developer Showcases',
         description: 'Browse through developer portfolios and project showcases.',
-        // Optional: Add a search or browse button for clients
         action: (
           <button
             className={styles.secondaryButton}
@@ -63,30 +90,13 @@ const ShowcaseEmptyState = ({
       };
     }
 
-    // Developer view
-    if (subscriptionStatus !== 'active') {
-      return {
-        title: 'Showcase Your Projects',
-        description: 'Upgrade your account to create project showcases and attract more clients.',
-        action: (
-          <button
-            className={styles.primaryButton}
-            onClick={() => navigate('/subscription')}
-          >
-            <CreditCard size={20} />
-            <span>Upgrade Account</span>
-          </button>
-        )
-      };
-    }
-
     return {
       title: 'No Project Showcases Yet',
       description: 'Share your best projects with the community and attract potential clients.',
       action: (
         <button
           className={styles.primaryButton}
-          onClick={onCreateShowcase}
+          onClick={handleCreateShowcase}
           disabled={isLoading}
         >
           <PlusCircle size={20} />
@@ -100,51 +110,60 @@ const ShowcaseEmptyState = ({
   const content = renderContent();
 
   return (
-    <div className={styles.wrapper}>
-      {error && (
-        <div className={styles.alert} role="alert">
-          <div className={styles.alertContent}>
-            <span>{error}</span>
-            <button
-              className={styles.retryButton}
-              onClick={onRetry}
-              disabled={isLoading}
-            >
-              <RefreshCw size={16} className={isLoading ? styles.spinning : ''} />
-              <span>{isLoading ? 'Retrying...' : 'Try Again'}</span>
-            </button>
+    <>
+      <div className={styles.wrapper}>
+        {error && (
+          <div className={styles.alert} role="alert">
+            <div className={styles.alertContent}>
+              <span>{error}</span>
+              <button
+                className={styles.retryButton}
+                onClick={onRetry}
+                disabled={isLoading}
+              >
+                <RefreshCw size={16} className={isLoading ? styles.spinning : ''} />
+                <span>{isLoading ? 'Retrying...' : 'Try Again'}</span>
+              </button>
+            </div>
           </div>
+        )}
+
+        <div className={styles.container}>
+          <div className={styles.iconWrapper}>
+            <Briefcase
+              className={`${styles.icon} ${error ? styles.errorIcon : ''}`}
+              size={48}
+            />
+          </div>
+
+          <h2 className={styles.title}>{content.title}</h2>
+          <p className={styles.description}>{content.description}</p>
+
+          {content.action && (
+            <div className={styles.actionWrapper}>
+              {content.action}
+            </div>
+          )}
+
+          {content.footer && (
+            <p className={styles.footer}>{content.footer}</p>
+          )}
+
+          {isLoading && (
+            <div className={styles.loadingOverlay}>
+              <RefreshCw size={24} className={styles.spinning} />
+            </div>
+          )}
         </div>
-      )}
-
-      <div className={styles.container}>
-        <div className={styles.iconWrapper}>
-          <Briefcase
-            className={`${styles.icon} ${error ? styles.errorIcon : ''}`}
-            size={48}
-          />
-        </div>
-
-        <h2 className={styles.title}>{content.title}</h2>
-        <p className={styles.description}>{content.description}</p>
-
-        {content.action && (
-          <div className={styles.actionWrapper}>
-            {content.action}
-          </div>
-        )}
-
-        {content.footer && (
-          <p className={styles.footer}>{content.footer}</p>
-        )}
-
-        {isLoading && (
-          <div className={styles.loadingOverlay}>
-            <RefreshCw size={24} className={styles.spinning} />
-          </div>
-        )}
       </div>
-    </div>
+
+      <SubscriptionDialog
+        isOpen={showSubscriptionDialog}
+        onClose={handleSubscriptionDialogClose}
+        onSuccess={handleSubscriptionSuccess}
+        returnUrl={localStorage.getItem('pending_showcase_navigation') || '/showcase/create'}
+      />
+    </>
   );
 };
 
