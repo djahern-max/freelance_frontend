@@ -353,10 +353,11 @@
 
 .profileSection {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  /* Center the entire section */
-  gap: 1rem;
+  text-align: center;
+  gap: 0.5rem;
   padding: 1rem;
   border-radius: 12px;
   background: #f8f9fa;
@@ -364,7 +365,6 @@
 }
 
 .profileSection p {
-  /* Style for the "Creator" text */
   font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
   font-weight: 600;
   font-size: 0.9rem;
@@ -372,17 +372,15 @@
   letter-spacing: 0.05em;
   color: #6b7280;
   margin: 0;
-  /* Remove margin */
-  min-width: fit-content;
-  /* Ensure text doesn't wrap */
 }
 
 .profileLink {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 1rem;
   text-decoration: none;
   color: inherit;
+  gap: 0.5rem;
 }
 
 .profileLink:hover {
@@ -390,13 +388,14 @@
 }
 
 .profileImage {
-  width: 3rem;
-  height: 3rem;
+  width: 4rem;
+  height: 4rem;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 
 .videoSection {
   margin: 1.25rem 0;
@@ -407,13 +406,13 @@
 }
 
 .profileLink span {
-  /* Match the CREATOR text style */
   font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
   font-weight: 600;
   font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: #6b7280;
+  text-align: center;
 }
 
 
