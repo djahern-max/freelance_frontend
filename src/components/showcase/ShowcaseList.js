@@ -131,13 +131,22 @@ const ShowcaseList = () => {
             >
               {/* Rest of your showcase card JSX */}
               <div className={styles.imageContainer}>
-                <img
-                  src={showcase.image_url}
-                  alt={showcase.title}
-                  className={styles.image}
-                />
+                <a
+                  href={showcase.demo_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.demoLink}
+                >
+                  <img
+                    src={showcase.image_url}
+                    alt={showcase.title}
+                    className={styles.image}
+                  />
+                  <div className={styles.imageOverlay}>
+                    <span className={styles.demoButton}>View Demo</span>
+                  </div>
+                </a>
               </div>
-
               <div className={styles.content}>
                 <h3 className={styles.title}>{showcase.title}</h3>
                 <p className={styles.description}>{showcase.description}</p>

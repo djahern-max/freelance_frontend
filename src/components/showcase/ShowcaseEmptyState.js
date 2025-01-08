@@ -30,13 +30,21 @@ const ShowcaseEmptyState = ({
 
   const handleCreateShowcase = async () => {
     try {
-      // Try to access showcase creation
-      const response = await api.get('/showcase/check-access');
-      navigate('/showcase/create');
+      // First check subscription status
+      const { data: subStatus } = await api.get('/payments/subscription-status');
+
+      if (subStatus.status === 'active') {
+        // Has active subscription, proceed to showcase creation
+        navigate('/showcase/create');
+      } else {
+        // No active subscription, show dialog
+        localStorage.setItem('pending_showcase_navigation', '/showcase/create');
+        setShowSubscriptionDialog(true);
+      }
     } catch (error) {
-      console.error('Error accessing showcase:', error);
-      if (error.response?.status === 402 || error.response?.status === 403) {
-        // Store the pending navigation
+      console.error('Error checking subscription status:', error);
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        // Unauthorized or forbidden, show subscription dialog
         localStorage.setItem('pending_showcase_navigation', '/showcase/create');
         setShowSubscriptionDialog(true);
       } else {

@@ -166,125 +166,127 @@ const ShowcaseForm = ({ isEditing = false }) => {
     }
 
     return (
-        <form className={styles.form} onSubmit={handleSubmit}>
-            <div className={styles.formGroup}>
-                <label htmlFor="title">Title *</label>
-                <input
-                    type="text"
-                    id="title"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleInputChange}
-                    required
-                    className={`${styles.input} ${formErrors.title ? styles.inputError : ''}`}
-                />
-                {formErrors.title && <span className={styles.errorMessage}>{formErrors.title}</span>}
-            </div>
+        <div className={styles.wrapper}>
+            <form className={styles.form} onSubmit={handleSubmit}>
+                <div className={styles.formGroup}>
+                    <label htmlFor="title">Title *</label>
+                    <input
+                        type="text"
+                        id="title"
+                        name="title"
+                        value={formData.title}
+                        onChange={handleInputChange}
+                        required
+                        className={`${styles.input} ${formErrors.title ? styles.inputError : ''}`}
+                    />
+                    {formErrors.title && <span className={styles.errorMessage}>{formErrors.title}</span>}
+                </div>
 
-            <div className={styles.formGroup}>
-                <label htmlFor="description">Description *</label>
-                <textarea
-                    id="description"
-                    name="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
-                    required
-                    className={`${styles.textarea} ${formErrors.description ? styles.inputError : ''}`}
-                />
-                {formErrors.description && <span className={styles.errorMessage}>{formErrors.description}</span>}
-            </div>
+                <div className={styles.formGroup}>
+                    <label htmlFor="description">Description *</label>
+                    <textarea
+                        id="description"
+                        name="description"
+                        value={formData.description}
+                        onChange={handleInputChange}
+                        required
+                        className={`${styles.textarea} ${formErrors.description ? styles.inputError : ''}`}
+                    />
+                    {formErrors.description && <span className={styles.errorMessage}>{formErrors.description}</span>}
+                </div>
 
-            <div className={styles.formGroup}>
-                <label htmlFor="project_url">Project URL *</label>
-                <input
-                    type="url"
-                    id="project_url"
-                    name="project_url"
-                    value={formData.project_url}
-                    onChange={handleInputChange}
-                    required
-                    className={`${styles.input} ${formErrors.project_url ? styles.inputError : ''}`}
-                    placeholder="https://"
-                />
-                {formErrors.project_url && <span className={styles.errorMessage}>{formErrors.project_url}</span>}
-            </div>
+                <div className={styles.formGroup}>
+                    <label htmlFor="project_url">Project URL *</label>
+                    <input
+                        type="url"
+                        id="project_url"
+                        name="project_url"
+                        value={formData.project_url}
+                        onChange={handleInputChange}
+                        required
+                        className={`${styles.input} ${formErrors.project_url ? styles.inputError : ''}`}
+                        placeholder="https://"
+                    />
+                    {formErrors.project_url && <span className={styles.errorMessage}>{formErrors.project_url}</span>}
+                </div>
 
-            <div className={styles.formGroup}>
-                <label htmlFor="repository_url">Repository URL</label>
-                <input
-                    type="url"
-                    id="repository_url"
-                    name="repository_url"
-                    value={formData.repository_url}
-                    onChange={handleInputChange}
-                    className={`${styles.input} ${formErrors.repository_url ? styles.inputError : ''}`}
-                    placeholder="https://"
-                />
-                {formErrors.repository_url && <span className={styles.errorMessage}>{formErrors.repository_url}</span>}
-            </div>
+                <div className={styles.formGroup}>
+                    <label htmlFor="repository_url">Repository URL</label>
+                    <input
+                        type="url"
+                        id="repository_url"
+                        name="repository_url"
+                        value={formData.repository_url}
+                        onChange={handleInputChange}
+                        className={`${styles.input} ${formErrors.repository_url ? styles.inputError : ''}`}
+                        placeholder="https://"
+                    />
+                    {formErrors.repository_url && <span className={styles.errorMessage}>{formErrors.repository_url}</span>}
+                </div>
 
-            <div className={styles.formGroup}>
-                <label htmlFor="demo_url">Demo URL</label>
-                <input
-                    type="url"
-                    id="demo_url"
-                    name="demo_url"
-                    value={formData.demo_url}
-                    onChange={handleInputChange}
-                    className={`${styles.input} ${formErrors.demo_url ? styles.inputError : ''}`}
-                    placeholder="https://"
-                />
-                {formErrors.demo_url && <span className={styles.errorMessage}>{formErrors.demo_url}</span>}
-            </div>
+                <div className={styles.formGroup}>
+                    <label htmlFor="demo_url">Demo URL</label>
+                    <input
+                        type="url"
+                        id="demo_url"
+                        name="demo_url"
+                        value={formData.demo_url}
+                        onChange={handleInputChange}
+                        className={`${styles.input} ${formErrors.demo_url ? styles.inputError : ''}`}
+                        placeholder="https://"
+                    />
+                    {formErrors.demo_url && <span className={styles.errorMessage}>{formErrors.demo_url}</span>}
+                </div>
 
-            <div className={styles.formGroup}>
-                <label htmlFor="image_file">Project Image {!isEditing && '*'}</label>
-                <input
-                    type="file"
-                    id="image_file"
-                    name="image_file"
-                    onChange={handleFileChange}
-                    accept="image/*"
-                    required={!isEditing}
-                    className={`${styles.fileInput} ${formErrors.image_file ? styles.inputError : ''}`}
-                />
-                {formErrors.image_file && <span className={styles.errorMessage}>{formErrors.image_file}</span>}
-                {preview.image && (
-                    <div className={styles.imagePreview}>
-                        <img src={preview.image} alt="Preview" />
-                    </div>
-                )}
-            </div>
+                <div className={styles.formGroup}>
+                    <label htmlFor="image_file">Project Image {!isEditing && '*'}</label>
+                    <input
+                        type="file"
+                        id="image_file"
+                        name="image_file"
+                        onChange={handleFileChange}
+                        accept="image/*"
+                        required={!isEditing}
+                        className={`${styles.fileInput} ${formErrors.image_file ? styles.inputError : ''}`}
+                    />
+                    {formErrors.image_file && <span className={styles.errorMessage}>{formErrors.image_file}</span>}
+                    {preview.image && (
+                        <div className={styles.imagePreview}>
+                            <img src={preview.image} alt="Preview" />
+                        </div>
+                    )}
+                </div>
 
-            <div className={styles.formGroup}>
-                <label htmlFor="readme_file">README File {!isEditing && '*'}</label>
-                <input
-                    type="file"
-                    id="readme_file"
-                    name="readme_file"
-                    onChange={handleFileChange}
-                    accept=".md"
-                    required={!isEditing}
-                    className={`${styles.fileInput} ${formErrors.readme_file ? styles.inputError : ''}`}
-                />
-                {formErrors.readme_file && <span className={styles.errorMessage}>{formErrors.readme_file}</span>}
-                {preview.readme && (
-                    <div className={styles.readmePreview}>
-                        <pre>{preview.readme}</pre>
-                    </div>
-                )}
-            </div>
+                <div className={styles.formGroup}>
+                    <label htmlFor="readme_file">README File {!isEditing && '*'}</label>
+                    <input
+                        type="file"
+                        id="readme_file"
+                        name="readme_file"
+                        onChange={handleFileChange}
+                        accept=".md"
+                        required={!isEditing}
+                        className={`${styles.fileInput} ${formErrors.readme_file ? styles.inputError : ''}`}
+                    />
+                    {formErrors.readme_file && <span className={styles.errorMessage}>{formErrors.readme_file}</span>}
+                    {preview.readme && (
+                        <div className={styles.readmePreview}>
+                            <pre>{preview.readme}</pre>
+                        </div>
+                    )}
+                </div>
 
-            {error && <div className={styles.error}>{error}</div>}
+                {error && <div className={styles.error}>{error}</div>}
 
-            <button
-                type="submit"
-                className={styles.submitButton}
-                disabled={loading}
-            >
-                {loading ? 'Submitting...' : isEditing ? 'Update Showcase' : 'Create Showcase'}
-            </button>
-        </form>
+                <button
+                    type="submit"
+                    className={styles.submitButton}
+                    disabled={loading}
+                >
+                    {loading ? 'Submitting...' : isEditing ? 'Update Showcase' : 'Create Showcase'}
+                </button>
+            </form>
+        </div>
 
     );
 }
