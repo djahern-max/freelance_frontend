@@ -192,6 +192,51 @@
   cursor: not-allowed;
 }
 
+.profileSection {
+  margin: 1rem 0;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  background: #f8f9fa;
+}
+
+.profileLink {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.profileImage {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.videosSection {
+  margin: 1rem 0;
+}
+
+.videoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.5rem;
+}
+
+.videoLink {
+  text-decoration: none;
+  color: inherit;
+}
+
+.videoThumbnail {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 0.25rem;
+}
+
+
 @media (max-width: 768px) {
   .container {
     padding: 1rem;

@@ -83,6 +83,8 @@ const ShowcaseList = () => {
       <div className={styles.grid}>
         {showcases.map((showcase) => (
           <div key={showcase.id} className={styles.card}>
+            {console.log('Showcase data:', showcase)}
+            {console.log('Linked content:', showcase.linked_content)}
             <div className={styles.imageContainer}>
               <img
                 src={showcase.image_url}
@@ -94,6 +96,38 @@ const ShowcaseList = () => {
             <div className={styles.content}>
               <h3 className={styles.title}>{showcase.title}</h3>
               <p className={styles.description}>{showcase.description}</p>
+
+              {/* Profile Section */}
+              {showcase.developer_profile && (
+                <div className={styles.profileSection}>
+                  <Link to={`/creator_profile/${showcase.developer_id}`} className={styles.profileLink}>
+                    <img
+                      src={showcase.developer_profile.profile_image_url}
+                      alt="Developer"
+                      className={styles.profileImage}
+                    />
+                    <span>{showcase.developer_profile.user.username}</span>
+                  </Link>
+                </div>
+              )}
+              {/* Videos Section */}
+              {showcase.videos?.length > 0 && (
+                <div className={styles.videosSection}>
+                  <h4>Solution Videos</h4>
+                  <div className={styles.videoGrid}>
+                    {showcase.videos.map(video => (
+                      <Link
+                        key={video.id}  // Add this line
+                        to={`/video_display/${video.id}`}
+                        className={styles.videoLink}
+                      >
+                        <img src={video.thumbnail_path} alt={video.title} className={styles.videoThumbnail} />
+                        <span>{video.title}</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className={styles.links}>
                 {showcase.project_url && (
