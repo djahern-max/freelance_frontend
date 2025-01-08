@@ -100,7 +100,7 @@ const ShowcaseList = () => {
               {/* Profile Section */}
               {showcase.developer_profile && (
                 <div className={styles.profileSection}>
-                  <Link to={`/creator_profile/${showcase.developer_id}`} className={styles.profileLink}>
+                  <Link to={`/profile/developers/${showcase.developer_id}/public`} className={styles.profileLink}>
                     <img
                       src={showcase.developer_profile.profile_image_url}
                       alt="Developer"
@@ -110,6 +110,7 @@ const ShowcaseList = () => {
                   </Link>
                 </div>
               )}
+
               {/* Videos Section */}
               {showcase.videos?.length > 0 && (
                 <div className={styles.videosSection}>
@@ -117,8 +118,8 @@ const ShowcaseList = () => {
                   <div className={styles.videoGrid}>
                     {showcase.videos.map(video => (
                       <Link
-                        key={video.id}  // Add this line
-                        to={`/video_display/${video.id}`}
+                        key={video.id}
+                        to={`/video_display/stream/${video.id}`}
                         className={styles.videoLink}
                       >
                         <img src={video.thumbnail_path} alt={video.title} className={styles.videoThumbnail} />

@@ -143,7 +143,7 @@ function AppContent() {
                   <Route path="/profile/developers/:id/public" element={<DeveloperProfileView />} />
                   <Route path="/creators" element={<PublicDevelopers />} />
                   <Route path="/shared/videos/:shareToken" element={<SharedVideo />} />
-                  <Route path="/shared/videos/:shareToken" element={<SharedVideo />} />
+
 
                   {/* Showcase routes */}
                   {/* Showcase routes */}
@@ -182,10 +182,7 @@ function AppContent() {
                     path="/subscription/success"
                     element={<SubscriptionSuccess />}
                   />
-                  <Route
-                    path="/subscription/success"
-                    element={<SubscriptionSuccess />}
-                  />
+
 
                   {/* Client-specific routes */}
                   <Route
