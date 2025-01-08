@@ -351,7 +351,7 @@ const DeveloperDashboard = () => {
       case 'snagged':
         return (
           <div className={styles.expandedSection}>
-            <h2>Snagged Tickets</h2>
+            <h2>Your Watchlist</h2>
             {snaggedRequests.length > 0 ? (
               <div className={styles.requestsList}>
                 {snaggedRequests.map((item) => (
@@ -408,8 +408,8 @@ const DeveloperDashboard = () => {
             ) : (
               <div className={styles.emptyState}>
                 <Bookmark className={styles.emptyStateIcon} />
-                <p>No snagged requests yet</p>
-                <p>When you snag a request, it will appear here</p>
+                <p>No items added to watchlist yet</p>
+                <p>When connect to with a potential client and share your credentials the ticket will appear here</p>
               </div>
             )}
           </div>
