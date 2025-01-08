@@ -158,6 +158,40 @@
   color: #666;
 }
 
+/* ShowcaseForm.module.css */
+.imagePreview img {
+  max-height: 200px;
+  object-fit: contain;
+}
+
+/* LinkedContent.module.css */
+.videoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.pagination {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  align-items: center;
+}
+
+.paginationButton {
+  padding: 0.5rem 1rem;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.paginationButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 1rem;

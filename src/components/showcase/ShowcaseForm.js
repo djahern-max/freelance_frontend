@@ -15,7 +15,7 @@ const ShowcaseForm = ({ isEditing = false }) => {
     const [profile, setProfile] = useState(null);
     const [apiLoading, setApiLoading] = useState(false);
     const [apiError, setApiError] = useState(null);
-
+    const [formErrors, setFormErrors] = useState({});
     const [formData, setFormData] = useState({
         title: '',
         description: '',
@@ -108,8 +108,25 @@ const ShowcaseForm = ({ isEditing = false }) => {
         }
     };
 
+    const validateForm = () => {
+        const errors = {};
+        if (!formData.title.trim()) errors.title = 'Title is required';
+        if (!formData.project_url && !formData.project_url.match(/^https?:\/\/.+/)) {
+            errors.project_url = 'Valid URL required';
+        }
+        return errors;
+    };
+
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const errors = validateForm();
+        if (Object.keys(errors).length > 0) {
+            setFormErrors(errors);
+            return;
+        }
 
         try {
             const submitData = new FormData();
@@ -159,8 +176,9 @@ const ShowcaseForm = ({ isEditing = false }) => {
                     value={formData.title}
                     onChange={handleInputChange}
                     required
-                    className={styles.input}
+                    className={`${styles.input} ${formErrors.title ? styles.inputError : ''}`}
                 />
+                {formErrors.title && <span className={styles.errorMessage}>{formErrors.title}</span>}
             </div>
 
             <div className={styles.formGroup}>
@@ -171,8 +189,9 @@ const ShowcaseForm = ({ isEditing = false }) => {
                     value={formData.description}
                     onChange={handleInputChange}
                     required
-                    className={styles.textarea}
+                    className={`${styles.textarea} ${formErrors.description ? styles.inputError : ''}`}
                 />
+                {formErrors.description && <span className={styles.errorMessage}>{formErrors.description}</span>}
             </div>
 
             <div className={styles.formGroup}>
@@ -184,9 +203,10 @@ const ShowcaseForm = ({ isEditing = false }) => {
                     value={formData.project_url}
                     onChange={handleInputChange}
                     required
-                    className={styles.input}
+                    className={`${styles.input} ${formErrors.project_url ? styles.inputError : ''}`}
                     placeholder="https://"
                 />
+                {formErrors.project_url && <span className={styles.errorMessage}>{formErrors.project_url}</span>}
             </div>
 
             <div className={styles.formGroup}>
@@ -197,9 +217,10 @@ const ShowcaseForm = ({ isEditing = false }) => {
                     name="repository_url"
                     value={formData.repository_url}
                     onChange={handleInputChange}
-                    className={styles.input}
+                    className={`${styles.input} ${formErrors.repository_url ? styles.inputError : ''}`}
                     placeholder="https://"
                 />
+                {formErrors.repository_url && <span className={styles.errorMessage}>{formErrors.repository_url}</span>}
             </div>
 
             <div className={styles.formGroup}>
@@ -210,9 +231,10 @@ const ShowcaseForm = ({ isEditing = false }) => {
                     name="demo_url"
                     value={formData.demo_url}
                     onChange={handleInputChange}
-                    className={styles.input}
+                    className={`${styles.input} ${formErrors.demo_url ? styles.inputError : ''}`}
                     placeholder="https://"
                 />
+                {formErrors.demo_url && <span className={styles.errorMessage}>{formErrors.demo_url}</span>}
             </div>
 
             <div className={styles.formGroup}>
@@ -224,8 +246,9 @@ const ShowcaseForm = ({ isEditing = false }) => {
                     onChange={handleFileChange}
                     accept="image/*"
                     required={!isEditing}
-                    className={styles.fileInput}
+                    className={`${styles.fileInput} ${formErrors.image_file ? styles.inputError : ''}`}
                 />
+                {formErrors.image_file && <span className={styles.errorMessage}>{formErrors.image_file}</span>}
                 {preview.image && (
                     <div className={styles.imagePreview}>
                         <img src={preview.image} alt="Preview" />
@@ -242,8 +265,9 @@ const ShowcaseForm = ({ isEditing = false }) => {
                     onChange={handleFileChange}
                     accept=".md"
                     required={!isEditing}
-                    className={styles.fileInput}
+                    className={`${styles.fileInput} ${formErrors.readme_file ? styles.inputError : ''}`}
                 />
+                {formErrors.readme_file && <span className={styles.errorMessage}>{formErrors.readme_file}</span>}
                 {preview.readme && (
                     <div className={styles.readmePreview}>
                         <pre>{preview.readme}</pre>

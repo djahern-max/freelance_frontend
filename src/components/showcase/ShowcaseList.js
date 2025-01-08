@@ -12,10 +12,18 @@ const ShowcaseList = () => {
   const { showcases, loading, error } = useSelector((state) => state.showcase);
   const { user } = useSelector((state) => state.auth);
   const [selectedReadme, setSelectedReadme] = useState(null);
+  const [page, setPage] = useState(0);
+  const ITEMS_PER_PAGE = 12;
 
   useEffect(() => {
-    dispatch(fetchShowcases({ skip: 0, limit: 100 }));
-  }, [dispatch]);
+    dispatch(fetchShowcases({
+      skip: page * ITEMS_PER_PAGE,
+      limit: ITEMS_PER_PAGE
+    }));
+  }, [page, dispatch]);
+
+
+
 
   const isOwner = (showcase) => {
     return user && showcase.developer_id === user.id;
@@ -64,7 +72,7 @@ const ShowcaseList = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1>Project Showcases</h1>
+
         {user && user.userType === 'developer' && (
           <Link to="/showcase/new" className={styles.createButton}>
             Create New Showcase
@@ -153,6 +161,25 @@ const ShowcaseList = () => {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Add this pagination section */}
+      <div className={styles.pagination}>
+        <button
+          onClick={() => setPage(p => Math.max(0, p - 1))}
+          disabled={page === 0}
+          className={styles.paginationButton}
+        >
+          Previous
+        </button>
+        <span>Page {page + 1}</span>
+        <button
+          onClick={() => setPage(p => p + 1)}
+          disabled={showcases.length < ITEMS_PER_PAGE}
+          className={styles.paginationButton}
+        >
+          Next
+        </button>
       </div>
 
       {selectedReadme && (

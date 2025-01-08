@@ -12,6 +12,8 @@ const LinkedContent = ({ showcase, onComplete }) => {
     const [includeProfile, setIncludeProfile] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [savingVideos, setSavingVideos] = useState(false);
+    const [savingProfile, setSavingProfile] = useState(false);
 
     useEffect(() => {
         const fetchUserVideos = async () => {
@@ -32,30 +34,28 @@ const LinkedContent = ({ showcase, onComplete }) => {
 
     const handleSave = async (e) => {
         e.preventDefault();
-
         if (!showcase?.id) return;
 
-        setLoading(true);
         try {
-            // Update videos if any are selected
             if (selectedVideos.length > 0) {
+                setSavingVideos(true);
                 await dispatch(linkVideos({
                     id: showcase.id,
                     videoIds: selectedVideos
-                })).unwrap();
+                }));
             }
 
-            // Update profile if selected
             if (includeProfile) {
-                await dispatch(linkProfile(showcase.id)).unwrap();
+                setSavingProfile(true);
+                await dispatch(linkProfile(showcase.id));
             }
 
             onComplete();
         } catch (err) {
-            console.error('Error saving linked content:', err);
             setError('Failed to save changes');
         } finally {
-            setLoading(false);
+            setSavingVideos(false);
+            setSavingProfile(false);
         }
     };
 
@@ -133,10 +133,13 @@ const LinkedContent = ({ showcase, onComplete }) => {
                     <button
                         type="submit"
                         className={styles.submitButton}
-                        disabled={loading}
+                        disabled={loading || savingVideos || savingProfile}
                     >
-                        {loading ? 'Saving...' : 'Save & Finish'}
+                        {savingVideos ? 'Saving Videos...' :
+                            savingProfile ? 'Saving Profile...' :
+                                loading ? 'Saving...' : 'Save & Finish'}
                     </button>
+
                 </div>
             </form>
         </div>
