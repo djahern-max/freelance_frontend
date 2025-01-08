@@ -10,15 +10,24 @@ import styles from './ShowcaseList.module.css';
 const ShowcaseList = () => {
   const dispatch = useDispatch();
   const { showcases, loading, error } = useSelector((state) => state.showcase);
+  const { user } = useSelector((state) => state.auth);
   const [selectedReadme, setSelectedReadme] = useState(null);
 
   useEffect(() => {
     dispatch(fetchShowcases({ skip: 0, limit: 100 }));
   }, [dispatch]);
 
+  const isOwner = (showcase) => {
+    return user && showcase.developer_id === user.id;
+  };
+
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this showcase?')) {
-      await dispatch(deleteShowcase(id));
+      try {
+        await dispatch(deleteShowcase(id)).unwrap();
+      } catch (error) {
+        console.error('Failed to delete showcase:', error);
+      }
     }
   };
 
@@ -39,9 +48,11 @@ const ShowcaseList = () => {
       <div className={styles.emptyState}>
         <h2>No showcases yet</h2>
         <p>Create your first showcase to display your work!</p>
-        <Link to="/showcase/new" className={styles.createButton}>
-          Create Showcase
-        </Link>
+        {user && user.userType === 'developer' && (
+          <Link to="/showcase/new" className={styles.createButton}>
+            Create Showcase
+          </Link>
+        )}
       </div>
     );
   }
@@ -50,9 +61,11 @@ const ShowcaseList = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1>Project Showcases</h1>
-        <Link to="/showcase/new" className={styles.createButton}>
-          Create New Showcase
-        </Link>
+        {user && user.userType === 'developer' && (
+          <Link to="/showcase/new" className={styles.createButton}>
+            Create New Showcase
+          </Link>
+        )}
       </div>
 
       <div className={styles.grid}>
@@ -116,18 +129,22 @@ const ShowcaseList = () => {
                 >
                   View README
                 </button>
-                <Link
-                  to={`/showcase/edit/${showcase.id}`}
-                  className={styles.actionButton}
-                >
-                  Edit
-                </Link>
-                <button
-                  onClick={() => handleDelete(showcase.id)}
-                  className={`${styles.actionButton} ${styles.deleteButton}`}
-                >
-                  Delete
-                </button>
+                {isOwner(showcase) && (
+                  <>
+                    <Link
+                      to={`/showcase/edit/${showcase.id}`}
+                      className={styles.actionButton}
+                    >
+                      Edit
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(showcase.id)}
+                      className={`${styles.actionButton} ${styles.deleteButton}`}
+                    >
+                      Delete
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>

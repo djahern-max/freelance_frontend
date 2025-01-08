@@ -11,13 +11,22 @@ const EditShowcaseForm = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { currentShowcase, loading, error } = useSelector((state) => state.showcase);
+    const { user } = useSelector((state) => state.auth);
     const [loadingInitial, setLoadingInitial] = useState(true);
 
     useEffect(() => {
         const loadShowcase = async () => {
             try {
-                await dispatch(fetchShowcase(id)).unwrap();
+                const result = await dispatch(fetchShowcase(id)).unwrap();
                 setLoadingInitial(false);
+
+                // Check if the current user is the owner
+                if (!user || result.developer_id !== user.id) {
+                    navigate('/showcase', {
+                        replace: true,
+                        state: { error: 'You do not have permission to edit this showcase' }
+                    });
+                }
             } catch (err) {
                 console.error('Error loading showcase:', err);
                 navigate('/showcase', {
@@ -28,7 +37,7 @@ const EditShowcaseForm = () => {
         };
 
         loadShowcase();
-    }, [dispatch, id, navigate]);
+    }, [dispatch, id, navigate, user]);
 
     if (loadingInitial || loading) {
         return (

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { createShowcase, updateShowcase, updateShowcaseFiles } from '../../redux/showcaseSlice';
+import LinkedContent from './LinkedContent';
 import styles from './ShowcaseForm.module.css';
 
 const ShowcaseForm = ({ showcase, isEditing = false }) => {
@@ -17,15 +18,15 @@ const ShowcaseForm = ({ showcase, isEditing = false }) => {
         repository_url: '',
         demo_url: '',
         image_file: null,
-        readme_file: null,
-        selected_video_ids: [],
-        include_profile: true
+        readme_file: null
     });
 
     const [preview, setPreview] = useState({
         image: null,
         readme: null
     });
+
+    const [showLinkedContent, setShowLinkedContent] = useState(false);
 
     useEffect(() => {
         if (showcase && isEditing) {
@@ -34,9 +35,7 @@ const ShowcaseForm = ({ showcase, isEditing = false }) => {
                 description: showcase.description || '',
                 project_url: showcase.project_url || '',
                 repository_url: showcase.repository_url || '',
-                demo_url: showcase.demo_url || '',
-                selected_video_ids: showcase.selected_video_ids || [],
-                include_profile: true
+                demo_url: showcase.demo_url || ''
             });
         }
     }, [showcase, isEditing]);
@@ -83,25 +82,16 @@ const ShowcaseForm = ({ showcase, isEditing = false }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const submitData = new FormData();
-        Object.keys(formData).forEach(key => {
-            if (formData[key] !== null && formData[key] !== undefined) {
-                if (key === 'selected_video_ids') {
-                    submitData.append(key, JSON.stringify(formData[key]));
-                } else {
-                    submitData.append(key, formData[key]);
-                }
-            }
-        });
-
         try {
+            let showcaseData;
+
             if (isEditing && showcase) {
                 // Handle file updates separately if files have changed
                 if (formData.image_file || formData.readme_file) {
                     const fileFormData = new FormData();
                     if (formData.image_file) fileFormData.append('image_file', formData.image_file);
                     if (formData.readme_file) fileFormData.append('readme_file', formData.readme_file);
-                    await dispatch(updateShowcaseFiles({ id: showcase.id, formData: fileFormData }));
+                    await dispatch(updateShowcaseFiles({ id: showcase.id, formData: fileFormData })).unwrap();
                 }
 
                 // Update other fields
@@ -112,15 +102,52 @@ const ShowcaseForm = ({ showcase, isEditing = false }) => {
                     repository_url: formData.repository_url,
                     demo_url: formData.demo_url
                 };
-                await dispatch(updateShowcase({ id: showcase.id, data: updateData }));
+                showcaseData = await dispatch(updateShowcase({ id: showcase.id, data: updateData })).unwrap();
             } else {
-                await dispatch(createShowcase(submitData));
+                // Create new showcase
+                const submitData = new FormData();
+                Object.keys(formData).forEach(key => {
+                    if (formData[key] !== null && formData[key] !== undefined) {
+                        submitData.append(key, formData[key]);
+                    }
+                });
+
+                showcaseData = await dispatch(createShowcase(submitData)).unwrap();
             }
-            navigate('/showcase');
+
+            if (showcaseData) {
+                setShowLinkedContent(true);
+            }
         } catch (err) {
             console.error('Error submitting showcase:', err);
         }
     };
+
+    const handleFinish = () => {
+        navigate('/showcase');
+    };
+
+    if (showLinkedContent && !loading) {
+        return (
+            <div className={styles.container}>
+                <h2 className={styles.linkedContentTitle}>
+                    {isEditing ? 'Update Linked Content' : 'Add Content to Your Showcase'}
+                </h2>
+                <LinkedContent
+                    showcase={showcase || formData}
+                    onComplete={handleFinish}
+                />
+                <div className={styles.linkedContentActions}>
+                    <button
+                        onClick={handleFinish}
+                        className={styles.finishButton}
+                    >
+                        Finish
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <form className={styles.form} onSubmit={handleSubmit}>
@@ -159,6 +186,7 @@ const ShowcaseForm = ({ showcase, isEditing = false }) => {
                     onChange={handleInputChange}
                     required
                     className={styles.input}
+                    placeholder="https://"
                 />
             </div>
 
@@ -171,6 +199,7 @@ const ShowcaseForm = ({ showcase, isEditing = false }) => {
                     value={formData.repository_url}
                     onChange={handleInputChange}
                     className={styles.input}
+                    placeholder="https://"
                 />
             </div>
 
@@ -183,6 +212,7 @@ const ShowcaseForm = ({ showcase, isEditing = false }) => {
                     value={formData.demo_url}
                     onChange={handleInputChange}
                     className={styles.input}
+                    placeholder="https://"
                 />
             </div>
 
