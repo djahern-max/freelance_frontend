@@ -2,35 +2,40 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { linkProfile, linkVideos } from '../../redux/showcaseSlice';
+import api from '../../utils/api';
 import styles from './LinkedContent.module.css';
 
-const LinkedContent = ({
-    showcase,
-    onComplete,
-    videos = [],
-    profileUrl,
-    isLoading = false,
-    error = null
-}) => {
+const LinkedContent = ({ showcase, onComplete }) => {
     const dispatch = useDispatch();
+    const [userVideos, setUserVideos] = useState([]);
     const [selectedVideos, setSelectedVideos] = useState([]);
     const [includeProfile, setIncludeProfile] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    // Initialize from existing showcase data if available
     useEffect(() => {
-        if (showcase?.videos) {
-            setSelectedVideos(showcase.videos.map(v => v.id));
-        }
-        if (showcase?.linked_content) {
-            setIncludeProfile(showcase.linked_content.some(content => content.type === 'profile'));
-        }
-    }, [showcase]);
+        const fetchUserVideos = async () => {
+            try {
+                const response = await api.get('/video_display/my-videos');
+                console.log('Videos response:', response.data);
+                setUserVideos(response.data.user_videos || []);
+            } catch (err) {
+                console.error('Error fetching videos:', err);
+                setError('Failed to load videos');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUserVideos();
+    }, []);
 
     const handleSave = async (e) => {
         e.preventDefault();
 
         if (!showcase?.id) return;
 
+        setLoading(true);
         try {
             // Update videos if any are selected
             if (selectedVideos.length > 0) {
@@ -40,15 +45,17 @@ const LinkedContent = ({
                 })).unwrap();
             }
 
-            // Update profile if changed
+            // Update profile if selected
             if (includeProfile) {
                 await dispatch(linkProfile(showcase.id)).unwrap();
             }
 
-            // Complete the process
             onComplete();
         } catch (err) {
             console.error('Error saving linked content:', err);
+            setError('Failed to save changes');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -61,8 +68,10 @@ const LinkedContent = ({
                 <div className={styles.section}>
                     <h3 className={styles.sectionTitle}>Solution Videos</h3>
                     <div className={styles.videoGrid}>
-                        {videos.length > 0 ? (
-                            videos.map((video) => (
+                        {loading ? (
+                            <div>Loading your videos...</div>
+                        ) : userVideos.length > 0 ? (
+                            userVideos.map((video) => (
                                 <label key={video.id} className={styles.videoCard}>
                                     <input
                                         type="checkbox"
@@ -74,7 +83,6 @@ const LinkedContent = ({
                                                     : prev.filter(id => id !== video.id)
                                             );
                                         }}
-                                        disabled={isLoading}
                                         className={styles.checkbox}
                                     />
                                     <div className={styles.videoInfo}>
@@ -105,7 +113,6 @@ const LinkedContent = ({
                             type="checkbox"
                             checked={includeProfile}
                             onChange={(e) => setIncludeProfile(e.target.checked)}
-                            disabled={isLoading}
                             className={styles.checkbox}
                         />
                         Include my developer profile
@@ -119,16 +126,16 @@ const LinkedContent = ({
                         type="button"
                         onClick={onComplete}
                         className={styles.cancelButton}
-                        disabled={isLoading}
+                        disabled={loading}
                     >
                         Cancel
                     </button>
                     <button
                         type="submit"
                         className={styles.submitButton}
-                        disabled={isLoading}
+                        disabled={loading}
                     >
-                        {isLoading ? 'Saving...' : 'Save & Finish'}
+                        {loading ? 'Saving...' : 'Save & Finish'}
                     </button>
                 </div>
             </form>
