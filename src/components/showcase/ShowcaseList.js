@@ -162,19 +162,27 @@ const ShowcaseList = () => {
                 {/* Truncated Description */}
                 <div className={styles.descriptionWrapper}>
                   <p className={styles.description}>
-                    {showcase.description.substring(0, 100)}...
+                    {showcase.description ? (
+                      <>
+                        {showcase.description.substring(0, 100)}
+                        {showcase.description.length > 100 ? '...' : ''}
+                        {showcase.description.length > 100 && (
+                          <button
+                            onClick={() => setSelectedDescription(showcase.description)}
+                            className={styles.readMoreButton}
+                          >
+                            Read More
+                          </button>
+                        )}
+                      </>
+                    ) : (
+                      <span className={styles.placeholderText}>No description available</span>
+                    )}
                   </p>
-                  {showcase.description.length > 100 && (
-                    <button
-                      onClick={() => setSelectedDescription(showcase.description)}
-                      className={styles.readMoreButton}
-                    >
-                      Read More
-                    </button>
-                  )}
                 </div>
 
-                {showcase.developer_profile && (
+                {/* Profile Section with consistent height */}
+                {showcase.developer_profile ? (
                   <div className={styles.profileSection}>
                     <p className={styles.sectionHeading}>CREATOR</p>
                     <Link
@@ -189,7 +197,16 @@ const ShowcaseList = () => {
                       <span>{showcase.developer.username}</span>
                     </Link>
                   </div>
+                ) : (
+                  <div className={`${styles.profileSection} ${styles.emptySection}`}>
+                    <p className={styles.sectionHeading}>CREATOR</p>
+                    <div className={styles.emptyProfilePlaceholder}>
+                      <div className={styles.emptyProfileImage}></div>
+                      <span>No developer profile</span>
+                    </div>
+                  </div>
                 )}
+
 
 
                 {/* Modal for Full Description */}
@@ -212,7 +229,7 @@ const ShowcaseList = () => {
                     </div>,
                     document.body // Mount modal directly to the body
                   )}
-                {showcase.videos?.length > 0 && (
+                {showcase.videos?.length > 0 ? (
                   <div className={styles.videoSection}>
                     <p className={styles.sectionHeading}>RELATED Videos</p>
                     <div className={`${styles.videoList} ${showcase.videos.length === 1 ? styles.single : ''}`}>
@@ -233,9 +250,12 @@ const ShowcaseList = () => {
                       ))}
                     </div>
                   </div>
+                ) : (
+                  <div className={`${styles.videoSection} ${styles.emptySection}`}>
+                    <p className={styles.sectionHeading}>RELATED Videos</p>
+                    <p>No videos available</p>
+                  </div>
                 )}
-
-
                 <div className={styles.links}>
                   {showcase.project_url && (
                     <a
