@@ -155,9 +155,21 @@ const ShowcaseList = () => {
                 </a>
               </div>
               <div className={styles.content}>
-                <h3 className={styles.title}>{showcase.title}</h3>
-
-
+                <div className={styles.titleContainer}>
+                  <h3 className={styles.title}>{showcase.title}</h3>
+                  {showcase.developer_profile && (
+                    <Link
+                      to={`/profile/developers/${showcase.developer_id}/public`}
+                      className={styles.profileLink}
+                    >
+                      <img
+                        src={showcase.developer_profile.profile_image_url}
+                        alt="Developer"
+                        className={styles.profileImageRight}
+                      />
+                    </Link>
+                  )}
+                </div>
 
                 {/* Truncated Description */}
                 <div className={styles.descriptionWrapper}>
@@ -182,7 +194,7 @@ const ShowcaseList = () => {
                 </div>
 
                 {/* Profile Section with consistent height */}
-                {showcase.developer_profile ? (
+                {/* {showcase.developer_profile ? (
                   <div className={styles.profileSection}>
                     <p className={styles.sectionHeading}>CREATOR</p>
                     <Link to={`/profile/developers/${showcase.developer_id}/public`} className={styles.profileLink}>
@@ -202,7 +214,7 @@ const ShowcaseList = () => {
                       <span>No developer profile</span>
                     </div>
                   </div>
-                )}
+                )} */}
 
 
 
