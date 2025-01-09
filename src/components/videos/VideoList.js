@@ -9,6 +9,7 @@ import CreateRequestModal from '../requests/CreateRequestModal';
 import VideoEmptyState from './VideoEmptyState';
 import styles from './VideoList.module.css';
 import ShareButton from './ShareButton';
+import Modal from '../shared/Modal';
 
 const VideoItem = ({
   video,
@@ -16,11 +17,11 @@ const VideoItem = ({
   isAuthenticated,
   onVote,
   onSendRequest,
-  expandedDescriptions,
-  toggleDescription,
   user,
   formatDate
 }) => {
+  const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
+
   return (
     <div className={styles.videoCard}>
       <div
@@ -74,20 +75,18 @@ const VideoItem = ({
         {video.description && (
           <div className={styles.description}>
             <p>
-              {expandedDescriptions.has(video.id)
-                ? video.description
-                : `${video.description.substring(0, 100)}${video.description.length > 100 ? '...' : ''
-                }`}
+              {video.description.substring(0, 100)}
+              {video.description.length > 100 ? '...' : ''}
             </p>
             {video.description.length > 100 && (
               <button
                 className={styles.readMoreButton}
                 onClick={(e) => {
                   e.stopPropagation();
-                  toggleDescription(video.id);
+                  setIsDescriptionModalOpen(true);
                 }}
               >
-                {expandedDescriptions.has(video.id) ? 'Show Less' : 'Read More'}
+                Read More
               </button>
             )}
           </div>
@@ -97,8 +96,7 @@ const VideoItem = ({
           <span>{formatDate(video.upload_date)}</span>
           <div className={styles.likeContainer}>
             <button
-              className={`${styles.likeButton} ${video.liked_by_user ? styles.liked : ''
-                }`}
+              className={`${styles.likeButton} ${video.liked_by_user ? styles.liked : ''}`}
               onClick={(e) => {
                 e.stopPropagation();
                 onVote(video.id, video.liked_by_user);
@@ -114,9 +112,23 @@ const VideoItem = ({
           </div>
         </div>
       </div>
+
+      <Modal
+        isOpen={isDescriptionModalOpen}
+        onClose={() => setIsDescriptionModalOpen(false)}
+        title={video.title || 'Video Description'}
+      >
+        <div className={styles.modalDescription}>
+          {video.description}
+        </div>
+      </Modal>
     </div>
   );
 };
+
+
+
+
 
 const VideoList = () => {
   const [videos, setVideos] = useState([]);
@@ -125,14 +137,12 @@ const VideoList = () => {
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [showVideoModal, setShowVideoModal] = useState(false);
-  const [expandedDescriptions, setExpandedDescriptions] = useState(new Set());
   const [selectedCreator, setSelectedCreator] = useState(null);
 
   const location = useLocation();
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-
   // In VideoList.js, modify the fetchVideos function
   const fetchVideos = async () => {
     try {
@@ -186,17 +196,7 @@ const VideoList = () => {
 
 
 
-  const toggleDescription = (videoId) => {
-    setExpandedDescriptions((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(videoId)) {
-        newSet.delete(videoId);
-      } else {
-        newSet.add(videoId);
-      }
-      return newSet;
-    });
-  };
+
 
   const handleVote = async (videoId, currentlyLiked) => {
     if (!isAuthenticated) {
@@ -320,6 +320,8 @@ const VideoList = () => {
     );
   }
 
+
+
   return (
     <div className={styles.container}>
       <div className={styles.headerContainer}>
@@ -342,72 +344,38 @@ const VideoList = () => {
             isAuthenticated={isAuthenticated}
             onVote={handleVote}
             onSendRequest={handleSendRequest}
-            expandedDescriptions={expandedDescriptions}
-            toggleDescription={toggleDescription}
             user={user}
             formatDate={formatDate}
           />
         ))}
       </div>
 
-
       {showVideoModal && selectedVideo && (
-        <div className={styles.modal}>
-          <div className={styles.modalContent}>
-            <button
-              type="button"
-              className={styles.closeButton}
-              onClick={() => {
-                setShowVideoModal(false);
-                setSelectedVideo(null);
-              }}
-              aria-label="Close modal"
+        <Modal
+          isOpen={showVideoModal}
+          onClose={() => {
+            setShowVideoModal(false);
+            setSelectedVideo(null);
+          }}
+          title={selectedVideo.title || 'Video Preview'}
+        >
+          <div className={styles.videoWrapper}>
+            <video
+              className={styles.modalVideo}
+              controls
+              autoPlay
+              src={selectedVideo.streamUrl}
             >
-              <X size={24} />
-            </button>
-            <div className={styles.videoWrapper}>
-              <video
-                className={styles.modalVideo}
-                controls
-                autoPlay
-                src={selectedVideo.streamUrl}
-              >
-                Your browser does not support the video tag.
-              </video>
-            </div>
+              Your browser does not support the video tag.
+            </video>
             <div className={styles.modalInfo}>
               <h2 className={styles.videoTitle}>{selectedVideo.title}</h2>
-
-              <div className={styles.modalMetadata}>
-                <span>{formatDate(selectedVideo.upload_date)}</span>
-                <div className={styles.likeContainer}>
-                  <button
-                    className={`${styles.likeButton} ${selectedVideo.liked_by_user ? styles.liked : ''
-                      }`}
-                    onClick={() =>
-                      handleVote(selectedVideo.id, selectedVideo.liked_by_user)
-                    }
-                  >
-                    <ThumbsUp
-                      size={16}
-                      className={styles.icon}
-                      fill={
-                        selectedVideo.liked_by_user ? 'currentColor' : 'none'
-                      }
-                    />
-                    <span>{selectedVideo.likes || 0}</span>
-                  </button>
-                </div>
-              </div>
-
               {selectedVideo.description && (
-                <p className={styles.description}>
-                  {selectedVideo.description}
-                </p>
+                <p className={styles.description}>{selectedVideo.description}</p>
               )}
             </div>
           </div>
-        </div>
+        </Modal>
       )}
 
       <AuthDialog
@@ -416,12 +384,8 @@ const VideoList = () => {
           setShowAuthDialog(false);
           setSelectedVideo(null);
         }}
-        onLogin={() =>
-          navigate('/login', { state: { from: location.pathname } })
-        }
-        onRegister={() =>
-          navigate('/register', { state: { from: location.pathname } })
-        }
+        onLogin={() => navigate('/login', { state: { from: location.pathname } })}
+        onRegister={() => navigate('/register', { state: { from: location.pathname } })}
       />
 
       {selectedCreator && (
@@ -444,6 +408,6 @@ const VideoList = () => {
       )}
     </div>
   );
-}
+};
 
 export default VideoList;
