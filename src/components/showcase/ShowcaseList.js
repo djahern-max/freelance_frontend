@@ -185,16 +185,13 @@ const ShowcaseList = () => {
                 {showcase.developer_profile ? (
                   <div className={styles.profileSection}>
                     <p className={styles.sectionHeading}>CREATOR</p>
-                    <Link
-                      to={`/developer/${showcase.developer_profile.user_id}`}
-                      className={styles.profileLink}
-                    >
+                    <Link to={`/profile/developers/${showcase.developer_id}/public`} className={styles.profileLink}>
                       <img
                         src={showcase.developer_profile.profile_image_url}
-                        alt={showcase.developer.username}
+                        alt="Developer"
                         className={styles.profileImage}
                       />
-                      <span>{showcase.developer.username}</span>
+                      <span>{showcase.developer_profile.user.username}</span>
                     </Link>
                   </div>
                 ) : (
