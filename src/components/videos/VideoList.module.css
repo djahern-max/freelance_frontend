@@ -338,15 +338,30 @@
   z-index: 1001;
 }
 
+Untitled .modalDescription {
+  text-align: left;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.videoWrapper {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
 .modalVideo {
   width: 100%;
-  aspect-ratio: 16/9;
-  display: block;
-  /* Prevent any spacing issues */
+  max-height: 60vh;
+  object-fit: contain;
 }
 
 .modalInfo {
-  padding: 1.5rem;
+  margin-top: 1rem;
+  text-align: left;
 }
 
 .closeButton {
@@ -374,14 +389,17 @@
 }
 
 .readMoreButton {
-  color: #0066cc;
   background: none;
   border: none;
-  padding: 0;
-  font: inherit;
+  color: #4f46e5;
   cursor: pointer;
-  margin-top: 4px;
-  display: inline-block;
+  padding: 0;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+.readMoreButton:hover {
+  text-decoration: underline;
 }
 
 .likeContainer {
