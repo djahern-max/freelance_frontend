@@ -226,7 +226,7 @@
   min-height: 100px;
   display: flex;
   flex-direction: column;
-  margin-bottom: 1.5rem;
+  margin-bottom: .5rem;
 }
 
 .description {
@@ -540,8 +540,8 @@
 
 
 .videoSection {
-  margin: 1.25rem 0;
-  padding: 1rem;
+
+
   background: #f8f9fa;
   /* Light grey background */
   border-radius: 12px;
@@ -712,8 +712,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 0.5rem 0;
-  /* Reduce top margin here */
+  width: 100%;
+  margin: 0.75rem auto;
+  padding: 0;
+  gap: 0.5rem;
 }
 
 .loading,

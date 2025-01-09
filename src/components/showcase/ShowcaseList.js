@@ -155,21 +155,6 @@ const ShowcaseList = () => {
                 </a>
               </div>
               <div className={styles.content}>
-                <div className={styles.titleContainer}>
-                  <h3 className={styles.title}>{showcase.title}</h3>
-                  {showcase.developer_profile && (
-                    <Link
-                      to={`/profile/developers/${showcase.developer_id}/public`}
-                      className={styles.profileLink}
-                    >
-                      <img
-                        src={showcase.developer_profile.profile_image_url}
-                        alt="Developer"
-                        className={styles.profileImageRight}
-                      />
-                    </Link>
-                  )}
-                </div>
 
                 {/* Truncated Description */}
                 <div className={styles.descriptionWrapper}>
@@ -192,52 +177,6 @@ const ShowcaseList = () => {
                     )}
                   </p>
                 </div>
-
-                {/* Profile Section with consistent height */}
-                {/* {showcase.developer_profile ? (
-                  <div className={styles.profileSection}>
-                    <p className={styles.sectionHeading}>CREATOR</p>
-                    <Link to={`/profile/developers/${showcase.developer_id}/public`} className={styles.profileLink}>
-                      <img
-                        src={showcase.developer_profile.profile_image_url}
-                        alt="Developer"
-                        className={styles.profileImage}
-                      />
-                      <span>{showcase.developer_profile.user.username}</span>
-                    </Link>
-                  </div>
-                ) : (
-                  <div className={`${styles.profileSection} ${styles.emptySection}`}>
-                    <p className={styles.sectionHeading}>CREATOR</p>
-                    <div className={styles.emptyProfilePlaceholder}>
-                      <div className={styles.emptyProfileImage}></div>
-                      <span>No developer profile</span>
-                    </div>
-                  </div>
-                )} */}
-
-
-
-                {/* Modal for Full Description */}
-                {selectedDescription &&
-                  ReactDOM.createPortal(
-                    <div className={styles.modalOverlay} onClick={toggleModal}>
-                      <div
-                        className={styles.modalContent}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <h3 className={styles.modalTitle}>Full Description</h3>
-                        <p className={styles.modalDescription}>{selectedDescription}</p>
-                        <button
-                          onClick={() => setSelectedDescription(null)}
-                          className={styles.closeButton}
-                        >
-                          Close
-                        </button>
-                      </div>
-                    </div>,
-                    document.body // Mount modal directly to the body
-                  )}
                 {showcase.videos?.length > 0 ? (
                   <div className={styles.videoSection}>
                     <p className={styles.sectionHeading}>RELATED Videos</p>
@@ -265,6 +204,51 @@ const ShowcaseList = () => {
                     <p>No videos available</p>
                   </div>
                 )}
+
+
+                <div className={styles.titleContainer}>
+                  {showcase.developer_profile && (
+                    <Link
+                      to={`/profile/developers/${showcase.developer_id}/public`}
+                      className={styles.profileLink}
+                    >
+                      <img
+                        src={showcase.developer_profile.profile_image_url}
+                        alt="Developer"
+                        className={styles.profileImageRight}
+                      />
+                    </Link>
+                  )}
+                  <div className={styles.ratingContainer}>
+                    <ShowcaseRating
+                      showcaseId={showcase.id}
+                      averageRating={showcase.average_rating}
+                      totalRatings={showcase.total_ratings}
+                    />
+                  </div>
+                </div>
+
+                {/* Modal for Full Description */}
+                {selectedDescription &&
+                  ReactDOM.createPortal(
+                    <div className={styles.modalOverlay} onClick={toggleModal}>
+                      <div
+                        className={styles.modalContent}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <h3 className={styles.modalTitle}>Full Description</h3>
+                        <p className={styles.modalDescription}>{selectedDescription}</p>
+                        <button
+                          onClick={() => setSelectedDescription(null)}
+                          className={styles.closeButton}
+                        >
+                          Close
+                        </button>
+                      </div>
+                    </div>,
+                    document.body // Mount modal directly to the body
+                  )}
+
                 <div className={styles.links}>
                   {showcase.project_url && (
                     <a
@@ -290,13 +274,7 @@ const ShowcaseList = () => {
                 </div>
 
 
-                <div className={styles.ratingContainer}>
-                  <ShowcaseRating
-                    showcaseId={showcase.id}
-                    averageRating={showcase.average_rating}
-                    totalRatings={showcase.total_ratings}
-                  />
-                </div>
+
 
                 <div className={styles.actions}>
                   <button
