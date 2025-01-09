@@ -1,0 +1,46 @@
+.shareButton {
+    display: block;
+    width: auto;
+    /* Remove the fixed width to adapt to content */
+    padding: 0.75rem 1.5rem;
+    margin: 0.5rem auto 0;
+    /* Reduce bottom margin (0) */
+    background: #4f46e5;
+    /* Indigo background */
+    color: white;
+    /* White text */
+    border: none;
+    /* Remove border */
+    border-radius: 8px;
+    /* Rounded corners */
+    font-weight: 600;
+    font-size: 1rem;
+    /* Slightly larger text for better readability */
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.shareButton:hover {
+    background: #4338ca;
+    /* Darker shade on hover */
+    transform: translateY(-2px);
+    /* Subtle lift effect */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.shareButton:disabled {
+    opacity: 0.6;
+    /* Dimmed look */
+    cursor: not-allowed;
+    /* Prevent interaction */
+    transform: none;
+    /* Remove hover effect */
+    background: #d1d5db;
+    /* Light gray background */
+    color: #6b7280;
+    /* Gray text */
+}

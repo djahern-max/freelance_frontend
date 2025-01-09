@@ -44,6 +44,7 @@ import EditShowcaseForm from './components/showcase/EditShowcaseForm';
 
 
 
+
 import { login } from './redux/authSlice';
 import { store } from './redux/store';
 import './styles/global.css';
@@ -175,7 +176,7 @@ function AppContent() {
                       </ProtectedRoute>
                     }
                   />
-
+                  <Route path="/showcase/:shareToken" element={<SharedShowcase />} />
 
 
                   <Route

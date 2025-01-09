@@ -10,6 +10,7 @@ import DeveloperRatingSection from './DeveloperRatingSection';
 import DevelopersEmptyState from './DevelopersEmptyState';
 import styles from './PublicDevelopers.module.css';
 import RatingModal from './RatingModal';
+import Modal from '../shared/Modal';
 
 const PublicDevelopers = () => {
   const [developers, setDevelopers] = useState([]);
@@ -19,17 +20,14 @@ const PublicDevelopers = () => {
   const [selectedCreator, setSelectedCreator] = useState(null);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const location = useLocation();
-  const [expandedBioId, setExpandedBioId] = useState(null);
-  const [ratingDeveloper, setRatingDeveloper] = useState(null);
 
+  const [ratingDeveloper, setRatingDeveloper] = useState(null);
+  const [bioModalDeveloper, setBioModalDeveloper] = useState(null);
   const user = useSelector((state) => state.auth.user);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
   const TRUNCATE_LENGTH = 150;
 
-  const toggleReadMore = (id) => {
-    setExpandedBioId(expandedBioId === id ? null : id);
-  };
 
   const fetchDevelopers = async () => {
     try {
@@ -188,19 +186,20 @@ const PublicDevelopers = () => {
                 </div>
 
                 <p className={styles.bio}>
-                  {expandedBioId === developer.id ||
-                    developer.bio.length <= TRUNCATE_LENGTH
-                    ? developer.bio
-                    : `${developer.bio.slice(0, TRUNCATE_LENGTH)}...`}
+                  {developer.bio.slice(0, TRUNCATE_LENGTH)}
                   {developer.bio.length > TRUNCATE_LENGTH && (
-                    <button
-                      onClick={() => toggleReadMore(developer.id)}
-                      className={styles.readMoreButton}
-                    >
-                      {expandedBioId === developer.id
-                        ? 'Read less'
-                        : 'Read more'}
-                    </button>
+                    <>
+                      ...
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setBioModalDeveloper(developer);
+                        }}
+                        className={styles.readMoreButton}
+                      >
+                        Read more
+                      </button>
+                    </>
                   )}
                 </p>
 
@@ -239,6 +238,17 @@ const PublicDevelopers = () => {
             </div>
           ))}
         </div>
+      )}
+      {bioModalDeveloper && (
+        <Modal
+          isOpen={!!bioModalDeveloper}
+          onClose={() => setBioModalDeveloper(null)}
+          title={`About ${getUsername(bioModalDeveloper)}`}
+        >
+          <div className={styles.modalBio}>
+            {bioModalDeveloper.bio}
+          </div>
+        </Modal>
       )}
 
       <AuthDialog

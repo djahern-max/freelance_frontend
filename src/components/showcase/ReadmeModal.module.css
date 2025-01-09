@@ -130,6 +130,23 @@
     border-radius: 4px;
 }
 
+.markdown table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1em 0;
+}
+
+.markdown th,
+.markdown td {
+    border: 1px solid #ddd;
+    padding: 0.5em;
+}
+
+.markdown th {
+    background-color: #f6f8fa;
+    font-weight: bold;
+}
+
 @media (max-width: 768px) {
     .modal {
         margin: 0;

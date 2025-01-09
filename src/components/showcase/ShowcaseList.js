@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -8,6 +6,7 @@ import ShowcaseRating from './ShowcaseRating';
 import ReadmeModal from './ReadmeModal';
 import styles from './ShowcaseList.module.css';
 import ReactDOM from 'react-dom';
+import ShowcaseShareButton from './ShowcaseShareButton';
 
 const ShowcaseList = () => {
   const dispatch = useDispatch();
@@ -158,6 +157,8 @@ const ShowcaseList = () => {
               <div className={styles.content}>
                 <h3 className={styles.title}>{showcase.title}</h3>
 
+
+
                 {/* Truncated Description */}
                 <div className={styles.descriptionWrapper}>
                   <p className={styles.description}>
@@ -172,6 +173,24 @@ const ShowcaseList = () => {
                     </button>
                   )}
                 </div>
+
+                {showcase.developer_profile && (
+                  <div className={styles.profileSection}>
+                    <p className={styles.sectionHeading}>CREATOR</p>
+                    <Link
+                      to={`/developer/${showcase.developer_profile.user_id}`}
+                      className={styles.profileLink}
+                    >
+                      <img
+                        src={showcase.developer_profile.profile_image_url}
+                        alt={showcase.developer.username}
+                        className={styles.profileImage}
+                      />
+                      <span>{showcase.developer.username}</span>
+                    </Link>
+                  </div>
+                )}
+
 
                 {/* Modal for Full Description */}
                 {selectedDescription &&
@@ -215,6 +234,8 @@ const ShowcaseList = () => {
                     </div>
                   </div>
                 )}
+
+
                 <div className={styles.links}>
                   {showcase.project_url && (
                     <a
@@ -236,17 +257,9 @@ const ShowcaseList = () => {
                       Repository
                     </a>
                   )}
-                  {showcase.demo_url && (
-                    <a
-                      href={showcase.demo_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={styles.link}
-                    >
-                      Live Demo
-                    </a>
-                  )}
+                  <ShowcaseShareButton showcaseId={showcase.id} />
                 </div>
+
 
                 <div className={styles.ratingContainer}>
                   <ShowcaseRating

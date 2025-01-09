@@ -19,7 +19,7 @@
   display: inline-flex;
   align-items: center;
   padding: 0.75rem 1.5rem;
-  background-color: #2563eb;
+  background-color: #4f46e5;
   /* Modern indigo color */
   color: white;
   text-decoration: none;
@@ -48,6 +48,10 @@
   overflow: hidden;
   transition: all 0.3s ease;
   border: 1px solid rgba(0, 0, 0, 0.05);
+  margin: 0;
+  /* Remove margin */
+  padding: 0;
+  /* Remove padding */
 }
 
 .card:hover {
@@ -57,12 +61,12 @@
 
 .imageContainer {
   position: relative;
+  width: 100%;
   padding-top: 56.25%;
-  /* 16:9 aspect ratio */
-  background-color: #f3f4f6;
   overflow: hidden;
-  border-radius: 8px;
-  cursor: pointer;
+  background-color: #f3f4f6;
+  border-radius: 16px 16px 0 0;
+  /* Match top radius with card, remove bottom radius */
 }
 
 .imageContainer img {
@@ -70,15 +74,18 @@
   top: 0;
   left: 0;
   width: 100%;
+  /* Full width of the container */
   height: 100%;
+  /* Fill the height while maintaining aspect ratio */
   object-fit: cover;
+  /* Ensures the image scales proportionally */
   transition: transform 0.3s ease;
+  /* Optional: hover effect */
 }
 
 .imageContainer:hover img {
   transform: scale(1.05);
-  filter: brightness(0.7);
-  /* Slight darkening for better text contrast */
+  /* Slight zoom effect on hover */
 }
 
 
@@ -179,7 +186,8 @@
 }
 
 .content {
-  padding: 1.5rem;
+  padding: 1.75rem;
+  /* Keep padding in content area but not around image */
 }
 
 .title {
@@ -202,6 +210,7 @@
 .descriptionWrapper {
   position: relative;
   text-align: left;
+  margin-bottom: 1.5rem;
 }
 
 .description {
@@ -213,6 +222,10 @@
   text-overflow: ellipsis;
 }
 
+.profileSection {
+  margin-bottom: 1.5rem;
+}
+
 .readMoreButton {
   background: none;
   border: none;
@@ -222,6 +235,7 @@
   cursor: pointer;
   text-decoration: underline;
   margin-top: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .readMoreButton:hover {
@@ -285,7 +299,8 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
-  margin: 1.25rem 0;
+  margin: 1.25rem 0 0.5rem;
+  /* Reduce bottom margin here */
   justify-content: center;
 }
 
@@ -434,6 +449,7 @@
   border-radius: 12px;
   background: #f8f9fa;
   border: 1px solid #e5e7eb;
+  margin-bottom: 1.5rem;
 }
 
 .profileSection p {
@@ -624,7 +640,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 1rem 0;
+  margin: 0.5rem 0;
+  /* Reduce top margin here */
 }
 
 .loading,
@@ -665,6 +682,12 @@
   text-align: center;
   /* Center the video section content */
 }
+
+.actions,
+.ratingContainer {
+  text-align: center;
+}
+
 
 
 
