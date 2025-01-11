@@ -467,36 +467,21 @@ const DeveloperDashboard = () => {
       );
 
       if (requestIds.length > 0) {
-        // Get agreement statuses for all conversations
-        const agreementResponse = await api.get(`/agreements/statuses`, {
-          params: {
-            request_ids: requestIds.join(','),
-          },
-        });
-
         // Get projects
         const projectsRes = await api.get('/projects/');
-        const projects = Array.isArray(projectsRes.data)
-          ? projectsRes.data
-          : [];
+        const projects = Array.isArray(projectsRes.data) ? projectsRes.data : [];
 
-        // Map agreement statuses to conversations
-        const updatedConversations = conversationsWithDetails.map(
-          (conversation) => {
-            const agreement = agreementResponse.data.find(
-              (status) => status.request_id === conversation.request_id
-            );
-            // Find matching project
-            const relatedProject = projects.find(
-              (p) => p.request_id === conversation.request_id
-            );
-            return {
-              ...conversation,
-              agreement_status: agreement ? agreement.status : 'No Agreement',
-              project_id: relatedProject?.id,
-            };
-          }
-        );
+        // Map conversations with projects only
+        const updatedConversations = conversationsWithDetails.map((conversation) => {
+          // Find matching project
+          const relatedProject = projects.find(
+            (p) => p.request_id === conversation.request_id
+          );
+          return {
+            ...conversation,
+            project_id: relatedProject?.id,
+          };
+        });
 
         setConversations(updatedConversations);
       } else {
