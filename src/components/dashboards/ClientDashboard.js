@@ -387,50 +387,20 @@ const ClientDashboard = () => {
       const response = await api.get('/conversations/user/list');
       const conversations = Array.isArray(response.data) ? response.data : [];
 
-      // Extract request IDs from conversations
-      const requestIds = conversations.map((conv) => conv.request_id);
+      setDashboardData(prev => ({
+        ...prev,
+        conversations: conversations
+      }));
 
-      if (requestIds.length > 0) {
-        // Only make the call if there are request IDs
-        // Change the parameter format
-        const agreementResponse = await api.get(`/agreements/statuses`, {
-          params: {
-            request_ids: requestIds.join(','), // Convert array to comma-separated string
-          },
-        });
-
-        // Map agreement statuses to conversations
-        const agreementStatuses = agreementResponse.data;
-        const updatedConversations = conversations.map((conversation) => {
-          const agreement = agreementStatuses.find(
-            (status) => status.request_id === conversation.request_id
-          );
-          return {
-            ...conversation,
-            agreement_status: agreement ? agreement.status : 'No Agreement',
-          };
-        });
-
-        setDashboardData((prev) => ({
-          ...prev,
-          conversations: updatedConversations,
-        }));
-      } else {
-        // If no conversations, set empty array
-        setDashboardData((prev) => ({
-          ...prev,
-          conversations: [],
-        }));
-      }
-      setErrors((prev) => ({ ...prev, conversations: null }));
+      setErrors(prev => ({ ...prev, conversations: null }));
     } catch (error) {
       console.error('Conversations fetch failed:', error);
-      setErrors((prev) => ({
+      setErrors(prev => ({
         ...prev,
-        conversations: 'Unable to load conversations. Please try again later.',
+        conversations: 'Unable to load conversations. Please try again later.'
       }));
     } finally {
-      setLoadingStates((prev) => ({ ...prev, conversations: false }));
+      setLoadingStates(prev => ({ ...prev, conversations: false }));
     }
   };
 
@@ -622,6 +592,8 @@ const ClientDashboard = () => {
           <CreateRequestModal
             onClose={() => setShowCreateModal(false)}
             onSubmit={handleCreateRequest}
+            creatorId={user.id} // Add this
+            creatorUsername={user.username} // Add this
           />
         )}
 

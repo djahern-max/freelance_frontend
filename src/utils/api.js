@@ -34,68 +34,120 @@ export const API_ROUTES = {
     README: (id) => `/project-showcase/${id}/readme`,
     FILES: (id) => `/project-showcase/${id}/files`,
     VIDEOS: (id) => `/project-showcase/${id}/videos`,
-    PROFILE: (id) => `/project-showcase/${id}/profile`
+    PROFILE: (id) => `/project-showcase/${id}/profile`,
+    DEVELOPER_SHOWCASE: (developerId) => `/project-showcase/showcase/${developerId}`,
+    DEVELOPER_USER_RATING: (developerId) => `/project-showcase/developer/${developerId}/user-rating`,
+    DEVELOPER_RATING: (developerId) => `/project-showcase/developer/${developerId}/rating`,
+  },
 
-  },
   VIDEOS: {
+    CREATE: '/videos',
     DISPLAY: '/video_display',
+    MY_VIDEOS: '/video_display/my-videos',
+    SPACES: '/video_display/spaces',
+    STREAM: (id) => `/video_display/stream/${id}`,
+    SHARED: (token) => `/video_display/shared/${token}`,
     SHARE: (id) => `/videos/${id}/share`,
+    RATING: (id) => `/videos/${id}/rating`,
+    USER_RATING: (id) => `/videos/${id}/user-rating`,
   },
+
   RATINGS: {
     DEVELOPER: (id) => `/ratings/developer/${id}`,
-
-    DEVELOPER_RATING: (id) => `/ratings/developer/${id}/rating`, // Add this new route
+    DEVELOPER_RATING: (id) => `/ratings/developer/${id}/rating`,
   },
+
   PROFILE: {
     ME: '/profile/me',
     DEVELOPER: '/profile/developer',
     CLIENT: '/profile/client',
+    DEVELOPER_IMAGE: '/profile/developer/image',
+    PUBLIC_DEVELOPERS: '/profile/developers/public',
+    PUBLIC_DEVELOPER: (id) => `/profile/developers/${id}/public`,
+    UPDATE: (id) => `/profile/${id}`,
   },
+
   AUTH: {
     LOGIN: '/auth/login',
     LOGOUT: '/auth/logout',
     REGISTER: '/auth/register',
+    VALIDATE_TOKEN: '/auth/validate-token',
+    ME: '/auth/me',
+    USER: (id) => `/auth/users/${id}`,
   },
+
   PUBLIC: {
     REQUESTS: '/requests/public',
     DEVELOPERS: '/profile/developers/public',
     VIDEOS: '/video_display',
   },
+
   CONVERSATIONS: {
     LIST: '/conversations/user/list',
     DETAIL: (id) => `/conversations/${id}`,
     MESSAGES: (id) => `/conversations/${id}/messages`,
     CREATE: '/conversations/',
+    FROM_VIDEO: '/conversations/from-video',
   },
+
   REQUESTS: {
     LIST: '/requests/',
     DETAIL: (id) => `/requests/${id}`,
     PUBLIC: '/requests/public',
     SHARED: '/requests/shared-with-me',
+    MARK_VIEWED: (shareId) => `/requests/shared-with-me/${shareId}/mark-viewed`,
+    SHARE: (id) => `/requests/${id}/share`,
+    SHARE_WITH_USER: (id, userId) => `/requests/${id}/share/${userId}`,
+    SHARES_USERS: (id) => `/requests/${id}/shares/users`,
+    USERS_SEARCH: '/requests/users/search',
+    SEARCH_USERS: '/requests/search/users',
+    UPDATE_PRIVACY: (id) => `/requests/${id}/privacy`,
+    PROJECT: (id) => `/requests/${id}/project`,
   },
+
   AGREEMENTS: {
     CREATE: '/agreements/',
     ACCEPT: (id) => `/agreements/${id}/accept`,
     BY_REQUEST: (requestId) => `/agreements/request/${requestId}`,
   },
+
   PAYMENTS: {
     CREATE_SUBSCRIPTION: '/payments/create-subscription',
     SUBSCRIPTION_STATUS: '/payments/subscription-status',
+    WEBHOOK: '/payments/webhook',
+    CREATE_PAYMENT_INTENT: '/payments/create-payment-intent',
+    CONFIRM_PAYMENT: '/payments/confirm-payment',
+    CREATE_CHECKOUT_SESSION: '/payments/create-checkout-session',
+    PURCHASE: (productId) => `/payments/${productId}/purchase`,
+    CHECK_SHOWCASE_SUBSCRIPTION: '/payments/check-showcase-subscription',
   },
+
   PROJECTS: {
     LIST: '/projects/',
     CREATE: '/projects/',
-    DETAIL: (id) => `/projects/${id}/`,
+    DETAIL: (id) => `/projects/${id}`,
     ADD_REQUEST: (requestId) => `/requests/${requestId}/project`,
   },
+
   SNAGGED_REQUESTS: {
     CREATE: '/snagged-requests/',
     LIST: '/snagged-requests/',
-    REMOVE: (id) => `/snagged-requests/${id}`
+    REMOVE: (id) => `/snagged-requests/${id}`,
   },
 
-};
+  FEEDBACK: {
+    CREATE: '/feedback',
+    LIST: '/feedback',
+  },
 
+  SHARED: {
+    VIDEOS: (token) => `/shared/videos/${token}`,
+  },
+
+  DEVELOPERS: {
+    METRICS: (id) => `/developers/${id}/metrics`,
+  },
+};
 // Helper function to check if a route is public
 // In api.js
 const isPublicRoute = (url) => {
