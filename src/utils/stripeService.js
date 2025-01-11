@@ -15,7 +15,7 @@ const handleResponse = async (response) => {
 
 export const createPaymentIntent = async (amount) => {
     try {
-        console.log('Creating payment intent for amount:', amount);
+
 
         const response = await fetch('/api/payments/create-payment-intent', {
             method: 'POST',
@@ -36,7 +36,7 @@ export const createPaymentIntent = async (amount) => {
 
 export const getStripeConfig = async () => {
     try {
-        console.log('Fetching Stripe config');
+
         const response = await fetch('/api/payments/config');
         return handleResponse(response);
     } catch (error) {
@@ -47,7 +47,7 @@ export const getStripeConfig = async () => {
 
 export const processPayment = async (stripe, elements, clientSecret) => {
     try {
-        console.log('Processing payment with client secret');
+
 
         const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
             payment_method: {

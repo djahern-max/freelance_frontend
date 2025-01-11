@@ -17,7 +17,6 @@ import ConversationDetail from './components/conversations/ConversationDetail';
 import ConversationsList from './components/conversations/ConversationsList';
 import RequestDetails from './components/conversations/RequestDetails';
 import RequestResponses from './components/conversations/RequestResponses';
-import AppDashboard from './components/dashboards/AppDashboard';
 import ClientDashboard from './components/dashboards/ClientDashboard';
 import DeveloperDashboard from './components/dashboards/DeveloperDashboard';
 import Home from './components/pages/HomePage';
@@ -57,14 +56,14 @@ function AppContent() {
     const token = localStorage.getItem('token');
 
     if (token) {
-      console.log('Checking auth with token:', token);
+
 
       api
         .get('/auth/me', {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => {
-          console.log('User data received:', response.data);
+
           dispatch(
             login({
               token,
@@ -229,14 +228,6 @@ function AppContent() {
                     }
                   />
 
-                  <Route
-                    path="/app-dashboard"
-                    element={
-                      <ProtectedRoute>
-                        <AppDashboard />
-                      </ProtectedRoute>
-                    }
-                  />
 
                   <Route
                     path="/video-upload"

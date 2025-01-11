@@ -66,11 +66,8 @@ const RequestGroupingToolbar = ({
 
     try {
       const trimmedName = newProjectName.trim();
-      console.log(
-        'RequestGroupingToolbar - trimmedName type:',
-        typeof trimmedName
-      );
-      console.log('RequestGroupingToolbar - trimmedName value:', trimmedName);
+
+
 
       if (!trimmedName) {
         throw new Error('Project name is required');

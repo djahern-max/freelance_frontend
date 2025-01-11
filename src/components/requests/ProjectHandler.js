@@ -2,8 +2,7 @@ import api from '../../utils/api';
 
 class ProjectHandler {
   static async createProject(projectData) {
-    console.log('ProjectHandler - projectData:', projectData);
-    console.log('ProjectHandler - name type:', typeof projectData?.name);
+
 
     try {
       if (!projectData || typeof projectData !== 'object') {
@@ -19,7 +18,7 @@ class ProjectHandler {
         description: projectData.description || null,
       };
 
-      console.log('ProjectHandler - final payload:', payload);
+
 
       const response = await api.post('/projects/', payload);
 

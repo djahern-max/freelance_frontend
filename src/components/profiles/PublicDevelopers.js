@@ -34,9 +34,9 @@ const PublicDevelopers = () => {
       setLoading(true);
       setError(null);
       // Log the request attempt
-      console.log('Fetching public developers...');
+
       const response = await api.get(API_ROUTES.PUBLIC.DEVELOPERS);
-      console.log('Developers response:', response.data);
+
 
       if (Array.isArray(response.data)) {
         setDevelopers(response.data);
@@ -58,8 +58,7 @@ const PublicDevelopers = () => {
   };
 
   useEffect(() => {
-    console.log('Current user:', user);
-    console.log('Is authenticated:', isAuthenticated);
+
   }, [user, isAuthenticated]);
 
   useEffect(() => {

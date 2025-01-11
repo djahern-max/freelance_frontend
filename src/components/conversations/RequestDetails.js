@@ -74,7 +74,7 @@ const RequestDetails = () => {
       const subscriptionResponse = await api.get(
         '/payments/subscription-status'
       );
-      console.log('Subscription status:', subscriptionResponse.data);
+
 
       if (
         !subscriptionResponse.data ||
@@ -214,12 +214,11 @@ const RequestDetails = () => {
                   className={styles.viewConversationButton}
                   onClick={() =>
                     navigate(
-                      `/conversations/${
-                        conversations.find(
-                          (conv) =>
-                            conv.starter_user_id === parseInt(user.id) ||
-                            conv.recipient_user_id === parseInt(user.id)
-                        ).id
+                      `/conversations/${conversations.find(
+                        (conv) =>
+                          conv.starter_user_id === parseInt(user.id) ||
+                          conv.recipient_user_id === parseInt(user.id)
+                      ).id
                       }`
                     )
                   }

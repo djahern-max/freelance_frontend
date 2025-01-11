@@ -8,12 +8,19 @@
     margin-bottom: 1rem;
 }
 
+/* This is the specific class for success toasts */
 .Toastify__toast--success {
-    background: #EDF7ED;
-    border: 1px solid #4CAF50;
-    color: #1E4620;
+    background: #3b82f6 !important;
+    /* Blue-500 from Tailwind with !important */
+    color: white !important;
+    border: none !important;
 }
 
+.Toastify__toast--success .Toastify__progress-bar {
+    background-color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Keep your other toast styles */
 .Toastify__toast--error {
     background: #FDEDED;
     border: 1px solid #EF5350;

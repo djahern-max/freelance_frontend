@@ -89,7 +89,7 @@ export const getProductDownloadUrl = async (productId) => {
             headers: getAuthHeaders()
         });
         const data = await response.json();
-        console.log('Download URL Response:', data); // Debug log
+
         if (!response.ok) throw new Error(data.detail || 'Failed to get download URL');
         return data;
     } catch (error) {

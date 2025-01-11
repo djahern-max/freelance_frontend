@@ -67,7 +67,7 @@ const Request = () => {
   // Request CRUD Operations
   const handleCreateRequest = useCallback(
     async (formData) => {
-      console.log('handleCreateRequest called with:', formData);
+
       try {
         const response = await axios.post(`${apiUrl}/requests/`, formData, {
           headers: {
@@ -90,7 +90,7 @@ const Request = () => {
 
   const handleEditRequest = useCallback(
     async (formData) => {
-      console.log('handleEditRequest called with:', formData);
+
       if (!editingRequest?.id) {
         throw new Error('No request ID for editing');
       }
@@ -194,7 +194,7 @@ const Request = () => {
 
   const handleModalSubmit = useCallback(
     async (formData) => {
-      console.log('handleModalSubmit called with:', formData);
+
 
       if (editingRequest) {
         try {
@@ -215,12 +215,7 @@ const Request = () => {
     [editingRequest, handleEditRequest, handleCreateRequest]
   );
 
-  console.log('Modal props before render:', {
-    handleModalClose,
-    handleModalSubmit,
-    editingRequest,
-    isEditing: !!editingRequest,
-  });
+
 
   if (isLoading && !requests.length) {
     return (
@@ -231,7 +226,7 @@ const Request = () => {
     );
   }
 
-  console.log('handleModalSubmit type:', typeof handleModalSubmit);
+
 
   return (
     <div className={styles.container}>

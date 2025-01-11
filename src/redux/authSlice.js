@@ -44,7 +44,7 @@ const authSlice = createSlice({
       state.error = null;
     },
     login: (state, action) => {
-      console.log('Login action payload:', action.payload);
+
       const { token, user } = action.payload;
 
       // Basic validation
@@ -56,7 +56,7 @@ const authSlice = createSlice({
 
       // Normalize user data using helper function
       const normalizedUser = normalizeUserData(user);
-      console.log('Normalized user data:', normalizedUser);
+
 
       if (!normalizedUser) {
         console.error('Failed to normalize user data:', user);
@@ -75,7 +75,7 @@ const authSlice = createSlice({
       try {
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(normalizedUser));
-        console.log('User data stored in localStorage');
+
       } catch (err) {
         console.error('Error storing auth data:', err);
         // Continue even if localStorage fails
@@ -98,7 +98,7 @@ const authSlice = createSlice({
       try {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        console.log('Auth data cleared from localStorage');
+
       } catch (err) {
         console.error('Error clearing auth data:', err);
       }

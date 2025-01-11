@@ -19,7 +19,7 @@ const LinkedContent = ({ showcase, onComplete }) => {
         const fetchUserVideos = async () => {
             try {
                 const response = await api.get('/video_display/my-videos');
-                console.log('Videos response:', response.data);
+
                 setUserVideos(response.data.user_videos || []);
             } catch (err) {
                 console.error('Error fetching videos:', err);

@@ -122,10 +122,10 @@ const PublicRequests = () => {
   // Add function to handle snag ticket submission
   const handleSnagSubmit = async (formData) => {
     try {
-      console.log('Submitting snag request with formData:', formData);
+
 
       const result = await snagTicket(selectedRequest.id, formData);
-      console.log('Snag request successful:', result);
+
 
       setShowSnagModal(false);
       toast.success('Request sent successfully!', {

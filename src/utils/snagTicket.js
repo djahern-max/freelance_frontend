@@ -10,10 +10,7 @@ export const useSnagTicket = () => {
     setError(null);
 
     try {
-      console.log('Sending snag request with data:', {
-        request_id: requestId,
-        ...formData
-      });
+
 
       // First create the snagged request
       const response = await api.post('/snagged-requests/', {
@@ -24,7 +21,7 @@ export const useSnagTicket = () => {
         include_profile: formData.include_profile
       });
 
-      console.log('Snag request response:', response);
+
 
       return response.data;
     } catch (error) {

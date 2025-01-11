@@ -49,7 +49,7 @@ const FeedbackModal = ({ location, targetId, onClose }) => {
       }
 
       const data = await response.json();
-      console.log('Feedback submitted successfully:', data);
+
     } catch (error) {
       console.error('Error submitting feedback:', error);
     }
@@ -84,9 +84,8 @@ const FeedbackModal = ({ location, targetId, onClose }) => {
                     className={styles.starButton}
                   >
                     <Star
-                      className={`${styles.star} ${
-                        value <= rating ? styles.starActive : ''
-                      }`}
+                      className={`${styles.star} ${value <= rating ? styles.starActive : ''
+                        }`}
                     />
                   </button>
                 ))}

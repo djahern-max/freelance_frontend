@@ -93,16 +93,7 @@ export const API_ROUTES = {
     LIST: '/snagged-requests/',
     REMOVE: (id) => `/snagged-requests/${id}`
   },
-  MARKETPLACE: {
-    PRODUCTS: '/marketplace/products',
-    PRODUCT_DETAIL: (id) => `/marketplace/products/${id}`,
-    PURCHASE: (id) => `/marketplace/products/${id}/purchase`,
-    FILES: (id) => `/marketplace/products/files/${id}`,
-    VERIFY_PURCHASE: (sessionId) => `/marketplace/purchase/verify/${sessionId}`,
-    UPLOAD_FILES: (id) => `/marketplace/products/${id}/files`,
-    GET_FILES_INFO: (id) => `/marketplace/products/${id}/files/info`,
-    REVIEWS: (id) => `/marketplace/products/${id}/reviews`,
-  },
+
 };
 
 // Helper function to check if a route is public
@@ -148,12 +139,7 @@ api.interceptors.request.use(
 
     // Log requests in development
     if (process.env.NODE_ENV === 'development') {
-      console.log('API Request:', {
-        url: `${config.baseURL}${config.url}`,
-        method: config.method,
-        headers: config.headers,
-        data: config.data,
-      });
+
     }
 
     // Add auth token for non-public routes
@@ -179,11 +165,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => {
     if (process.env.NODE_ENV === 'development') {
-      console.log('API Response:', {
-        url: response.config.url,
-        status: response.status,
-        data: response.data,
-      });
+
     }
     return response;
   },
@@ -299,6 +281,7 @@ api.helpers = {
     // Return user-friendly error messages based on status code
     switch (error.response.status) {
       case 400:
+        // Handle marketplace products
         if (error.config.url.includes('/marketplace/products')) {
           if (error.response.data?.detail?.includes('insufficient_funds')) {
             return 'Insufficient funds for purchase.';
@@ -307,9 +290,7 @@ api.helpers = {
             return 'You have already purchased this product.';
           }
         }
-        return error.response.data?.detail || 'Invalid request. Please check your input.';
-
-      case 400:
+        // Handle project showcase
         if (error.config.url.includes('/project-showcase')) {
           if (error.response.data?.detail?.includes('cannot_rate_own')) {
             return 'You cannot rate your own showcase.';
@@ -318,7 +299,7 @@ api.helpers = {
             return 'One or more selected videos are invalid.';
           }
         }
-
+        return error.response.data?.detail || 'Invalid request. Please check your input.';
       case 401:
         return 'Please log in to continue';
       case 403:
@@ -349,10 +330,7 @@ api.helpers = {
   checkAuthState: () => {
     const token = localStorage.getItem('token');
     if (process.env.NODE_ENV === 'development') {
-      console.log('Auth State Check:', {
-        hasToken: !!token,
-        tokenPreview: token ? `${token.substr(0, 10)}...` : null,
-      });
+
     }
     return !!token;
   },
@@ -364,7 +342,7 @@ api.profile = {
   async fetchUserProfile() {
     try {
       const response = await api.get('/profile/me');
-      console.log('User Profile Response:', response.data);
+
       return response.data;
     } catch (error) {
       throw new Error(api.helpers.handleError(error));
@@ -380,7 +358,7 @@ api.profile = {
     } catch (error) {
       // Handle 404 case first
       if (error.response?.status === 404) {
-        console.log(`No ${userType} profile found, returning null`);
+
         return null;
       }
 
@@ -514,7 +492,7 @@ api.videos = {
 
 api.ratings = {
   async rateDeveloper(developerId, ratingData) {
-    console.log('Rating developer:', developerId, 'with data:', ratingData);
+
     try {
       const response = await api.post(
         API_ROUTES.RATINGS.DEVELOPER(developerId),
@@ -629,7 +607,7 @@ api.conversations = {
 api.snaggedRequests = {
   async create(requestId, data) {
     try {
-      console.log('Creating snagged request:', { requestId, ...data });
+
       const response = await api.post(API_ROUTES.SNAGGED_REQUESTS.CREATE, {
         request_id: requestId,
         message: data.message,
@@ -637,7 +615,7 @@ api.snaggedRequests = {
         profile_link: data.include_profile,
         include_profile: data.include_profile
       });
-      console.log('Snagged request response:', response.data);
+
       return response.data;
     } catch (error) {
       console.error('Error creating snagged request:', error);

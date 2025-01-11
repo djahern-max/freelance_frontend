@@ -149,7 +149,7 @@ const VideoList = () => {
       setLoading(true);
       setError(null);
       const response = await api.get('/video_display/');
-      console.log('Video API Response:', response); // Add this line
+
       if (response.data && Array.isArray(response.data.other_videos)) {
         setVideos(response.data.other_videos);
       } else {

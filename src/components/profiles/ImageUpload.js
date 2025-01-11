@@ -9,7 +9,7 @@ const ImageUpload = ({
   showSkip = false,
   onSkip,
 }) => {
-  console.log('Styles object:', styles);
+  ;
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);

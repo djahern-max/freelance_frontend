@@ -452,8 +452,7 @@ const ClientDashboard = () => {
       return true;
     }
 
-    console.log('ClientDashboard - projectName type:', typeof projectName);
-    console.log('ClientDashboard - projectName value:', projectName);
+
 
     try {
       const projectData = {
@@ -461,7 +460,7 @@ const ClientDashboard = () => {
         description: `Project created from ${selectedRequests.length} requests`,
       };
 
-      console.log('ClientDashboard - projectData:', projectData);
+
 
       // Create the project
       const projectResult = await ProjectHandler.createProject(projectData);
@@ -608,7 +607,7 @@ const ClientDashboard = () => {
             onClick={() => setShowCreateModal(true)}
             className={styles.headerCreateButton}
           >
-            <Plus size={20} className={styles.buttonIcon} />
+            <Plus className={styles.buttonIcon} />
             Create Ticket
           </button>
         </div>

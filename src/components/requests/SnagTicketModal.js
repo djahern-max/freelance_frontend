@@ -26,7 +26,7 @@ const SnagTicketModal = ({
       include_profile: includeProfile // This matches the ConversationMessageCreate schema
     };
 
-    console.log('Submitting snag ticket with payload:', payload);
+
     onSubmit(payload);
   };
 

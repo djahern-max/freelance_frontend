@@ -20,9 +20,7 @@ const RequestSharing = ({
   const suggestionsRef = useRef(null);
 
   useEffect(() => {
-    console.log('Request data (full):', JSON.stringify(request, null, 2));
-    console.log('Shared with:', request?.shared_with);
-    console.log('Shared with info:', request?.shared_with_info);
+
 
     const sharedWithData = request?.shared_with || request?.shared_with_info;
 

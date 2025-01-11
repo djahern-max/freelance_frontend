@@ -26,7 +26,7 @@ const Register = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      console.log('Found stale auth data, clearing...');
+
       clearAuthData();
     }
   }, []);
