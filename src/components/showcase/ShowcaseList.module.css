@@ -524,6 +524,15 @@
   align-items: center;
   text-decoration: none;
   color: inherit;
+  background: transparent !important;
+  /* Force no background */
+}
+
+.profileLink:hover {
+  background: transparent !important;
+  /* Force no background on hover */
+  transform: none;
+  /* Prevent any unwanted transforms */
 }
 
 .profileLink:hover {
@@ -547,9 +556,20 @@
   border: 2px solid white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-left: 1rem;
-  /* Space between the title and the image */
+  transition: all 0.3s ease;
+  background: transparent !important;
+  /* Ensure no background */
 }
 
+.profileLink:hover .profileImageRight {
+  box-shadow: 0 0 15px rgba(34, 197, 94, 0.6),
+    0 0 8px rgba(34, 197, 94, 0.4),
+    0 0 4px rgba(34, 197, 94, 0.2);
+  transform: scale(1.05);
+  border-color: rgba(34, 197, 94, 0.8);
+  background: transparent !important;
+  /* Ensure no background on hover */
+}
 
 .videoSection {
 
