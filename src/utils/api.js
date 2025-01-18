@@ -34,120 +34,77 @@ export const API_ROUTES = {
     README: (id) => `/project-showcase/${id}/readme`,
     FILES: (id) => `/project-showcase/${id}/files`,
     VIDEOS: (id) => `/project-showcase/${id}/videos`,
-    PROFILE: (id) => `/project-showcase/${id}/profile`,
-    DEVELOPER_SHOWCASE: (developerId) => `/project-showcase/showcase/${developerId}`,
-    DEVELOPER_USER_RATING: (developerId) => `/project-showcase/developer/${developerId}/user-rating`,
-    DEVELOPER_RATING: (developerId) => `/project-showcase/developer/${developerId}/rating`,
-  },
+    PROFILE: (id) => `/project-showcase/${id}/profile`
 
+  },
   VIDEOS: {
-    CREATE: '/videos',
     DISPLAY: '/video_display',
-    MY_VIDEOS: '/video_display/my-videos',
-    SPACES: '/video_display/spaces',
-    STREAM: (id) => `/video_display/stream/${id}`,
-    SHARED: (token) => `/video_display/shared/${token}`,
     SHARE: (id) => `/videos/${id}/share`,
-    RATING: (id) => `/videos/${id}/rating`,
-    USER_RATING: (id) => `/videos/${id}/user-rating`,
   },
-
   RATINGS: {
     DEVELOPER: (id) => `/ratings/developer/${id}`,
-    DEVELOPER_RATING: (id) => `/ratings/developer/${id}/rating`,
-  },
 
+    DEVELOPER_RATING: (id) => `/ratings/developer/${id}/rating`, // Add this new route
+  },
   PROFILE: {
     ME: '/profile/me',
     DEVELOPER: '/profile/developer',
     CLIENT: '/profile/client',
-    DEVELOPER_IMAGE: '/profile/developer/image',
-    PUBLIC_DEVELOPERS: '/profile/developers/public',
-    PUBLIC_DEVELOPER: (id) => `/profile/developers/${id}/public`,
-    UPDATE: (id) => `/profile/${id}`,
   },
-
   AUTH: {
     LOGIN: '/auth/login',
     LOGOUT: '/auth/logout',
     REGISTER: '/auth/register',
-    VALIDATE_TOKEN: '/auth/validate-token',
-    ME: '/auth/me',
-    USER: (id) => `/auth/users/${id}`,
   },
-
   PUBLIC: {
     REQUESTS: '/requests/public',
     DEVELOPERS: '/profile/developers/public',
     VIDEOS: '/video_display',
   },
-
   CONVERSATIONS: {
     LIST: '/conversations/user/list',
     DETAIL: (id) => `/conversations/${id}`,
     MESSAGES: (id) => `/conversations/${id}/messages`,
     CREATE: '/conversations/',
-    FROM_VIDEO: '/conversations/from-video',
   },
-
   REQUESTS: {
     LIST: '/requests/',
     DETAIL: (id) => `/requests/${id}`,
     PUBLIC: '/requests/public',
     SHARED: '/requests/shared-with-me',
-    MARK_VIEWED: (shareId) => `/requests/shared-with-me/${shareId}/mark-viewed`,
-    SHARE: (id) => `/requests/${id}/share`,
-    SHARE_WITH_USER: (id, userId) => `/requests/${id}/share/${userId}`,
-    SHARES_USERS: (id) => `/requests/${id}/shares/users`,
-    USERS_SEARCH: '/requests/users/search',
-    SEARCH_USERS: '/requests/search/users',
-    UPDATE_PRIVACY: (id) => `/requests/${id}/privacy`,
-    PROJECT: (id) => `/requests/${id}/project`,
   },
-
   AGREEMENTS: {
     CREATE: '/agreements/',
     ACCEPT: (id) => `/agreements/${id}/accept`,
     BY_REQUEST: (requestId) => `/agreements/request/${requestId}`,
   },
-
   PAYMENTS: {
     CREATE_SUBSCRIPTION: '/payments/create-subscription',
     SUBSCRIPTION_STATUS: '/payments/subscription-status',
-    WEBHOOK: '/payments/webhook',
-    CREATE_PAYMENT_INTENT: '/payments/create-payment-intent',
-    CONFIRM_PAYMENT: '/payments/confirm-payment',
-    CREATE_CHECKOUT_SESSION: '/payments/create-checkout-session',
-    PURCHASE: (productId) => `/payments/${productId}/purchase`,
-    CHECK_SHOWCASE_SUBSCRIPTION: '/payments/check-showcase-subscription',
   },
-
   PROJECTS: {
     LIST: '/projects/',
     CREATE: '/projects/',
-    DETAIL: (id) => `/projects/${id}`,
+    DETAIL: (id) => `/projects/${id}/`,
     ADD_REQUEST: (requestId) => `/requests/${requestId}/project`,
   },
-
   SNAGGED_REQUESTS: {
     CREATE: '/snagged-requests/',
     LIST: '/snagged-requests/',
-    REMOVE: (id) => `/snagged-requests/${id}`,
+    REMOVE: (id) => `/snagged-requests/${id}`
   },
-
-  FEEDBACK: {
-    CREATE: '/feedback',
-    LIST: '/feedback',
-  },
-
-  SHARED: {
-    VIDEOS: (token) => `/shared/videos/${token}`,
-  },
-
-  DEVELOPERS: {
-    METRICS: (id) => `/developers/${id}/metrics`,
+  MARKETPLACE: {
+    PRODUCTS: '/marketplace/products',
+    PRODUCT_DETAIL: (id) => `/marketplace/products/${id}`,
+    PURCHASE: (id) => `/marketplace/products/${id}/purchase`,
+    FILES: (id) => `/marketplace/products/files/${id}`,
+    VERIFY_PURCHASE: (sessionId) => `/marketplace/purchase/verify/${sessionId}`,
+    UPLOAD_FILES: (id) => `/marketplace/products/${id}/files`,
+    GET_FILES_INFO: (id) => `/marketplace/products/${id}/files/info`,
+    REVIEWS: (id) => `/marketplace/products/${id}/reviews`,
   },
 };
+
 // Helper function to check if a route is public
 // In api.js
 const isPublicRoute = (url) => {
@@ -191,7 +148,12 @@ api.interceptors.request.use(
 
     // Log requests in development
     if (process.env.NODE_ENV === 'development') {
-
+      console.log('API Request:', {
+        url: `${config.baseURL}${config.url}`,
+        method: config.method,
+        headers: config.headers,
+        data: config.data,
+      });
     }
 
     // Add auth token for non-public routes
@@ -217,7 +179,11 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => {
     if (process.env.NODE_ENV === 'development') {
-
+      console.log('API Response:', {
+        url: response.config.url,
+        status: response.status,
+        data: response.data,
+      });
     }
     return response;
   },
@@ -333,7 +299,6 @@ api.helpers = {
     // Return user-friendly error messages based on status code
     switch (error.response.status) {
       case 400:
-        // Handle marketplace products
         if (error.config.url.includes('/marketplace/products')) {
           if (error.response.data?.detail?.includes('insufficient_funds')) {
             return 'Insufficient funds for purchase.';
@@ -342,7 +307,9 @@ api.helpers = {
             return 'You have already purchased this product.';
           }
         }
-        // Handle project showcase
+        return error.response.data?.detail || 'Invalid request. Please check your input.';
+
+      case 400:
         if (error.config.url.includes('/project-showcase')) {
           if (error.response.data?.detail?.includes('cannot_rate_own')) {
             return 'You cannot rate your own showcase.';
@@ -351,7 +318,7 @@ api.helpers = {
             return 'One or more selected videos are invalid.';
           }
         }
-        return error.response.data?.detail || 'Invalid request. Please check your input.';
+
       case 401:
         return 'Please log in to continue';
       case 403:
@@ -382,7 +349,10 @@ api.helpers = {
   checkAuthState: () => {
     const token = localStorage.getItem('token');
     if (process.env.NODE_ENV === 'development') {
-
+      console.log('Auth State Check:', {
+        hasToken: !!token,
+        tokenPreview: token ? `${token.substr(0, 10)}...` : null,
+      });
     }
     return !!token;
   },
@@ -394,7 +364,7 @@ api.profile = {
   async fetchUserProfile() {
     try {
       const response = await api.get('/profile/me');
-
+      console.log('User Profile Response:', response.data);
       return response.data;
     } catch (error) {
       throw new Error(api.helpers.handleError(error));
@@ -410,7 +380,7 @@ api.profile = {
     } catch (error) {
       // Handle 404 case first
       if (error.response?.status === 404) {
-
+        console.log(`No ${userType} profile found, returning null`);
         return null;
       }
 
@@ -544,7 +514,7 @@ api.videos = {
 
 api.ratings = {
   async rateDeveloper(developerId, ratingData) {
-
+    console.log('Rating developer:', developerId, 'with data:', ratingData);
     try {
       const response = await api.post(
         API_ROUTES.RATINGS.DEVELOPER(developerId),
@@ -659,7 +629,7 @@ api.conversations = {
 api.snaggedRequests = {
   async create(requestId, data) {
     try {
-
+      console.log('Creating snagged request:', { requestId, ...data });
       const response = await api.post(API_ROUTES.SNAGGED_REQUESTS.CREATE, {
         request_id: requestId,
         message: data.message,
@@ -667,7 +637,7 @@ api.snaggedRequests = {
         profile_link: data.include_profile,
         include_profile: data.include_profile
       });
-
+      console.log('Snagged request response:', response.data);
       return response.data;
     } catch (error) {
       console.error('Error creating snagged request:', error);

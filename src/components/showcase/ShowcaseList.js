@@ -1,34 +1,25 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom'; // Add useNavigate
+import { Link } from 'react-router-dom';
 import { fetchShowcases, deleteShowcase } from '../../redux/showcaseSlice';
 import ShowcaseRating from './ShowcaseRating';
 import ReadmeModal from './ReadmeModal';
-import SubscriptionDialog from '../payments/SubscriptionDialog';
 import styles from './ShowcaseList.module.css';
 import ReactDOM from 'react-dom';
 import ShowcaseShareButton from './ShowcaseShareButton';
-import axios from 'axios'; // Add axios
-import { toast } from 'react-toastify'; // Add toast
+import { Upload } from 'lucide-react';
 
 const ShowcaseList = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const { showcases, loading, error } = useSelector((state) => state.showcase);
-  const { user, token } = useSelector((state) => state.auth);
-
-  // Add all missing state declarations
+  const { user } = useSelector((state) => state.auth);
   const [selectedReadme, setSelectedReadme] = useState(null);
   const [hasMore, setHasMore] = useState(true);
   const [allShowcases, setAllShowcases] = useState([]);
   const [page, setPage] = useState(0);
+  const ITEMS_PER_FETCH = 12;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDescription, setSelectedDescription] = useState(null);
-  const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
-
-  // Add constant
-  const ITEMS_PER_FETCH = 12;
-  const apiUrl = process.env.REACT_APP_API_URL;
 
 
   const toggleModal = () => {
@@ -103,25 +94,6 @@ const ShowcaseList = () => {
     setSelectedReadme(showcase);
   };
 
-  const handleCreateShowcase = async () => {
-    try {
-      // Using the existing payments endpoint
-      await axios.get(`${apiUrl}/payments/check-showcase-subscription`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      // If successful (no 402 error), navigate to create page
-      navigate('/showcase/new');
-    } catch (err) {
-      if (err.response?.status === 402) {
-        // Show subscription dialog if backend requires subscription
-        setShowSubscriptionDialog(true);
-      } else {
-        console.error('Failed to create showcase:', err);
-        toast.error('Failed to create showcase.');
-      }
-    }
-  };
-
   if (error) {
     return <div className={styles.error}>{error}</div>;
   }
@@ -129,13 +101,14 @@ const ShowcaseList = () => {
   if (!allShowcases.length && !loading) {
     return (
       <div className={styles.emptyState}>
-        <h2>No showcases yet</h2>
+        <h2>No Projects Uploaded Yet</h2>
         {user && user.userType === 'developer' ? (
           <>
-            <p>Create your first showcase to display your work!</p>
-            <button onClick={handleCreateShowcase} className={styles.createButton}>
-              Create Showcase
-            </button>
+            <p>Upload your latest project and display your work!</p>
+            <Link to="/showcase/new" className={styles.createButton}>
+              <Upload className={styles.uploadIcon} />
+              Upload Project
+            </Link>
           </>
         ) : (
           <p>Check back later to see new showcases!</p>
@@ -148,9 +121,10 @@ const ShowcaseList = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         {user && user.userType === 'developer' && (
-          <button onClick={handleCreateShowcase} className={styles.createButton}>
-            Add New Project
-          </button>
+          <Link to="/showcase/new" className={styles.createButton}>
+            <Upload className={styles.uploadIcon} />
+            Upload Project
+          </Link>
         )}
       </div>
 
@@ -343,19 +317,8 @@ const ShowcaseList = () => {
           onClose={() => setSelectedReadme(null)}
         />
       )}
-
-      <SubscriptionDialog
-        isOpen={showSubscriptionDialog}
-        onClose={() => setShowSubscriptionDialog(false)}
-        returnUrl="/showcase/new"
-        onSuccess={() => {
-          setShowSubscriptionDialog(false);
-          navigate('/showcase/new');
-        }}
-      />
     </div>
   );
-}
-
+};
 
 export default ShowcaseList;

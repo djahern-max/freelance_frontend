@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Send } from 'lucide-react';
 import styles from './ShowcaseShareButton.module.css';
 
 const ShowcaseShareButton = ({ showcaseId }) => {
@@ -48,9 +49,17 @@ const ShowcaseShareButton = ({ showcaseId }) => {
             className={styles.shareButton}
             disabled={isSharing}
         >
-            {isSharing ? '⌛' : copyStatus || 'Share Project'}
+            {isSharing ? (
+                '⌛'
+            ) : (
+                <>
+                    <Send className={styles.shareIcon} />
+                    {copyStatus || 'Share Project'}
+                </>
+            )}
         </button>
     );
 };
 
 export default ShowcaseShareButton;
+

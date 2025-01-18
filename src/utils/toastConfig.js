@@ -24,11 +24,10 @@ export const toastStyles = {
   success: {
     style: {
       ...toastConfig.style,
-      background: '#3b82f6', // Tailwind blue-500
-      border: '1px solid #2563eb', // Tailwind blue-600
-      color: '#ffffff', // White text for better contrast
+      background: '#EDF7ED',
+      border: '1px solid #4CAF50',
     },
-    icon: '✓' // Changed to checkmark for better visibility on blue
+    icon: '🎉'
   },
   error: {
     style: {
@@ -50,13 +49,13 @@ export const toastStyles = {
     style: {
       ...toastConfig.style,
       background: '#FFF4E5',
-      border: '1px solid #FF9800', å
+      border: '1px solid #FF9800',
     },
     icon: '⚠️'
   }
 };
 
-// Custom toast functions remain the same
+// Custom toast functions
 export const customToast = {
   success: (message) => toast.success(message, { ...toastConfig, ...toastStyles.success }),
   error: (message) => toast.error(message, { ...toastConfig, ...toastStyles.error }),
