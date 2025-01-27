@@ -165,7 +165,7 @@ const ShowcaseList = () => {
                     {showcase.description ? (
                       <>
                         {showcase.description.substring(0, 100)}
-                        {showcase.description.length > 100 ? '...' : ''}
+                        {showcase.description.length > 100 ? '... ' : ''}
                         {showcase.description.length > 100 && (
                           <button
                             onClick={() => setSelectedDescription(showcase.description)}
@@ -309,7 +309,7 @@ const ShowcaseList = () => {
         })}
       </div>
 
-      {loading && <div className={styles.loading}>Loading more showcases...</div>}
+      {loading && <div className={styles.loading}>Loading more showcases... </div>}
 
       {selectedReadme && (
         <ReadmeModal
