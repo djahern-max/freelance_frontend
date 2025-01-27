@@ -46,7 +46,7 @@ const SubscriptionDialog = ({ isOpen, onClose, onSuccess }) => {
         <h2 className={styles.title}>Creator Subscription Required</h2>
         <p className={styles.description}>
           To communicate with clients and access opportunities, a subscription
-          is required. The monthly fee is $20.
+          is required. The monthly fee is $9.95.
         </p>
 
         {error && <div className={styles.error}>{error}</div>}

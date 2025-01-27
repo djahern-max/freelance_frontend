@@ -1,9 +1,9 @@
-// src/components/showcase/EditShowcaseForm.js
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchShowcase } from '../../redux/showcaseSlice';
+import { fetchShowcase, updateShowcase, updateShowcaseFiles } from '../../redux/showcaseSlice';
 import ShowcaseForm from './ShowcaseForm';
+import api from '../../utils/api';
 import styles from './EditShowcaseForm.module.css';
 
 const EditShowcaseForm = () => {
@@ -13,11 +13,23 @@ const EditShowcaseForm = () => {
     const { currentShowcase, loading, error } = useSelector((state) => state.showcase);
     const { user } = useSelector((state) => state.auth);
     const [loadingInitial, setLoadingInitial] = useState(true);
+    const [userVideos, setUserVideos] = useState([]);
+    const [developerProfile, setDeveloperProfile] = useState(null);
 
     useEffect(() => {
-        const loadShowcase = async () => {
+        const loadShowcaseAndRelatedData = async () => {
             try {
+                // Load showcase
                 const result = await dispatch(fetchShowcase(id)).unwrap();
+
+                // Load user's videos
+                const videosResponse = await api.get('/video_display/my-videos');
+                setUserVideos(videosResponse.data);
+
+                // Load developer profile
+                const profileResponse = await api.get('/profile/developer');
+                setDeveloperProfile(profileResponse.data);
+
                 setLoadingInitial(false);
 
                 // Check if the current user is the owner
@@ -36,8 +48,53 @@ const EditShowcaseForm = () => {
             }
         };
 
-        loadShowcase();
+        loadShowcaseAndRelatedData();
     }, [dispatch, id, navigate, user]);
+
+    const handleUpdate = async (formData) => {
+        try {
+            // Update basic showcase information
+            await dispatch(updateShowcase({
+                id,
+                data: {
+                    title: formData.title,
+                    description: formData.description,
+                    project_url: formData.project_url,
+                    repository_url: formData.repository_url,
+                    demo_url: formData.demo_url
+                }
+            })).unwrap();
+
+            // Update files if provided
+            if (formData.image_file || formData.readme_file) {
+                const filesFormData = new FormData();
+                if (formData.image_file) {
+                    filesFormData.append('image_file', formData.image_file);
+                }
+                if (formData.readme_file) {
+                    filesFormData.append('readme_file', formData.readme_file);
+                }
+                await dispatch(updateShowcaseFiles({ id, data: filesFormData })).unwrap();
+            }
+
+            // Update video links
+            if (formData.selectedVideos?.length > 0) {
+                await api.put(`/project-showcase/${id}/videos`, {
+                    video_ids: formData.selectedVideos
+                });
+            }
+
+            // Update profile link
+            if (formData.includeProfile) {
+                await api.put(`/project-showcase/${id}/profile`);
+            }
+
+            navigate('/showcase');
+        } catch (error) {
+            console.error('Error updating showcase:', error);
+            throw error;
+        }
+    };
 
     if (loadingInitial || loading) {
         return (
@@ -92,8 +149,11 @@ const EditShowcaseForm = () => {
                 </div>
 
                 <ShowcaseForm
-                    showcase={currentShowcase}
                     isEditing={true}
+                    initialData={currentShowcase}
+                    onSubmit={handleUpdate}
+                    availableVideos={userVideos}
+                    developerProfile={developerProfile}
                 />
             </div>
         </div>

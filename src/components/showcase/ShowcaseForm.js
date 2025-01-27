@@ -1,4 +1,3 @@
-// src/components/showcase/ShowcaseForm.js
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -12,10 +11,15 @@ const ShowcaseForm = ({ isEditing = false }) => {
     const navigate = useNavigate();
     const { loading, error, currentShowcase } = useSelector((state) => state.showcase);
     const [videos, setVideos] = useState([]);
+    const [userVideos, setUserVideos] = useState([]);
+    const [selectedVideos, setSelectedVideos] = useState([]);
     const [profile, setProfile] = useState(null);
+    const [includeProfile, setIncludeProfile] = useState(false);
     const [apiLoading, setApiLoading] = useState(false);
     const [apiError, setApiError] = useState(null);
     const [formErrors, setFormErrors] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
     const [formData, setFormData] = useState({
         title: '',
         description: '',
@@ -35,40 +39,148 @@ const ShowcaseForm = ({ isEditing = false }) => {
     const [createdShowcase, setCreatedShowcase] = useState(null);
 
     useEffect(() => {
+        const fetchUserContent = async () => {
+            try {
+                const [videosResponse, profileResponse] = await Promise.all([
+                    api.get('/video_display/my-videos'),
+                    api.get('/profile/developer')
+                ]);
+                setUserVideos(videosResponse.data);
+                setProfile(profileResponse.data);
+            } catch (err) {
+                console.error('Error fetching user content:', err);
+                setApiError('Failed to load user content');
+            }
+        };
+        fetchUserContent();
+    }, []);
+
+    useEffect(() => {
         if (currentShowcase && isEditing) {
-            setFormData({
+            setFormData(prevData => ({
+                ...prevData,
                 title: currentShowcase.title || '',
                 description: currentShowcase.description || '',
                 project_url: currentShowcase.project_url || '',
                 repository_url: currentShowcase.repository_url || '',
                 demo_url: currentShowcase.demo_url || ''
-            });
+            }));
+
+            // Set selected videos if any
+            if (currentShowcase.videos) {
+                setSelectedVideos(currentShowcase.videos.map(v => v.id));
+            }
+
+            // Set profile inclusion if linked
+            setIncludeProfile(!!currentShowcase.developer_profile_id);
         }
     }, [currentShowcase, isEditing]);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            setApiLoading(true);
-            try {
-                // Fetch videos
-                const videosResponse = await api.get('/video_display/my-videos');
-                const videosList = videosResponse.data.videos || [];
-                setVideos(videosList);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-                // Fetch profile
-                const profileResponse = await api.get('/profile/developer');
-                setProfile(profileResponse.data);
-            } catch (err) {
-                console.error('Error fetching data:', err);
-                setApiError(err.message);
-            } finally {
-                setApiLoading(false);
+        if (isSubmitting) return;
+
+        const errors = validateForm();
+        if (Object.keys(errors).length > 0) {
+            setFormErrors(errors);
+            return;
+        }
+
+        setIsSubmitting(true);
+        setSuccessMessage('');
+        setApiError(null);
+
+        try {
+            if (isEditing && currentShowcase?.id) {
+                // First update basic information
+                const updateData = {
+                    title: formData.title,
+                    description: formData.description,
+                    project_url: formData.project_url || null,
+                    repository_url: formData.repository_url || null,
+                    demo_url: formData.demo_url || null
+                };
+
+                const response = await dispatch(updateShowcase({
+                    id: currentShowcase.id,
+                    data: updateData
+                })).unwrap();
+
+                // Update files if changed
+                if (formData.image_file || formData.readme_file) {
+                    const filesFormData = new FormData();
+                    if (formData.image_file) {
+                        filesFormData.append('image_file', formData.image_file);
+                    }
+                    if (formData.readme_file) {
+                        filesFormData.append('readme_file', formData.readme_file);
+                    }
+                    await dispatch(updateShowcaseFiles({
+                        id: currentShowcase.id,
+                        data: filesFormData
+                    })).unwrap();
+                }
+
+                // Update videos if changed
+                if (selectedVideos.length > 0) {
+                    await api.put(`/project-showcase/${currentShowcase.id}/videos`, {
+                        video_ids: selectedVideos
+                    });
+                }
+
+                // Update profile linking if changed
+                if (includeProfile) {
+                    await api.put(`/project-showcase/${currentShowcase.id}/profile`);
+                }
+
+                setSuccessMessage('Showcase updated successfully!');
+                setTimeout(() => {
+                    navigate('/showcase');
+                }, 1500);
+
+            } else {
+                // Create new showcase logic remains the same
+                const submitData = new FormData();
+                Object.keys(formData).forEach(key => {
+                    if (formData[key] !== null && formData[key] !== undefined && formData[key] !== '') {
+                        submitData.append(key, formData[key]);
+                    }
+                });
+
+                // Add video IDs and profile inclusion
+                if (selectedVideos.length > 0) {
+                    submitData.append('selected_video_ids', JSON.stringify(selectedVideos));
+                }
+                submitData.append('include_profile', includeProfile);
+
+                const response = await dispatch(createShowcase(submitData)).unwrap();
+                setSuccessMessage('Showcase created successfully!');
+                setTimeout(() => {
+                    setCreatedShowcase(response);
+                    setShowLinkedContent(true);
+                }, 1500);
             }
-        };
+        } catch (err) {
+            console.error('Error submitting showcase:', err);
+            setApiError(err.message || 'Error submitting showcase');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
-        fetchData();
-    }, []);
+    const handleVideoSelection = (videoId) => {
+        setSelectedVideos(prev => {
+            if (prev.includes(videoId)) {
+                return prev.filter(id => id !== videoId);
+            }
+            return [...prev, videoId];
+        });
+    };
 
+    const handleFinish = () => {
+        navigate('/showcase');
+    };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -76,6 +188,13 @@ const ShowcaseForm = ({ isEditing = false }) => {
             ...prev,
             [name]: value
         }));
+        // Clear error for this field when user starts typing
+        if (formErrors[name]) {
+            setFormErrors(prev => ({
+                ...prev,
+                [name]: null
+            }));
+        }
     };
 
     const handleFileChange = (e) => {
@@ -110,45 +229,42 @@ const ShowcaseForm = ({ isEditing = false }) => {
 
     const validateForm = () => {
         const errors = {};
-        if (!formData.title.trim()) errors.title = 'Title is required';
-        if (!formData.project_url && !formData.project_url.match(/^https?:\/\/.+/)) {
-            errors.project_url = 'Valid URL required';
+        if (!formData.title.trim()) {
+            errors.title = 'Title is required';
         }
+        if (!formData.description.trim()) {
+            errors.description = 'Description is required';
+        }
+
+        // Validate URLs only if they're not empty
+        const urlFields = ['project_url', 'repository_url', 'demo_url'];
+        urlFields.forEach(field => {
+            if (formData[field] && !isValidUrl(formData[field])) {
+                errors[field] = 'Please enter a valid URL';
+            }
+        });
+
+        if (!isEditing && !formData.image_file) {
+            errors.image_file = 'Project image is required';
+        }
+        if (!isEditing && !formData.readme_file) {
+            errors.readme_file = 'README file is required';
+        }
+
         return errors;
     };
 
-
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        const errors = validateForm();
-        if (Object.keys(errors).length > 0) {
-            setFormErrors(errors);
-            return;
-        }
-
+    const isValidUrl = (url) => {
+        if (!url) return true; // Empty URLs are valid (for optional fields)
         try {
-            const submitData = new FormData();
-            Object.keys(formData).forEach(key => {
-                if (formData[key] !== null && formData[key] !== undefined && formData[key] !== '') {
-                    submitData.append(key, formData[key]);
-                }
-            });
-
-            const response = await dispatch(createShowcase(submitData)).unwrap();
-            if (response && response.id) {
-                setCreatedShowcase(response);
-                setShowLinkedContent(true);
-            }
-        } catch (err) {
-            console.error('Error submitting showcase:', err);
+            new URL(url);
+            return true;
+        } catch (e) {
+            return false;
         }
     };
 
-    const handleFinish = () => {
-        navigate('/showcase');
-    };
+
 
     if (showLinkedContent && !loading) {
         return (
@@ -168,6 +284,18 @@ const ShowcaseForm = ({ isEditing = false }) => {
     return (
         <div className={styles.wrapper}>
             <form className={styles.form} onSubmit={handleSubmit}>
+                {successMessage && (
+                    <div className={styles.successMessage}>
+                        {successMessage}
+                    </div>
+                )}
+
+                {apiError && (
+                    <div className={styles.errorMessage}>
+                        {apiError}
+                    </div>
+                )}
+
                 <div className={styles.formGroup}>
                     <label htmlFor="title">Title *</label>
                     <input
@@ -276,20 +404,64 @@ const ShowcaseForm = ({ isEditing = false }) => {
                     )}
                 </div>
 
-                {error && <div className={styles.error}>{error}</div>}
-
                 <button
                     type="submit"
-                    className={styles.submitButton}
-                    disabled={loading}
+                    className={`${styles.submitButton} ${isSubmitting ? styles.submitting : ''}`}
+                    disabled={isSubmitting}
                 >
-                    {loading ? 'Submitting...' : isEditing ? 'Update Showcase' : 'Create Showcase'}
+                    {isSubmitting
+                        ? 'Submitting...'
+                        : isEditing
+                            ? 'Update Showcase'
+                            : 'Create Showcase'}
                 </button>
+
+                {userVideos.length > 0 && (
+                    <div className={styles.formGroup}>
+                        <label>Link Videos</label>
+                        <div className={styles.videoGrid}>
+                            {userVideos.map(video => (
+                                <div
+                                    key={video.id}
+                                    className={`${styles.videoItem} ${selectedVideos.includes(video.id) ? styles.selected : ''
+                                        }`}
+                                    onClick={() => handleVideoSelection(video.id)}
+                                >
+                                    <img src={video.thumbnail_url} alt={video.title} />
+                                    <span>{video.title}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {profile && (
+                    <div className={styles.formGroup}>
+                        <label>
+                            <input
+                                type="checkbox"
+                                checked={includeProfile}
+                                onChange={(e) => setIncludeProfile(e.target.checked)}
+                            />
+                            Link Developer Profile
+                        </label>
+                    </div>
+                )}
+
+                {/* <button
+                    type="submit"
+                    className={`${styles.submitButton} ${isSubmitting ? styles.submitting : ''}`}
+                    disabled={isSubmitting}
+                >
+                    {isSubmitting
+                        ? 'Submitting...'
+                        : isEditing
+                            ? 'Update Showcase'
+                            : 'Create Showcase'}
+                </button> */}
             </form>
         </div>
-
     );
-}
-
+};
 
 export default ShowcaseForm;

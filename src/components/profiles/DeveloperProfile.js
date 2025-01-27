@@ -108,25 +108,25 @@ const DeveloperProfile = () => {
     }
 
     // Show the image upload prompt after successful profile creation
-    if (showImageUpload) {
-        return (
-            <div className={styles.imageUploadPrompt}>
-                <h2>Would you like to add a profile picture?</h2>
-                <div className={styles.imageUploadContainer}>
-                    <ImageUpload
-                        mode="upload"
-                        onUploadSuccess={handleImageUploadSuccess}
-                    />
-                </div>
-                <button
-                    className={styles.skipButton}
-                    onClick={() => setShowImageUpload(false)}
-                >
-                    Skip for now
-                </button>
-            </div>
-        );
-    }
+    // if (showImageUpload) {
+    //     return (
+    //         <div className={styles.imageUploadPrompt}>
+    //             <h2>Would you like to add a profile picture?</h2>
+    //             <div className={styles.imageUploadContainer}>
+    //                 <ImageUpload
+    //                     mode="upload"
+    //                     onUploadSuccess={handleImageUploadSuccess}
+    //                 />
+    //             </div>
+    //             <button
+    //                 className={styles.skipButton}
+    //                 onClick={() => setShowImageUpload(false)}
+    //             >
+    //                 Skip for now
+    //             </button>
+    //         </div>
+    //     );
+    // }
 
     const hasProfile = !!profile?.developer_profile;
 
@@ -138,21 +138,17 @@ const DeveloperProfile = () => {
                         {hasProfile ? 'Update Your Profile' : 'Create Your Profile'}
                     </h2>
                     {hasProfile && (
-                        <>
-                            <div className={styles.profileStatus}>
-                                <span className={styles.checkmark}>✓</span>
-                                Profile created on{' '}
-                                {new Date(
-                                    profile.developer_profile.created_at
-                                ).toLocaleDateString()}
-                            </div>
-                            <ImageUpload
-                                mode="upload"
-                                onUploadSuccess={handleImageUploadSuccess}
-                                currentImageUrl={profile.developer_profile.profile_image_url}
-                            />
-                        </>
+                        <div className={styles.profileStatus}>
+                            <span className={styles.checkmark}>✓</span>
+                            Profile created on {' '}
+                            {new Date(profile.developer_profile.created_at).toLocaleDateString()}
+                        </div>
                     )}
+                    <ImageUpload
+                        mode="upload"
+                        onUploadSuccess={handleImageUploadSuccess}
+                        currentImageUrl={profile?.developer_profile?.profile_image_url}
+                    />
                 </div>
 
                 <form onSubmit={handleSubmit} className={styles.form}>

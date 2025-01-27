@@ -485,17 +485,18 @@ api.agreements = {
 api.videos = {
   async shareVideo(videoId, projectUrl) {
     try {
-      const response = await api.post(API_ROUTES.VIDEOS.SHARE(videoId), {
+      const response = await api.post(`/videos/${videoId}/share`, {
         project_url: projectUrl
       });
-      return response.data;
+      return {
+        ...response.data,
+        share_url: response.data.share_url // Use the URL directly from response
+      };
     } catch (error) {
       console.error('Error sharing video:', error);
       throw new Error(api.helpers.handleError(error));
     }
   },
-
-
 
   async getDisplayVideos() {
     try {
@@ -503,6 +504,15 @@ api.videos = {
       return response.data;
     } catch (error) {
       console.error('Error fetching videos:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async getSharedVideo(shareToken) {
+    try {
+      const response = await api.get(`/shared/videos/${shareToken}`);
+      return response.data;
+    } catch (error) {
       throw new Error(api.helpers.handleError(error));
     }
   }

@@ -22,17 +22,17 @@ const CreateRequestModal = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (typeof onSubmit !== 'function') {
-      console.error('onSubmit prop is not a function');
-      return;
-    }
-
     setIsSubmitting(true);
     setError(null);
 
+    const submissionData = {
+      ...formData,
+      estimated_budget: formData.estimated_budget === '' ? null : Number(formData.estimated_budget),
+      creatorId
+    };
+
     try {
-      // Include creatorId in the form submission
-      await onSubmit({ ...formData, creatorId });
+      await onSubmit(submissionData);
       onClose();
     } catch (err) {
       console.error('Error submitting request:', err);
@@ -133,9 +133,8 @@ const CreateRequestModal = ({
           <div className={styles.buttonContainer}>
             <button
               type="submit"
-              className={`${styles.submitButton} ${
-                isSubmitting ? styles.loading : ''
-              }`}
+              className={`${styles.submitButton} ${isSubmitting ? styles.loading : ''
+                }`}
               disabled={isSubmitting}
             >
               {isSubmitting
@@ -143,8 +142,8 @@ const CreateRequestModal = ({
                   ? 'Updating...'
                   : 'Creating...'
                 : isEditing
-                ? 'Update Request'
-                : 'Create Request'}
+                  ? 'Update Request'
+                  : 'Create Request'}
             </button>
             <button
               type="button"
@@ -172,7 +171,7 @@ CreateRequestModal.propTypes = {
   }),
   onSubmit: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
-  creatorId: PropTypes.string.isRequired,
+  creatorId: PropTypes.number.isRequired,
   creatorUsername: PropTypes.string.isRequired,
 };
 

@@ -41,7 +41,7 @@ const SharedVideo = () => {
     }, [shareToken]);
 
     const handleBack = () => {
-        window.history.back();
+        navigate('/videos');
     };
 
     const handleSendRequest = () => {
@@ -117,7 +117,6 @@ const SharedVideo = () => {
                 <div className={styles.header}>
                     <button onClick={handleBack} className={styles.backButton}>
                         <ArrowLeft size={16} />
-                        Back
                     </button>
                     <h1 className={styles.title}>{video.title || 'Shared Video'}</h1>
                 </div>
