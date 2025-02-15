@@ -7,7 +7,7 @@ import {
   Share2,
   User,
 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -21,6 +21,7 @@ import RequestGroupingToolbar from '../requests/RequestGroupingToolbar';
 import Header from '../shared/Header';
 import styles from './ClientDashboard.module.css';
 import DashboardSections from './DashboardSections';
+import axios from 'axios';
 
 
 const ClientDashboard = () => {
@@ -107,7 +108,18 @@ const ClientDashboard = () => {
     return controller;
   };
 
-  const fetchProjects = async () => {
+  useEffect(() => {
+    return () => {
+      Object.values(controllersRef.current).forEach(controller => {
+        if (controller) {
+          controller.abort();
+        }
+      });
+      controllersRef.current = {};
+    };
+  }, []);
+
+  const fetchProjects = useCallback(async () => {
     const controller = createController('projects');
     try {
       const response = await api.get('/projects/', {
@@ -123,9 +135,64 @@ const ClientDashboard = () => {
     } finally {
       setLoadingStates((prev) => ({ ...prev, projects: false }));
     }
-  };
+  }, []);
 
-  const fetchSharedRequests = async () => {
+  const fetchRequests = useCallback(async () => {
+    const controller = createController('requests');
+    try {
+      setLoadingStates(prev => ({ ...prev, requests: true }));
+
+      // Get token directly
+      const token = localStorage.getItem('token');
+
+      // Make request exactly like the working CURL
+      const response = await axios.get('http://localhost:8000/requests/', {
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        signal: controller.signal
+      });
+
+      if (response.data) {
+        const sortedRequests = [...response.data].sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        );
+
+        setDashboardData(prev => ({
+          ...prev,
+          requests: sortedRequests,
+        }));
+      }
+    } catch (error) {
+      if (error.message !== 'REQUEST_CANCELLED') {
+        console.error('Error fetching requests:', error);
+      }
+    } finally {
+      setLoadingStates(prev => ({ ...prev, requests: false }));
+    }
+  }, []);
+
+  const handleCreateRequest = useCallback(async (formData) => {
+    const controller = createController('createRequest');
+    try {
+      const response = await api.post('/requests/', formData, {
+        signal: controller.signal
+      });
+      await fetchRequests();
+      setShowCreateModal(false);
+      toast.success('Request created successfully');
+      return response.data;
+    } catch (error) {
+      if (error.message !== 'REQUEST_CANCELLED') {
+        console.error('Error creating request:', error);
+        toast.error(error.response?.data?.detail || 'Failed to create request');
+      }
+      throw error;
+    }
+  }, [fetchRequests]);
+
+  const fetchSharedRequests = useCallback(async () => {
     const controller = createController('sharedRequests');
     try {
       setLoadingStates((prev) => ({ ...prev, sharedRequests: true }));
@@ -159,7 +226,7 @@ const ClientDashboard = () => {
             }
           }
         })
-      );
+      ); // Promise.all ends here
 
       const validSharedRequests = Array.from(uniqueRequestsMap.values());
 
@@ -179,88 +246,10 @@ const ClientDashboard = () => {
     } finally {
       setLoadingStates((prev) => ({ ...prev, sharedRequests: false }));
     }
-  };
+  }, []); // useCallback's dependency array goes here, outside the entire function
 
-  const fetchRequests = async () => {
-    const controller = createController('requests');
-    try {
-      // Authentication debugging
-      const token = localStorage.getItem('token');
-      console.log('Auth token:', token ? `${token.substring(0, 10)}...` : 'No token');
-      console.log('Current user:', user);
-      console.log('User type:', user?.user_type);
 
-      // Request debugging
-      console.log('Making request to:', `${api.defaults.baseURL}/requests/`);
-      console.log('Request headers:', {
-        Authorization: token ? `Bearer ${token}` : 'No token',
-        'Content-Type': 'application/json'
-      });
-
-      // Make the API request
-      console.log('Fetching requests...');
-      const response = await api.get('/requests/', {
-        signal: controller.signal,
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      // Response debugging
-      console.log('Full response:', response);
-      console.log('Response status:', response.status);
-      console.log('Response headers:', response.headers);
-      console.log('Requests response data:', response.data);
-
-      // Data processing debugging
-      const isArray = Array.isArray(response.data);
-      console.log('Response is array:', isArray);
-
-      const sortedRequests = isArray
-        ? [...response.data].sort(
-          (a, b) => new Date(b.created_at) - new Date(a.created_at)
-        )
-        : [];
-
-      console.log('Sorted requests:', sortedRequests);
-
-      // Update state
-      setDashboardData((prev) => {
-        console.log('Previous dashboard data:', prev);
-        const newState = {
-          ...prev,
-          requests: sortedRequests,
-        };
-        console.log('New dashboard data:', newState);
-        return newState;
-      });
-
-      setErrors((prev) => ({ ...prev, requests: null }));
-
-    } catch (error) {
-      if (error.message !== 'REQUEST_CANCELLED') {
-        console.error('Detailed error information:', {
-          message: error.message,
-          status: error.response?.status,
-          statusText: error.response?.statusText,
-          data: error.response?.data,
-          config: error.config,
-        });
-
-        setErrors((prev) => ({
-          ...prev,
-          requests: 'Unable to load requests. Please try again later.',
-        }));
-      }
-    } finally {
-      setLoadingStates((prev) => {
-        const newLoadingState = { ...prev, requests: false };
-        console.log('Updated loading states:', newLoadingState);
-        return newLoadingState;
-      });
-    }
-  };
-  const fetchConversations = async () => {
+  const fetchConversations = useCallback(async () => {
     const controller = createController('conversations');
     try {
       const response = await api.get('/conversations/user/list', {
@@ -284,15 +273,78 @@ const ClientDashboard = () => {
     } finally {
       setLoadingStates(prev => ({ ...prev, conversations: false }));
     }
-  };
+  }, []);
+
+  const fetchDashboardData = useCallback(async () => {
+    console.log('Fetching dashboard data...');
+    await Promise.all([
+      fetchRequests(),
+      fetchConversations(),
+      fetchProjects(),
+      fetchSharedRequests()
+    ]);
+    console.log('All data fetched');
+  }, [fetchRequests, fetchConversations, fetchProjects, fetchSharedRequests]);
+
+  // 3. Use a single useEffect for data fetching
+  useEffect(() => {
+    console.log('Dashboard effect running...');
+    if (!user || user.userType !== 'client') {
+      console.log('User not client or not logged in');
+      return;
+    }
+
+    let mounted = true;
+
+    const loadData = async () => {
+      if (mounted) {
+        await fetchDashboardData();
+        console.log('Dashboard data loaded');
+      }
+    };
+
+    loadData();
+
+    // Cleanup function
+    return () => {
+      mounted = false;
+      // Cancel any pending requests
+      Object.values(controllersRef.current).forEach(controller => {
+        if (controller) {
+          controller.abort();
+        }
+      });
+    };
+  }, [user, fetchDashboardData]);
+
+  // 4. Add a debug effect to monitor state changes
+  useEffect(() => {
+    console.log('Dashboard data changed:', dashboardData);
+  }, [dashboardData]);
+
 
   useEffect(() => {
-    console.log('Current user:', user); // Add this
-    if (!user || user.user_type !== 'client') {
-      console.warn('User is not a client or not logged in:', user);
+    if (!user || user.userType !== 'client') {
+      return;
     }
-    fetchDashboardData();
-  }, []);
+
+    let mounted = true;
+    const loadInitialData = async () => {
+      if (mounted) {
+        await fetchDashboardData();
+      }
+    };
+
+    loadInitialData();
+
+    return () => {
+      mounted = false;
+      // Clean up any pending requests
+      Object.values(controllersRef.current).forEach(controller => {
+        controller.abort();
+      });
+    };
+  }, [user, fetchDashboardData]);
 
 
   const formatTimeSince = (date) => {
@@ -474,31 +526,6 @@ const ClientDashboard = () => {
 
 
 
-  const fetchDashboardData = async () => {
-    fetchRequests();
-    fetchConversations();
-    fetchProjects();
-    fetchSharedRequests();
-  };
-
-  const handleCreateRequest = async (formData) => {
-    const controller = createController('createRequest');
-    try {
-      const response = await api.post('/requests/', formData, {
-        signal: controller.signal
-      });
-      await fetchRequests();
-      setShowCreateModal(false);
-      toast.success('Request created successfully');
-      return response.data;
-    } catch (error) {
-      if (error.message !== 'REQUEST_CANCELLED') {
-        console.error('Error creating request:', error);
-        toast.error(error.response?.data?.detail || 'Failed to create request');
-      }
-      throw error;
-    }
-  };
 
   const handleRequestSelection = (requestId) => {
     setSelectedRequests((prev) => {
@@ -649,7 +676,15 @@ const ClientDashboard = () => {
       <div className={styles.dashboardContainer}>
         <Header />
         <div className={styles.loadingContainer}>
-          <div className={styles.loading}>Loading your dashboard...</div>
+          <div className={styles.loading}>
+            Loading your dashboard...
+            <div>
+              Requests: {loadingStates.requests ? 'Loading' : 'Done'}
+              Projects: {loadingStates.projects ? 'Loading' : 'Done'}
+              Conversations: {loadingStates.conversations ? 'Loading' : 'Done'}
+              Shared: {loadingStates.sharedRequests ? 'Loading' : 'Done'}
+            </div>
+          </div>
         </div>
       </div>
     );
