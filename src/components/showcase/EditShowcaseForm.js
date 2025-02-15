@@ -15,6 +15,8 @@ const EditShowcaseForm = () => {
     const [loadingInitial, setLoadingInitial] = useState(true);
     const [userVideos, setUserVideos] = useState([]);
     const [developerProfile, setDeveloperProfile] = useState(null);
+    const [selectedVideos, setSelectedVideos] = useState([]);
+    const [includeProfile, setIncludeProfile] = useState(false);
 
     useEffect(() => {
         const loadShowcaseAndRelatedData = async () => {
@@ -29,6 +31,14 @@ const EditShowcaseForm = () => {
                 // Load developer profile
                 const profileResponse = await api.get('/profile/developer');
                 setDeveloperProfile(profileResponse.data);
+
+                // Set initial selected videos from showcase
+                if (result.videos) {
+                    setSelectedVideos(result.videos.map(video => video.id));
+                }
+
+                // Set initial profile inclusion state
+                setIncludeProfile(!!result.developer_profile_id);
 
                 setLoadingInitial(false);
 
@@ -78,16 +88,14 @@ const EditShowcaseForm = () => {
             }
 
             // Update video links
-            if (formData.selectedVideos?.length > 0) {
-                await api.put(`/project-showcase/${id}/videos`, {
-                    video_ids: formData.selectedVideos
-                });
-            }
+            await api.put(`/project-showcase/${id}/videos`, {
+                video_ids: formData.selectedVideos
+            });
 
             // Update profile link
-            if (formData.includeProfile) {
-                await api.put(`/project-showcase/${id}/profile`);
-            }
+            await api.put(`/project-showcase/${id}/profile`, {
+                include_profile: formData.includeProfile
+            });
 
             navigate('/showcase');
         } catch (error) {
@@ -97,12 +105,7 @@ const EditShowcaseForm = () => {
     };
 
     if (loadingInitial || loading) {
-        return (
-            <div className={styles.loading}>
-                <div className={styles.spinner}></div>
-                Loading showcase...
-            </div>
-        );
+        return <div className={styles.loading}>Loading showcase...</div>;
     }
 
     if (error) {
@@ -110,25 +113,7 @@ const EditShowcaseForm = () => {
             <div className={styles.error}>
                 <h2>Error Loading Showcase</h2>
                 <p>{error}</p>
-                <button
-                    onClick={() => navigate('/showcase')}
-                    className={styles.backButton}
-                >
-                    Back to Showcases
-                </button>
-            </div>
-        );
-    }
-
-    if (!currentShowcase) {
-        return (
-            <div className={styles.notFound}>
-                <h2>Showcase Not Found</h2>
-                <p>The showcase you're trying to edit doesn't exist or has been removed.</p>
-                <button
-                    onClick={() => navigate('/showcase')}
-                    className={styles.backButton}
-                >
+                <button onClick={() => navigate('/showcase')}>
                     Back to Showcases
                 </button>
             </div>
@@ -150,7 +135,11 @@ const EditShowcaseForm = () => {
 
                 <ShowcaseForm
                     isEditing={true}
-                    initialData={currentShowcase}
+                    initialData={{
+                        ...currentShowcase,
+                        selectedVideos,
+                        includeProfile
+                    }}
                     onSubmit={handleUpdate}
                     availableVideos={userVideos}
                     developerProfile={developerProfile}

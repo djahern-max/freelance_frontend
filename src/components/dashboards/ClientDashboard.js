@@ -7,7 +7,7 @@ import {
   Share2,
   User,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -93,6 +93,207 @@ const ClientDashboard = () => {
       count: projects.length,
     },
   ];
+
+  const controllersRef = useRef({});
+
+  const createController = (key) => {
+    // Cancel existing request
+    if (controllersRef.current[key]) {
+      controllersRef.current[key].abort();
+    }
+    // Create new controller
+    const controller = new AbortController();
+    controllersRef.current[key] = controller;
+    return controller;
+  };
+
+  const fetchProjects = async () => {
+    const controller = createController('projects');
+    try {
+      const response = await api.get('/projects/', {
+        signal: controller.signal
+      });
+      setProjects(response.data);
+      setErrors((prev) => ({ ...prev, projects: null }));
+    } catch (error) {
+      if (error.message !== 'REQUEST_CANCELLED') {
+        console.error('Error fetching projects:', error);
+        setErrors((prev) => ({ ...prev, projects: 'Failed to load projects' }));
+      }
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, projects: false }));
+    }
+  };
+
+  const fetchSharedRequests = async () => {
+    const controller = createController('sharedRequests');
+    try {
+      setLoadingStates((prev) => ({ ...prev, sharedRequests: true }));
+
+      const requestsResponse = await api.get('/requests/', {
+        signal: controller.signal
+      });
+      const uniqueRequestsMap = new Map();
+
+      await Promise.all(
+        requestsResponse.data.map(async (request) => {
+          try {
+            const sharesResponse = await api.get(
+              `/requests/${request.id}/shares/users`,
+              { signal: controller.signal }
+            );
+            const sharedUsers = sharesResponse.data;
+
+            if (sharedUsers && sharedUsers.length > 0) {
+              uniqueRequestsMap.set(request.id, {
+                ...request,
+                sharedWith: sharedUsers,
+              });
+            }
+          } catch (error) {
+            if (error.message !== 'REQUEST_CANCELLED') {
+              console.error(
+                `Error fetching shares for request ${request.id}:`,
+                error
+              );
+            }
+          }
+        })
+      );
+
+      const validSharedRequests = Array.from(uniqueRequestsMap.values());
+
+      setDashboardData((prev) => ({
+        ...prev,
+        sharedRequests: validSharedRequests,
+      }));
+      setErrors((prev) => ({ ...prev, sharedRequests: null }));
+    } catch (error) {
+      if (error.message !== 'REQUEST_CANCELLED') {
+        console.error('Shared requests fetch failed:', error);
+        setErrors((prev) => ({
+          ...prev,
+          sharedRequests: 'Unable to load shared requests',
+        }));
+      }
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, sharedRequests: false }));
+    }
+  };
+
+  const fetchRequests = async () => {
+    const controller = createController('requests');
+    try {
+      // Authentication debugging
+      const token = localStorage.getItem('token');
+      console.log('Auth token:', token ? `${token.substring(0, 10)}...` : 'No token');
+      console.log('Current user:', user);
+      console.log('User type:', user?.user_type);
+
+      // Request debugging
+      console.log('Making request to:', `${api.defaults.baseURL}/requests/`);
+      console.log('Request headers:', {
+        Authorization: token ? `Bearer ${token}` : 'No token',
+        'Content-Type': 'application/json'
+      });
+
+      // Make the API request
+      console.log('Fetching requests...');
+      const response = await api.get('/requests/', {
+        signal: controller.signal,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      // Response debugging
+      console.log('Full response:', response);
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+      console.log('Requests response data:', response.data);
+
+      // Data processing debugging
+      const isArray = Array.isArray(response.data);
+      console.log('Response is array:', isArray);
+
+      const sortedRequests = isArray
+        ? [...response.data].sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        )
+        : [];
+
+      console.log('Sorted requests:', sortedRequests);
+
+      // Update state
+      setDashboardData((prev) => {
+        console.log('Previous dashboard data:', prev);
+        const newState = {
+          ...prev,
+          requests: sortedRequests,
+        };
+        console.log('New dashboard data:', newState);
+        return newState;
+      });
+
+      setErrors((prev) => ({ ...prev, requests: null }));
+
+    } catch (error) {
+      if (error.message !== 'REQUEST_CANCELLED') {
+        console.error('Detailed error information:', {
+          message: error.message,
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          data: error.response?.data,
+          config: error.config,
+        });
+
+        setErrors((prev) => ({
+          ...prev,
+          requests: 'Unable to load requests. Please try again later.',
+        }));
+      }
+    } finally {
+      setLoadingStates((prev) => {
+        const newLoadingState = { ...prev, requests: false };
+        console.log('Updated loading states:', newLoadingState);
+        return newLoadingState;
+      });
+    }
+  };
+  const fetchConversations = async () => {
+    const controller = createController('conversations');
+    try {
+      const response = await api.get('/conversations/user/list', {
+        signal: controller.signal
+      });
+      const conversations = Array.isArray(response.data) ? response.data : [];
+
+      setDashboardData(prev => ({
+        ...prev,
+        conversations: conversations
+      }));
+      setErrors(prev => ({ ...prev, conversations: null }));
+    } catch (error) {
+      if (error.message !== 'REQUEST_CANCELLED') {
+        console.error('Conversations fetch failed:', error);
+        setErrors(prev => ({
+          ...prev,
+          conversations: 'Unable to load conversations. Please try again later.'
+        }));
+      }
+    } finally {
+      setLoadingStates(prev => ({ ...prev, conversations: false }));
+    }
+  };
+
+  useEffect(() => {
+    console.log('Current user:', user); // Add this
+    if (!user || user.user_type !== 'client') {
+      console.warn('User is not a client or not logged in:', user);
+    }
+    fetchDashboardData();
+  }, []);
+
 
   const formatTimeSince = (date) => {
     const now = new Date();
@@ -269,9 +470,9 @@ const ClientDashboard = () => {
     }
   };
 
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
+
+
+
 
   const fetchDashboardData = async () => {
     fetchRequests();
@@ -280,127 +481,22 @@ const ClientDashboard = () => {
     fetchSharedRequests();
   };
 
-  const fetchProjects = async () => {
-    try {
-      const response = await api.get('/projects/'); // Fetch projects from the API
-      setProjects(response.data); // Directly use the response data without modifying it
-      setErrors((prev) => ({ ...prev, projects: null }));
-    } catch (error) {
-      console.error('Error fetching projects:', error);
-      setErrors((prev) => ({ ...prev, projects: 'Failed to load projects' }));
-    } finally {
-      setLoadingStates((prev) => ({ ...prev, projects: false }));
-    }
-  };
-
-  const fetchSharedRequests = async () => {
-    try {
-      setLoadingStates((prev) => ({ ...prev, sharedRequests: true }));
-
-      const requestsResponse = await api.get('/requests/');
-      // Create a Map with request ID as key to ensure uniqueness
-      const uniqueRequestsMap = new Map();
-
-      await Promise.all(
-        requestsResponse.data.map(async (request) => {
-          try {
-            const sharesResponse = await api.get(
-              `/requests/${request.id}/shares/users`
-            );
-            const sharedUsers = sharesResponse.data;
-
-            if (sharedUsers && sharedUsers.length > 0) {
-              uniqueRequestsMap.set(request.id, {
-                ...request,
-                sharedWith: sharedUsers,
-              });
-            }
-          } catch (error) {
-            console.error(
-              `Error fetching shares for request ${request.id}:`,
-              error
-            );
-          }
-        })
-      );
-
-      const validSharedRequests = Array.from(uniqueRequestsMap.values());
-
-      setDashboardData((prev) => ({
-        ...prev,
-        sharedRequests: validSharedRequests,
-      }));
-      setErrors((prev) => ({ ...prev, sharedRequests: null }));
-    } catch (error) {
-      console.error('Shared requests fetch failed:', error);
-      setErrors((prev) => ({
-        ...prev,
-        sharedRequests: 'Unable to load shared requests',
-      }));
-    } finally {
-      setLoadingStates((prev) => ({ ...prev, sharedRequests: false }));
-    }
-  };
-
   const handleCreateRequest = async (formData) => {
+    const controller = createController('createRequest');
     try {
-      const response = await api.post('/requests/', formData);
+      const response = await api.post('/requests/', formData, {
+        signal: controller.signal
+      });
       await fetchRequests();
       setShowCreateModal(false);
       toast.success('Request created successfully');
       return response.data;
     } catch (error) {
-      console.error('Error creating request:', error);
-      toast.error(error.response?.data?.detail || 'Failed to create request');
+      if (error.message !== 'REQUEST_CANCELLED') {
+        console.error('Error creating request:', error);
+        toast.error(error.response?.data?.detail || 'Failed to create request');
+      }
       throw error;
-    }
-  };
-
-  const fetchRequests = async () => {
-    try {
-      const response = await api.get('/requests/');
-      // Sort the requests by created_at in descending order (newest first)
-      const sortedRequests = Array.isArray(response.data)
-        ? [...response.data].sort(
-          (a, b) => new Date(b.created_at) - new Date(a.created_at)
-        )
-        : [];
-
-      setDashboardData((prev) => ({
-        ...prev,
-        requests: sortedRequests,
-      }));
-      setErrors((prev) => ({ ...prev, requests: null }));
-    } catch (error) {
-      console.error('Requests fetch failed:', error);
-      setErrors((prev) => ({
-        ...prev,
-        requests: 'Unable to load requests. Please try again later.',
-      }));
-    } finally {
-      setLoadingStates((prev) => ({ ...prev, requests: false }));
-    }
-  };
-
-  const fetchConversations = async () => {
-    try {
-      const response = await api.get('/conversations/user/list');
-      const conversations = Array.isArray(response.data) ? response.data : [];
-
-      setDashboardData(prev => ({
-        ...prev,
-        conversations: conversations
-      }));
-
-      setErrors(prev => ({ ...prev, conversations: null }));
-    } catch (error) {
-      console.error('Conversations fetch failed:', error);
-      setErrors(prev => ({
-        ...prev,
-        conversations: 'Unable to load conversations. Please try again later.'
-      }));
-    } finally {
-      setLoadingStates(prev => ({ ...prev, conversations: false }));
     }
   };
 
@@ -492,6 +588,7 @@ const ClientDashboard = () => {
   const renderRequests = () => (
     <div className={styles.expandedSection}>
       <h2>Work Requests</h2>
+      {console.log('Current requests:', dashboardData.requests)}
       {dashboardData.requests.length > 0 && (
         <div className={styles.groupingInfo}>
           <span className={styles.groupingMessage}>
@@ -545,16 +642,6 @@ const ClientDashboard = () => {
 
   const isLoading = Object.values(loadingStates).some((state) => state);
 
-  if (isLoading) {
-    return (
-      <div className={styles.dashboardContainer}>
-        <Header />
-        <div className={styles.loadingContainer}>
-          <div className={styles.loading}>Loading your dashboard...</div>
-        </div>
-      </div>
-    );
-  }
 
   // Replace the current return statement with this
   if (isLoading) {

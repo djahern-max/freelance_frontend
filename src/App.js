@@ -52,18 +52,38 @@ import api from './utils/api';
 function AppContent() {
   const dispatch = useDispatch();
 
+  // Add performance monitoring for development
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development' && window.performance && window.performance.memory) {
+      const memoryCheck = setInterval(() => {
+        const { usedJSHeapSize, totalJSHeapSize } = window.performance.memory;
+        const usedMB = Math.round(usedJSHeapSize / 1024 / 1024);
+        const totalMB = Math.round(totalJSHeapSize / 1024 / 1024);
+        console.log(`Memory usage: ${usedMB}MB / ${totalMB}MB`);
+
+        // Alert if memory usage is getting high (over 80% of total)
+        if (usedMB > totalMB * 0.8) {
+          console.warn('High memory usage detected!');
+        }
+      }, 10000);
+
+      return () => clearInterval(memoryCheck);
+    }
+  }, []);
+
+  // Authentication check
   useEffect(() => {
     const token = localStorage.getItem('token');
 
     if (token) {
-
+      const controller = new AbortController();
 
       api
         .get('/auth/me', {
           headers: { Authorization: `Bearer ${token}` },
+          signal: controller.signal
         })
         .then((response) => {
-
           dispatch(
             login({
               token,
@@ -80,10 +100,13 @@ function AppContent() {
           );
         })
         .catch((error) => {
+          if (error.name === 'AbortError') return;
           console.error('Auth check failed:', error);
           localStorage.removeItem('token');
           localStorage.removeItem('user');
         });
+
+      return () => controller.abort();
     }
   }, [dispatch]);
 

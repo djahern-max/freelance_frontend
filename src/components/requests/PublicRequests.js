@@ -277,19 +277,32 @@ const PublicRequests = () => {
   }, [fetchData]);
 
   useEffect(() => {
+    let mounted = true;
+
     const setupPolling = () => {
-      if (isAuthenticated) {
-        pollTimeoutRef.current = setTimeout(() => {
-          fetchData(true).then(() => {
-            setupPolling();
-          });
-        }, POLL_INTERVAL);
-      }
+      if (!mounted || !isAuthenticated) return;
+
+      pollTimeoutRef.current = setTimeout(async () => {
+        try {
+          if (mounted && isAuthenticated) {
+            await fetchData(true);
+            setupPolling(); // Setup next poll only after successful fetch
+          }
+        } catch (error) {
+          console.error('Polling error:', error);
+          if (mounted && isAuthenticated) {
+            setupPolling(); // Retry polling even after error
+          }
+        }
+      }, POLL_INTERVAL);
     };
 
-    setupPolling();
+    if (isAuthenticated) {
+      setupPolling();
+    }
 
     return () => {
+      mounted = false;
       if (pollTimeoutRef.current) {
         clearTimeout(pollTimeoutRef.current);
       }

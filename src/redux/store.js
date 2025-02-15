@@ -10,24 +10,17 @@ export const store = configureStore({
     auth: authReducer,
     profile: profileReducer,
     showcase: showcaseReducer,
-    video: videoReducer,    // Changed from videos to video
+    video: videoReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: [
-          'showcase/create/fulfilled',
-          'showcase/updateFiles/fulfilled',
-          'showcase/create/pending'
-        ],
-        ignoredActionPaths: [
-          'payload.formData',
-          'meta.arg.formData',
-          'meta.arg'
-        ],
-        ignoredPaths: [],
-      },
-    }),
+      serializableCheck: true,
+      immutableCheck: true,
+      thunk: true,
+    }).concat(/* any custom middleware */),
+  devTools: process.env.NODE_ENV !== 'production',
 });
+
+
 
 export default store;

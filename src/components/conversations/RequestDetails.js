@@ -40,6 +40,12 @@ const RequestDetails = () => {
           api.get('/conversations/user/list'),
         ]);
 
+        if (!requestResponse.data) {
+          setError('Request not found');
+          setLoading(false);
+          return;
+        }
+
         setRequest(requestResponse.data);
         const relevantConversations = conversationsResponse.data.filter(
           (conv) => conv.request_id === parseInt(requestId)
@@ -48,13 +54,26 @@ const RequestDetails = () => {
         setLoading(false);
       } catch (err) {
         console.error('Error fetching request details:', err);
-        setError('Failed to load request details');
+        // More specific error messages
+        if (err.response?.status === 404) {
+          setError('Request not found');
+        } else if (err.response?.status === 403) {
+          setError('You do not have permission to view this request');
+        } else if (err.response?.status === 401) {
+          setError('Please log in to view this request');
+          // Optionally redirect to login
+          navigate('/login', {
+            state: { from: location.pathname }
+          });
+        } else {
+          setError(err.response?.data?.detail || 'Failed to load request details');
+        }
         setLoading(false);
       }
     };
 
     fetchRequestDetails();
-  }, [requestId, token, apiUrl]);
+  }, [requestId, token, apiUrl, navigate, location.pathname]);
 
   const handleStartConversation = async () => {
     try {
@@ -127,11 +146,14 @@ const RequestDetails = () => {
     );
   }
 
-  if (error || !request) {
+  if (loading) {
     return (
       <div className={styles.container}>
         <Header />
-        <div className={styles.error}>{error || 'Request not found'}</div>
+        <div className={styles.loading}>
+          <div className={styles.loadingSpinner}></div>
+          <p>Loading request details...</p>
+        </div>
       </div>
     );
   }

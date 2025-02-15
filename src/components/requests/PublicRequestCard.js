@@ -7,7 +7,13 @@ const PublicRequestCard = ({
   onCardClick,
   isExpanded,
   onToggleExpand,
+  conversations
 }) => {
+
+  const getResponseText = () => {
+    const count = conversations?.[request.id] || 0;
+    return `${count} ${count === 1 ? 'response' : 'responses'}`;
+  };
   const getSnagButton = () => {
     if (request.status?.toLowerCase() === 'open') {
       return (
@@ -103,7 +109,7 @@ const PublicRequestCard = ({
           </div>
           <div className={styles.metaItem}>
             <MessageSquare size={16} />
-            <span>{request.responses || 0} responses</span>
+            <span>{getResponseText()}</span>
           </div>
           {request.owner_username && (
             <div className={styles.metaItem}>

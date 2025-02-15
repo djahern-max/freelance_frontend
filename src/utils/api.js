@@ -139,14 +139,30 @@ const api = axios.create({
   timeout: 30000, // Add timeout here
 });
 
+const pendingRequests = new Map();
+
 // Request interceptor with enhanced error handling
+// Update your existing request interceptor (around line 131)
 api.interceptors.request.use(
   (config) => {
-    // Add right after this line
+    // Existing config setup
     config.retries = config.retries || 3;
     config.retryCount = config.retryCount || 0;
 
-    // Log requests in development
+    // Add request deduplication
+    const requestKey = `${config.method}:${config.url}`;
+
+    // Cancel any pending requests with the same key
+    if (pendingRequests.has(requestKey)) {
+      pendingRequests.get(requestKey).abort();
+    }
+
+    // Create new controller for this request
+    const controller = new AbortController();
+    config.signal = controller.signal;
+    pendingRequests.set(requestKey, controller);
+
+    // Rest of your existing request interceptor code
     if (process.env.NODE_ENV === 'development') {
       console.log('API Request:', {
         url: `${config.baseURL}${config.url}`,
@@ -156,7 +172,6 @@ api.interceptors.request.use(
       });
     }
 
-    // Add auth token for non-public routes
     if (!isPublicRoute(config.url)) {
       const token = localStorage.getItem('token');
       if (token) {
@@ -178,6 +193,10 @@ api.interceptors.request.use(
 // Response interceptor with comprehensive error handling
 api.interceptors.response.use(
   (response) => {
+    // Add cleanup for pending requests
+    const requestKey = `${response.config.method}:${response.config.url}`;
+    pendingRequests.delete(requestKey);
+
     if (process.env.NODE_ENV === 'development') {
       console.log('API Response:', {
         url: response.config.url,
@@ -188,7 +207,11 @@ api.interceptors.response.use(
     return response;
   },
   async (error) => {
-    // Handle cancellations first, before any other error processing
+    // Add cleanup for pending requests in error case
+    const requestKey = `${error.config?.method}:${error.config?.url}`;
+    pendingRequests.delete(requestKey);
+
+    // Rest of your existing error handling code
     if (error.name === 'CanceledError' || error.message === 'canceled') {
       return Promise.reject(new Error('REQUEST_CANCELLED'));
     }
