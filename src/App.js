@@ -53,23 +53,29 @@ function AppContent() {
   const dispatch = useDispatch();
 
   // Add performance monitoring for development
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'development' && window.performance && window.performance.memory) {
-      const memoryCheck = setInterval(() => {
-        const { usedJSHeapSize, totalJSHeapSize } = window.performance.memory;
-        const usedMB = Math.round(usedJSHeapSize / 1024 / 1024);
-        const totalMB = Math.round(totalJSHeapSize / 1024 / 1024);
-        console.log(`Memory usage: ${usedMB}MB / ${totalMB}MB`);
+  // useEffect(() => {
+  //   if (process.env.NODE_ENV === 'development' && window.performance && window.performance.memory) {
+  //     const memoryCheck = setInterval(() => {
+  //       const { usedJSHeapSize, totalJSHeapSize } = window.performance.memory;
+  //       const usedMB = Math.round(usedJSHeapSize / 1024 / 1024);
+  //       const totalMB = Math.round(totalJSHeapSize / 1024 / 1024);
+  //       const usagePercentage = (usedMB / totalMB) * 100;
 
-        // Alert if memory usage is getting high (over 80% of total)
-        if (usedMB > totalMB * 0.8) {
-          console.warn('High memory usage detected!');
-        }
-      }, 10000);
+  //       console.log(`Memory usage: ${usedMB}MB / ${totalMB}MB (${usagePercentage.toFixed(1)}%)`);
 
-      return () => clearInterval(memoryCheck);
-    }
-  }, []);
+  //       // Increased threshold to 90% to reduce warning frequency
+  //       if (usedMB > totalMB * 0.9) {
+  //         console.warn('High memory usage detected!', {
+  //           used: usedMB,
+  //           total: totalMB,
+  //           percentage: usagePercentage.toFixed(1)
+  //         });
+  //       }
+  //     }, 10000);
+
+  //     return () => clearInterval(memoryCheck);
+  //   }
+  // }, []);
 
   // Authentication check
   useEffect(() => {

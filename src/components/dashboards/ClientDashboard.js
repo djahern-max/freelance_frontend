@@ -23,6 +23,8 @@ import styles from './ClientDashboard.module.css';
 import DashboardSections from './DashboardSections';
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+
 
 const ClientDashboard = () => {
   const [dashboardData, setDashboardData] = useState({
@@ -142,11 +144,12 @@ const ClientDashboard = () => {
     try {
       setLoadingStates(prev => ({ ...prev, requests: true }));
 
-      // Get token directly
       const token = localStorage.getItem('token');
 
-      // Make request exactly like the working CURL
-      const response = await axios.get('http://localhost:8000/requests/', {
+      // Ensure API_URL is defined here
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+
+      const response = await axios.get(`${API_URL}/requests/`, {
         headers: {
           'Accept': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -172,6 +175,7 @@ const ClientDashboard = () => {
       setLoadingStates(prev => ({ ...prev, requests: false }));
     }
   }, []);
+
 
   const handleCreateRequest = useCallback(async (formData) => {
     const controller = createController('createRequest');

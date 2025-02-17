@@ -29,6 +29,8 @@ const RequestDetails = () => {
   const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchRequestDetails = async () => {
       if (requestId === 'new') {
         setLoading(false);
@@ -36,32 +38,43 @@ const RequestDetails = () => {
       }
       try {
         const [requestResponse, conversationsResponse] = await Promise.all([
-          api.get(`/requests/${requestId}`),
-          api.get('/conversations/user/list'),
+          api.get(`/requests/${requestId}`, {
+            signal: controller.signal
+          }),
+          api.get('/conversations/user/list', {
+            signal: controller.signal
+          })
         ]);
 
-        if (!requestResponse.data) {
-          setError('Request not found');
+        // Only set state if the component is still mounted
+        if (!controller.signal.aborted) {
+          if (!requestResponse.data) {
+            setError('Request not found');
+            setLoading(false);
+            return;
+          }
+
+          setRequest(requestResponse.data);
+          const relevantConversations = conversationsResponse.data.filter(
+            (conv) => conv.request_id === parseInt(requestId)
+          );
+          setConversations(relevantConversations);
           setLoading(false);
+        }
+      } catch (err) {
+        // Only set error state if the request wasn't cancelled
+        if (err.name === 'AbortError' || err.message === 'REQUEST_CANCELLED') {
+          console.log('Request cancelled');
           return;
         }
 
-        setRequest(requestResponse.data);
-        const relevantConversations = conversationsResponse.data.filter(
-          (conv) => conv.request_id === parseInt(requestId)
-        );
-        setConversations(relevantConversations);
-        setLoading(false);
-      } catch (err) {
         console.error('Error fetching request details:', err);
-        // More specific error messages
         if (err.response?.status === 404) {
           setError('Request not found');
         } else if (err.response?.status === 403) {
           setError('You do not have permission to view this request');
         } else if (err.response?.status === 401) {
           setError('Please log in to view this request');
-          // Optionally redirect to login
           navigate('/login', {
             state: { from: location.pathname }
           });
@@ -73,6 +86,9 @@ const RequestDetails = () => {
     };
 
     fetchRequestDetails();
+    return () => {
+      controller.abort();
+    };
   }, [requestId, token, apiUrl, navigate, location.pathname]);
 
   const handleStartConversation = async () => {
@@ -141,19 +157,50 @@ const RequestDetails = () => {
     return (
       <div className={styles.container}>
         <Header />
-        <div className={styles.loading}>Loading request details...</div>
+        <main className={styles.content}>
+          <button className={styles.backButton} onClick={handleBack}>
+            <ArrowLeft className={styles.backIcon} />
+            Back to Dashboard
+          </button>
+          <div className={styles.loading}>
+            <div className={styles.loadingSpinner}></div>
+            <p>Loading request details...</p>
+          </div>
+        </main>
       </div>
     );
   }
 
-  if (loading) {
+  // Add this right after the first loading check
+  if (error) {
     return (
       <div className={styles.container}>
         <Header />
-        <div className={styles.loading}>
-          <div className={styles.loadingSpinner}></div>
-          <p>Loading request details...</p>
-        </div>
+        <main className={styles.content}>
+          <button className={styles.backButton} onClick={handleBack}>
+            <ArrowLeft className={styles.backIcon} />
+            Back to Dashboard
+          </button>
+          <div className={styles.errorContainer}>
+            <p className={styles.errorMessage}>{error}</p>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Add this check before trying to render request data
+  if (!request) {
+    return (
+      <div className={styles.container}>
+        <Header />
+        <main className={styles.content}>
+          <button className={styles.backButton} onClick={handleBack}>
+            <ArrowLeft className={styles.backIcon} />
+            Back to Dashboard
+          </button>
+          <div className={styles.loading}>No request data available</div>
+        </main>
       </div>
     );
   }
