@@ -52,11 +52,9 @@ const ConversationDetail = () => {
   };
 
   // 4. Callback functions (functions that need useCallback)
-  const fetchConversation = useCallback(async () => {
+  const fetchConversation = useCallback(async (signal) => {
     try {
-      // Use the user/list endpoint since we don't have a single conversation endpoint
-      const conversationsRes = await api.get('/conversations/user/list');
-      // Find the specific conversation from the list
+      const conversationsRes = await api.get('/conversations/user/list', { signal });
       const conversation = conversationsRes.data.find(
         (conv) => conv.id === parseInt(id)
       );
@@ -65,15 +63,19 @@ const ConversationDetail = () => {
         throw new Error('Conversation not found');
       }
 
-      const requestRes = await api.get(`/requests/${conversation.request_id}`);
+      const requestRes = await api.get(`/requests/${conversation.request_id}`, { signal });
 
-      setConversation(conversation);
-      setRequestDetails(requestRes.data);
-      setIsLoading(false);
+      if (!signal.aborted) {
+        setConversation(conversation);
+        setRequestDetails(requestRes.data);
+        setIsLoading(false);
+      }
     } catch (err) {
-      console.error('Error fetching conversation:', err);
-      toast.error('Failed to load conversation.');
-      setIsLoading(false);
+      if (!signal.aborted) {
+        console.error('Error fetching conversation:', err);
+        toast.error('Failed to load conversation.');
+        setIsLoading(false);
+      }
     }
   }, [id]);
 
@@ -81,13 +83,80 @@ const ConversationDetail = () => {
 
 
 
-  // Polling effects
+  // First useEffect - Polling
   useEffect(() => {
     if (!id || !token) return;
-    fetchConversation();
-    const intervalId = setInterval(fetchConversation, 5000);
-    return () => clearInterval(intervalId);
-  }, [id, token, fetchConversation]);
+
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    const fetchWithSignal = async () => {
+      try {
+        const conversationsRes = await api.get('/conversations/user/list', { signal });
+        const conversation = conversationsRes.data.find(
+          (conv) => conv.id === parseInt(id)
+        );
+
+        if (!conversation) {
+          throw new Error('Conversation not found');
+        }
+
+        const requestRes = await api.get(`/requests/${conversation.request_id}`, { signal });
+
+        if (!signal.aborted) {
+          setConversation(conversation);
+          setRequestDetails(requestRes.data);
+          setIsLoading(false);
+        }
+      } catch (err) {
+        if (!signal.aborted) {
+          console.error('Error fetching conversation:', err);
+          toast.error('Failed to load conversation.');
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchWithSignal();
+    const intervalId = setInterval(fetchWithSignal, 5000);
+
+    return () => {
+      controller.abort();
+      clearInterval(intervalId);
+    };
+  }, [id, token]);
+
+  // Second useEffect - State cleanup
+  useEffect(() => {
+    return () => {
+      setConversation(null);
+      setRequestDetails(null);
+      setNewMessage('');
+      setIsLoading(true);
+      setAgreement(null);
+      setShowAgreementModal(false);
+      setIsSidebarVisible(false);
+      setShowSubscriptionDialog(false);
+      setPendingMessage(null);
+    };
+  }, []);
+
+  // Third useEffect - Event listener cleanup
+  useEffect(() => {
+    const handleEscapeKey = (e) => {
+      if (e.key === 'Escape') {
+        setIsSidebarVisible(false);
+        setShowAgreementModal(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleEscapeKey);
+    return () => {
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, []);
+
+
 
 
 
@@ -142,27 +211,25 @@ const ConversationDetail = () => {
     e.preventDefault();
     if (!newMessage.trim()) return;
 
+    const controller = new AbortController();
     try {
-      // Try to send message directly without checking subscription first
       await axios.post(
         `${apiUrl}/conversations/${id}/messages`,
         { content: newMessage.trim() },
         {
           headers: { Authorization: `Bearer ${token}` },
+          signal: controller.signal
         }
       );
       setNewMessage('');
       await fetchConversation();
     } catch (err) {
-      if (err.response?.status === 402 && user.userType === 'developer') {
-        // Only show subscription dialog for developers when backend requires it
-        setShowSubscriptionDialog(true);
-        setPendingMessage(newMessage.trim());
-      } else {
+      if (!controller.signal.aborted) {
         console.error('Failed to send message:', err);
         toast.error('Failed to send message.');
       }
     }
+    return () => controller.abort();
   };
 
   if (isLoading) {
@@ -481,7 +548,7 @@ const ConversationDetail = () => {
         </div>
       )}
 
-      <SubscriptionDialog
+      {/* <SubscriptionDialog
         isOpen={showSubscriptionDialog}
         onClose={() => {
           setShowSubscriptionDialog(false);
@@ -508,7 +575,7 @@ const ConversationDetail = () => {
             }
           }
         }}
-      />
+      /> */}
 
     </div>
   );

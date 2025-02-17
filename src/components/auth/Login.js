@@ -24,6 +24,14 @@ const Login = () => {
     clearAuthData();
   }, []);
 
+  useEffect(() => {
+    performance.mark('loginStart');
+    return () => {
+      performance.mark('loginEnd');
+      performance.measure('loginLifetime', 'loginStart', 'loginEnd');
+    };
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({

@@ -9,8 +9,8 @@ import {
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import api from '../../utils/api'; // Added this line
-import SubscriptionDialog from '../payments/SubscriptionDialog';
+
+
 import Header from '../shared/Header';
 import styles from './ConversationsList.module.css';
 
@@ -19,25 +19,25 @@ const ConversationsList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
-  const [hasSubscription, setHasSubscription] = useState(null);
-  const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
+  // const [hasSubscription, setHasSubscription] = useState(null);
+  // const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
 
   const navigate = useNavigate();
   const { token, user } = useSelector((state) => state.auth);
 
-  const checkSubscription = async () => {
-    if (user?.userType !== 'developer') return true;
+  // const checkSubscription = async () => {
+  //   if (user?.userType !== 'developer') return true;
 
-    try {
-      const response = await api.get('/payments/subscription-status');
-      setHasSubscription(response.data.status === 'active');
-      return response.data.status === 'active';
-    } catch (error) {
-      console.error('Subscription check failed:', error);
-      setHasSubscription(false);
-      return false;
-    }
-  };
+  //   try {
+  //     const response = await api.get('/payments/subscription-status');
+  //     setHasSubscription(response.data.status === 'active');
+  //     return response.data.status === 'active';
+  //   } catch (error) {
+  //     console.error('Subscription check failed:', error);
+  //     setHasSubscription(false);
+  //     return false;
+  //   }
+  // };
 
   const formatTimeSince = (date) => {
     const now = new Date();
@@ -52,19 +52,24 @@ const ConversationsList = () => {
     return date.toLocaleDateString();
   };
 
+  // const fetchConversations = async () => {
+  //   try {
+  //     setLoading(true);
+  //     setError('');
+
+  //     if (user?.userType === 'developer' && hasSubscription === null) {
+  //       const subscribed = await checkSubscription();
+  //       if (!subscribed) {
+  //         setShowSubscriptionDialog(true);
+  //         setLoading(false);
+  //         return;
+  //       }
+  //     }
+
   const fetchConversations = async () => {
     try {
       setLoading(true);
       setError('');
-
-      if (user?.userType === 'developer' && hasSubscription === null) {
-        const subscribed = await checkSubscription();
-        if (!subscribed) {
-          setShowSubscriptionDialog(true);
-          setLoading(false);
-          return;
-        }
-      }
 
       const response = await axios.get(
         `${process.env.REACT_APP_API_URL}/conversations/user/list`,
@@ -100,12 +105,17 @@ const ConversationsList = () => {
     }
   };
 
+  // useEffect(() => {
+  //   if (user?.userType === 'developer' && hasSubscription === null) {
+  //     checkSubscription();
+  //   }
+  //   fetchConversations();
+  // }, [token, hasSubscription]);
+
   useEffect(() => {
-    if (user?.userType === 'developer' && hasSubscription === null) {
-      checkSubscription();
-    }
+
     fetchConversations();
-  }, [token, hasSubscription]);
+  }, [token]);
 
   const getOtherUserName = (conversation) => {
     return user.id === conversation.starter_user_id
@@ -132,8 +142,8 @@ const ConversationsList = () => {
     const lastMessageTime =
       conversation.messages?.length > 0
         ? new Date(
-            conversation.messages[conversation.messages.length - 1].created_at
-          )
+          conversation.messages[conversation.messages.length - 1].created_at
+        )
         : new Date(conversation.created_at);
 
     const timeSince = formatTimeSince(lastMessageTime);
@@ -215,33 +225,29 @@ const ConversationsList = () => {
 
         <div className={styles.filters}>
           <button
-            className={`${styles.filterButton} ${
-              activeFilter === 'all' ? styles.active : ''
-            }`}
+            className={`${styles.filterButton} ${activeFilter === 'all' ? styles.active : ''
+              }`}
             onClick={() => setActiveFilter('all')}
           >
             All
           </button>
           <button
-            className={`${styles.filterButton} ${
-              activeFilter === 'active' ? styles.active : ''
-            }`}
+            className={`${styles.filterButton} ${activeFilter === 'active' ? styles.active : ''
+              }`}
             onClick={() => setActiveFilter('active')}
           >
             Active
           </button>
           <button
-            className={`${styles.filterButton} ${
-              activeFilter === 'pending' ? styles.active : ''
-            }`}
+            className={`${styles.filterButton} ${activeFilter === 'pending' ? styles.active : ''
+              }`}
             onClick={() => setActiveFilter('pending')}
           >
             Pending
           </button>
           <button
-            className={`${styles.filterButton} ${
-              activeFilter === 'completed' ? styles.active : ''
-            }`}
+            className={`${styles.filterButton} ${activeFilter === 'completed' ? styles.active : ''
+              }`}
             onClick={() => setActiveFilter('completed')}
           >
             Completed
@@ -268,14 +274,14 @@ const ConversationsList = () => {
             getFilteredConversations().map(renderConversationCard)
           )}
         </div>
-        <SubscriptionDialog
+        {/* <SubscriptionDialog
           isOpen={showSubscriptionDialog}
           onClose={() => setShowSubscriptionDialog(false)}
           onSuccess={() => {
             setShowSubscriptionDialog(false);
             fetchConversations();
           }}
-        />
+        /> */}
       </main>
     </div>
   );

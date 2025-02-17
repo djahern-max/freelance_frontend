@@ -1,128 +1,268 @@
-import { useEffect } from 'react';
+import React, { useEffect, Suspense } from 'react';
 import { Provider, useDispatch } from 'react-redux';
-import {
-  Navigate,
-  Route,
-  BrowserRouter as Router,
-  Routes,
-} from 'react-router-dom';
+import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles/toast.css';
-import Login from './components/auth/Login';
-import Logout from './components/auth/Logout';
-import Register from './components/auth/Register';
-import ProtectedRoute from './components/common/ProtectedRoute';
-import ConversationDetail from './components/conversations/ConversationDetail';
-import ConversationsList from './components/conversations/ConversationsList';
-import RequestDetails from './components/conversations/RequestDetails';
-import RequestResponses from './components/conversations/RequestResponses';
-import ClientDashboard from './components/dashboards/ClientDashboard';
-import DeveloperDashboard from './components/dashboards/DeveloperDashboard';
-import Home from './components/pages/HomePage';
-import SubscriptionSuccess from './components/payments/SubscriptionSuccess';
-import PublicDevelopers from './components/profiles/PublicDevelopers';
-import CreateProject from './components/projects/CreateProject';
-import ProjectDetails from './components/projects/ProjectDetails';
-import ProjectsList from './components/projects/ProjectsList';
-import PublicRequests from './components/requests/PublicRequests';
-import Requests from './components/requests/Request';
-import Settings from './components/settings/Settings';
-import Footer from './components/shared/Footer';
+import './styles/global.css';
+
+// Core components that are always needed
 import Header from './components/shared/Header';
-import VideoList from './components/videos/VideoList';
-import VideoUpload from './components/videos/VideoUpload';
-import DeveloperProfileView from './components/profiles/DeveloperProfileView';
-import SharedVideo from './components/videos/SharedVideo';
-// Showcase-related imports
-import ShowcaseList from './components/showcase/ShowcaseList';
-import ShowcaseForm from './components/showcase/ShowcaseForm';
-import SharedShowcase from './components/showcase/SharedShowcase';
-import EditShowcaseForm from './components/showcase/EditShowcaseForm';
-
-
-
-
+import Footer from './components/shared/Footer';
+import Home from './components/pages/HomePage';
+import ProtectedRoute from './components/common/ProtectedRoute';
 
 import { login } from './redux/authSlice';
 import { store } from './redux/store';
-import './styles/global.css';
 import api from './utils/api';
+import MemoryMonitor from './utils/debug/MemoryMonitor';
+
+// Lazy load all other components
+const Login = React.lazy(() => import('./components/auth/Login'));
+const Logout = React.lazy(() => import('./components/auth/Logout'));
+const Register = React.lazy(() => import('./components/auth/Register'));
+const ConversationDetail = React.lazy(() => import('./components/conversations/ConversationDetail'));
+const ConversationsList = React.lazy(() => import('./components/conversations/ConversationsList'));
+const RequestDetails = React.lazy(() => import('./components/conversations/RequestDetails'));
+const RequestResponses = React.lazy(() => import('./components/conversations/RequestResponses'));
+const ClientDashboard = React.lazy(() => import('./components/dashboards/ClientDashboard'));
+const DeveloperDashboard = React.lazy(() => import('./components/dashboards/DeveloperDashboard'));
+const SubscriptionSuccess = React.lazy(() => import('./components/payments/SubscriptionSuccess'));
+const PublicDevelopers = React.lazy(() => import('./components/profiles/PublicDevelopers'));
+const CreateProject = React.lazy(() => import('./components/projects/CreateProject'));
+const ProjectDetails = React.lazy(() => import('./components/projects/ProjectDetails'));
+const ProjectsList = React.lazy(() => import('./components/projects/ProjectsList'));
+const PublicRequests = React.lazy(() => import('./components/requests/PublicRequests'));
+const Requests = React.lazy(() => import('./components/requests/Request'));
+const Settings = React.lazy(() => import('./components/settings/Settings'));
+const VideoList = React.lazy(() => import('./components/videos/VideoList'));
+const VideoUpload = React.lazy(() => import('./components/videos/VideoUpload'));
+const DeveloperProfileView = React.lazy(() => import('./components/profiles/DeveloperProfileView'));
+const SharedVideo = React.lazy(() => import('./components/videos/SharedVideo'));
+const ShowcaseList = React.lazy(() => import('./components/showcase/ShowcaseList'));
+const ShowcaseForm = React.lazy(() => import('./components/showcase/ShowcaseForm'));
+const SharedShowcase = React.lazy(() => import('./components/showcase/SharedShowcase'));
+const EditShowcaseForm = React.lazy(() => import('./components/showcase/EditShowcaseForm'));
+
+
+const LoadingFallback = () => (
+  <div className="loading-spinner">Loading...</div>
+);
 
 function AppContent() {
   const dispatch = useDispatch();
 
-  // Add performance monitoring for development
-  // useEffect(() => {
-  //   if (process.env.NODE_ENV === 'development' && window.performance && window.performance.memory) {
-  //     const memoryCheck = setInterval(() => {
-  //       const { usedJSHeapSize, totalJSHeapSize } = window.performance.memory;
-  //       const usedMB = Math.round(usedJSHeapSize / 1024 / 1024);
-  //       const totalMB = Math.round(totalJSHeapSize / 1024 / 1024);
-  //       const usagePercentage = (usedMB / totalMB) * 100;
-
-  //       console.log(`Memory usage: ${usedMB}MB / ${totalMB}MB (${usagePercentage.toFixed(1)}%)`);
-
-  //       // Increased threshold to 90% to reduce warning frequency
-  //       if (usedMB > totalMB * 0.9) {
-  //         console.warn('High memory usage detected!', {
-  //           used: usedMB,
-  //           total: totalMB,
-  //           percentage: usagePercentage.toFixed(1)
-  //         });
-  //       }
-  //     }, 10000);
-
-  //     return () => clearInterval(memoryCheck);
-  //   }
-  // }, []);
-
-  // Authentication check
   useEffect(() => {
+    const controller = new AbortController();
     const token = localStorage.getItem('token');
 
-    if (token) {
-      const controller = new AbortController();
+    const checkAuth = async () => {
+      if (!token) return;
 
-      api
-        .get('/auth/me', {
+      try {
+        const response = await api.get('/auth/me', {
           headers: { Authorization: `Bearer ${token}` },
           signal: controller.signal
-        })
-        .then((response) => {
-          dispatch(
-            login({
-              token,
-              user: {
-                id: response.data.id,
-                username: response.data.username,
-                email: response.data.email,
-                fullName: response.data.full_name,
-                isActive: response.data.is_active,
-                userType: response.data.user_type,
-                createdAt: response.data.created_at,
-              },
-            })
-          );
-        })
-        .catch((error) => {
-          if (error.name === 'AbortError') return;
-          console.error('Auth check failed:', error);
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
         });
 
-      return () => controller.abort();
-    }
+        dispatch(login({
+          token,
+          user: {
+            id: response.data.id,
+            username: response.data.username,
+            email: response.data.email,
+            fullName: response.data.full_name,
+            isActive: response.data.is_active,
+            userType: response.data.user_type,
+            createdAt: response.data.created_at,
+          },
+        }));
+      } catch (error) {
+        if (error.name === 'AbortError') return;
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      }
+    };
+
+    checkAuth();
+    return () => controller.abort();
   }, [dispatch]);
 
   return (
     <>
+      <Header />
+      <div className="app-content">
+        <Suspense fallback={<LoadingFallback />}>
+          <Routes>
+            {/* Public routes */}
+            <Route path="/" element={<Home />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/logout" element={<Logout />} />
+            <Route path="/opportunities" element={<PublicRequests />} />
+            <Route path="/videos" element={<VideoList />} />
+            <Route path="/video_display/stream/:video_id" element={<VideoList />} />
+            <Route path="/profile/developers/:id/public" element={<DeveloperProfileView />} />
+            <Route path="/creators" element={<PublicDevelopers />} />
+            <Route path="/shared/videos/:shareToken" element={<SharedVideo />} />
+            <Route path="/subscription/success" element={<SubscriptionSuccess />} />
 
+            {/* Showcase routes */}
+            <Route
+              path="/showcase"
+              element={
+                <ProtectedRoute>
+                  <ShowcaseList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/showcase/new"
+              element={
+                <ProtectedRoute userType="developer" requiresSubscription={true}>
+                  <ShowcaseForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/showcase/edit/:id"
+              element={
+                <ProtectedRoute userType="developer" requiresSubscription={true}>
+                  <EditShowcaseForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/showcase/:id" element={<SharedShowcase />} />
+
+            {/* Video routes */}
+            <Route
+              path="/video-upload"
+              element={
+                <ProtectedRoute>
+                  <VideoUpload />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Client routes */}
+            <Route
+              path="/client-dashboard"
+              element={
+                <ProtectedRoute userType="client">
+                  <ClientDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/create-project"
+              element={
+                <ProtectedRoute userType="client">
+                  <CreateProject />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/projects/:projectId"
+              element={
+                <ProtectedRoute userType="client">
+                  <ProjectDetails />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Developer routes */}
+            <Route
+              path="/developer-dashboard"
+              element={
+                <ProtectedRoute userType="developer">
+                  <DeveloperDashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Protected routes */}
+            <Route
+              path="/conversations/:id"
+              element={
+                <ProtectedRoute>
+                  <ConversationDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/conversations"
+              element={
+                <ProtectedRoute>
+                  <ConversationsList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/requests"
+              element={
+                <ProtectedRoute>
+                  <Requests />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/requests/responses"
+              element={
+                <ProtectedRoute>
+                  <RequestResponses />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/requests/:requestId"
+              element={
+                <ProtectedRoute>
+                  <RequestDetails />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Settings />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/projects"
+              element={
+                <ProtectedRoute>
+                  <ProjectsList />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Dashboard redirect */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  {({ user }) => (
+                    <Navigate
+                      to={user.userType === 'client' ? '/client-dashboard' : '/developer-dashboard'}
+                      replace
+                    />
+                  )}
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Fallback route */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
+      </div>
+      <Footer />
       <ToastContainer
         position="top-right"
-        autoClose={5000}
-        hideProgressBar={false} // Show progress bar for better UX
+        autoClose={3000}
+        hideProgressBar={false}
         newestOnTop
         closeOnClick
         rtl={false}
@@ -130,6 +270,7 @@ function AppContent() {
         draggable
         pauseOnHover
         theme="light"
+        limit={5}
         toastStyle={{
           background: '#fff',
           borderRadius: '8px',
@@ -142,227 +283,27 @@ function AppContent() {
           background: 'var(--primary-color, #007bff)'
         }}
       />
-      <Routes>
-        {/* Conversation route without header/footer */}
-        <Route
-          path="/conversations/:id"
-          element={
-            <ProtectedRoute>
-              <ConversationDetail />
-            </ProtectedRoute>
-          }
-        />
-
-
-        <Route
-          path="*"
-          element={
-            <>
-              <Header />
-              <div className="app-content">
-                <Routes>
-                  {/* Public routes */}
-                  <Route path="/" element={<Home />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/logout" element={<Logout />} />
-                  <Route path="/opportunities" element={<PublicRequests />} />
-                  <Route path="/videos" element={<VideoList />} />
-                  <Route path="/video_display/stream/:video_id" element={<VideoList />} />
-                  <Route path="/profile/developers/:id/public" element={<DeveloperProfileView />} />
-                  <Route path="/creators" element={<PublicDevelopers />} />
-                  <Route path="/shared/videos/:shareToken" element={<SharedVideo />} />
-
-
-                  {/* Showcase routes */}
-                  {/* Showcase routes */}
-                  <Route path="/showcase" element={<ProtectedRoute><ShowcaseList /></ProtectedRoute>} />
-                  <Route
-                    path="/showcase/new"
-                    element={
-                      <ProtectedRoute userType="developer" requiresSubscription={true}>
-                        <ShowcaseForm />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/showcase/edit/:id"
-                    element={
-                      <ProtectedRoute userType="developer" requiresSubscription={true}>
-                        <EditShowcaseForm />
-                      </ProtectedRoute>
-                    }
-                  />
-                  {/* This should come last */}
-                  <Route path="/showcase/:id" element={<SharedShowcase />} />
-
-                  <Route
-                    path="/showcase/edit/:id"
-                    element={
-                      <ProtectedRoute userType="developer" requiresSubscription={true}>
-                        <ShowcaseForm isEditing />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route path="/showcase/:shareToken" element={<SharedShowcase />} />
-
-
-                  <Route
-                    path="/subscription/success"
-                    element={<SubscriptionSuccess />}
-                  />
-
-
-                  {/* Client-specific routes */}
-                  <Route
-                    path="/client-dashboard"
-                    element={
-                      <ProtectedRoute userType="client">
-                        <ClientDashboard />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/create-project"
-                    element={
-                      <ProtectedRoute userType="client">
-                        <CreateProject />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/projects/:projectId"
-                    element={
-                      <ProtectedRoute userType="client">
-                        <ProjectDetails />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/requests"
-                    element={
-                      <ProtectedRoute>
-                        <Requests />
-                      </ProtectedRoute>
-                    }
-                  />
-
-                  {/* Developer-specific routes */}
-                  <Route
-                    path="/developer-dashboard"
-                    element={
-                      <ProtectedRoute userType="developer">
-                        <DeveloperDashboard />
-                      </ProtectedRoute>
-                    }
-                  />
-
-
-                  <Route
-                    path="/video-upload"
-                    element={
-                      <ProtectedRoute>
-                        <VideoUpload />
-                      </ProtectedRoute>
-                    }
-                  />
-
-                  {/* Shared routes */}
-
-                  <Route
-                    path="/conversations"
-                    element={
-                      <ProtectedRoute>
-                        <ConversationsList />
-                      </ProtectedRoute>
-                    }
-                  />
-
-                  <Route
-                    path="/requests/responses"
-                    element={
-                      <ProtectedRoute>
-                        <RequestResponses />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/requests/:requestId"
-                    element={
-                      <ProtectedRoute>
-                        <RequestDetails />
-                      </ProtectedRoute>
-                    }
-                  />
-
-                  <Route
-                    path="/profile"
-                    element={
-                      <ProtectedRoute>
-                        <Settings />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/projects"
-                    element={
-                      <ProtectedRoute>
-                        <ProjectsList />
-                      </ProtectedRoute>
-                    }
-                  />
-
-
-                  {/* Dashboard redirect based on user type */}
-                  <Route
-                    path="/dashboard"
-                    element={
-                      <ProtectedRoute>
-                        {({ user }) => (
-                          <Navigate
-                            to={
-                              user.userType === 'client'
-                                ? '/client-dashboard'
-                                : '/developer-dashboard'
-                            }
-                            replace
-                          />
-                        )}
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/developer-dashboard"
-                    element={
-                      <ProtectedRoute userType="developer">
-                        <DeveloperDashboard />
-                      </ProtectedRoute>
-                    }
-                  />
-
-
-
-                  <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-              </div>
-              <Footer />
-            </>
-          }
-        />
-      </Routes>
     </>
   );
 }
+
+// Memoize the AppContent component with explicit comparison
+const MemoizedAppContent = React.memo(AppContent, (prevProps, nextProps) => {
+  return JSON.stringify(prevProps) === JSON.stringify(nextProps);
+});
+
 function App() {
   return (
     <Provider store={store}>
       <Router>
         <div className="app-wrapper" style={{ backgroundColor: 'var(--color-background-main)' }}>
-          <AppContent />
+          <MemoizedAppContent />
+          {process.env.NODE_ENV === 'development' && <MemoryMonitor />}
         </div>
       </Router>
     </Provider>
   );
 }
 
+// Export without memory debugger to reduce overhead
 export default App;

@@ -13,7 +13,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
-import SubscriptionDialog from '../payments/SubscriptionDialog';
+
 import Header from '../shared/Header';
 import DashboardSections from './DashboardSections';
 import styles from './DeveloperDashboard.module.css';
@@ -26,8 +26,7 @@ const RequestCard = ({ request, navigate }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const maxLength = 150;
   const needsTruncation = request.content.length > maxLength;
-  const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
-  const [pendingNavigation, setPendingNavigation] = useState('');
+
 
 
 
@@ -558,35 +557,14 @@ const DeveloperDashboard = () => {
 
   const startConversation = async (request) => {
     try {
-      // First check subscription status
-      const subscriptionResponse = await api.get(
-        '/payments/subscription-status'
-      );
-
-      if (subscriptionResponse.data.status === 'active') {
-        // If subscribed, create conversation
-        const response = await api.post('/conversations/', {
-          request_id: request.id,
-        });
-        await markShareViewed(request.share_id);
-        navigate(`/conversations/${response.data.id}`);
-      } else {
-        // If not subscribed, show subscription dialog
-        setPendingRequest(request);
-        localStorage.setItem('pending_conversation_request_id', request.id);
-        setShowSubscriptionDialog(true);
-      }
+      // Create conversation directly without subscription check
+      const response = await api.post('/conversations/', {
+        request_id: request.id,
+      });
+      await markShareViewed(request.share_id);
+      navigate(`/conversations/${response.data.id}`);
     } catch (error) {
       console.error('Error starting conversation:', error);
-      if (error.response?.status === 403) {
-        // Show subscription dialog if not subscribed
-        setPendingRequest(request);
-        localStorage.setItem('pending_conversation_request_id', request.id);
-        setShowSubscriptionDialog(true);
-      } else {
-        // Handle other errors
-        console.error('Unexpected error:', error);
-      }
     }
   };
 
@@ -601,25 +579,8 @@ const DeveloperDashboard = () => {
     // Don't start conversation here - it will happen in SubscriptionSuccess component
   };
 
-  const handleShowcaseClick = async () => {
-    try {
-      // Check subscription status
-      const subscriptionResponse = await api.get('/payments/subscription-status');
-      if (subscriptionResponse.data.status === 'active') {
-        // If subscribed, navigate to showcase create
-        navigate('/showcase/create');
-      } else {
-        // If not subscribed, show subscription dialog
-        setPendingNavigation('/showcase/create');
-        setShowSubscriptionDialog(true);
-      }
-    } catch (error) {
-      console.error('Error checking subscription:', error);
-      if (error.response?.status === 403) {
-        setPendingNavigation('/showcase/create');
-        setShowSubscriptionDialog(true);
-      }
-    }
+  const handleShowcaseClick = () => {
+    navigate('/showcase/create');
   };
 
 
@@ -666,12 +627,7 @@ const DeveloperDashboard = () => {
             <DashboardSections sections={sections} renderSection={renderSection} />
           </div>
 
-          <SubscriptionDialog
-            isOpen={showSubscriptionDialog}
-            onClose={handleSubscriptionDialogClose}
-            onSuccess={handleSubscriptionSuccess}
-            returnUrl={localStorage.getItem('pending_showcase_navigation') || '/showcase/create'}
-          />
+
         </>
       )}
     </div>

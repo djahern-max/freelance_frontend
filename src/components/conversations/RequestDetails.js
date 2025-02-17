@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import api from '../../utils/api';
-import SubscriptionDialog from '../payments/SubscriptionDialog';
+// import SubscriptionDialog from '../payments/SubscriptionDialog';
 import RequestSharing from '../requests/RequestSharing'; // Import RequestSharing component
 import Header from '../shared/Header';
 import styles from './RequestDetails.module.css';
@@ -26,7 +26,7 @@ const RequestDetails = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
   const token = useSelector((state) => state.auth.token);
   const user = useSelector((state) => state.auth.user);
-  const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
+  // const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -105,21 +105,7 @@ const RequestDetails = () => {
         return;
       }
 
-      // Check subscription status
-      const subscriptionResponse = await api.get(
-        '/payments/subscription-status'
-      );
-
-
-      if (
-        !subscriptionResponse.data ||
-        subscriptionResponse.data.status !== 'active'
-      ) {
-        setShowSubscriptionDialog(true);
-        return;
-      }
-
-      // Create conversation if subscription is active
+      // Create conversation directly without subscription check
       const response = await api.post('/conversations/', {
         request_id: parseInt(requestId),
       });
@@ -127,10 +113,6 @@ const RequestDetails = () => {
       navigate(`/conversations/${response.data.id}`);
     } catch (err) {
       console.error('Error starting conversation:', err);
-      if (err.response?.status === 403) {
-        setShowSubscriptionDialog(true);
-        return;
-      }
       setError(err.message || 'Failed to start conversation');
     }
   };
@@ -309,7 +291,7 @@ const RequestDetails = () => {
         </div>
       </main>
 
-      <SubscriptionDialog
+      {/* <SubscriptionDialog
         isOpen={showSubscriptionDialog}
         onClose={() => setShowSubscriptionDialog(false)}
         onSuccess={async () => {
@@ -330,7 +312,7 @@ const RequestDetails = () => {
             setError('Failed to verify subscription. Please try again.');
           }
         }}
-      />
+      /> */}
     </div>
   );
 };
