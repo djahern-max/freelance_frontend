@@ -4,6 +4,7 @@ import { stripeService } from '../../utils/stripeService';
 
 const DonationModal = ({ onClose }) => {
     const [amount, setAmount] = useState('5');
+    const [isAnonymous, setIsAnonymous] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
@@ -16,7 +17,8 @@ const DonationModal = ({ onClose }) => {
 
             const response = await stripeService.createDonationSession({
                 amount: Math.floor(parseFloat(amount) * 100), // Convert to cents
-                currency: 'usd'
+                currency: 'usd',
+                isAnonymous: isAnonymous // Add the anonymous flag
             });
 
             if (response.url) {
@@ -60,6 +62,17 @@ const DonationModal = ({ onClose }) => {
                             step="1"
                         />
                     </div>
+                </div>
+
+                <div className={styles.anonymousOption}>
+                    <label className={styles.checkboxLabel}>
+                        <input
+                            type="checkbox"
+                            checked={isAnonymous}
+                            onChange={(e) => setIsAnonymous(e.target.checked)}
+                        />
+                        Make this donation anonymous
+                    </label>
                 </div>
 
                 {error && <div className={styles.error}>{error}</div>}

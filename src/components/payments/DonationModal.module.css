@@ -91,3 +91,21 @@
     margin-top: 8px;
     font-size: 14px;
 }
+
+.anonymousOption {
+    margin: 1rem 0;
+    text-align: left;
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.checkboxLabel input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
