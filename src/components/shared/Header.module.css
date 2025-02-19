@@ -154,6 +154,38 @@
   color: var(--color-text-primary);
 }
 
+.specialIcon {
+  color: #ef4444 !important;
+}
+
+.specialIcon:hover {
+  background-color: rgba(239, 68, 68, 0.1) !important;
+  transform: translateY(-2px);
+}
+
+.specialIcon .iconImage {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.icon.specialIcon:hover .iconImage {
+  transform: scale(1.2);
+  color: #ef4444;
+}
+
 /* Tablet and below */
 @media (max-width: 768px) {
   .header {
