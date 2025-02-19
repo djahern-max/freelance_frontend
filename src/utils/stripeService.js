@@ -34,25 +34,19 @@ export const createPaymentIntent = async (amount) => {
     }
 };
 
-export const createDonationSession = async ({ amount, currency = 'usd' }) => {
+export const createDonationSession = async (data) => {
     try {
-        console.log('Creating donation session for amount:', amount);
-
         const response = await fetch('/api/payments/create-donation-session', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                amount,
-                currency
-            }),
+            body: JSON.stringify(data),
         });
 
         return handleResponse(response);
     } catch (error) {
-        console.error('Error creating donation session:', error);
+        console.error('Donation session creation failed:', error);
         throw error;
     }
 };

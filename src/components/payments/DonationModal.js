@@ -13,16 +13,18 @@ const DonationModal = ({ onClose }) => {
         try {
             setLoading(true);
             setError('');
+
             const response = await stripeService.createDonationSession({
                 amount: Math.floor(parseFloat(amount) * 100), // Convert to cents
                 currency: 'usd'
             });
+
             if (response.url) {
                 window.location.href = response.url;
             }
         } catch (error) {
-            setError('Failed to process donation. Please try again.');
             console.error('Donation error:', error);
+            setError('Failed to process donation. Please try again.');
         } finally {
             setLoading(false);
         }
