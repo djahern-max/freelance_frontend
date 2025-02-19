@@ -55,7 +55,7 @@ const ReadmeModal = ({ showcase, onClose }) => {
                     ) : (
                         <div
                             className={styles.markdown}
-                            dangerouslySetInnerHTML={{ __html: content }}
+                            dangerouslySetInnerHTML={{ __html: content.replace(/\n/g, '<br>') }}
                         />
                     )}
                 </div>

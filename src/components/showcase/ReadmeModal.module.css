@@ -77,8 +77,15 @@
 
 .markdown {
     line-height: 1.6;
-    color: #333;
+    /* Improve line spacing */
+    white-space: pre-line;
+    /* Preserve line breaks */
+    text-align: left;
+    /* Align text properly */
+    padding: 10px;
+    /* Add padding for better readability */
 }
+
 
 .markdown h1,
 .markdown h2,

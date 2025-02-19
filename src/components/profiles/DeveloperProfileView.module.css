@@ -8,10 +8,18 @@
 
 .profileCard {
     background: white;
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 24px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    position: relative;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.profileHeader {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
 }
 
 .headerSection {
@@ -62,11 +70,69 @@
 }
 
 .profileImage {
-    width: 120px;
-    height: 120px;
-    border-radius: 60px;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
     object-fit: cover;
-    margin-bottom: 16px;
+}
+
+.username {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.stats {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.statItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #666;
+}
+
+.statIcon {
+    font-size: 1.2rem;
+}
+
+.readMoreLink {
+    color: #0066cc;
+    background: none;
+    border: none;
+    padding: 0;
+    margin-left: 4px;
+    cursor: pointer;
+    font-size: inherit;
+}
+
+.skillsTitle {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.skillsList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.skillPill {
+    background: #f0f7ff;
+    color: #0066cc;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 0.9rem;
+}
+
+.bioSection {
+    margin-bottom: 24px;
+    line-height: 1.6;
 }
 
 .name {

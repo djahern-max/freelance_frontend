@@ -418,7 +418,7 @@ const PublicRequests = () => {
           />
         ) : (
           <div className={styles.requestsGrid}>
-            {publicRequests.map((request) => (
+            {[...publicRequests].reverse().map((request) => (
               <PublicRequestCard
                 key={request.id}
                 request={request}

@@ -18,12 +18,14 @@ const DEFAULT_VALUES = {
     experience_years: '',
     bio: '',
     is_public: false,
+    total_projects: '0',
 };
 
 const PLACEHOLDERS = {
     skills: 'Python, React, FastAPI...',
     experience_years: '0',
     bio: 'Tell us about your experience and expertise...',
+    total_projects: '0',  // Add this line
 };
 
 const DeveloperProfile = () => {
@@ -46,6 +48,7 @@ const DeveloperProfile = () => {
                         experience_years: data.experience_years?.toString() || '',
                         bio: data.bio || '',
                         is_public: data.is_public || false,
+                        total_projects: data.total_projects?.toString() || '0',
                     });
                 } else {
                     setFormData(DEFAULT_VALUES);
@@ -65,6 +68,7 @@ const DeveloperProfile = () => {
             const processedData = {
                 ...formData,
                 experience_years: parseInt(formData.experience_years) || 0,
+                total_projects: parseInt(formData.total_projects) || 0,  // Add this line
             };
 
             // If profile exists, update it; otherwise, create it
@@ -212,6 +216,23 @@ const DeveloperProfile = () => {
                             rows={4}
                             required
                         />
+                    </div>
+
+                    <div className={styles.formGroup}>
+                        <div className={styles.labelContainer}>
+                            <label className={styles.label}>Total Completed Projects</label>
+                        </div>
+                        <input
+                            type="number"
+                            className={styles.input}
+                            value={formData.total_projects}
+                            onChange={(e) =>
+                                setFormData({ ...formData, total_projects: e.target.value })
+                            }
+                            placeholder={PLACEHOLDERS.total_projects}
+                            min="0"
+                        />
+                        <span className={styles.helpText}>Number of projects you have successfully completed</span>
                     </div>
 
                     <div className={styles.formGroup}>

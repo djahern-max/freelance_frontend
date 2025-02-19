@@ -20,7 +20,7 @@ const Features = () => {
     {
       icon: CheckCircle,
       title: 'Solutions',
-      path: '/marketplace/products',
+      path: '/showcase',
       requiresAuth: false,
     },
     {

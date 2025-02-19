@@ -64,7 +64,7 @@ const ShowcaseList = () => {
               existingShowcase => existingShowcase.id === newShowcase.id
             )
           );
-          return [...prev, ...newShowcases];
+          return [...newShowcases.reverse(), ...prev];
         });
       } catch (error) {
         console.error('Failed to fetch showcases:', error);

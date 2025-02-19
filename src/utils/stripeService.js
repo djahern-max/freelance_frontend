@@ -1,4 +1,5 @@
 // src/utils/stripeService.js
+
 const handleResponse = async (response) => {
     const data = await response.json();
 
@@ -21,7 +22,6 @@ export const createPaymentIntent = async (amount) => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                // Add any auth headers you might need
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             },
             body: JSON.stringify({ amount }),
@@ -30,6 +30,29 @@ export const createPaymentIntent = async (amount) => {
         return handleResponse(response);
     } catch (error) {
         console.error('Error creating payment intent:', error);
+        throw error;
+    }
+};
+
+export const createDonationSession = async ({ amount, currency = 'usd' }) => {
+    try {
+        console.log('Creating donation session for amount:', amount);
+
+        const response = await fetch('/api/payments/create-donation-session', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify({
+                amount,
+                currency
+            }),
+        });
+
+        return handleResponse(response);
+    } catch (error) {
+        console.error('Error creating donation session:', error);
         throw error;
     }
 };
@@ -66,3 +89,13 @@ export const processPayment = async (stripe, elements, clientSecret) => {
         throw error;
     }
 };
+
+// Export all functions together for easier imports
+export const stripeService = {
+    createPaymentIntent,
+    createDonationSession,
+    getStripeConfig,
+    processPayment
+};
+
+export default stripeService;
