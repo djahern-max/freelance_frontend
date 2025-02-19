@@ -15,11 +15,27 @@ const DonationModal = ({ onClose }) => {
             setLoading(true);
             setError('');
 
-            const response = await stripeService.createDonationSession({
+            const donationData = {
                 amount: Math.floor(parseFloat(amount) * 100), // Convert to cents
                 currency: 'usd',
-                isAnonymous: isAnonymous // Add the anonymous flag
-            });
+                isAnonymous: isAnonymous
+            };
+
+            // Include auth token if not anonymous
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+
+            if (!isAnonymous) {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+            }
+
+            console.log('Sending donation data:', donationData);
+
+            const response = await stripeService.createDonationSession(donationData);
 
             if (response.url) {
                 window.location.href = response.url;

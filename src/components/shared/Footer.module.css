@@ -1,73 +1,100 @@
 .footer {
   position: fixed;
   bottom: 0;
-  left: 0;
   width: 100%;
-  background-color: var(--color-background);
-  border-top: 1px solid var(--color-border);
-  padding: var(--spacing-sm) var(--spacing-md);
-  z-index: 1000;
+  background: white;
+  border-top: 1px solid #e5e7eb;
+  padding: 0.75rem;
+  z-index: 40;
 }
 
 .footerContent {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
 }
 
-.leftSection {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
-}
-
-.middleSection {
-  display: flex;
-  gap: var(--spacing-md);
-}
-
-.footerLink {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-.footerLink:hover {
-  color: var(--color-primary);
-  text-decoration: none;
-}
-
-.rightSection {
-  display: flex;
-  gap: var(--spacing-sm);
-}
-
-.iconButton {
+.section {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: var(--spacing-xs);
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--color-text-secondary);
+}
+
+.supportText {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.buttonIcon {
   transition: all 0.2s ease;
-  border-radius: var(--radius-md);
 }
 
-.iconButton:hover {
-  background-color: var(--color-secondary);
-  color: var(--color-primary);
+.donateButton,
+.feedbackButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  background: transparent;
+  border: 1px solid #e5e7eb;
 }
 
+.donateButton:hover {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.feedbackButton:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+/* Responsive styles */
 @media (max-width: 640px) {
-  .middleSection {
+  .footerContent {
+    padding: 0 0.5rem;
+  }
+
+  .supportText span {
     display: none;
   }
-  
+
+  .donateButton span,
+  .feedbackButton span {
+    display: none;
+  }
+
+  .donateButton,
+  .feedbackButton {
+    padding: 0.5rem;
+  }
+
+  .section {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .rightSection {
+    justify-content: flex-end;
+  }
+}
+
+/* For extremely small screens */
+@media (max-width: 360px) {
   .footerContent {
-    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .donateButton,
+  .feedbackButton {
+    padding: 0.375rem;
   }
 }

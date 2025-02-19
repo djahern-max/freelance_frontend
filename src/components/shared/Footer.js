@@ -1,50 +1,54 @@
-import { MessageSquareMore } from 'lucide-react';
+import { MessageSquareMore, Heart, Coffee } from 'lucide-react';
 import { useState } from 'react';
 import FeedbackModal from '../feedback/FeedbackModal';
+import DonationModal from '../payments/DonationModal';
 import styles from './Footer.module.css';
 
 const Footer = () => {
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
-
-  // const footerLinks = [
-  //   { text: 'About', href: '/about' },
-  //   { text: 'Terms', href: '/terms' },
-  //   { text: 'Privacy', href: '/privacy' },
-  //   { text: 'Contact', href: '/contact' },
-  // ];
+  const [showDonationModal, setShowDonationModal] = useState(false);
+  const [isHeartHovered, setIsHeartHovered] = useState(false);
+  const [isFeedbackHovered, setIsFeedbackHovered] = useState(false);
 
   return (
     <footer className={styles.footer}>
       <div className={styles.footerContent}>
-        <div className={styles.leftSection}>
-          <span className={styles.copyright}>
-            © {new Date().getFullYear()} RYZE.ai
-          </span>
+        <div className={styles.section}>
+          <button
+            className={styles.donateButton}
+            onClick={() => setShowDonationModal(true)}
+            onMouseEnter={() => setIsHeartHovered(true)}
+            onMouseLeave={() => setIsHeartHovered(false)}
+          >
+            <Heart
+              size={18}
+              className={styles.buttonIcon}
+              fill={isHeartHovered ? '#ef4444' : 'none'}
+            />
+            <span>Support RYZE.ai</span>
+          </button>
         </div>
 
-        {/* <nav className={styles.middleSection}>
-          {footerLinks.map((link, index) => (
-            <a key={index} href={link.href} className={styles.footerLink}>
-              {link.text}
-            </a>
-          ))}
-        </nav> */}
+        <div className={`${styles.section} ${styles.centerSection}`}>
+          <div className={styles.supportText}>
+            <Coffee size={16} />
+            <span>Help us empower more creators</span>
+          </div>
+        </div>
 
-        <div className={styles.rightSection}>
+        <div className={`${styles.section} ${styles.rightSection}`}>
           <button
-            className={styles.iconButton}
+            className={styles.feedbackButton}
             onClick={() => setShowFeedbackModal(true)}
-            title="Send Feedback"
+            onMouseEnter={() => setIsFeedbackHovered(true)}
+            onMouseLeave={() => setIsFeedbackHovered(false)}
           >
-            <MessageSquareMore size={18} />
+            <MessageSquareMore
+              size={18}
+              className={styles.buttonIcon}
+            />
+            <span>Feedback</span>
           </button>
-          {/* <button
-            className={styles.iconButton}
-            onClick={() => window.open('/support', '_blank')}
-            title="Support RYZE.ai"
-          >
-            <Heart size={18} />
-          </button> */}
         </div>
       </div>
 
@@ -54,6 +58,10 @@ const Footer = () => {
           targetId="general_feedback"
           onClose={() => setShowFeedbackModal(false)}
         />
+      )}
+
+      {showDonationModal && (
+        <DonationModal onClose={() => setShowDonationModal(false)} />
       )}
     </footer>
   );

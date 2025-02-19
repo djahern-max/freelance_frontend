@@ -2,6 +2,7 @@ import { Search, Users2, Video, Bot, CheckCircle } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { selectIsAuthenticated } from '../../redux/authSlice';
+import Mission from './Mission';
 
 import styles from './Features.module.css';
 
@@ -61,9 +62,11 @@ const Features = () => {
               </div>
               <h3 className={styles.title}>{feature.title}</h3>
               <p className={styles.description}>{feature.description}</p>
+
             </div>
           ))}
         </div>
+        <Mission />
       </section>
 
       <div className={styles.comingSoon}>

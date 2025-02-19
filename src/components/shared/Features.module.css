@@ -150,6 +150,7 @@
   margin-bottom: 0;
 }
 
+
 @media (max-width: 1024px) {
   .featureCards {
     grid-template-columns: repeat(2, 1fr);

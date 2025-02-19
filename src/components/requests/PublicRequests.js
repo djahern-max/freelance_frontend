@@ -13,6 +13,7 @@ import PublicRequestCard from './PublicRequestCard';
 import styles from './PublicRequests.module.css';
 import SnagTicketModal from './SnagTicketModal';
 
+
 const POLL_INTERVAL = 60000;
 const DEBOUNCE_DELAY = 300;
 
@@ -27,6 +28,12 @@ const PublicRequests = () => {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [expandedCards, setExpandedCards] = useState({});
   const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
+  const STATUS_PRIORITY = {
+    'Open': 0,
+    'In Progress': 1,
+    'Completed': 2,
+    'Cancelled': 3
+  };
 
   // New state for snag ticket functionality
   const [showSnagModal, setShowSnagModal] = useState(false);
@@ -79,6 +86,19 @@ const PublicRequests = () => {
       console.error('Failed to fetch profile URL:', error);
       setProfileUrl(null);
     }
+  };
+
+  const sortRequestsByStatus = (requests) => {
+    return [...requests].sort((a, b) => {
+      const priorityA = STATUS_PRIORITY[a.status] ?? Number.MAX_VALUE;
+      const priorityB = STATUS_PRIORITY[b.status] ?? Number.MAX_VALUE;
+
+      if (priorityA !== priorityB) {
+        return priorityA - priorityB;
+      }
+
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
   };
 
   // Modify snag ticket handler
@@ -418,7 +438,7 @@ const PublicRequests = () => {
           />
         ) : (
           <div className={styles.requestsGrid}>
-            {[...publicRequests].reverse().map((request) => (
+            {sortRequestsByStatus(publicRequests).map((request) => (
               <PublicRequestCard
                 key={request.id}
                 request={request}
