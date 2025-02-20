@@ -8,9 +8,9 @@ import {
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import api from '../../utils/api';
-// import SubscriptionDialog from '../payments/SubscriptionDialog';
-import RequestSharing from '../requests/RequestSharing'; // Import RequestSharing component
+import RequestSharing from '../requests/RequestSharing';
 import Header from '../shared/Header';
 import styles from './RequestDetails.module.css';
 
@@ -241,19 +241,29 @@ const RequestDetails = () => {
                   });
                 }}
                 toggleRequestPrivacy={(id, isPublic) => {
-                  api
-                    .put(`/requests/${id}/privacy`, { is_public: !isPublic })
+                  api.put(`/requests/${id}/privacy`, { is_public: !isPublic })
                     .then(() => {
                       setRequest((prev) => ({
                         ...prev,
                         is_public: !isPublic,
+                      }));
+                      toast.success(
+                        `Request is now ${!isPublic ? 'public' : 'private'}`
+                      );
+                    })
+                    .catch((error) => {
+                      console.error('Error toggling privacy:', error);
+                      toast.error('Failed to update request privacy');
+                      // Revert the state if the API call fails
+                      setRequest((prev) => ({
+                        ...prev,
+                        is_public: isPublic,
                       }));
                     });
                 }}
               />
             </div>
           )}
-
           {user.id !== request.user_id && (
             <div className={styles.actions}>
               {conversations.some(

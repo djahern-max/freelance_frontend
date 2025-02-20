@@ -536,37 +536,7 @@ const PublicRequests = () => {
             </div>
           </div>
         )}
-        {publicRequests.length === 0 ? (
-          <EmptyState
-            isAuthenticated={isAuthenticated}
-            userType={user?.userType}
-            onCreateProject={() => navigate('/create-project')}
-            onSignUp={() => setShowAuthDialog(true)}
-          />
-        ) : (
-          <div className={styles.requestsGrid}>
-            {sortRequestsByStatus(publicRequests).map((request) => (
-              <PublicRequestCard
-                key={request.id}
-                request={request}
-                onSnag={handleSnagTicket}
-                onCardClick={handleRequestClick}
-                isExpanded={expandedCards[request.id]}
-                onToggleExpand={toggleCardExpansion}
-                isAuthenticated={isAuthenticated}
-                userType={user?.userType}
-                loading={loading}
-                conversations={conversations}
-                onStartConversation={handleStartConversation}
-                onAuthDialog={(e) => {
-                  e.stopPropagation();
-                  setSelectedRequest(request);
-                  setShowAuthDialog(true);
-                }}
-              />
-            ))}
-          </div>
-        )}
+
 
         <AuthDialog
           isOpen={showAuthDialog}

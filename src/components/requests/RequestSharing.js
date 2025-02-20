@@ -2,13 +2,14 @@ import { XCircle } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import styles from './RequestSharing.module.css';
 
+
 const RequestSharing = ({
   requestId,
   token,
   apiUrl,
   onShareComplete,
   request,
-  toggleRequestPrivacy,
+
 }) => {
   const [shareUsername, setShareUsername] = useState('');
   const [suggestions, setSuggestions] = useState([]);
@@ -18,6 +19,7 @@ const RequestSharing = ({
   const [showSuggestions, setShowSuggestions] = useState(false);
   const inputRef = useRef(null);
   const suggestionsRef = useRef(null);
+  const [isPrivacyUpdating, setIsPrivacyUpdating] = useState(false);
 
   useEffect(() => {
 
@@ -80,6 +82,32 @@ const RequestSharing = ({
       setShowSuggestions(false);
     }
   };
+
+  const handlePrivacyToggle = async () => {
+    setIsPrivacyUpdating(true);
+    setError('');
+    try {
+      const response = await fetch(
+        `${apiUrl}/requests/${requestId}/privacy?is_public=${!request.is_public}`,
+        {
+          method: 'PUT',
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Failed to update privacy settings');
+      }
+      if (onShareComplete) {
+        onShareComplete();
+      }
+    } catch (error) {
+      console.error('Failed to update privacy:', error);
+      setError('Unable to update privacy settings');
+    } finally {
+      setIsPrivacyUpdating(false);
+    }
+  };
+
 
   const handleInputChange = (e) => {
     const value = e.target.value;
@@ -236,46 +264,45 @@ const RequestSharing = ({
               type="checkbox"
               className={styles.toggleInput}
               checked={request.is_public}
-              onChange={() =>
-                toggleRequestPrivacy(request.id, request.is_public)
-              }
+              onChange={handlePrivacyToggle}
+              disabled={isPrivacyUpdating}
             />
             <span className={styles.slider}></span>
           </label>
           <span className={styles.toggleLabel}>
-            {request.is_public ? 'Public' : 'Private'}
+            {isPrivacyUpdating ? 'Updating...' : request.is_public ? 'Public' : 'Private'}
           </span>
         </div>
-      </div>
 
-      {error && <div className={styles.error}>{error}</div>}
+        {error && <div className={styles.error}>{error}</div>}
 
-      {/* Add this section to display shared users */}
-      {(sharedUsers?.length > 0 || request?.shared_with?.length > 0) && (
-        <div className={styles.sharedWithList}>
-          <div className={styles.sharedWithTitle}>Shared with:</div>
-          <div className={styles.sharedUsersList}>
-            {(sharedUsers.length > 0 ? sharedUsers : request.shared_with).map(
-              (share) => (
-                <div
-                  key={share.user_id || share.id}
-                  className={styles.sharedUser}
-                >
-                  <span className={styles.username}>@{share.username}</span>
-                  <button
-                    className={styles.removeUserButton}
-                    onClick={() => removeShare(share.user_id || share.id)}
+        {/* Add this section to display shared users */}
+        {(sharedUsers?.length > 0 || request?.shared_with?.length > 0) && (
+          <div className={styles.sharedWithList}>
+            <div className={styles.sharedWithTitle}>Shared with:</div>
+            <div className={styles.sharedUsersList}>
+              {(sharedUsers.length > 0 ? sharedUsers : request.shared_with).map(
+                (share) => (
+                  <div
+                    key={share.user_id || share.id}
+                    className={styles.sharedUser}
                   >
-                    <XCircle size={16} />
-                  </button>
-                </div>
-              )
-            )}
+                    <span className={styles.username}>@{share.username}</span>
+                    <button
+                      className={styles.removeUserButton}
+                      onClick={() => removeShare(share.user_id || share.id)}
+                    >
+                      <XCircle size={16} />
+                    </button>
+                  </div>
+                )
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
-};
+}
 
 export default RequestSharing;

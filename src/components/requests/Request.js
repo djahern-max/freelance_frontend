@@ -316,6 +316,7 @@ const Request = () => {
                   apiUrl={apiUrl}
                   onShareComplete={fetchRequests}
                   request={request}
+                  isOwner={true} // This is your requests page, so you're always the owner
                   toggleRequestPrivacy={(id, isPublic) => {
                     const togglePrivacy = async () => {
                       try {
@@ -337,7 +338,8 @@ const Request = () => {
                       }
                     };
                     togglePrivacy();
-                  }}
+                  }
+                  }
                 />
               </div>
             ))
