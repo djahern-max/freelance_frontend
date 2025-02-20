@@ -35,7 +35,8 @@
 }
 
 .donateButton,
-.feedbackButton {
+.feedbackButton,
+.coffeeButton {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -44,7 +45,22 @@
   font-size: 0.875rem;
   transition: all 0.2s ease;
   background: transparent;
-  border: 1px solid #e5e7eb;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.donateButton {
+  border-color: #e5e7eb;
+}
+
+.coffeeButton {
+  padding: 0;
+}
+
+.coffeeButton:hover {
+  .supportText {
+    color: #ef4444;
+  }
 }
 
 .donateButton:hover {
@@ -57,6 +73,10 @@
   border-color: #d1d5db;
 }
 
+.buttonText {
+  display: inline;
+}
+
 /* Responsive styles */
 @media (max-width: 640px) {
   .footerContent {
@@ -67,8 +87,7 @@
     display: none;
   }
 
-  .donateButton span,
-  .feedbackButton span {
+  .buttonText {
     display: none;
   }
 

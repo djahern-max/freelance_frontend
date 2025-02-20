@@ -9,6 +9,7 @@ const Footer = () => {
   const [showDonationModal, setShowDonationModal] = useState(false);
   const [isHeartHovered, setIsHeartHovered] = useState(false);
   const [isFeedbackHovered, setIsFeedbackHovered] = useState(false);
+  const [isCoffeeHovered, setIsCoffeeHovered] = useState(false);
 
   return (
     <footer className={styles.footer}>
@@ -19,21 +20,35 @@ const Footer = () => {
             onClick={() => setShowDonationModal(true)}
             onMouseEnter={() => setIsHeartHovered(true)}
             onMouseLeave={() => setIsHeartHovered(false)}
+            aria-label="Support RYZE.ai"
           >
             <Heart
               size={18}
               className={styles.buttonIcon}
-              fill={isHeartHovered ? '#ef4444' : 'none'}
+              fill="#ef4444"
+              color={isHeartHovered ? '#ef4444' : '#ef4444'}
             />
-            <span>Support RYZE.ai</span>
+            <span className={styles.buttonText}>Support RYZE.ai</span>
           </button>
         </div>
 
-        <div className={`${styles.section} ${styles.centerSection}`}>
-          <div className={styles.supportText}>
-            <Coffee size={16} />
-            <span>Help us empower more creators</span>
-          </div>
+        <div className={styles.section}>
+          <button
+            className={styles.coffeeButton}
+            onClick={() => setShowDonationModal(true)}
+            onMouseEnter={() => setIsCoffeeHovered(true)}
+            onMouseLeave={() => setIsCoffeeHovered(false)}
+            aria-label="Help empower creators"
+          >
+            <div className={styles.supportText}>
+              <Coffee
+                size={16}
+                className={styles.buttonIcon}
+                color={isCoffeeHovered ? '#ef4444' : '#6b7280'}
+              />
+              <span>Help us empower more creators</span>
+            </div>
+          </button>
         </div>
 
         <div className={`${styles.section} ${styles.rightSection}`}>
@@ -42,12 +57,13 @@ const Footer = () => {
             onClick={() => setShowFeedbackModal(true)}
             onMouseEnter={() => setIsFeedbackHovered(true)}
             onMouseLeave={() => setIsFeedbackHovered(false)}
+            aria-label="Provide feedback"
           >
             <MessageSquareMore
               size={18}
               className={styles.buttonIcon}
             />
-            <span>Feedback</span>
+            <span className={styles.buttonText}>Feedback</span>
           </button>
         </div>
       </div>
