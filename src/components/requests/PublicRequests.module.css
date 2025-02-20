@@ -408,6 +408,42 @@
 }
 
 
+.dropdown {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid #d1d5db;
+  /* Light border */
+  border-radius: 6px;
+  background-color: white;
+  color: #374151;
+  /* Dark gray text */
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  outline: none;
+}
+
+.dropdown:hover {
+  border-color: #2563eb;
+  /* Bright blue hover */
+}
+
+.dropdown:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+  /* Soft blue focus ring */
+}
+
+.dropdown option {
+  background: white;
+  color: #374151;
+  font-weight: 500;
+}
+
+.dropdown option:hover {
+  background-color: #eff6ff;
+  /* Light blue hover effect */
+}
 
 
 

@@ -16,9 +16,12 @@ const RequestCard = ({ request, onUpdate }) => {
       const formattedStatus = newStatus.toLowerCase().replace(' ', '_');
       const response = await api.put(`/requests/${requestId}`, {
         status: formattedStatus,
+        is_idea: false,
+        seeks_collaboration: false
       });
 
       if (response?.data) {
+        // Call onUpdate to refresh the data
         onUpdate();
       }
     } catch (error) {
@@ -30,7 +33,6 @@ const RequestCard = ({ request, onUpdate }) => {
       setIsUpdating(false);
     }
   };
-
   const toggleRequestPrivacy = async (requestId, currentStatus) => {
     setIsUpdating(true);
     setError(null);
@@ -85,9 +87,8 @@ const RequestCard = ({ request, onUpdate }) => {
           value={request.status}
           onChange={(e) => updateRequestStatus(request.id, e.target.value)}
           disabled={isUpdating}
-          className={`${styles.statusSelect} ${
-            styles[getStatusClass(request.status)]
-          }`}
+          className={`${styles.statusSelect} ${styles[getStatusClass(request.status)]
+            }`}
         >
           <option value="open">Open</option>
           <option value="in_progress">In Progress</option>
@@ -122,8 +123,8 @@ const RequestCard = ({ request, onUpdate }) => {
             {isUpdating
               ? 'Updating...'
               : request.is_public
-              ? 'Public'
-              : 'Private'}
+                ? 'Public'
+                : 'Private'}
           </span>
         </div>
       </div>

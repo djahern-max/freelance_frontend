@@ -1,5 +1,5 @@
 import { Loader } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -18,7 +18,7 @@ const POLL_INTERVAL = 60000;
 const DEBOUNCE_DELAY = 300;
 
 const PublicRequests = () => {
-  // Existing state
+  // Existing state declarations
   const [publicRequests, setPublicRequests] = useState([]);
   const [conversations, setConversations] = useState({});
   const [error, setError] = useState(null);
@@ -28,11 +28,57 @@ const PublicRequests = () => {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [expandedCards, setExpandedCards] = useState({});
   const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
+  const [filter, setFilter] = useState('all');
+
+  const sortRequests = (requests) => {
+    const getStatusPriority = (request) => {
+      if (request.is_idea) {
+        return request.seeks_collaboration ? 1 : 2; // collaboration: 1, idea: 2
+      }
+      const priorities = {
+        'open': 0,
+        'in_progress': 3,
+        'completed': 4,
+        'cancelled': 5
+      };
+      return priorities[request.status?.toLowerCase()] ?? 0;
+    };
+
+    return [...requests].sort((a, b) => {
+      const priorityA = getStatusPriority(a);
+      const priorityB = getStatusPriority(b);
+
+      if (priorityA !== priorityB) {
+        return priorityA - priorityB;
+      }
+
+      // Within same priority, sort by newest first
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
+  };
+
+  // Then add the filteredAndSortedRequests memo after the state declarations
+  const filteredAndSortedRequests = useMemo(() => {
+    let filtered = publicRequests;
+    if (filter !== 'all') {
+      filtered = publicRequests.filter(request => {
+        if (filter === 'collaboration') {
+          return request.is_idea && request.seeks_collaboration;
+        }
+        if (filter === 'idea') {
+          return request.is_idea && !request.seeks_collaboration;
+        }
+        return request.status?.toLowerCase() === filter;
+      });
+    }
+    return sortRequests(filtered);
+  }, [publicRequests, filter]);
+
   const STATUS_PRIORITY = {
-    'Open': 0,
-    'In Progress': 1,
-    'Completed': 2,
-    'Cancelled': 3
+    'open': 0,
+    'in_progress': 1,
+    'completed': 2,
+    'cancelled': 3
   };
 
   // New state for snag ticket functionality
@@ -54,6 +100,26 @@ const PublicRequests = () => {
     error: snagError,
     setError: setSnagError,
   } = useSnagTicket();
+
+
+
+  const RequestFilter = ({ onFilterChange, currentFilter }) => {
+    return (
+      <select
+        className={styles.dropdown}
+        value={currentFilter}
+        onChange={(e) => onFilterChange(e.target.value)}
+      >
+        <option value="all">All Tickets</option>
+        <option value="open">Open Tickets</option>
+        <option value="collaboration">Collaboration Opportunities</option>
+        <option value="idea">Ideas</option>
+        <option value="in_progress">In Progress</option>
+        <option value="completed">Completed</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+    );
+  };
 
   // Add function to fetch user's videos
   const fetchUserVideos = async () => {
@@ -90,14 +156,14 @@ const PublicRequests = () => {
 
   const sortRequestsByStatus = (requests) => {
     return [...requests].sort((a, b) => {
-      const priorityA = STATUS_PRIORITY[a.status] ?? Number.MAX_VALUE;
-      const priorityB = STATUS_PRIORITY[b.status] ?? Number.MAX_VALUE;
+      const priorityA = STATUS_PRIORITY[a.status?.toLowerCase()] ?? Number.MAX_VALUE;
+      const priorityB = STATUS_PRIORITY[b.status?.toLowerCase()] ?? Number.MAX_VALUE;
 
       if (priorityA !== priorityB) {
         return priorityA - priorityB;
       }
 
-      return new Date(b.createdAt) - new Date(a.createdAt);
+      return new Date(b.created_at) - new Date(a.created_at);
     });
   };
 
@@ -388,6 +454,47 @@ const PublicRequests = () => {
     <div className={styles.mainContainer}>
       <Header />
       <main className={styles.mainContent}>
+        <div className={styles.headerContainer}>
+          <RequestFilter
+            onFilterChange={setFilter}
+            currentFilter={filter}
+          />
+          {!isAuthenticated && <p className={styles.subtitle}></p>}
+        </div>
+
+        {error && (
+          <div className={styles.alert} role="alert">
+            <div className={styles.alertContent}>
+              <span>{error}</span>
+              <button className={styles.retryButton} onClick={fetchData}>
+                Try Again
+              </button>
+            </div>
+          </div>
+        )}
+
+        {filteredAndSortedRequests.length === 0 ? (
+          <EmptyState
+            isAuthenticated={isAuthenticated}
+            userType={user?.userType}
+            onCreateProject={() => navigate('/create-project')}
+            onSignUp={() => setShowAuthDialog(true)}
+          />
+        ) : (
+          <div className={styles.requestsGrid}>
+            {filteredAndSortedRequests.map((request) => (
+              <PublicRequestCard
+                key={request.id}
+                request={request}
+                onSnag={handleSnagTicket}
+                onCardClick={handleRequestClick}
+                isExpanded={expandedCards[request.id]}
+                onToggleExpand={toggleCardExpansion}
+                conversations={conversations}
+              />
+            ))}
+          </div>
+        )}
         <SnagTicketModal
           isOpen={showSnagModal}
           onClose={() => {

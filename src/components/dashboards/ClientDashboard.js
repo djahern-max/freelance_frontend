@@ -144,18 +144,18 @@ const ClientDashboard = () => {
     try {
       setLoadingStates(prev => ({ ...prev, requests: true }));
 
+      // Get token and set proper headers
       const token = localStorage.getItem('token');
-
-      // Ensure API_URL is defined here
-      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
-
-      const response = await axios.get(`${API_URL}/requests/`, {
+      const config = {
         headers: {
           'Accept': 'application/json',
+          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
         signal: controller.signal
-      });
+      };
+
+      const response = await api.get('/requests/public', config);
 
       if (response.data) {
         const sortedRequests = [...response.data].sort(
@@ -168,14 +168,13 @@ const ClientDashboard = () => {
         }));
       }
     } catch (error) {
-      if (error.message !== 'REQUEST_CANCELLED') {
+      if (!error.name?.includes('Cancel') && error.message !== 'REQUEST_CANCELLED') {
         console.error('Error fetching requests:', error);
       }
     } finally {
       setLoadingStates(prev => ({ ...prev, requests: false }));
     }
   }, []);
-
 
   const handleCreateRequest = useCallback(async (formData) => {
     const controller = createController('createRequest');
@@ -327,28 +326,7 @@ const ClientDashboard = () => {
   }, [dashboardData]);
 
 
-  useEffect(() => {
-    if (!user || user.userType !== 'client') {
-      return;
-    }
 
-    let mounted = true;
-    const loadInitialData = async () => {
-      if (mounted) {
-        await fetchDashboardData();
-      }
-    };
-
-    loadInitialData();
-
-    return () => {
-      mounted = false;
-      // Clean up any pending requests
-      Object.values(controllersRef.current).forEach(controller => {
-        controller.abort();
-      });
-    };
-  }, [user, fetchDashboardData]);
 
 
   const formatTimeSince = (date) => {

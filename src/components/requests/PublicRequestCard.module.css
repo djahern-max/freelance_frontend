@@ -4,11 +4,30 @@
   border-radius: 8px;
   padding: 1.5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.2s;
+  transition: all 0.2s ease;
   min-height: 320px;
-  /* Increased from 280px */
+  margin-bottom: 1rem;
+  border: 1px solid #e5e7eb;
+  padding-top: 2.7rem;
+  /* Increase padding to push content down */
+  position: relative;
 }
 
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+.card[data-expanded="true"] .description {
+  max-height: none;
+}
+
+.card[data-expanded="true"] .fade {
+  display: none;
+}
+
+/* Status indicator styles */
 .statusIndicator {
   position: absolute;
   top: 0;
@@ -19,20 +38,53 @@
   font-weight: 600;
   text-transform: uppercase;
   border-radius: 8px 8px 0 0;
+  transition: background-color 0.2s ease;
 }
 
-.card:hover {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.statusOpen {
+  background-color: #ecfdf5;
+  color: #065f46;
+  border-top: 3px solid #10b981;
 }
 
-.card[data-expanded="true"] .description {
-  max-height: none;
+/* Collaboration status - Purple */
+.statusCollaboration {
+  background-color: #F5F3FF;
+  color: #5B21B6;
+  border-top: 3px solid #7C3AED;
 }
 
-.card[data-expanded="true"] .fade {
-  display: none;
+/* Idea status - Orange */
+.statusIdea {
+  background-color: #EFF6FF;
+  /* Soft Blue */
+  color: #1E40AF;
+  /* Deep Navy */
+  border-top: 3px solid #2563EB;
+  /* Vivid Blue */
 }
 
+.statusInProgress {
+  background-color: #eff6ff;
+  color: #1e40af;
+  border-top: 3px solid #3b82f6;
+}
+
+/* Completed status - Gray */
+.statusCompleted {
+  background-color: #f8fafc;
+  color: #475569;
+  border-top: 3px solid #94a3b8;
+}
+
+/* Cancelled status - Red */
+.statusCancelled {
+  background-color: #fef2f2;
+  color: #991b1b;
+  border-top: 3px solid #ef4444;
+}
+
+/* Snag button styles */
 .snagButton {
   position: absolute;
   top: 0.75rem;
@@ -42,6 +94,8 @@
   font-size: 0.875rem;
   font-weight: 500;
   z-index: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .snagButtonEnabled {
@@ -50,27 +104,40 @@
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.snagButtonDisabled {
-  background-color: #f3f4f6;
-  color: #6b7280;
-}
-
-
 .snagButtonEnabled:hover {
   background-color: #059669;
 }
 
 .snagButtonDisabled {
   background-color: #e5e7eb;
-  color: #6b7280;
-  cursor: default;
+  color: #374151;
+  /* Darker text for readability */
 }
 
+/* Type-specific badges and buttons */
+.ideaButton {
+  background-color: #2563EB;
+  color: white;
+}
+
+.ideaButton:hover {
+  background-color: #1E40AF;
+}
+
+.collaborateButton {
+  background-color: #6366f1;
+  color: white;
+}
+
+.collaborateButton:hover {
+  background-color: #4f46e5;
+}
+
+/* Header and content styles */
 .header {
   margin-top: 0.5rem;
   padding-right: 6rem;
   padding-bottom: 4rem;
-  /* Make room for meta info */
 }
 
 .headerContent {
@@ -83,10 +150,21 @@
   font-size: 1.25rem;
   font-weight: 600;
   color: #1f2937;
-  margin: 0;
-  padding-right: 1rem;
+  width: 100%;
+  margin: 0.5rem 0 1rem 0;
+  padding: 0;
   line-height: 1.4;
-  margin-top: 1rem;
+}
+
+/* Description styles */
+.description {
+  position: relative;
+  color: #4b5563;
+  margin: 1.5rem 0;
+  line-height: 1.6;
+  max-height: 9.6em;
+  overflow: hidden;
+  padding-bottom: 1rem;
 }
 
 .fade {
@@ -95,21 +173,8 @@
   left: 0;
   right: 0;
   height: 3em;
-  /* Increased height of fade */
   background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
   pointer-events: none;
-}
-
-.description {
-  position: relative;
-  color: #4b5563;
-  margin: 1rem 0;
-  line-height: 1.6;
-  max-height: 9.6em;
-  /* Increased to show 6 lines of text */
-  overflow: hidden;
-  padding-bottom: 1rem;
-  /* Space for fade effect */
 }
 
 .readMoreButton {
@@ -130,129 +195,138 @@
   text-decoration: underline;
 }
 
+/* Budget display */
 .budget {
   color: #2563eb;
   font-weight: 600;
   white-space: nowrap;
 }
 
-.content {
-  color: #4b5563;
-  margin-top: 0.75rem;
-  line-height: 1.5;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-}
-
+/* Meta information section */
 .metaInfo {
   position: absolute;
-  bottom: 1.5rem;
+  bottom: 1rem;
   left: 1.5rem;
   right: 1.5rem;
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  justify-content: space-between;
+  /* Ensures items are evenly spaced */
+  gap: 1rem;
   color: #6b7280;
   font-size: 0.875rem;
   border-top: 1px solid #e5e7eb;
   padding-top: 1rem;
+  margin-top: 1.5rem;
   background: white;
-  /* Ensure it covers any overflow */
 }
 
 .metaItem {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.5rem;
+  /* Ensures icon and text are close */
+  white-space: nowrap;
+  /* Prevents wrapping */
 }
 
-.footer {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #f3f4f6;
-  display: flex;
-  justify-content: space-between;
+/* Type badges */
+.typeBadge {
+  display: inline-flex;
   align-items: center;
-}
-
-.status {
-  padding: 0.25rem 0.75rem;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
   border-radius: 9999px;
   font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.statusOpen {
-  background-color: #ecfdf5;
-  color: #065f46;
-}
-
-.statusInProgress {
-  background-color: #fff7ed;
-  color: #9a3412;
-}
-
-.statusDefault {
-  background-color: #f3f4f6;
-  color: #374151;
-}
-
-.conversationButton {
-  background-color: #2563eb;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-size: 0.875rem;
   font-weight: 500;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s;
+  margin-bottom: 1rem;
+  /* Add more margin */
 }
 
-.conversationButton:hover {
-  background-color: #1d4ed8;
+.typeBadge.collaboration {
+  background-color: #f5f3ff;
+  color: #5b21b6;
+  border: 1px solid #ddd6fe;
 }
 
-.cardControls {
-  display: flex;
-  gap: 8px;
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  z-index: 1;
+.typeBadge.idea {
+  background-color: #DBEAFE;
+  /* Light Blue */
+  color: #1E40AF;
+  border: 1px solid #93C5FD;
+  /* Soft Blue Border */
 }
 
-.privacyToggle {
+
+/* Collaboration details section */
+.collaborationDetails {
+  margin: 1rem 0;
+  color: #5B21B6;
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 0.375rem 1rem;
-  border-radius: 9999px;
-  border: none;
-  cursor: pointer;
+  gap: 0.5rem;
+}
+
+.inline {
+  color: #7C3AED;
+  flex-shrink: 0;
+}
+
+.collaborationIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+}
+
+.collaborationIcon svg {
+  color: #7C3AED;
+}
+
+.collaborationText {
+  margin: 0;
+  color: #5B21B6;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.collaborationDetails span {
+  font-weight: 600;
+  color: #5B21B6;
+  /* Slightly darker purple */
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.collaborationDetails svg {
+  color: #7c3aed;
+}
+
+.collaborationDetails p {
+  margin: 0;
+  color: #4B5563;
+}
+
+/* Filter dropdown styles */
+.filterDropdown {
+  padding: 0.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  background-color: white;
   font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
+  color: #374151;
+  cursor: pointer;
+  margin-bottom: 1rem;
 }
 
-.privacyToggle:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.filterDropdown:hover {
+  border-color: #d1d5db;
 }
 
-.privacyToggle.public {
-  background-color: #10b981;
-  color: white;
-}
-
-.privacyToggle.private {
-  background-color: #ef4444;
-  color: white;
-}
-
-.privacyToggle:hover:not(:disabled) {
-  opacity: 0.9;
+.filterDropdown:focus {
+  outline: none;
+  ring: 2px;
+  ring-offset: 2px;
+  ring-color: #3b82f6;
 }
