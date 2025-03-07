@@ -66,7 +66,7 @@ const Features = () => {
             </div>
           ))}
         </div>
-        <Mission />
+
       </section>
 
       <div className={styles.comingSoon}>

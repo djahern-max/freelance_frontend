@@ -127,6 +127,7 @@ const ShowcaseList = () => {
           </Link>
         )}
       </div>
+      <h2 className={styles.subtitle}>Marketplace</h2>
 
       <div className={styles.grid}>
         {allShowcases.map((showcase, index) => {
@@ -158,6 +159,9 @@ const ShowcaseList = () => {
                 </a>
               </div>
               <div className={styles.content}>
+
+
+
 
                 {/* Truncated Description */}
                 <div className={styles.descriptionWrapper}>

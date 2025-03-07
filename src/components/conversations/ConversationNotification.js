@@ -129,6 +129,9 @@ const ConversationSection = ({ apiUrl }) => {
     }
   };
 
+
+
+
   const navigateToConversation = async (conversationId) => {
     await markAsRead(conversationId);
     navigate(`/conversations/${conversationId}`);
@@ -179,9 +182,8 @@ const ConversationSection = ({ apiUrl }) => {
             return (
               <li
                 key={conv.id}
-                className={`${styles.conversationItem} ${
-                  isNew ? styles.unread : ""
-                }`}
+                className={`${styles.conversationItem} ${isNew ? styles.unread : ""
+                  }`}
                 onClick={() => navigateToConversation(conv.id)}
               >
                 <div className={styles.conversationContent}>
@@ -195,9 +197,8 @@ const ConversationSection = ({ apiUrl }) => {
                     )}
                   </span>
                   <button
-                    className={`${styles.deleteButton} ${
-                      confirmDelete === conv.id ? styles.deleteConfirm : ""
-                    }`}
+                    className={`${styles.deleteButton} ${confirmDelete === conv.id ? styles.deleteConfirm : ""
+                      }`}
                     onClick={(e) => handleDelete(e, conv.id)}
                     title={
                       confirmDelete === conv.id

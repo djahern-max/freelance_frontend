@@ -8,11 +8,27 @@
   /* Light background for contrast */
 }
 
+
+.subtitle {
+  color: #6a6666;
+  font-size: 1.25rem;
+  font-weight: bold;
+  text-align: center;
+  letter-spacing: 1px;
+  margin: 0 0 0.5rem 0;
+  /* Reduced bottom margin from 1rem to 0.5rem */
+  padding: 0;
+  margin-bottom: 2rem;
+}
+
+
+
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
+  /* Reduced from 2rem to 1rem */
 }
 
 .createButton {
@@ -50,8 +66,11 @@
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 2rem;
+  gap: 1.5rem;
+  margin-top: 0;
+  padding-top: 0;
 }
+
 
 .card {
   background-color: white;
@@ -60,14 +79,10 @@
   overflow: hidden;
   transition: all 0.3s ease;
   border: 1px solid rgba(0, 0, 0, 0.05);
-  margin: 0;
-  /* Remove margin */
-  padding: 0;
-  /* Remove padding */
-  min-height: 600px;
-  /* Adjust this value based on your needs */
-  display: flex;
-  flex-direction: column;
+  margin-top: 0;
+  /* Ensure no margin at the top */
+  padding-top: 0;
+  /* Remove any extra padding */
 }
 
 .card:hover {
@@ -810,6 +825,11 @@
 @media (max-width: 768px) {
   .container {
     padding: 1rem;
+  }
+
+  .header {
+    padding-top: 1.5rem;
+    /* Push down upload button */
   }
 
   .grid {

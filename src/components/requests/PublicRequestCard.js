@@ -19,7 +19,7 @@ const PublicRequestCard = ({
     if (request.status?.toLowerCase() === 'open') {
       if (request.is_idea) {
         const buttonStyle = request.seeks_collaboration ? styles.collaborateButton : styles.ideaButton;
-        const buttonText = request.seeks_collaboration ? 'Collaborate' : 'Idea';
+        const buttonText = request.seeks_collaboration ? 'Collaborate' : 'Connect';
         return (
           <span
             className={`${styles.snagButton} ${buttonStyle}`}
@@ -89,7 +89,7 @@ const PublicRequestCard = ({
         ) : (
           <>
             <Lightbulb size={16} />
-            <span>Idea</span>
+            <span>Just an Idea</span>
           </>
         )}
       </div>
@@ -103,9 +103,7 @@ const PublicRequestCard = ({
       data-expanded={isExpanded}
     >
       <div className={`${styles.statusIndicator} ${getStatusClass()}`}>
-        {request.is_idea
-          ? (request.seeks_collaboration ? 'COLLABORATION' : 'IDEA')
-          : request.status?.replace('_', ' ').toUpperCase() || 'OPEN'}
+        {request.status?.replace('_', ' ').toUpperCase() || 'OPEN'}
       </div>
 
       {getSnagButton()}

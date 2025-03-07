@@ -80,6 +80,41 @@ const ConversationDetail = () => {
   }, [id]);
 
 
+  // Add this outside your component function
+  const makeLinksClickable = (text) => {
+    if (!text) return '';
+
+    // URL regex pattern - matches common URL formats
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+    // Split by URLs and map parts to either text or links
+    const parts = text.split(urlRegex);
+    const matches = text.match(urlRegex) || [];
+
+    return parts.reduce((result, part, i) => {
+      // Add the text part
+      result.push(part);
+
+      // Add the URL part if there is one
+      if (matches[i]) {
+        result.push(
+          <a
+            key={i}
+            href={matches[i]}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent the click from bubbling up to parent elements
+            }}
+          >
+            {matches[i]}
+          </a>
+        );
+      }
+
+      return result;
+    }, []);
+  };
 
 
 
@@ -226,7 +261,7 @@ const ConversationDetail = () => {
     } catch (err) {
       if (!controller.signal.aborted) {
         console.error('Failed to send message:', err);
-        toast.error('Failed to send message.');
+        // toast.error('Failed to send message.');
       }
     }
     return () => controller.abort();
@@ -342,7 +377,7 @@ const ConversationDetail = () => {
                       >
                         <div className={styles.messageContent}>
                           <div className={styles.messageText}>
-                            {message.content}
+                            {makeLinksClickable(message.content)}
 
 
 
@@ -411,8 +446,7 @@ const ConversationDetail = () => {
         {/* Sidebar */}
 
         <div
-          className={`${styles.sidebar} ${isSidebarVisible ? styles.mobileVisible : ''
-            }`}
+          className={`${styles.sidebar} ${isSidebarVisible ? styles.mobileVisible : ''}`}
         >
           <div className={styles.sidebarHeader}>
             <button

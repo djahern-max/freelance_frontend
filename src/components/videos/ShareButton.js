@@ -8,16 +8,22 @@ const ShareButton = ({ videoId, projectUrl }) => {
     const [isSharing, setIsSharing] = useState(false);
     const [shareUrl, setShareUrl] = useState('');
     const [showCopiedMessage, setShowCopiedMessage] = useState(false);
+    const [showFallbackCopy, setShowFallbackCopy] = useState(false);
+    const [failed, setFailed] = useState(false);
 
     const copyToClipboard = async (url) => {
         try {
+            // Modern way to copy text
             await navigator.clipboard.writeText(url);
             setShowCopiedMessage(true);
             toast.success('Share link copied to clipboard!');
             setTimeout(() => setShowCopiedMessage(false), 2000);
         } catch (error) {
+            // Fallback method if clipboard API fails
             console.error('Error copying to clipboard:', error);
-            toast.error('Failed to copy link to clipboard');
+            setShowFallbackCopy(true);
+            setFailed(true);
+            toast.error('Failed to copy link. Use the copy button below.');
         }
     };
 
@@ -65,6 +71,30 @@ const ShareButton = ({ videoId, projectUrl }) => {
                         disabled={showCopiedMessage}
                     >
                         {showCopiedMessage ? 'Copied!' : 'Copy'}
+                    </button>
+                </div>
+            )}
+
+            {failed && showFallbackCopy && (
+                <div className={styles.fallbackCopy}>
+                    <input
+                        type="text"
+                        value={shareUrl}
+                        readOnly
+                        className={styles.fallbackInput}
+                    />
+                    <button
+                        onClick={() => {
+                            const input = document.querySelector(`.${styles.fallbackInput}`);
+                            input.select();
+                            document.execCommand('copy');
+                            setShowCopiedMessage(true);
+                            toast.success('Share link copied to clipboard!');
+                            setTimeout(() => setShowCopiedMessage(false), 2000);
+                        }}
+                        className={styles.fallbackButton}
+                    >
+                        Copy Link
                     </button>
                 </div>
             )}

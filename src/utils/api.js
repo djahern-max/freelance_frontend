@@ -821,7 +821,16 @@ api.showcase = {
     } catch (error) {
       throw new Error(api.helpers.handleError(error));
     }
-  }
+  },
+  async linkVideo(showcaseId, videoId) {
+    try {
+      const response = await api.post(`/project-showcase/${showcaseId}/link-video/${videoId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error linking video to showcase:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
 };
 
 

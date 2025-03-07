@@ -45,6 +45,9 @@ const SharedShowcase = React.lazy(() => import('./components/showcase/SharedShow
 const EditShowcaseForm = React.lazy(() => import('./components/showcase/EditShowcaseForm'));
 const DonationSuccess = React.lazy(() => import('./components/payments/DonationSuccess'));
 const DonationCancel = React.lazy(() => import('./components/payments/DonationCancel'));
+const TermsOfServicePage = React.lazy(() => import('./components/legal/TermsOfServicePage'));
+const PrivacyPolicyPage = React.lazy(() => import('./components/legal/PrivacyPolicyPage'));
+
 
 
 const LoadingFallback = () => (
@@ -110,6 +113,8 @@ function AppContent() {
             <Route path="/subscription/success" element={<SubscriptionSuccess />} />
             <Route path="/donation/success" element={<DonationSuccess />} />
             <Route path="/donation/cancel" element={<DonationCancel />} />
+            <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
 
             {/* Showcase routes */}
             <Route

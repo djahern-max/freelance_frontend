@@ -64,13 +64,37 @@ const ShowcaseForm = ({
         }
     };
 
-    const handleVideoSelection = (videoId) => {
-        setSelectedVideos(prev => {
-            if (prev.includes(videoId)) {
-                return prev.filter(id => id !== videoId);
+    const handleVideoSelection = async (videoId) => {
+        if (isEditing) {
+            try {
+                // Use the showcase ID from initialData
+                const showcaseId = initialData.id;
+
+                // Check if we're adding or removing the video
+                if (!selectedVideos.includes(videoId)) {
+                    // Adding a video - use the new linkVideo API method
+                    await api.showcase.linkVideo(showcaseId, videoId);
+
+                    // Update local state on success
+                    setSelectedVideos(prev => [...prev, videoId]);
+                } else {
+                    // For removing videos, you might still need the bulk update
+                    // or implement a similar "unlinkVideo" endpoint
+                    setSelectedVideos(prev => prev.filter(id => id !== videoId));
+                }
+            } catch (error) {
+                console.error('Error updating video selection:', error);
+                setApiError(error.message || 'Failed to update video selection');
             }
-            return [...prev, videoId];
-        });
+        } else {
+            // Keep the existing behavior for new showcases
+            setSelectedVideos(prev => {
+                if (prev.includes(videoId)) {
+                    return prev.filter(id => id !== videoId);
+                }
+                return [...prev, videoId];
+            });
+        }
     };
 
     const handleFileChange = (e) => {
@@ -99,6 +123,18 @@ const ShowcaseForm = ({
                     }));
                 };
                 reader.readAsText(files[0]);
+            }
+        }
+    };
+
+    const handleDemoUrlAutoLink = (e) => {
+        const { value } = e.target;
+        // If this is a video share URL, try to find the matching video to auto-select
+        if (value && value.includes('/shared/videos/')) {
+            const shareToken = value.split('/').pop();
+            const matchingVideo = availableVideos.find(v => v.share_token === shareToken);
+            if (matchingVideo && !selectedVideos.includes(matchingVideo.id)) {
+                setSelectedVideos(prev => [...prev, matchingVideo.id]);
             }
         }
     };
@@ -253,7 +289,10 @@ const ShowcaseForm = ({
                     id="demo_url"
                     name="demo_url"
                     value={formData.demo_url}
-                    onChange={handleInputChange}
+                    onChange={(e) => {
+                        handleInputChange(e);
+                        handleDemoUrlAutoLink(e);
+                    }}
                     className={`${styles.input} ${formErrors.demo_url ? styles.inputError : ''}`}
                     placeholder="https://"
                 />
@@ -296,23 +335,28 @@ const ShowcaseForm = ({
                     </div>
                 )}
             </div>
-
-            {availableVideos.length > 0 && (
+            {Array.isArray(availableVideos) && availableVideos.length > 0 ? (
                 <div className={styles.formGroup}>
-                    <label>Link Videos</label>
+                    <label>Link Videos (Available: {availableVideos.length})</label>
                     <div className={styles.videoGrid}>
                         {availableVideos.map(video => (
                             <div
                                 key={video.id}
-                                className={`${styles.videoItem} ${selectedVideos.includes(video.id) ? styles.selected : ''
-                                    }`}
+                                className={`${styles.videoItem} ${selectedVideos.includes(video.id) ? styles.selected : ''}`}
                                 onClick={() => handleVideoSelection(video.id)}
                             >
-                                <img src={video.thumbnail_url} alt={video.title} />
+                                <img
+                                    src={video.thumbnail_path || '/placeholder-thumbnail.png'}
+                                    alt={video.title}
+                                />
                                 <span>{video.title}</span>
                             </div>
                         ))}
                     </div>
+                </div>
+            ) : (
+                <div className={styles.formGroup}>
+                    <p className={styles.noVideosMessage}>No videos available to link. Upload videos first.</p>
                 </div>
             )}
 

@@ -335,6 +335,9 @@ const VideoList = () => {
           </button>
         )}
       </div>
+      <h2 className={styles.subtitle}>
+        Instructional Videos
+      </h2>
       <div className={styles.grid}>
         {videos.map((video) => (
           <VideoItem

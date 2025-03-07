@@ -66,21 +66,30 @@ export const fetchShowcase = createAsyncThunk(
 );
 
 // Update showcase files
+// Update showcase files
 export const updateShowcaseFiles = createAsyncThunk(
     'showcase/updateFiles',
-    async ({ id, formData }, { getState, rejectWithValue }) => {
+    async ({ id, data }, { getState, rejectWithValue }) => {
         try {
             const state = getState();
             const userId = state.auth.user?.id;
-            const showcase = state.showcase.showcases.find(s => s.id === id);
 
-            if (!showcase || showcase.developer_id !== userId) {
+            // Check both current showcase and showcases array
+            const currentShowcase = state.showcase.currentShowcase;
+            const showcaseFromList = state.showcase.showcases.find(s => s.id === id);
+            const showcase = currentShowcase?.id === parseInt(id) ? currentShowcase : showcaseFromList;
+
+            // Skip permission check if we're editing the current showcase that was loaded directly
+            if (!showcase) {
+                console.warn('Showcase not found in state, proceeding anyway');
+                // We'll proceed anyway since the BE will handle permissions
+            } else if (showcase.developer_id !== userId) {
                 throw new Error('You do not have permission to update this showcase');
             }
 
             const response = await axios.put(
                 `${API_URL}/project-showcase/${id}/files`,
-                formData,
+                data,
                 {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -93,7 +102,6 @@ export const updateShowcaseFiles = createAsyncThunk(
         }
     }
 );
-
 // Rate showcase
 export const rateShowcase = createAsyncThunk(
     'showcase/rate',
@@ -117,15 +125,25 @@ export const rateShowcase = createAsyncThunk(
 );
 
 // Update showcase
+// Update showcase
 export const updateShowcase = createAsyncThunk(
     'showcase/update',
     async ({ id, data }, { getState, rejectWithValue }) => {
         try {
             const state = getState();
             const userId = state.auth.user?.id;
-            const showcase = state.showcase.showcases.find(s => s.id === id);
 
-            if (!showcase || showcase.developer_id !== userId) {
+            // Check both current showcase and showcases array
+            const currentShowcase = state.showcase.currentShowcase;
+            const showcaseFromList = state.showcase.showcases.find(s => s.id === id);
+            const showcase = currentShowcase?.id === parseInt(id) ? currentShowcase : showcaseFromList;
+
+            // Skip permission check if we're editing the current showcase that was loaded directly
+            // Alternatively, make a more flexible permission check
+            if (!showcase) {
+                console.warn('Showcase not found in state, proceeding anyway');
+                // We'll proceed anyway since the BE will handle permissions
+            } else if (showcase.developer_id !== userId) {
                 throw new Error('You do not have permission to edit this showcase');
             }
 
@@ -200,6 +218,9 @@ export const linkVideos = createAsyncThunk(
     'showcase/linkVideos',
     async ({ id, videoIds }, { rejectWithValue }) => {
         try {
+            console.log('Sending video IDs to API:', videoIds);
+
+            // Directly send the array as the request body
             const response = await axios.put(
                 `${API_URL}/project-showcase/${id}/videos`,
                 videoIds,
@@ -212,10 +233,10 @@ export const linkVideos = createAsyncThunk(
             );
             return response.data;
         } catch (error) {
-            const errorMessage = error.response?.data?.detail?.[0]?.msg ||
-                error.response?.data?.detail ||
-                error.response?.data?.message ||
+            const errorMessage = error.response?.data?.detail ||
+                error.message ||
                 'Failed to link videos';
+            console.error('Error in linkVideos:', errorMessage);
             return rejectWithValue(errorMessage);
         }
     }

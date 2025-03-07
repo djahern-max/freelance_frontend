@@ -55,11 +55,98 @@ const TermsModal = ({ isOpen, onClose }) => {
             the platform, interruptions in service, or errors.
           </p>
 
-          <h3>5. Acceptance of Terms</h3>
+          {/* QuickBooks Integration Terms */}
+          <h3>5. Third-Party Integrations</h3>
+          <p>
+            RYZE.ai offers integration with third-party services, including Intuit QuickBooks. By using these integrations, you agree to the following:
+          </p>
+          <ul>
+            <li>
+              You authorize RYZE.ai to access your QuickBooks data when you connect your account.
+            </li>
+            <li>
+              You understand that RYZE.ai will access only the data necessary to provide the services you request.
+            </li>
+            <li>
+              You acknowledge that RYZE.ai is not affiliated with or endorsed by Intuit Inc., and that QuickBooks is a registered trademark of Intuit Inc.
+            </li>
+            <li>
+              You are responsible for maintaining your QuickBooks account and credentials.
+            </li>
+          </ul>
+
+          <h3>6. Data Usage and Security</h3>
+          <p>
+            When you connect your QuickBooks account to RYZE.ai:
+          </p>
+          <ul>
+            <li>
+              We access your financial data solely to provide analysis, insights, and the services you request.
+            </li>
+            <li>
+              We implement industry-standard security measures to protect your data.
+            </li>
+            <li>
+              We do not sell or rent your QuickBooks data to third parties.
+            </li>
+            <li>
+              We retain your data only as long as necessary to provide our services or as required by law.
+            </li>
+            <li>
+              You can revoke access to your QuickBooks data at any time through your account settings or by contacting us.
+            </li>
+          </ul>
+
+          <h3>7. Compliance with Intuit Requirements</h3>
+          <p>
+            RYZE.ai complies with all Intuit Developer requirements and policies, including:
+          </p>
+          <ul>
+            <li>
+              We maintain the confidentiality and security of your QuickBooks data.
+            </li>
+            <li>
+              We only use APIs and methods approved by Intuit to access your data.
+            </li>
+            <li>
+              We follow Intuit's authentication and authorization protocols.
+            </li>
+            <li>
+              We promptly address any issues related to our QuickBooks integration.
+            </li>
+          </ul>
+
+          <h3>8. Service Limitations</h3>
+          <p>
+            You acknowledge that:
+          </p>
+          <ul>
+            <li>
+              Our integration with QuickBooks may be subject to temporary unavailability due to maintenance or technical issues.
+            </li>
+            <li>
+              The accuracy of analyses and insights depends on the accuracy of the data in your QuickBooks account.
+            </li>
+            <li>
+              RYZE.ai is not a substitute for professional financial advice, accounting, or tax services.
+            </li>
+          </ul>
+
+          <h3>9. Acceptance of Terms</h3>
           <p>
             By registering for and using the RYZE.ai platform, you acknowledge
             that you have read, understood, and agree to these Terms of
             Agreement. If you do not agree, you may not use the platform.
+          </p>
+
+          <h3>10. Changes to Terms</h3>
+          <p>
+            RYZE.ai reserves the right to modify these terms at any time. We will notify users of significant changes. Your continued use of the platform after changes constitutes acceptance of the updated terms.
+          </p>
+
+          <h3>11. Contact Information</h3>
+          <p>
+            If you have questions about these terms or our QuickBooks integration, please contact us at support@ryze.ai.
           </p>
         </div>
         <button onClick={onClose} className={styles.closeButton}>

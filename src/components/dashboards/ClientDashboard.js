@@ -155,7 +155,8 @@ const ClientDashboard = () => {
         signal: controller.signal
       };
 
-      const response = await api.get('/requests/public', config);
+      // Use the user-specific endpoint instead of public requests
+      const response = await api.get(`/requests/user/${user.id}`, config);
 
       if (response.data) {
         const sortedRequests = [...response.data].sort(
@@ -174,7 +175,7 @@ const ClientDashboard = () => {
     } finally {
       setLoadingStates(prev => ({ ...prev, requests: false }));
     }
-  }, []);
+  }, [user.id]); // Add user.id as a dependency
 
   const handleCreateRequest = useCallback(async (formData) => {
     const controller = createController('createRequest');

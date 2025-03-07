@@ -19,8 +19,8 @@ const RequestCard = ({ request, onUpdate }) => {
 
   // Log the request object to see its structure
   useEffect(() => {
-    console.log('Request object:', request);
-    console.log('Local request object:', localRequest);
+    console.log('Request object:', JSON.stringify(request, null, 2));
+    console.log('Local request object:', JSON.stringify(localRequest, null, 2));
   }, [request, localRequest]);
 
   const toggleRequestPrivacy = () => {

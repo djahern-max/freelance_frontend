@@ -6,11 +6,29 @@
   background-color: var(--color-background-main);
 }
 
+.subtitle {
+  color: #6a6666;
+  /* Darker for better contrast */
+  font-size: 1.25rem;
+  /* Increase font size */
+  font-weight: bold;
+  /* Make it stand out */
+  margin: 1rem 0 2rem 0;
+  text-align: center;
+  /* Center align */
+  letter-spacing: 0.5px;
+  /* Improve readability */
+  margin-top: 0rem;
+  /* Remove extra spacing */
+  padding-top: 0rem;
+  /* Ensure no extra padding */
+}
+
 .headerContainer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: .5rem;
   width: 100%;
 }
 
