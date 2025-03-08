@@ -7,7 +7,23 @@ import { API_BASE_URL } from "../../utils/constants"; // Ensure this file exists
 
 const AuthDialog = ({ isOpen, onClose, error, onLogin, onRegister }) => {
   // Construct the Google OAuth URL dynamically
-  const googleLoginUrl = `${API_BASE_URL}/api/login/google`;
+  const getGoogleOAuthUrl = () => {
+    const apiUrl = process.env.REACT_APP_API_URL;
+
+    // Check if we're in production (when apiUrl is just a path, not a full URL)
+    const isProduction = !apiUrl.includes('://');
+
+    if (isProduction) {
+      // In production: avoid double /api by removing it from the path
+      return `${apiUrl}/login/google`;
+    } else {
+      // In development: keep the /api prefix
+      return `${apiUrl}/api/login/google`;
+    }
+  };
+
+  // Example usage in components:
+  const googleLoginUrl = getGoogleOAuthUrl();
 
   // Console log the URL and API_BASE_URL to debug
   useEffect(() => {

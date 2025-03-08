@@ -20,7 +20,23 @@ const Login = () => {
   const location = useLocation();
 
   // Get the OAuth URL consistently with AuthDialog
-  const googleLoginUrl = `${process.env.REACT_APP_API_URL}/api/login/google`;
+  const getGoogleOAuthUrl = () => {
+    const apiUrl = process.env.REACT_APP_API_URL;
+
+    // Check if we're in production (when apiUrl is just a path, not a full URL)
+    const isProduction = !apiUrl.includes('://');
+
+    if (isProduction) {
+      // In production: avoid double /api by removing it from the path
+      return `${apiUrl}/login/google`;
+    } else {
+      // In development: keep the /api prefix
+      return `${apiUrl}/api/login/google`;
+    }
+  };
+
+  // Example usage in components:
+  const googleLoginUrl = getGoogleOAuthUrl();
 
   useEffect(() => {
     // Log the OAuth URL to console for debugging
