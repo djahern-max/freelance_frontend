@@ -258,6 +258,88 @@
   margin-top: 15px;
 }
 
+/* Add these styles to your existing Login.module.css file */
+
+.socialLoginContainer {
+  width: 100%;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.oauthButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 12px 16px;
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  font-size: 16px;
+  color: #333;
+  text-decoration: none;
+  transition: background-color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.oauthButton:hover {
+  background-color: #f8f8f8;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.oauthButton svg {
+  margin-right: 12px;
+}
+
+/* Google Button */
+.googleButton {
+  border-color: #4285F4;
+}
+
+.googleButton:hover {
+  background-color: rgba(66, 133, 244, 0.04);
+}
+
+/* GitHub Button */
+.githubButton {
+  border-color: #24292e;
+}
+
+.githubButton:hover {
+  background-color: rgba(36, 41, 46, 0.04);
+}
+
+/* LinkedIn Button */
+.linkedinButton {
+  border-color: #0077B5;
+}
+
+.linkedinButton:hover {
+  background-color: rgba(0, 119, 181, 0.04);
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 16px 0;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.divider span {
+  padding: 0 10px;
+  font-size: 14px;
+  color: #666;
+}
+
 @keyframes slideIn {
   from {
     transform: translateY(-10px);

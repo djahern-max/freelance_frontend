@@ -78,11 +78,27 @@ class ApiService {
     }
 
     /**
-     * Gets the OAuth login URL
+     * Gets the Google OAuth login URL
      * @returns {string} The OAuth URL
      */
     getGoogleOAuthUrl() {
         return this.getApiUrl('login/google');
+    }
+
+    /**
+     * Gets the GitHub OAuth login URL
+     * @returns {string} The OAuth URL
+     */
+    getGithubOAuthUrl() {
+        return this.getApiUrl('login/github');
+    }
+
+    /**
+     * Gets the LinkedIn OAuth login URL
+     * @returns {string} The OAuth URL
+     */
+    getLinkedinOAuthUrl() {
+        return this.getApiUrl('login/linkedin');
     }
 
     /**
