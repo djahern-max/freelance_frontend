@@ -19,10 +19,17 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Get the OAuth URL consistently with AuthDialog
+  const googleLoginUrl = `${process.env.REACT_APP_API_URL}/api/login/google`;
+
   useEffect(() => {
+    // Log the OAuth URL to console for debugging
+    console.log("REACT_APP_API_URL:", process.env.REACT_APP_API_URL);
+    console.log("Google OAuth URL (Login.js):", googleLoginUrl);
+
     // Clear any existing auth data on component mount
     clearAuthData();
-  }, []);
+  }, [googleLoginUrl]);
 
   useEffect(() => {
     performance.mark('loginStart');
@@ -31,6 +38,12 @@ const Login = () => {
       performance.measure('loginLifetime', 'loginStart', 'loginEnd');
     };
   }, []);
+
+  const handleGoogleLogin = () => {
+    console.log("Google login button clicked");
+    console.log("Navigating to:", googleLoginUrl);
+    window.location.href = googleLoginUrl;
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -147,8 +160,6 @@ const Login = () => {
   };
 
   // Helper function to get error message and type
-  // Update the getErrorMessage function in your Login.js
-  // Update the getErrorMessage function in your Login.js
   const getErrorMessage = (error) => {
     if (!navigator.onLine) {
       return {
@@ -286,6 +297,31 @@ const Login = () => {
             )}
           </button>
         </form>
+
+
+        {/* After your main login form/button */}
+        <div className={styles.socialLoginContainer}>
+          <div className={styles.divider}>
+            <span>OR</span>
+          </div>
+
+          {/* Updated Google button with consistent URL */}
+          <a
+            href={googleLoginUrl}
+            className={styles.googleButton}
+            onClick={(e) => {
+              console.log("Google login clicked via direct link");
+            }}
+          >
+            <svg viewBox="0 0 24 24" width="18" height="18">
+              <path
+                d="M12.545 10.239v3.821h5.445c-0.712 2.315-2.647 3.972-5.445 3.972-3.332 0-6.033-2.701-6.033-6.032s2.701-6.032 6.033-6.032c1.498 0 2.866 0.549 3.921 1.453l2.814-2.814c-1.798-1.677-4.198-2.701-6.735-2.701-5.523 0-9.996 4.473-9.996 9.996s4.473 9.996 9.996 9.996c8.396 0 10.826-7.883 9.994-11.659h-9.994z"
+                fill="#4285F4"
+              />
+            </svg>
+            Continue with Google
+          </a>
+        </div>
 
         <div className={styles.footer}>
           <p>

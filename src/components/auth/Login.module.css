@@ -203,6 +203,61 @@
   opacity: 1;
 }
 
+/* Login.module.css - add these styles */
+/* Add or update these styles */
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+  color: #667;
+  text-align: center;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #ddd;
+}
+
+.divider span {
+  padding: 0 15px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.googleButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 20px;
+  background-color: white;
+  color: #444;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.googleButton:hover {
+  background-color: #f8f8f8;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+.googleButton svg {
+  margin-right: 10px;
+}
+
+/* You might also want to add some container styling */
+.socialLoginContainer {
+  margin-top: 15px;
+}
+
 @keyframes slideIn {
   from {
     transform: translateY(-10px);

@@ -17,6 +17,7 @@ import { store } from './redux/store';
 import api from './utils/api';
 import MemoryMonitor from './utils/debug/MemoryMonitor';
 
+
 // Lazy load all other components
 const Login = React.lazy(() => import('./components/auth/Login'));
 const Logout = React.lazy(() => import('./components/auth/Logout'));
@@ -47,6 +48,7 @@ const DonationSuccess = React.lazy(() => import('./components/payments/DonationS
 const DonationCancel = React.lazy(() => import('./components/payments/DonationCancel'));
 const TermsOfServicePage = React.lazy(() => import('./components/legal/TermsOfServicePage'));
 const PrivacyPolicyPage = React.lazy(() => import('./components/legal/PrivacyPolicyPage'));
+const OAuthCallback = React.lazy(() => import('./components/auth/OAuthCallback'));
 
 
 
@@ -103,6 +105,7 @@ function AppContent() {
             <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/oauth-callback" element={<OAuthCallback />} />
             <Route path="/logout" element={<Logout />} />
             <Route path="/opportunities" element={<PublicRequests />} />
             <Route path="/videos" element={<VideoList />} />

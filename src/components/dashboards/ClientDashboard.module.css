@@ -80,9 +80,8 @@
 .statsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 1rem;
-  /* Reduce from 2rem to 1rem */
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
 }
 
 .marketplaceTitle {
@@ -93,33 +92,64 @@
 }
 
 
-.statCard {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1.5rem;
-  background-color: white;
-  border-radius: 0.5rem;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  border: 1px solid #eaeaea;
-}
-
-.statCard:hover {
-  transform: translateY(-2px);
-  box-shadow: rgba(0, 0, 0, 0.15) 0px 8px 24px;
-}
-
+.statCard:active,
 .statCard.active {
-  border: 1px solid #0066cc;
-  box-shadow: rgba(0, 102, 204, 0.15) 0px 8px 24px;
+  background-color: #f0f6ff;
+  /* Light blue background instead of white */
+  border-color: #0066cc;
+  transform: translateY(0);
+  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
+}
+
+/* Add a clear indicator on the selected tab */
+.statCard.active::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #0066cc;
+  border-radius: 0 0 3px 3px;
+}
+
+/* Remove the previous active tab indicator */
+.statCard.active:before {
+  display: none;
 }
 
 .icon {
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 2rem;
+  height: 2rem;
   color: #0066cc;
+  padding: 0.5rem;
+  background-color: rgba(0, 102, 204, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.statCard.active .icon {
+  background-color: rgba(0, 102, 204, 0.2);
+}
+
+
+.countBadge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 12px;
+  background-color: #0066cc;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .statInfo {
@@ -128,9 +158,9 @@
 
 .statInfo h3 {
   margin: 0;
-  font-size: 0.875rem;
+  font-size: 0.9rem;
   font-weight: 500;
-  color: #666;
+  color: #4b5563;
 }
 
 .statInfo p {
@@ -138,7 +168,7 @@
   margin-top: 0.25rem;
   font-size: 1.5rem;
   font-weight: 600;
-  color: #333;
+  color: #1f2937;
 }
 
 /* Expanded Section */
@@ -452,6 +482,38 @@
   min-height: 50vh;
 }
 
+.statCard {
+  position: relative;
+  overflow: hidden;
+}
+
+.statCard::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(0, 102, 204, 0.1);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.4s ease-out, height 0.4s ease-out;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.statCard:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Ensure content sits above the ripple */
+.icon,
+.statInfo {
+  position: relative;
+  z-index: 1;
+}
+
 .loading {
   color: #666;
 }
@@ -746,14 +808,32 @@
 
   /* Stats Grid */
   .statsGrid {
-    grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .statCard {
-    margin: var(--spacing-xs) 0;
-    height: 72px;
-    padding: var(--spacing-md);
-    position: relative;
+    padding: 1rem;
+  }
+
+  .statCard::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(0, 102, 204, 0.1);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.4s ease-out, height 0.4s ease-out;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .statCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 102, 204, 0.15);
   }
 
   .statCard::after {
@@ -771,7 +851,14 @@
   }
 
   .statCard.active::after {
-    transform: translateY(-50%) rotate(-135deg);
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #0066cc;
+    border-radius: 0 0 3px 3px;
   }
 
   .cardContent {
@@ -837,6 +924,16 @@
     gap: 0.75rem;
   }
 
+  .icon {
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0.35rem;
+  }
+
+  .statInfo p {
+    font-size: 1.25rem;
+  }
+
   .titleSection,
   .userSection,
   .messageSection,
@@ -870,6 +967,8 @@
   margin-bottom: 16px;
   font-size: 15px;
 }
+
+
 
 
 

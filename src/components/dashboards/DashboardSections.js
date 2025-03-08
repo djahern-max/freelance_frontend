@@ -50,12 +50,12 @@ const DashboardSections = ({
 
   return (
     <div className={styles.container}>
-      {showTutorial && !hasSeenTutorial && (
+      {/* {showTutorial && !hasSeenTutorial && (
         <div className={styles.tutorialHint}>
           <span>💡</span>
           Click any card to view more details
         </div>
-      )}
+      )} */}
 
       <div className={styles.gridContainer}>
         {sections.map(({ id, icon: Icon, title, count }) => (

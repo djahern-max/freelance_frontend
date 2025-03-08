@@ -619,11 +619,11 @@ const DeveloperDashboard = () => {
                 </button>
               </div>
             </div>
-            {!hasSeenTutorial && (
+            {/* {!hasSeenTutorial && (
               <div className={styles.tutorialHint}>
                 Click any card to view more details
               </div>
-            )}
+            )} */}
             <DashboardSections sections={sections} renderSection={renderSection} />
           </div>
 

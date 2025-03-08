@@ -124,3 +124,30 @@
   color: #6b7280;
   font-size: 0.875rem;
 }
+
+.googleButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: 6px;
+  background-color: white;
+  color: #111827;
+  border: 1px solid #d1d5db;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.googleButton:hover {
+  background-color: #f3f4f6;
+}
+
+.googleIcon {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+}
