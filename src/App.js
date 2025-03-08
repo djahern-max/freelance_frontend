@@ -49,6 +49,8 @@ const DonationCancel = React.lazy(() => import('./components/payments/DonationCa
 const TermsOfServicePage = React.lazy(() => import('./components/legal/TermsOfServicePage'));
 const PrivacyPolicyPage = React.lazy(() => import('./components/legal/PrivacyPolicyPage'));
 const OAuthCallback = React.lazy(() => import('./components/auth/OAuthCallback'));
+const SelectRole = React.lazy(() => import('./components/auth/SelectRole'));
+
 
 
 
@@ -118,6 +120,7 @@ function AppContent() {
             <Route path="/donation/cancel" element={<DonationCancel />} />
             <Route path="/terms-of-service" element={<TermsOfServicePage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+            <Route path="/select-role" element={<SelectRole />} />
 
             {/* Showcase routes */}
             <Route

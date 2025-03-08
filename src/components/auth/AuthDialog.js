@@ -1,40 +1,23 @@
 import React, { useEffect } from "react";
-import styles from "./AuthDialog.module.css";
 import { X } from "lucide-react";
-
-// Import your API configuration or environment variables
-import { API_BASE_URL } from "../../utils/constants"; // Ensure this file exists
+import styles from "./AuthDialog.module.css";
+import apiService from '../../utils/apiService';
 
 const AuthDialog = ({ isOpen, onClose, error, onLogin, onRegister }) => {
-  // Construct the Google OAuth URL dynamically
-  const getGoogleOAuthUrl = () => {
-    const apiUrl = process.env.REACT_APP_API_URL;
+  // Get Google OAuth URL from the centralized service
+  const googleLoginUrl = apiService.getGoogleOAuthUrl();
 
-    // Check if we're in production (when apiUrl is just a path, not a full URL)
-    const isProduction = !apiUrl.includes('://');
-
-    if (isProduction) {
-      // In production: avoid double /api by removing it from the path
-      return `${apiUrl}/login/google`;
-    } else {
-      // In development: keep the /api prefix
-      return `${apiUrl}/api/login/google`;
-    }
-  };
-
-  // Example usage in components:
-  const googleLoginUrl = getGoogleOAuthUrl();
-
-  // Console log the URL and API_BASE_URL to debug
+  // Log URL for debugging
   useEffect(() => {
-    console.log("API_BASE_URL:", API_BASE_URL);
-    console.log("Generated Google OAuth URL:", googleLoginUrl);
-  }, [googleLoginUrl]);
+    if (isOpen) {
+      console.log("AuthDialog opened with Google OAuth URL:", googleLoginUrl);
+    }
+  }, [isOpen, googleLoginUrl]);
 
   if (!isOpen) return null;
 
   // Log when button is clicked
-  const handleGoogleClick = (e) => {
+  const handleGoogleClick = () => {
     console.log("Google login button clicked");
     console.log("Navigating to:", googleLoginUrl);
     // We don't prevent default because we want the navigation to happen

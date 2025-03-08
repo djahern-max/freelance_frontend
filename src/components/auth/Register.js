@@ -22,11 +22,28 @@ const Register = () => {
   const location = useLocation();
   const from = location.state?.from || '/';
 
+  // Get the Google OAuth URL
+  const getGoogleOAuthUrl = () => {
+    const apiUrl = process.env.REACT_APP_API_URL;
+    // Check if we're in production (when apiUrl is just a path, not a full URL)
+    const isProduction = !apiUrl.includes('://');
+
+    if (isProduction) {
+      // In production: avoid double /api by removing it from the path
+      return `${apiUrl}/login/google`;
+    } else {
+      // In development: keep the /api prefix
+      return `${apiUrl}/api/login/google`;
+    }
+  };
+
+  // Get the OAuth URL
+  const googleLoginUrl = getGoogleOAuthUrl();
+
   // Cleanup stale auth data
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-
       clearAuthData();
     }
   }, []);
@@ -38,6 +55,13 @@ const Register = () => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }));
+  };
+
+  // Handle Google registration
+  const handleGoogleRegister = () => {
+    console.log('Initiating Google registration');
+    console.log('Navigating to:', googleLoginUrl);
+    window.location.href = googleLoginUrl;
   };
 
   // Handle registration logic
@@ -107,6 +131,29 @@ const Register = () => {
         </div>
 
         {error && <div className={styles.error}>{error}</div>}
+
+        {/* Google Registration Button */}
+        <div className={styles.socialLoginContainer}>
+          <a
+            href={googleLoginUrl}
+            className={styles.googleButton}
+            onClick={(e) => {
+              console.log("Google registration clicked");
+            }}
+          >
+            <svg viewBox="0 0 24 24" width="18" height="18">
+              <path
+                d="M12.545 10.239v3.821h5.445c-0.712 2.315-2.647 3.972-5.445 3.972-3.332 0-6.033-2.701-6.033-6.032s2.701-6.032 6.033-6.032c1.498 0 2.866 0.549 3.921 1.453l2.814-2.814c-1.798-1.677-4.198-2.701-6.735-2.701-5.523 0-9.996 4.473-9.996 9.996s4.473 9.996 9.996 9.996c8.396 0 10.826-7.883 9.994-11.659h-9.994z"
+                fill="#4285F4"
+              />
+            </svg>
+            Register with Google
+          </a>
+
+          <div className={styles.divider}>
+            <span>OR</span>
+          </div>
+        </div>
 
         <form onSubmit={handleRegister} className={styles.form}>
           <div className={styles.formGroup}>

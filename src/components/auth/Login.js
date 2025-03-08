@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { login, loginFailure, loginStart } from '../../redux/authSlice';
-import api from '../../utils/api';
 import { clearAuthData } from '../../utils/authCleanup';
 import styles from './Login.module.css';
+import apiService from '../../utils/apiService';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -19,28 +19,11 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Get the OAuth URL consistently with AuthDialog
-  const getGoogleOAuthUrl = () => {
-    const apiUrl = process.env.REACT_APP_API_URL;
-
-    // Check if we're in production (when apiUrl is just a path, not a full URL)
-    const isProduction = !apiUrl.includes('://');
-
-    if (isProduction) {
-      // In production: avoid double /api by removing it from the path
-      return `${apiUrl}/login/google`;
-    } else {
-      // In development: keep the /api prefix
-      return `${apiUrl}/api/login/google`;
-    }
-  };
-
-  // Example usage in components:
-  const googleLoginUrl = getGoogleOAuthUrl();
+  // Get the OAuth URL consistently using our API service
+  const googleLoginUrl = apiService.getGoogleOAuthUrl();
 
   useEffect(() => {
     // Log the OAuth URL to console for debugging
-    console.log("REACT_APP_API_URL:", process.env.REACT_APP_API_URL);
     console.log("Google OAuth URL (Login.js):", googleLoginUrl);
 
     // Clear any existing auth data on component mount
@@ -54,12 +37,6 @@ const Login = () => {
       performance.measure('loginLifetime', 'loginStart', 'loginEnd');
     };
   }, []);
-
-  const handleGoogleLogin = () => {
-    console.log("Google login button clicked");
-    console.log("Navigating to:", googleLoginUrl);
-    window.location.href = googleLoginUrl;
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -99,37 +76,25 @@ const Login = () => {
     dispatch(loginStart());
 
     try {
-      // Login request
-      const loginUrl = `${process.env.REACT_APP_API_URL}/auth/login`;
-      const response = await fetch(loginUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username: formData.username,
-          password: formData.password,
-        }),
-        credentials: 'include', // Add this if you're using cookies
+      // Use our centralized API service for login
+      const response = await apiService.login({
+        username: formData.username,
+        password: formData.password,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.detail || 'Login failed');
-      }
-
+      const data = response.data;
       const token = data.access_token;
+
       if (!token) {
         throw new Error('No token received from server');
       }
 
       // Store token and update API headers
       localStorage.setItem('token', token);
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      apiService.setAuthToken(token);
 
       // Get user data
-      const userResponse = await api.get('/auth/me');
+      const userResponse = await apiService.getCurrentUser();
       const userData = userResponse.data;
 
       if (!userData || !userData.user_type) {
@@ -315,17 +280,17 @@ const Login = () => {
         </form>
 
 
-        {/* After your main login form/button */}
+        {/* OAuth login options */}
         <div className={styles.socialLoginContainer}>
           <div className={styles.divider}>
             <span>OR</span>
           </div>
 
-          {/* Updated Google button with consistent URL */}
+          {/* Updated Google button with consistent URL from our service */}
           <a
             href={googleLoginUrl}
             className={styles.googleButton}
-            onClick={(e) => {
+            onClick={() => {
               console.log("Google login clicked via direct link");
             }}
           >

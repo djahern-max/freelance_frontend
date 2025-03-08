@@ -1,0 +1,159 @@
+.roleSelectionPage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+    padding: 20px;
+}
+
+.roleSelectionContainer {
+    max-width: 800px;
+    width: 100%;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    padding: 40px;
+    text-align: center;
+}
+
+.roleSelectionTitle {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 32px;
+    font-weight: 600;
+}
+
+.roleButtons {
+    display: flex;
+    flex-direction: row;
+    gap: 24px;
+    margin-top: 20px;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .roleButtons {
+        flex-direction: column;
+    }
+
+    .roleSelectionContainer {
+        padding: 30px 20px;
+    }
+}
+
+.roleButton {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    border: 2px solid #e7e9eb;
+    background-color: white;
+    border-radius: 10px;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    overflow: hidden;
+    height: 220px;
+    min-width: 200px;
+}
+
+.roleButtonContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px;
+    width: 100%;
+    height: 100%;
+}
+
+.roleButton:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.08);
+}
+
+.roleIcon {
+    font-size: 42px;
+    margin-bottom: 16px;
+}
+
+.clientButton:hover {
+    border-color: #3498db;
+}
+
+.developerButton:hover {
+    border-color: #2ecc71;
+}
+
+.roleButton h3 {
+    margin: 0 0 12px 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+}
+
+.roleButton p {
+    margin: 0;
+    font-size: 16px;
+    color: #666;
+    line-height: 1.5;
+}
+
+.roleButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.errorMessage {
+    background-color: #ffebee;
+    color: #d32f2f;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.loadingContainer {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.loadingSpinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 12px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.debugInfo {
+    margin-top: 30px;
+    text-align: left;
+    border-top: 1px dashed #ddd;
+    padding-top: 20px;
+}
+
+.debugInfo pre {
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-size: 12px;
+}
