@@ -39,25 +39,21 @@ const SelectRole = () => {
             isProduction
         });
     }, [isOAuth, tempToken, apiBaseUrl, isProduction]);
-
+    // In SelectRole.js
     const handleRoleSelection = async (role) => {
         setIsLoading(true);
         setError('');
-        console.log(`Role selected: ${role}`);
 
         try {
-            // If coming from OAuth flow, complete registration with selected role
+            // If coming from OAuth flow with a temp token
             if (isOAuth && tempToken) {
                 console.log('Processing OAuth registration with role:', role);
 
-                // Construct the endpoint URL correctly
-                let completeRegistrationUrl = isProduction
-                    ? `${apiBaseUrl}/complete-oauth-registration`
-                    : `${apiBaseUrl}/api/complete-oauth-registration`;
+                // Build the URL properly
+                const apiUrl = process.env.REACT_APP_API_URL || '';
+                const completeRegistrationUrl = apiUrl + '/complete-oauth-registration';
 
-                console.log('Sending request to:', completeRegistrationUrl);
-
-                // Make the API call with axios for more control
+                // Make the API call with axios
                 const response = await axios.post(
                     completeRegistrationUrl,
                     {
@@ -71,32 +67,26 @@ const SelectRole = () => {
                     }
                 );
 
-                console.log('Registration response:', response.data);
-
-                // Extract credentials
+                // Extract response data
                 const { access_token, token_type, user_type } = response.data;
 
                 if (!access_token) {
                     throw new Error('No access token received');
                 }
 
-                // Store token in localStorage
+                // Store token and update auth state
                 localStorage.setItem('token', access_token);
-
-                // Update API headers for subsequent requests
                 axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
 
-                // Fetch user details if needed
+                // Get user details 
                 const userResponse = await axios.get(
-                    isProduction ? `${apiBaseUrl}/auth/me` : `${apiBaseUrl}/api/auth/me`,
+                    apiUrl + '/auth/me',
                     {
                         headers: {
                             'Authorization': `Bearer ${access_token}`
                         }
                     }
                 );
-
-                console.log('User data:', userResponse.data);
 
                 // Update Redux state
                 dispatch(
@@ -114,20 +104,14 @@ const SelectRole = () => {
                     ? '/client-dashboard'
                     : '/developer-dashboard';
 
-                console.log('Redirecting to:', dashboardPath);
                 navigate(dashboardPath);
             } else {
-                // For regular registration, just store the selection and continue
-                console.log('Not an OAuth flow, redirecting to regular registration');
+                // For regular registration, redirect to registration page
                 navigate(`/register?role=${role}`);
             }
         } catch (err) {
             console.error('Error during role selection:', err);
-
-            // Provide more detailed error information
-            const errorMessage = err.response?.data?.detail || err.message || 'Failed to complete registration';
-            setError(`Error: ${errorMessage}. Please try again or contact support.`);
-        } finally {
+            setError(`Error: ${err.response?.data?.detail || err.message}. Please try again.`);
             setIsLoading(false);
         }
     };
