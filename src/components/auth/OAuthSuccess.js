@@ -1,66 +1,88 @@
-// src/components/auth/OAuthSuccess.js
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import apiService from '../../utils/apiService';
+import api from '../../utils/api';
 import { login } from '../../redux/authSlice';
 
 const OAuthSuccess = () => {
+    const [status, setStatus] = useState('Authentication successful! Redirecting to your dashboard...');
     const navigate = useNavigate();
     const location = useLocation();
     const dispatch = useDispatch();
 
     useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        const token = params.get('token');
-
-        if (!token) {
-            console.error('No token found in OAuth success redirect');
-            navigate('/login');
-            return;
-        }
-
-        // Set the token in local storage and apiService
-        apiService.setAuthToken(token);
-
-        // Fetch user data and login
-        const fetchUserData = async () => {
+        const completeAuth = async () => {
             try {
-                // Fetch current user data
-                const response = await apiService.get('/auth/me');
-                const userData = response.data;
+                // Get token from query params
+                const params = new URLSearchParams(location.search);
+                const token = params.get('token');
 
-                // Dispatch login action with user data and token
-                dispatch(login({ token, user: userData }));
+                if (!token) {
+                    setStatus('Missing authentication token. Redirecting to login...');
+                    setTimeout(() => navigate('/login'), 2000);
+                    return;
+                }
 
-                // Check if user needs to select a role
-                if (userData.needs_role_selection) {
-                    navigate('/select-role'); // Changed from '/api/auth/select-role'
-                } else {
-                    // Redirect to appropriate dashboard based on user type
-                    if (userData.user_type === 'developer') {
-                        navigate('/developer-dashboard'); // Changed to match App.js routes
-                    } else if (userData.user_type === 'client') {
-                        navigate('/client-dashboard'); // Changed to match App.js routes
-                    } else {
-                        navigate('/dashboard'); // Default dashboard
+                // Store token in localStorage
+                localStorage.setItem('token', token);
+
+                // Fetch user data to determine where to redirect
+                const response = await api.get('/me', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                if (response.data) {
+                    // Update Redux store with user data
+                    dispatch(login({
+                        token,
+                        user: {
+                            id: response.data.id,
+                            username: response.data.username,
+                            email: response.data.email,
+                            fullName: response.data.full_name || '',
+                            isActive: response.data.is_active,
+                            userType: response.data.user_type,
+                            createdAt: response.data.created_at,
+                        },
+                    }));
+
+                    // Determine redirect based on user type
+                    let redirectPath = '/dashboard'; // Default fallback
+
+                    if (response.data.user_type === 'client') {
+                        redirectPath = '/client-dashboard';
+                        setStatus('Login successful! Redirecting to Client Dashboard...');
+                    } else if (response.data.user_type === 'developer') {
+                        redirectPath = '/developer-dashboard';
+                        setStatus('Login successful! Redirecting to Developer Dashboard...');
+                    } else if (!response.data.user_type) {
+                        // This shouldn't happen as users should have selected a role,
+                        // but just in case, redirect to role selection
+                        redirectPath = '/select-role';
+                        setStatus('Please select a role to continue...');
                     }
+
+                    // Redirect after a short delay
+                    setTimeout(() => navigate(redirectPath), 1500);
+                } else {
+                    throw new Error('Failed to retrieve user data');
                 }
             } catch (error) {
-                console.error('Error fetching user data:', error);
-                navigate('/login');
+                console.error('OAuth success error:', error);
+                setStatus('Authentication error. Redirecting to login...');
+                localStorage.removeItem('token');
+                setTimeout(() => navigate('/login'), 2000);
             }
         };
 
-        fetchUserData();
-    }, [dispatch, navigate, location]);
+        completeAuth();
+    }, [dispatch, location.search, navigate]);
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <div className="p-8 bg-white rounded-lg shadow-md text-center">
-                <div className="w-16 h-16 mx-auto mb-4 border-t-4 border-blue-500 border-solid rounded-full animate-spin"></div>
-                <h2 className="mb-2 text-2xl font-bold">Authentication Successful</h2>
-                <p className="text-gray-600">Redirecting you to your account...</p>
+        <div className="oauth-success-container">
+            <div className="success-content">
+                <div className="success-icon">✅</div>
+                <h2>{status}</h2>
             </div>
         </div>
     );

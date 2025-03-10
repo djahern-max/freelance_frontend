@@ -1,171 +1,141 @@
-// src/components/auth/SelectRole.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import apiService from '../../utils/apiService';
-import { updateUserType, login } from '../../redux/authSlice';
+import { useDispatch } from 'react-redux';
+import api from '../../utils/api';
+import { login } from '../../redux/authSlice';
 import styles from './SelectRole.module.css';
 
-const SelectRole = () => {
-    const [selectedRole, setSelectedRole] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
+// SVG Icons (inline for simplicity)
+const DeveloperIcon = () => (
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 18L3 12L8 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M16 6L21 12L16 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M10 20L14 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+);
 
+const ClientIcon = () => (
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 7L12 3L4 7M20 7L12 11M20 7V17L12 21M12 11L4 7M12 11V21M4 7V17L12 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+);
+
+const SelectRole = () => {
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [token, setToken] = useState('');
+    const [userData, setUserData] = useState(null);
     const navigate = useNavigate();
     const location = useLocation();
     const dispatch = useDispatch();
-    const { user } = useSelector(state => state.auth);
 
-    // Get OAuth IDs from localStorage
-    const googleId = localStorage.getItem('google_id');
-    const githubId = localStorage.getItem('github_id');
-    const linkedinId = localStorage.getItem('linkedin_id');
-
-    // Get token from URL query params if available
     useEffect(() => {
-        const queryParams = new URLSearchParams(location.search);
-        const urlToken = queryParams.get('token');
+        // Extract token from URL
+        const params = new URLSearchParams(location.search);
+        const urlToken = params.get('token');
 
-        if (urlToken) {
-            console.log('Token found in URL');
-            localStorage.setItem('token', urlToken);
-            if (apiService.setAuthToken) {
-                apiService.setAuthToken(urlToken);
-            }
-        }
-    }, [location]);
-
-    // Try to fetch user data if needed
-    useEffect(() => {
-        const fetchUserData = async () => {
-            if (!user && (googleId || githubId || linkedinId)) {
-                try {
-                    console.log('Fetching user data with OAuth IDs');
-                    const response = await apiService.get('/auth/get-user', {
-                        params: {
-                            google_id: googleId,
-                            github_id: githubId,
-                            linkedin_id: linkedinId
-                        }
-                    });
-
-                    if (response.data) {
-                        dispatch(
-                            login({
-                                user: {
-                                    id: response.data.id,
-                                    username: response.data.username,
-                                    email: response.data.email,
-                                    fullName: response.data.full_name,
-                                    isActive: response.data.is_active,
-                                    userType: response.data.user_type,
-                                    createdAt: response.data.created_at,
-                                },
-                            })
-                        );
-                    }
-                } catch (error) {
-                    console.error("Error fetching user data:", error);
-                }
-            }
-        };
-
-        fetchUserData();
-    }, [user, googleId, githubId, linkedinId, dispatch]);
-
-    const handleRoleSelection = async () => {
-        if (!selectedRole) {
-            setError('Please select a role to continue');
+        if (!urlToken) {
+            setError('Authentication token is missing. Please try logging in again.');
             return;
         }
 
-        setLoading(true);
-        setError('');
+        // Store token
+        setToken(urlToken);
+        localStorage.setItem('token', urlToken);
 
+        // We don't need to fetch user data here since we'll handle everything
+        // during role selection - the user is already authenticated with a token
+    }, [location.search]);
+
+    const handleRoleSelection = async (userType) => {
+        setLoading(true);
         try {
-            console.log('Submitting role selection with OAuth IDs');
-            // Check which OAuth identifiers we have
-            if (!googleId && !githubId && !linkedinId) {
-                setError('Unable to identify your account. Please try logging in again.');
-                setLoading(false);
+            if (!token) {
+                setError('Your session has expired. Please log in again.');
                 return;
             }
 
-            // Make the API call with OAuth identifiers
-            const response = await apiService.post('/auth/set-role', {
-                email: user?.email,
-                user_type: selectedRole,
-                google_id: googleId,
-                github_id: githubId,
-                linkedin_id: linkedinId
-            });
+            // Send role selection to backend
+            const response = await api.post('/auth/select-role',
+                {
+                    user_type: userType // This endpoint will get current_user from JWT token
+                },
+                {
+                    headers: { Authorization: `Bearer ${token}` }
+                }
+            );
 
-            console.log('Role selection response:', response);
+            if (response.data) {
+                // Fetch user data to get updated information
+                const userResponse = await api.get('/auth/me', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
 
-            // Update Redux store with the new user type
-            dispatch(updateUserType(selectedRole));
+                if (!userResponse.data) {
+                    throw new Error('Failed to retrieve user data');
+                }
 
-            // Navigate to appropriate dashboard
-            if (selectedRole === 'developer') {
-                navigate('/developer-dashboard');
-            } else {
-                navigate('/client-dashboard');
+                // Update Redux store
+                dispatch(login({
+                    token,
+                    user: {
+                        id: userResponse.data.id,
+                        username: userResponse.data.username,
+                        email: userResponse.data.email,
+                        fullName: userResponse.data.full_name || '',
+                        isActive: userResponse.data.is_active,
+                        userType: userType, // Use the selected role
+                        createdAt: userResponse.data.created_at,
+                    },
+                }));
+
+                // Redirect to appropriate dashboard
+                const dashboardPath = userType === 'client' ? '/client-dashboard' : '/developer-dashboard';
+                navigate(dashboardPath);
             }
         } catch (err) {
-            console.error('Error setting user role:', err);
-            setError('Failed to set role. Please try again.');
+            console.error('Error setting role:', err);
+            setError('Failed to set your role. Please try again.');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className={styles.container}>
-            <div className={styles.card}>
-                <h2 className={styles.title}>Choose Your Role</h2>
-                <p className={styles.description}>
-                    Select a role to personalize your experience on RYZE.ai
-                </p>
+        <div className={styles["select-role-container"]}>
+            <div className={styles["select-role-card"]}>
+                <h2>Choose Your Role</h2>
+                <p>Select a role to personalize your experience on RYZE.ai</p>
 
-                <div className={styles.roleOptions}>
-                    <div
-                        className={`${styles.roleOption} ${selectedRole === 'developer' ? styles.selected : ''}`}
-                        onClick={() => setSelectedRole('developer')}
+                <div className={styles["role-options"]}>
+                    <button
+                        className={`${styles["role-option"]} ${styles["developer"]}`}
+                        onClick={() => handleRoleSelection('developer')}
+                        disabled={loading}
                     >
-                        <div className={styles.roleIcon}>💻</div>
+                        <div className={styles["role-icon-container"]}>
+                            <span className={styles["role-icon"]}><DeveloperIcon /></span>
+                        </div>
                         <h3>Developer</h3>
                         <p>I provide software development services</p>
-                    </div>
+                    </button>
 
-                    <div
-                        className={`${styles.roleOption} ${selectedRole === 'client' ? styles.selected : ''}`}
-                        onClick={() => setSelectedRole('client')}
+                    <button
+                        className={`${styles["role-option"]} ${styles["client"]}`}
+                        onClick={() => handleRoleSelection('client')}
+                        disabled={loading}
                     >
-                        <div className={styles.roleIcon}>🏢</div>
+                        <div className={styles["role-icon-container"]}>
+                            <span className={styles["role-icon"]}><ClientIcon /></span>
+                        </div>
                         <h3>Client</h3>
                         <p>I'm looking to hire developers</p>
-                    </div>
+                    </button>
                 </div>
 
-                {error && <div className={styles.error}>{error}</div>}
+                {error && <div className={styles["error-message"]}>{error}</div>}
 
-                <button
-                    className={styles.continueButton}
-                    onClick={handleRoleSelection}
-                    disabled={loading || !selectedRole}
-                >
-                    {loading ? 'Processing...' : 'Continue'}
-                </button>
-
-                {/* Debug information - can be removed in production */}
-                {process.env.NODE_ENV === 'development' && (
-                    <div style={{ marginTop: '20px', fontSize: '12px', color: '#999' }}>
-                        <p>Debug: {googleId ? `Google ID: ${googleId.substring(0, 5)}...` : 'No Google ID'}</p>
-                        <p>Debug: {githubId ? `GitHub ID: ${githubId.substring(0, 5)}...` : 'No GitHub ID'}</p>
-                        <p>Debug: {linkedinId ? `LinkedIn ID: ${linkedinId.substring(0, 5)}...` : 'No LinkedIn ID'}</p>
-                        <p>Debug: {user ? `User Email: ${user.email}` : 'No User in Redux'}</p>
-                    </div>
-                )}
+                {loading && <div className={styles["loading"]}>Processing your selection...</div>}
             </div>
         </div>
     );

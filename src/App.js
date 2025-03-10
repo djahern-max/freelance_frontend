@@ -109,9 +109,13 @@ function AppContent() {
 
     const fetchUserByOAuthId = async () => {
       try {
-        const response = await api.get("/auth/get-user", {
-          params: { google_id: googleId, github_id: githubId, linkedin_id: linkedinId },
-        });
+        // Choose the provider and ID that exists
+        const params = {};
+        if (googleId) params.google_id = googleId;
+        if (githubId) params.github_id = githubId;
+        if (linkedinId) params.linkedin_id = linkedinId;
+
+        const response = await api.get("/auth/get-user", { params });
 
         const userData = response.data;
         if (!userData) throw new Error("User not found");
@@ -131,7 +135,7 @@ function AppContent() {
         );
 
         // Check if user needs to select a role (if user_type is null or empty)
-        if (!userData.user_type) {
+        if (!userData.user_type || userData.needs_role_selection) {
           // Redirect to role selection page
           window.location.href = '/select-role';
         } else {
@@ -142,6 +146,8 @@ function AppContent() {
         }
       } catch (error) {
         console.error("OAuth-based authentication failed", error);
+
+        // Clear OAuth IDs from localStorage
         localStorage.removeItem("google_id");
         localStorage.removeItem("github_id");
         localStorage.removeItem("linkedin_id");
@@ -153,7 +159,6 @@ function AppContent() {
 
     fetchUserByOAuthId();
   }, [dispatch]);
-
 
   return (
     <>
