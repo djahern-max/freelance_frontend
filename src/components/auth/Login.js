@@ -23,7 +23,7 @@ const Login = () => {
     const apiUrl = process.env.REACT_APP_API_URL || '';
     const isProduction = apiUrl && !apiUrl.startsWith('http');
 
-    return isProduction ? `${apiUrl}/auth/${provider}` : `${apiUrl}/api/auth/${provider}`;
+    return isProduction ? `${apiUrl}/api/auth/${provider}` : `${apiUrl}/auth/${provider}`;
   };
 
   const googleLoginUrl = getOAuthUrl('google');
@@ -74,7 +74,6 @@ const Login = () => {
 
   const handleOAuthClick = (provider, url) => {
     if (process.env.NODE_ENV === 'development') {
-      debugOAuthConnection(provider, url);
     }
   };
 
@@ -85,7 +84,7 @@ const Login = () => {
     dispatch(loginStart());
 
     try {
-      const loginUrl = `${process.env.REACT_APP_API_URL}/auth/login`;
+      const loginUrl = `${process.env.REACT_APP_API_URL}/api/auth/login`;
       const response = await axios.post(loginUrl, formData);
       const data = response.data;
       const token = data.access_token;

@@ -8,7 +8,7 @@ const OAuthButtons = () => {
 
     const handleOAuthLogin = (provider) => {
         // Navigate to the OAuth provider's login page
-        window.location.href = `${apiBaseUrl}/auth/${provider}`;
+        window.location.href = `${apiBaseUrl}/api/api/auth/${provider}`;
     };
 
     return (
