@@ -1,23 +1,75 @@
-/* OAuthSuccess.module.css */
+/* src/components/auth/OAuthSuccess.module.css */
 .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f7f9fc;
+    padding: 20px;
+}
+
+.card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 40px 30px;
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    height: 100vh;
-    background-color: #f8f9fa;
-    padding: 2rem;
-    text-align: center;
 }
 
-.loader {
-    border: 5px solid #f3f3f3;
-    border-top: 5px solid #3498db;
+.title {
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 16px;
+    font-weight: 600;
+}
+
+.message {
+    color: #666;
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+.loadingIcon,
+.successIcon,
+.errorIcon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
-    width: 50px;
-    height: 50px;
+    margin-bottom: 24px;
+}
+
+.loadingIcon {
+    background-color: #f0f8ff;
+    color: #3498db;
+}
+
+.successIcon {
+    background-color: #e6f7ef;
+    color: #2ecc71;
+    font-size: 32px;
+}
+
+.errorIcon {
+    background-color: #ffebee;
+    color: #e74c3c;
+    font-size: 28px;
+}
+
+.spinner {
+    border: 4px solid rgba(52, 152, 219, 0.2);
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
     animation: spin 1s linear infinite;
-    margin-bottom: 1.5rem;
 }
 
 @keyframes spin {
@@ -30,117 +82,18 @@
     }
 }
 
-.title {
-    font-size: 1.8rem;
-    margin-bottom: 1rem;
-    color: #2c3e50;
-}
-
-.message {
-    font-size: 1.1rem;
-    color: #7f8c8d;
-    max-width: 600px;
-}
-
-/* OAuthError.module.css */
-.container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    background-color: #f8f9fa;
-    padding: 2rem;
-    text-align: center;
-}
-
-.errorIcon {
-    font-size: 3rem;
-    margin-bottom: 1.5rem;
-    color: #e74c3c;
-}
-
-.title {
-    font-size: 1.8rem;
-    margin-bottom: 1rem;
-    color: #2c3e50;
-}
-
-.message {
-    font-size: 1.1rem;
-    color: #7f8c8d;
-    max-width: 600px;
-    margin-bottom: 2rem;
-}
-
-.actions {
-    margin-top: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.returnButton {
-    display: inline-block;
+.button {
     background-color: #3498db;
     color: white;
-    padding: 0.8rem 1.5rem;
+    border: none;
     border-radius: 4px;
-    text-decoration: none;
-    font-weight: 500;
-    transition: background-color 0.2s;
-}
-
-.returnButton:hover {
-    background-color: #2980b9;
-}
-
-.redirectMessage {
-    margin-top: 1.5rem;
-    font-size: 0.9rem;
-    color: #95a5a6;
-}
-
-/* OAuthButtons.module.css */
-.oauthSection {
-    width: 100%;
-    margin: 1.5rem 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-}
-
-.oauthButton {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.8rem;
-    border-radius: 4px;
-    border: 1px solid #e0e0e0;
-    background-color: white;
+    padding: 12px 24px;
+    font-size: 16px;
     cursor: pointer;
-    transition: background-color 0.2s, border-color 0.2s;
-    font-size: 0.95rem;
-    font-weight: 500;
+    transition: background-color 0.2s;
+    margin-top: 10px;
 }
 
-.oauthButton:hover {
-    background-color: #f5f5f5;
-    border-color: #c0c0c0;
-}
-
-.oauthIcon {
-    margin-right: 0.8rem;
-    font-size: 1.1rem;
-}
-
-/* Provider-specific styling */
-.oauthButton.google {
-    color: #4285F4;
-}
-
-.oauthButton.github {
-    color: #333;
-}
-
-.oauthButton.linkedin {
-    color: #0077B5;
+.button:hover {
+    background-color: #2980b9;
 }

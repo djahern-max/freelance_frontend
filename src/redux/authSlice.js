@@ -23,6 +23,7 @@ const normalizeUserData = (userData) => {
     isActive: userData.is_active || userData.isActive,
     userType: userData.user_type || userData.userType,
     createdAt: userData.created_at || userData.createdAt,
+    needsRoleSelection: userData.needs_role_selection || userData.needsRoleSelection || false,
   };
 };
 
@@ -44,11 +45,10 @@ const authSlice = createSlice({
       state.error = null;
     },
     login: (state, action) => {
-
       const { token, user } = action.payload;
 
       // Basic validation
-      if (!user || (!user.user_type && !user.userType)) {
+      if (!user) {
         console.error('Invalid user data received:', user);
         state.error = 'Invalid user data';
         return;
@@ -56,7 +56,6 @@ const authSlice = createSlice({
 
       // Normalize user data using helper function
       const normalizedUser = normalizeUserData(user);
-
 
       if (!normalizedUser) {
         console.error('Failed to normalize user data:', user);
@@ -75,7 +74,6 @@ const authSlice = createSlice({
       try {
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(normalizedUser));
-
       } catch (err) {
         console.error('Error storing auth data:', err);
         // Continue even if localStorage fails
@@ -98,7 +96,6 @@ const authSlice = createSlice({
       try {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-
       } catch (err) {
         console.error('Error clearing auth data:', err);
       }
@@ -122,6 +119,23 @@ const authSlice = createSlice({
         console.error('Error updating user data in localStorage:', err);
       }
     },
+    updateUserType: (state, action) => {
+      if (state.user) {
+        const updatedUser = {
+          ...state.user,
+          userType: action.payload,
+          needsRoleSelection: false
+        };
+
+        state.user = updatedUser;
+
+        try {
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+        } catch (err) {
+          console.error('Error updating user type in localStorage:', err);
+        }
+      }
+    },
     clearError: (state) => {
       state.error = null;
     },
@@ -134,6 +148,7 @@ export const selectUser = (state) => state.auth.user;
 export const selectToken = (state) => state.auth.token;
 export const selectIsAuthenticated = (state) => state.auth.isAuthenticated;
 export const selectUserType = (state) => state.auth.user?.userType;
+export const selectNeedsRoleSelection = (state) => state.auth.user?.needsRoleSelection;
 export const selectAuthError = (state) => state.auth.error;
 export const selectAuthLoading = (state) => state.auth.loading;
 
@@ -144,6 +159,7 @@ export const {
   loginFailure,
   logout,
   updateUser,
+  updateUserType,
   clearError,
 } = authSlice.actions;
 

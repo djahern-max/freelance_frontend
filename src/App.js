@@ -62,41 +62,98 @@ const LoadingFallback = () => (
 function AppContent() {
   const dispatch = useDispatch();
 
+  // useEffect(() => {
+  //   const controller = new AbortController();
+  //   const token = localStorage.getItem('token');
+
+  //   const checkAuth = async () => {
+  //     if (!token) return;
+
+  //     try {
+  //       const response = await api.get('/auth/me', {
+  //         headers: { Authorization: `Bearer ${token}` },
+  //         signal: controller.signal
+  //       });
+
+  //       dispatch(login({
+  //         token,
+  //         user: {
+  //           id: response.data.id,
+  //           username: response.data.username,
+  //           email: response.data.email,
+  //           fullName: response.data.full_name,
+  //           isActive: response.data.is_active,
+  //           userType: response.data.user_type,
+  //           createdAt: response.data.created_at,
+  //         },
+  //       }));
+  //     } catch (error) {
+  //       if (error.name === 'AbortError') return;
+  //       localStorage.removeItem('token');
+  //       localStorage.removeItem('user');
+  //     }
+  //   };
+
+  //   checkAuth();
+  //   return () => controller.abort();
+  // }, [dispatch]);
+
+  // 🔹 New useEffect for Google, GitHub, or LinkedIn Authentication
+  // Replace the OAuth useEffect in App.js with this updated version
   useEffect(() => {
-    const controller = new AbortController();
-    const token = localStorage.getItem('token');
+    const googleId = localStorage.getItem("google_id");
+    const githubId = localStorage.getItem("github_id");
+    const linkedinId = localStorage.getItem("linkedin_id");
 
-    const checkAuth = async () => {
-      if (!token) return;
+    if (!googleId && !githubId && !linkedinId) return;
 
+    const fetchUserByOAuthId = async () => {
       try {
-        const response = await api.get('/auth/me', {
-          headers: { Authorization: `Bearer ${token}` },
-          signal: controller.signal
+        const response = await api.get("/auth/get-user", {
+          params: { google_id: googleId, github_id: githubId, linkedin_id: linkedinId },
         });
 
-        dispatch(login({
-          token,
-          user: {
-            id: response.data.id,
-            username: response.data.username,
-            email: response.data.email,
-            fullName: response.data.full_name,
-            isActive: response.data.is_active,
-            userType: response.data.user_type,
-            createdAt: response.data.created_at,
-          },
-        }));
+        const userData = response.data;
+        if (!userData) throw new Error("User not found");
+
+        dispatch(
+          login({
+            user: {
+              id: userData.id,
+              username: userData.username,
+              email: userData.email,
+              fullName: userData.full_name,
+              isActive: userData.is_active,
+              userType: userData.user_type,
+              createdAt: userData.created_at,
+            },
+          })
+        );
+
+        // Check if user needs to select a role (if user_type is null or empty)
+        if (!userData.user_type) {
+          // Redirect to role selection page
+          window.location.href = '/select-role';
+        } else {
+          // Otherwise redirect based on existing role
+          const dashboardPath =
+            userData.user_type === "client" ? "/client-dashboard" : "/developer-dashboard";
+          window.location.href = dashboardPath;
+        }
       } catch (error) {
-        if (error.name === 'AbortError') return;
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        console.error("OAuth-based authentication failed", error);
+        localStorage.removeItem("google_id");
+        localStorage.removeItem("github_id");
+        localStorage.removeItem("linkedin_id");
+
+        // Don't redirect to login here - just clear the localStorage
+        // This prevents a potential redirect loop
       }
     };
 
-    checkAuth();
-    return () => controller.abort();
+    fetchUserByOAuthId();
   }, [dispatch]);
+
 
   return (
     <>
@@ -266,6 +323,7 @@ function AppContent() {
                 </ProtectedRoute>
               }
             />
+
 
             {/* Fallback route */}
             <Route path="*" element={<Navigate to="/" replace />} />

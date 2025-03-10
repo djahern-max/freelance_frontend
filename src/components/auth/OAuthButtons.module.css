@@ -1,0 +1,67 @@
+/* src/components/auth/OAuthButtons.module.css */
+.oauthContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    margin: 1rem 0;
+}
+
+.oauthButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 10px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    color: #333;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.oauthButton:hover {
+    background-color: #f8f8f8;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.oauthIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+}
+
+/* Provider-specific styling */
+.googleButton {
+    border-color: #4285f4;
+    color: #4285f4;
+}
+
+.googleButton:hover {
+    background-color: rgba(66, 133, 244, 0.05);
+}
+
+.githubButton {
+    border-color: #24292e;
+    color: #24292e;
+}
+
+.githubButton:hover {
+    background-color: rgba(36, 41, 46, 0.05);
+}
+
+.linkedinButton {
+    border-color: #0077b5;
+    color: #0077b5;
+}
+
+.linkedinButton:hover {
+    background-color: rgba(0, 119, 181, 0.05);
+}

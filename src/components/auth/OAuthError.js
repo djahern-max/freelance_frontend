@@ -1,77 +1,60 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+// src/components/auth/OAuthError.js
+import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styles from './OAuthError.module.css';
 
 const OAuthError = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const [errorDetails, setErrorDetails] = useState({
-        message: 'Authentication failed',
-        provider: 'OAuth'
-    });
+    const params = new URLSearchParams(location.search);
 
-    useEffect(() => {
-        // Parse query parameters
-        const params = new URLSearchParams(location.search);
-        const error = params.get('error');
-        const provider = params.get('provider');
+    // Get error details from URL
+    const errorMessage = params.get('error') || 'Authentication failed';
+    const provider = params.get('provider') || 'OAuth provider';
 
-        if (error) {
-            setErrorDetails({
-                message: decodeURIComponent(error),
-                provider: provider || 'OAuth'
-            });
-        }
-
-        // Auto redirect after 10 seconds
-        const redirectTimer = setTimeout(() => {
-            navigate('/login');
-        }, 10000);
-
-        return () => clearTimeout(redirectTimer);
-    }, [location, navigate]);
-
-    const getProviderName = (provider) => {
-        switch (provider?.toLowerCase()) {
-            case 'google':
-                return 'Google';
-            case 'github':
-                return 'GitHub';
-            case 'linkedin':
-                return 'LinkedIn';
-            default:
-                return 'OAuth';
-        }
+    // Format provider name for display
+    const formatProviderName = (name) => {
+        if (!name) return 'OAuth Provider';
+        return name.charAt(0).toUpperCase() + name.slice(1);
     };
 
-    const getErrorMessage = (message) => {
-        // Common error handling
-        if (message.includes('access_denied')) {
-            return 'You declined the authorization request.';
-        }
-
-        if (message.includes('unauthorized_scope')) {
-            return 'The requested permissions are not available.';
-        }
-
-        if (message.includes('Invalid state')) {
-            return 'Security validation failed. Please try again.';
-        }
-
-        return message;
-    };
+    const providerName = formatProviderName(provider);
 
     return (
         <div className={styles.container}>
-            <div className={styles.errorIcon}>❌</div>
-            <h2 className={styles.title}>{getProviderName(errorDetails.provider)} Authentication Failed</h2>
-            <p className={styles.message}>{getErrorMessage(errorDetails.message)}</p>
-            <div className={styles.actions}>
-                <Link to="/login" className={styles.returnButton}>
-                    Return to Login
-                </Link>
+            <div className={styles.errorCard}>
+                <div className={styles.errorIcon}></div>
+
+                <h2 className={styles.title}>Authentication Failed</h2>
+
+                <p className={styles.message}>
+                    We couldn't authenticate you with {providerName}.
+                </p>
+
+                <div className={styles.errorDetails}>
+                    <p>{errorMessage}</p>
+                </div>
+
+                <div className={styles.actions}>
+                    <button
+                        className={styles.primaryButton}
+                        onClick={() => navigate('/login')}
+                    >
+                        Return to Login
+                    </button>
+
+                    <button
+                        className={styles.secondaryButton}
+                        onClick={() => navigate('/')}
+                    >
+                        Go to Homepage
+                    </button>
+                </div>
+
+                <div className={styles.helpText}>
+                    <p>If this problem persists, please contact support.</p>
+                </div>
             </div>
-            <p className={styles.redirectMessage}>You'll be automatically redirected to the login page in a few seconds...</p>
         </div>
     );
 };

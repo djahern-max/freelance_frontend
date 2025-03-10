@@ -1,137 +1,174 @@
+// src/components/auth/SelectRole.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { login } from '../../redux/authSlice';
-import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import apiService from '../../utils/apiService';
+import { updateUserType, login } from '../../redux/authSlice';
 import styles from './SelectRole.module.css';
 
-function SelectRole() {
-    const [token, setToken] = useState('');
-    const [provider, setProvider] = useState('');
+const SelectRole = () => {
+    const [selectedRole, setSelectedRole] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+
     const navigate = useNavigate();
     const location = useLocation();
     const dispatch = useDispatch();
+    const { user } = useSelector(state => state.auth);
 
+    // Get OAuth IDs from localStorage
+    const googleId = localStorage.getItem('google_id');
+    const githubId = localStorage.getItem('github_id');
+    const linkedinId = localStorage.getItem('linkedin_id');
+
+    // Get token from URL query params if available
     useEffect(() => {
-        // Parse URL parameters
-        const params = new URLSearchParams(location.search);
-        const tokenParam = params.get('token');
-        const providerParam = params.get('provider');
+        const queryParams = new URLSearchParams(location.search);
+        const urlToken = queryParams.get('token');
 
-        if (tokenParam) {
-            setToken(tokenParam);
-            localStorage.setItem('token', tokenParam);
-            // Set authorization header for future requests
-            axios.defaults.headers.common['Authorization'] = `Bearer ${tokenParam}`;
-        }
-
-        if (providerParam) {
-            setProvider(providerParam);
+        if (urlToken) {
+            console.log('Token found in URL');
+            localStorage.setItem('token', urlToken);
+            if (apiService.setAuthToken) {
+                apiService.setAuthToken(urlToken);
+            }
         }
     }, [location]);
 
-    const selectRole = async (userType) => {
-        try {
-            setLoading(true);
-            setError('');
-
-            const apiUrl = process.env.REACT_APP_API_URL || '';
-
-            const response = await axios.post(
-                `${apiUrl}/auth/select-role`,
-                { user_type: userType },
-                {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                }
-            );
-
-            if (response.data) {
-                // Get updated user info
-                const userResponse = await axios.get(
-                    `${apiUrl}/auth/me`,
-                    {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
+    // Try to fetch user data if needed
+    useEffect(() => {
+        const fetchUserData = async () => {
+            if (!user && (googleId || githubId || linkedinId)) {
+                try {
+                    console.log('Fetching user data with OAuth IDs');
+                    const response = await apiService.get('/auth/get-user', {
+                        params: {
+                            google_id: googleId,
+                            github_id: githubId,
+                            linkedin_id: linkedinId
                         }
+                    });
+
+                    if (response.data) {
+                        dispatch(
+                            login({
+                                user: {
+                                    id: response.data.id,
+                                    username: response.data.username,
+                                    email: response.data.email,
+                                    fullName: response.data.full_name,
+                                    isActive: response.data.is_active,
+                                    userType: response.data.user_type,
+                                    createdAt: response.data.created_at,
+                                },
+                            })
+                        );
                     }
-                );
-
-                // Update Redux state
-                dispatch(
-                    login({
-                        token: token,
-                        user: {
-                            ...userResponse.data,
-                            userType: userType
-                        }
-                    })
-                );
-
-                // Navigate to appropriate dashboard based on role
-                if (userType === 'developer') {
-                    navigate('/developer-dashboard');
-                } else {
-                    navigate('/client-dashboard');
+                } catch (error) {
+                    console.error("Error fetching user data:", error);
                 }
             }
+        };
+
+        fetchUserData();
+    }, [user, googleId, githubId, linkedinId, dispatch]);
+
+    const handleRoleSelection = async () => {
+        if (!selectedRole) {
+            setError('Please select a role to continue');
+            return;
+        }
+
+        setLoading(true);
+        setError('');
+
+        try {
+            console.log('Submitting role selection with OAuth IDs');
+            // Check which OAuth identifiers we have
+            if (!googleId && !githubId && !linkedinId) {
+                setError('Unable to identify your account. Please try logging in again.');
+                setLoading(false);
+                return;
+            }
+
+            // Make the API call with OAuth identifiers
+            const response = await apiService.post('/auth/set-role', {
+                email: user?.email,
+                user_type: selectedRole,
+                google_id: googleId,
+                github_id: githubId,
+                linkedin_id: linkedinId
+            });
+
+            console.log('Role selection response:', response);
+
+            // Update Redux store with the new user type
+            dispatch(updateUserType(selectedRole));
+
+            // Navigate to appropriate dashboard
+            if (selectedRole === 'developer') {
+                navigate('/developer-dashboard');
+            } else {
+                navigate('/client-dashboard');
+            }
         } catch (err) {
-            console.error('Error selecting role:', err);
-            setError(`Error: ${err.response?.data?.detail || err.message}. Please try again.`);
+            console.error('Error setting user role:', err);
+            setError('Failed to set role. Please try again.');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className={styles.roleSelectionPage}>
-            <div className={styles.roleSelectionContainer}>
-                <h2 className={styles.roleSelectionTitle}>What brings you to RYZE.ai?</h2>
+        <div className={styles.container}>
+            <div className={styles.card}>
+                <h2 className={styles.title}>Choose Your Role</h2>
+                <p className={styles.description}>
+                    Select a role to personalize your experience on RYZE.ai
+                </p>
 
-                {error && (
-                    <div className={styles.errorMessage}>
-                        {error}
+                <div className={styles.roleOptions}>
+                    <div
+                        className={`${styles.roleOption} ${selectedRole === 'developer' ? styles.selected : ''}`}
+                        onClick={() => setSelectedRole('developer')}
+                    >
+                        <div className={styles.roleIcon}>💻</div>
+                        <h3>Developer</h3>
+                        <p>I provide software development services</p>
                     </div>
-                )}
 
-                <div className={styles.roleButtons}>
-                    <button
-                        onClick={() => selectRole('client')}
-                        disabled={loading}
-                        className={`${styles.roleButton} ${styles.clientButton}`}
+                    <div
+                        className={`${styles.roleOption} ${selectedRole === 'client' ? styles.selected : ''}`}
+                        onClick={() => setSelectedRole('client')}
                     >
-                        <div className={styles.roleButtonContent}>
-                            <span className={styles.roleIcon}>💼</span>
-                            <h3>Client</h3>
-                            <p>I need software solutions</p>
-                        </div>
-                    </button>
-
-                    <button
-                        onClick={() => selectRole('developer')}
-                        disabled={loading}
-                        className={`${styles.roleButton} ${styles.developerButton}`}
-                    >
-                        <div className={styles.roleButtonContent}>
-                            <span className={styles.roleIcon}>💻</span>
-                            <h3>Developer</h3>
-                            <p>I provide development services</p>
-                        </div>
-                    </button>
+                        <div className={styles.roleIcon}>🏢</div>
+                        <h3>Client</h3>
+                        <p>I'm looking to hire developers</p>
+                    </div>
                 </div>
 
-                {loading && (
-                    <div className={styles.loadingContainer}>
-                        <div className={styles.loadingSpinner}></div>
-                        <p>Processing your selection...</p>
+                {error && <div className={styles.error}>{error}</div>}
+
+                <button
+                    className={styles.continueButton}
+                    onClick={handleRoleSelection}
+                    disabled={loading || !selectedRole}
+                >
+                    {loading ? 'Processing...' : 'Continue'}
+                </button>
+
+                {/* Debug information - can be removed in production */}
+                {process.env.NODE_ENV === 'development' && (
+                    <div style={{ marginTop: '20px', fontSize: '12px', color: '#999' }}>
+                        <p>Debug: {googleId ? `Google ID: ${googleId.substring(0, 5)}...` : 'No Google ID'}</p>
+                        <p>Debug: {githubId ? `GitHub ID: ${githubId.substring(0, 5)}...` : 'No GitHub ID'}</p>
+                        <p>Debug: {linkedinId ? `LinkedIn ID: ${linkedinId.substring(0, 5)}...` : 'No LinkedIn ID'}</p>
+                        <p>Debug: {user ? `User Email: ${user.email}` : 'No User in Redux'}</p>
                     </div>
                 )}
             </div>
         </div>
     );
-}
+};
 
 export default SelectRole;

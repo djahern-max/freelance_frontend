@@ -1,245 +1,114 @@
-/* SelectRole.module.css */
-
-.roleSelectionPage {
-    min-height: 100vh;
+/* src/components/auth/SelectRole.module.css */
+.container {
     display: flex;
-    align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f5f7fa;
     padding: 20px;
 }
 
-.roleSelectionContainer {
-    background: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-    padding: 40px;
-    width: 100%;
-    max-width: 800px;
-    text-align: center;
-    transition: all 0.3s ease;
-}
-
-.roleSelectionTitle {
-    font-size: 2.2rem;
-    color: #333;
-    margin-bottom: 40px;
-    font-weight: 700;
-    position: relative;
-    display: inline-block;
-}
-
-.roleSelectionTitle::after {
-    content: '';
-    position: absolute;
-    width: 60px;
-    height: 4px;
-    background: #4c84ff;
-    left: 50%;
-    bottom: -12px;
-    transform: translateX(-50%);
-    border-radius: 2px;
-}
-
-.roleButtons {
-    display: flex;
-    gap: 30px;
-    margin-top: 30px;
-    flex-direction: column;
-}
-
-@media (min-width: 768px) {
-    .roleButtons {
-        flex-direction: row;
-    }
-}
-
-.roleButton {
-    flex: 1;
-    min-height: 220px;
-    border: none;
+.card {
+    background: white;
     border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background: #ffffff;
-    text-align: center;
-    overflow: hidden;
-    position: relative;
-    padding: 0;
-}
-
-.roleButton:hover {
-    transform: translateY(-6px);
-}
-
-.roleButton:focus {
-    outline: none;
-}
-
-.clientButton {
-    border: 2px solid #4c84ff;
-    box-shadow: 0 6px 20px rgba(76, 132, 255, 0.15);
-}
-
-.clientButton:hover {
-    box-shadow: 0 12px 28px rgba(76, 132, 255, 0.25);
-}
-
-.developerButton {
-    border: 2px solid #6c5ce7;
-    box-shadow: 0 6px 20px rgba(108, 92, 231, 0.15);
-}
-
-.developerButton:hover {
-    box-shadow: 0 12px 28px rgba(108, 92, 231, 0.25);
-}
-
-.roleButtonContent {
-    padding: 30px 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    padding: 32px;
     width: 100%;
-    position: relative;
-    z-index: 2;
-    transition: all 0.3s ease;
+    max-width: 700px;
+    text-align: center;
 }
 
-.clientButton .roleButtonContent {
-    background: linear-gradient(135deg, rgba(76, 132, 255, 0.05) 0%, rgba(76, 132, 255, 0.10) 100%);
+.title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #333;
 }
 
-.developerButton .roleButtonContent {
-    background: linear-gradient(135deg, rgba(108, 92, 231, 0.05) 0%, rgba(108, 92, 231, 0.10) 100%);
+.description {
+    color: #666;
+    margin-bottom: 32px;
 }
 
-.roleButton:hover .roleButtonContent {
-    background: transparent;
+.roleOptions {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 32px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.roleOption {
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 24px;
+    width: 250px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.roleOption:hover {
+    border-color: #ccc;
+    transform: translateY(-4px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+}
+
+.roleOption.selected {
+    border-color: #4a6cf7;
+    background-color: #f5f9ff;
 }
 
 .roleIcon {
-    font-size: 2.5rem;
-    margin-bottom: 15px;
-    display: block;
+    font-size: 36px;
+    margin-bottom: 16px;
 }
 
-.clientButton .roleIcon {
-    color: #4c84ff;
-}
-
-.developerButton .roleIcon {
-    color: #6c5ce7;
-}
-
-.roleButtonContent h3 {
-    font-size: 1.5rem;
+.roleOption h3 {
+    font-size: 20px;
     font-weight: 600;
-    margin-bottom: 10px;
-    transition: all 0.3s ease;
+    margin-bottom: 8px;
 }
 
-.clientButton h3 {
-    color: #4c84ff;
-}
-
-.developerButton h3 {
-    color: #6c5ce7;
-}
-
-.roleButtonContent p {
-    font-size: 1rem;
+.roleOption p {
     color: #666;
-    margin: 0;
-    max-width: 80%;
+    font-size: 14px;
 }
 
-.errorMessage {
-    background-color: #fff3f3;
-    color: #ff4d4f;
-    padding: 12px 20px;
+.continueButton {
+    background-color: #4a6cf7;
+    color: white;
+    border: none;
     border-radius: 8px;
-    border-left: 4px solid #ff4d4f;
-    margin-bottom: 20px;
-    text-align: left;
-    font-size: 0.9rem;
-}
-
-.loadingContainer {
-    margin-top: 30px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.loadingSpinner {
-    width: 40px;
-    height: 40px;
-    border: 3px solid rgba(0, 0, 0, 0.1);
-    border-radius: 50%;
-    border-top-color: #4c84ff;
-    animation: spin 1s ease-in-out infinite;
-    margin-bottom: 15px;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.debugInfo {
-    margin-top: 30px;
-    text-align: left;
-    padding: 15px;
-    background: #f7f9fc;
-    border-radius: 8px;
-    font-size: 0.8rem;
-    color: #666;
-}
-
-.debugInfo summary {
+    padding: 12px 32px;
+    font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    color: #4c84ff;
-    padding: 5px 0;
+    transition: background-color 0.2s;
 }
 
-.debugInfo pre {
-    margin-top: 10px;
-    background: #f0f2f5;
-    padding: 10px;
-    border-radius: 6px;
-    overflow-x: auto;
+.continueButton:hover {
+    background-color: #3a5ce5;
 }
 
-/* For disabled state */
-.roleButton:disabled {
-    opacity: 0.7;
+.continueButton:disabled {
+    background-color: #a0a0a0;
     cursor: not-allowed;
-    transform: none;
 }
 
-/* Add a subtle animation for the buttons */
-@keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(76, 132, 255, 0.4);
-    }
-
-    70% {
-        box-shadow: 0 0 0 10px rgba(76, 132, 255, 0);
-    }
-
-    100% {
-        box-shadow: 0 0 0 0 rgba(76, 132, 255, 0);
-    }
+.error {
+    color: #e74c3c;
+    margin-bottom: 16px;
+    font-size: 14px;
 }
 
-.clientButton:hover:not(:disabled) {
-    animation: pulse 1.5s infinite;
-}
+@media (max-width: 768px) {
+    .roleOptions {
+        flex-direction: column;
+        align-items: center;
+    }
 
-.developerButton:hover:not(:disabled) {
-    animation: pulse 1.5s infinite;
+    .roleOption {
+        width: 100%;
+        max-width: 300px;
+    }
 }

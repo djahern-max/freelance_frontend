@@ -1,9 +1,9 @@
+// src/components/auth/OAuthSuccess.js
 import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import apiService from '../../utils/apiService';
 import { login } from '../../redux/authSlice';
-import api from '../../utils/api';
-import styles from './OAuthSuccess.module.css';
 
 const OAuthSuccess = () => {
     const navigate = useNavigate();
@@ -11,71 +11,57 @@ const OAuthSuccess = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        const processOAuth = async () => {
+        const params = new URLSearchParams(location.search);
+        const token = params.get('token');
+
+        if (!token) {
+            console.error('No token found in OAuth success redirect');
+            navigate('/login');
+            return;
+        }
+
+        // Set the token in local storage and apiService
+        apiService.setAuthToken(token);
+
+        // Fetch user data and login
+        const fetchUserData = async () => {
             try {
-                // Parse query parameters
-                const params = new URLSearchParams(location.search);
-                const token = params.get('token');
-                const provider = params.get('provider');
+                // Fetch current user data
+                const response = await apiService.get('/auth/me');
+                const userData = response.data;
 
-                if (!token) {
-                    throw new Error('No token received');
+                // Dispatch login action with user data and token
+                dispatch(login({ token, user: userData }));
+
+                // Check if user needs to select a role
+                if (userData.needs_role_selection) {
+                    navigate('/select-role'); // Changed from '/api/auth/select-role'
+                } else {
+                    // Redirect to appropriate dashboard based on user type
+                    if (userData.user_type === 'developer') {
+                        navigate('/developer-dashboard'); // Changed to match App.js routes
+                    } else if (userData.user_type === 'client') {
+                        navigate('/client-dashboard'); // Changed to match App.js routes
+                    } else {
+                        navigate('/dashboard'); // Default dashboard
+                    }
                 }
-
-                // Store token in localStorage
-                localStorage.setItem('token', token);
-                api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
-                // Fetch user data
-                const userResponse = await api.get('/auth/me');
-                const userData = userResponse.data;
-
-                if (!userData?.user_type) {
-                    throw new Error('Invalid user data received');
-                }
-
-                // Normalize user data
-                const normalizedUser = {
-                    id: userData.id,
-                    username: userData.username,
-                    email: userData.email,
-                    fullName: userData.full_name,
-                    isActive: userData.is_active,
-                    userType: userData.user_type,
-                    createdAt: userData.created_at,
-                };
-
-                // Dispatch login action
-                dispatch(login({ token, user: normalizedUser }));
-
-                // Redirect to appropriate dashboard
-                const dashboardPath = getDashboardPath(userData.user_type);
-                navigate(dashboardPath, { replace: true });
             } catch (error) {
-                console.error('OAuth processing error:', error);
-                navigate('/login', { state: { error: 'Authentication failed. Please try again.' } });
+                console.error('Error fetching user data:', error);
+                navigate('/login');
             }
         };
 
-        processOAuth();
-    }, [location, dispatch, navigate]);
-
-    const getDashboardPath = (userType) => {
-        switch (userType?.toLowerCase()) {
-            case 'client':
-                return '/client-dashboard';
-            case 'developer':
-                return '/developer-dashboard';
-            default:
-                return '/login';
-        }
-    };
+        fetchUserData();
+    }, [dispatch, navigate, location]);
 
     return (
-        <div className={styles.container}>
-            <div className={styles.loader}></div>
-            <h2 className={styles.title}>Logging you in...</h2>
-            <p className={styles.message}>Please wait while we complete the authentication process.</p>
+        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+            <div className="p-8 bg-white rounded-lg shadow-md text-center">
+                <div className="w-16 h-16 mx-auto mb-4 border-t-4 border-blue-500 border-solid rounded-full animate-spin"></div>
+                <h2 className="mb-2 text-2xl font-bold">Authentication Successful</h2>
+                <p className="text-gray-600">Redirecting you to your account...</p>
+            </div>
         </div>
     );
 };

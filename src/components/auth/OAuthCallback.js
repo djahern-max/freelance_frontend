@@ -1,44 +1,48 @@
+// src/components/auth/OAuthCallback.js
 import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import styles from './OAuthCallback.module.css';
 
-/**
- * This component handles the redirect from OAuth providers.
- * It extracts the token from URL parameters and redirects appropriately.
- */
 const OAuthCallback = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
     useEffect(() => {
-        // Parse the query parameters
+        // Extract all URL parameters
         const params = new URLSearchParams(location.search);
-        const token = params.get('token');
-        const error = params.get('error');
-        const provider = location.pathname.split('/').pop(); // Extract provider from URL
 
+        // Look for OAuth provider IDs and tokens
+        const googleId = params.get('google_id');
+        const githubId = params.get('github_id');
+        const linkedinId = params.get('linkedin_id');
+        const token = params.get('token'); // JWT token if your backend provides one
+        const error = params.get('error');
+
+        // Handle errors
         if (error) {
-            // Redirect to error page with the error message
-            navigate(`/oauth-error?error=${encodeURIComponent(error)}&provider=${provider}`);
+            console.error('OAuth error:', error);
+            navigate('/oauth-error');
             return;
         }
 
-        if (token) {
-            // Redirect to success page with the token
-            navigate(`/oauth-success?token=${token}&provider=${provider}`);
-        } else {
-            // If neither token nor error is present, something went wrong
-            navigate('/oauth-error?error=Authentication%20failed&provider=unknown');
-        }
-    }, [location, navigate]);
+        // Store OAuth information
+        if (googleId) localStorage.setItem('google_id', googleId);
+        if (githubId) localStorage.setItem('github_id', githubId);
+        if (linkedinId) localStorage.setItem('linkedin_id', linkedinId);
+        if (token) localStorage.setItem('token', token);
+
+        // Navigate to success page which will handle user data fetching
+        navigate('/oauth-success');
+    }, [navigate, location]);
 
     return (
-        <div className={styles.container}>
-            <div className={styles.loader}></div>
-            <h2 className={styles.title}>Processing Authentication...</h2>
-            <p className={styles.message}>Please wait while we complete your sign-in.</p>
+        <div className="flex justify-center items-center min-h-screen bg-gray-100">
+            <div className="bg-white p-8 rounded-lg shadow-md text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                <h2 className="text-xl font-semibold mb-2">Processing Authentication</h2>
+                <p className="text-gray-600">Please wait while we verify your account...</p>
+            </div>
         </div>
     );
 };
 
-export default OAuthCallback; 
+export default OAuthCallback;

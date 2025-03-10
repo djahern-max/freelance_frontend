@@ -1,64 +1,118 @@
-// apiService.js with improved OAuth URL handling
-
+// src/utils/apiService.js
 import axios from 'axios';
 
-const apiService = {
-    // Base API URL from environment variable
-    baseUrl: process.env.REACT_APP_API_URL || '',
-
-    // OAuth URL handling
-    getOAuthUrl(provider) {
-        // Determine if we're in production (when apiUrl is just a path like "/api")
-        const isProduction = !this.baseUrl.includes('://');
-
-        // Build the URL
-        if (isProduction) {
-            // In production: /api/login/provider
-            return `${this.baseUrl}/auth/${provider}`;
-        } else {
-            // In development: e.g., http://localhost:8000/api/login/provider
-            return `${this.baseUrl}/api/auth/${provider}`;
-        }
+// Create an axios instance with baseURL
+const api = axios.create({
+    baseURL: process.env.REACT_APP_API_URL,
+    timeout: 15000, // 15 second timeout
+    headers: {
+        'Content-Type': 'application/json',
     },
+    withCredentials: true, // Important for cookies/sessions
+});
 
-    // Provider-specific OAuth URLs
-    getGoogleOAuthUrl() {
-        return this.getOAuthUrl('google');
-    },
-
-    getGithubOAuthUrl() {
-        return this.getOAuthUrl('github');
-    },
-
-    getLinkedinOAuthUrl() {
-        return this.getOAuthUrl('linkedin');
-    },
-
-    // General API request functions
-    async get(endpoint, config = {}) {
-        return axios.get(`${this.baseUrl}${endpoint}`, config);
-    },
-
-    async post(endpoint, data, config = {}) {
-        return axios.post(`${this.baseUrl}${endpoint}`, data, config);
-    },
-
-    async put(endpoint, data, config = {}) {
-        return axios.put(`${this.baseUrl}${endpoint}`, data, config);
-    },
-
-    async delete(endpoint, config = {}) {
-        return axios.delete(`${this.baseUrl}${endpoint}`, config);
-    },
-
-    // Set auth token for subsequent requests
-    setAuthToken(token) {
+// Add request interceptor to include auth token
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('token');
         if (token) {
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        } else {
-            delete axios.defaults.headers.common['Authorization'];
+            config.headers['Authorization'] = `Bearer ${token}`;
         }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
     }
+);
+
+// Add response interceptor to handle common errors
+api.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    (error) => {
+        // Handle 401 Unauthorized errors
+        if (error.response && error.response.status === 401) {
+            // Clear token and redirect to login
+            localStorage.removeItem('token');
+
+            // Only redirect if we're not already on login page
+            if (!window.location.pathname.includes('/login')) {
+                window.location.href = '/login';
+            }
+        }
+        return Promise.reject(error);
+    }
+);
+
+const apiService = {
+    // Auth-related methods
+    setAuthToken: (token) => {
+        if (token) {
+            localStorage.setItem('token', token);
+            api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        } else {
+            localStorage.removeItem('token');
+            delete api.defaults.headers.common['Authorization'];
+        }
+    },
+
+    clearAuthToken: () => {
+        localStorage.removeItem('token');
+        delete api.defaults.headers.common['Authorization'];
+    },
+
+    // OAuth URL generators
+    getGoogleOAuthUrl: () => {
+        return `${process.env.REACT_APP_API_URL}/api/auth/google`;
+    },
+
+    getGithubOAuthUrl: () => {
+        return `${process.env.REACT_APP_API_URL}/api/auth/github`;
+    },
+
+    getLinkedinOAuthUrl: () => {
+        return `${process.env.REACT_APP_API_URL}/api/auth/linkedin`;
+    },
+
+    // Basic HTTP methods
+    get: (url, config = {}) => {
+        return api.get(url, config);
+    },
+
+    post: (url, data = {}, config = {}) => {
+        return api.post(url, data, config);
+    },
+
+    put: (url, data = {}, config = {}) => {
+        return api.put(url, data, config);
+    },
+
+    delete: (url, config = {}) => {
+        return api.delete(url, config);
+    },
+
+    // File upload method with progress tracking
+    uploadFile: (url, file, onUploadProgress, config = {}) => {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        return api.post(url, formData, {
+            ...config,
+            headers: {
+                ...config.headers,
+                'Content-Type': 'multipart/form-data',
+            },
+            onUploadProgress: (progressEvent) => {
+                if (onUploadProgress) {
+                    const percentCompleted = Math.round(
+                        (progressEvent.loaded * 100) / progressEvent.total
+                    );
+                    onUploadProgress(percentCompleted);
+                }
+            },
+        });
+    },
 };
 
 export default apiService;
