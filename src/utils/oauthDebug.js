@@ -23,8 +23,7 @@ export const debugOAuthConnection = async (provider, url) => {
         console.log(`Host: ${authUrlParts.host}`);
         console.log(`Pathname: ${authUrlParts.pathname}`);
 
-        // Test if the endpoint is reachable
-        const checkUrl = `${authUrlParts.protocol}//${authUrlParts.host}/favicon.ico`;
+
 
         // We're just checking if the domain exists and responds
         const response = await fetch(checkUrl, {
@@ -39,8 +38,7 @@ export const debugOAuthConnection = async (provider, url) => {
 
     // Check backend connection for OAuth configuration
     try {
-        const testEndpoint = `${process.env.REACT_APP_API_URL}/api/env-test`;
-        const backendResponse = await fetch(testEndpoint);
+
 
         if (backendResponse.ok) {
             const data = await backendResponse.json();

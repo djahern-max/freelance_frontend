@@ -24,7 +24,7 @@ const Login = () => {
     const apiUrl = process.env.REACT_APP_API_URL || '';
     const isProduction = apiUrl && !apiUrl.startsWith('http');
 
-    return isProduction ? `${apiUrl}/login/${provider}` : `${apiUrl}/api/login/${provider}`;
+    return isProduction ? `${apiUrl}/auth/${provider}` : `${apiUrl}/api/auth/${provider}`;
   };
 
   const googleLoginUrl = getOAuthUrl('google');

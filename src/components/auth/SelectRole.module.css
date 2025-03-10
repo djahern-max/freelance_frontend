@@ -1,119 +1,169 @@
+/* SelectRole.module.css */
+
 .roleSelectionPage {
-    display: flex;
-    justify-content: center;
-    align-items: center;
     min-height: 100vh;
-    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
     padding: 20px;
 }
 
 .roleSelectionContainer {
-    max-width: 800px;
-    width: 100%;
-    background-color: white;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
     padding: 40px;
+    width: 100%;
+    max-width: 800px;
     text-align: center;
+    transition: all 0.3s ease;
 }
 
 .roleSelectionTitle {
-    font-size: 28px;
+    font-size: 2.2rem;
     color: #333;
-    margin-bottom: 32px;
-    font-weight: 600;
+    margin-bottom: 40px;
+    font-weight: 700;
+    position: relative;
+    display: inline-block;
+}
+
+.roleSelectionTitle::after {
+    content: '';
+    position: absolute;
+    width: 60px;
+    height: 4px;
+    background: #4c84ff;
+    left: 50%;
+    bottom: -12px;
+    transform: translateX(-50%);
+    border-radius: 2px;
 }
 
 .roleButtons {
     display: flex;
-    flex-direction: row;
-    gap: 24px;
-    margin-top: 20px;
-    justify-content: center;
+    gap: 30px;
+    margin-top: 30px;
+    flex-direction: column;
 }
 
-@media (max-width: 768px) {
+@media (min-width: 768px) {
     .roleButtons {
-        flex-direction: column;
-    }
-
-    .roleSelectionContainer {
-        padding: 30px 20px;
+        flex-direction: row;
     }
 }
 
 .roleButton {
     flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0;
-    border: 2px solid #e7e9eb;
-    background-color: white;
-    border-radius: 10px;
-    transition: all 0.2s ease-in-out;
+    min-height: 220px;
+    border: none;
+    border-radius: 12px;
     cursor: pointer;
+    transition: all 0.3s ease;
+    background: #ffffff;
+    text-align: center;
     overflow: hidden;
-    height: 220px;
-    min-width: 200px;
-}
-
-.roleButtonContent {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 24px;
-    width: 100%;
-    height: 100%;
+    position: relative;
+    padding: 0;
 }
 
 .roleButton:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.08);
+    transform: translateY(-6px);
 }
 
-.roleIcon {
-    font-size: 42px;
-    margin-bottom: 16px;
+.roleButton:focus {
+    outline: none;
+}
+
+.clientButton {
+    border: 2px solid #4c84ff;
+    box-shadow: 0 6px 20px rgba(76, 132, 255, 0.15);
 }
 
 .clientButton:hover {
-    border-color: #3498db;
+    box-shadow: 0 12px 28px rgba(76, 132, 255, 0.25);
+}
+
+.developerButton {
+    border: 2px solid #6c5ce7;
+    box-shadow: 0 6px 20px rgba(108, 92, 231, 0.15);
 }
 
 .developerButton:hover {
-    border-color: #2ecc71;
+    box-shadow: 0 12px 28px rgba(108, 92, 231, 0.25);
 }
 
-.roleButton h3 {
-    margin: 0 0 12px 0;
-    font-size: 20px;
+.roleButtonContent {
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.clientButton .roleButtonContent {
+    background: linear-gradient(135deg, rgba(76, 132, 255, 0.05) 0%, rgba(76, 132, 255, 0.10) 100%);
+}
+
+.developerButton .roleButtonContent {
+    background: linear-gradient(135deg, rgba(108, 92, 231, 0.05) 0%, rgba(108, 92, 231, 0.10) 100%);
+}
+
+.roleButton:hover .roleButtonContent {
+    background: transparent;
+}
+
+.roleIcon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.clientButton .roleIcon {
+    color: #4c84ff;
+}
+
+.developerButton .roleIcon {
+    color: #6c5ce7;
+}
+
+.roleButtonContent h3 {
+    font-size: 1.5rem;
     font-weight: 600;
-    color: #333;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
 }
 
-.roleButton p {
-    margin: 0;
-    font-size: 16px;
+.clientButton h3 {
+    color: #4c84ff;
+}
+
+.developerButton h3 {
+    color: #6c5ce7;
+}
+
+.roleButtonContent p {
+    font-size: 1rem;
     color: #666;
-    line-height: 1.5;
-}
-
-.roleButton:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
+    margin: 0;
+    max-width: 80%;
 }
 
 .errorMessage {
-    background-color: #ffebee;
-    color: #d32f2f;
-    padding: 12px;
-    border-radius: 6px;
+    background-color: #fff3f3;
+    color: #ff4d4f;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border-left: 4px solid #ff4d4f;
     margin-bottom: 20px;
-    text-align: center;
-    font-size: 14px;
+    text-align: left;
+    font-size: 0.9rem;
 }
 
 .loadingContainer {
@@ -124,21 +174,17 @@
 }
 
 .loadingSpinner {
-    border: 4px solid rgba(0, 0, 0, 0.1);
-    border-top: 4px solid #3498db;
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(0, 0, 0, 0.1);
     border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    animation: spin 1s linear infinite;
-    margin-bottom: 12px;
+    border-top-color: #4c84ff;
+    animation: spin 1s ease-in-out infinite;
+    margin-bottom: 15px;
 }
 
 @keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
+    to {
         transform: rotate(360deg);
     }
 }
@@ -146,14 +192,54 @@
 .debugInfo {
     margin-top: 30px;
     text-align: left;
-    border-top: 1px dashed #ddd;
-    padding-top: 20px;
+    padding: 15px;
+    background: #f7f9fc;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.debugInfo summary {
+    font-weight: 600;
+    cursor: pointer;
+    color: #4c84ff;
+    padding: 5px 0;
 }
 
 .debugInfo pre {
-    background-color: #f5f5f5;
+    margin-top: 10px;
+    background: #f0f2f5;
     padding: 10px;
-    border-radius: 4px;
+    border-radius: 6px;
     overflow-x: auto;
-    font-size: 12px;
+}
+
+/* For disabled state */
+.roleButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Add a subtle animation for the buttons */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(76, 132, 255, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(76, 132, 255, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(76, 132, 255, 0);
+    }
+}
+
+.clientButton:hover:not(:disabled) {
+    animation: pulse 1.5s infinite;
+}
+
+.developerButton:hover:not(:disabled) {
+    animation: pulse 1.5s infinite;
 }

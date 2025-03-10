@@ -30,10 +30,10 @@ const Register = () => {
 
     if (isProduction) {
       // In production: avoid double /api by removing it from the path
-      return `${apiUrl}/login/${provider}`;
+      return `${apiUrl}/auth/${provider}`;
     } else {
       // In development: keep the /api prefix
-      return `${apiUrl}/api/login/${provider}`;
+      return `${apiUrl}/api/auth/${provider}`;
     }
   };
 

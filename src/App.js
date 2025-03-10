@@ -16,7 +16,8 @@ import { login } from './redux/authSlice';
 import { store } from './redux/store';
 import api from './utils/api';
 import MemoryMonitor from './utils/debug/MemoryMonitor';
-
+import OAuthSuccess from './components/auth/OAuthSuccess';
+import OAuthError from './components/auth/OAuthError';
 
 // Lazy load all other components
 const Login = React.lazy(() => import('./components/auth/Login'));
@@ -108,6 +109,8 @@ function AppContent() {
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/oauth-callback" element={<OAuthCallback />} />
+            <Route path="/oauth-success" element={<OAuthSuccess />} />
+            <Route path="/oauth-error" element={<OAuthError />} />
             <Route path="/logout" element={<Logout />} />
             <Route path="/opportunities" element={<PublicRequests />} />
             <Route path="/videos" element={<VideoList />} />

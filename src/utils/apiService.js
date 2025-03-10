@@ -14,10 +14,10 @@ const apiService = {
         // Build the URL
         if (isProduction) {
             // In production: /api/login/provider
-            return `${this.baseUrl}/login/${provider}`;
+            return `${this.baseUrl}/auth/${provider}`;
         } else {
             // In development: e.g., http://localhost:8000/api/login/provider
-            return `${this.baseUrl}/api/login/${provider}`;
+            return `${this.baseUrl}/api/auth/${provider}`;
         }
     },
 

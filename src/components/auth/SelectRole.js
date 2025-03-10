@@ -5,85 +5,57 @@ import { login } from '../../redux/authSlice';
 import axios from 'axios';
 import styles from './SelectRole.module.css';
 
-
-const SelectRole = () => {
-    const [isLoading, setIsLoading] = useState(false);
+function SelectRole() {
+    const [token, setToken] = useState('');
+    const [provider, setProvider] = useState('');
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [debugInfo, setDebugInfo] = useState({});
     const navigate = useNavigate();
     const location = useLocation();
     const dispatch = useDispatch();
 
-    // Parse query parameters
-    const searchParams = new URLSearchParams(location.search);
-    const isOAuth = searchParams.get('oauth') === 'true';
-    const tempToken = searchParams.get('temp_token');
-
-    // API URL handling
-    const apiBaseUrl = process.env.REACT_APP_API_URL || '';
-    const isProduction = !apiBaseUrl.includes('://');
-
-    // For debugging - log important values on component mount
     useEffect(() => {
-        console.log('SelectRole Component Mounted');
-        console.log('isOAuth:', isOAuth);
-        console.log('tempToken:', tempToken);
-        console.log('API Base URL:', apiBaseUrl);
-        console.log('Is Production:', isProduction);
+        // Parse URL parameters
+        const params = new URLSearchParams(location.search);
+        const tokenParam = params.get('token');
+        const providerParam = params.get('provider');
 
-        // Store debug info for potential display to the user
-        setDebugInfo({
-            isOAuth,
-            hasToken: !!tempToken,
-            apiBaseUrl,
-            isProduction
-        });
-    }, [isOAuth, tempToken, apiBaseUrl, isProduction]);
-    // In SelectRole.js
-    const handleRoleSelection = async (role) => {
-        setIsLoading(true);
-        setError('');
+        if (tokenParam) {
+            setToken(tokenParam);
+            localStorage.setItem('token', tokenParam);
+            // Set authorization header for future requests
+            axios.defaults.headers.common['Authorization'] = `Bearer ${tokenParam}`;
+        }
 
+        if (providerParam) {
+            setProvider(providerParam);
+        }
+    }, [location]);
+
+    const selectRole = async (userType) => {
         try {
-            // If coming from OAuth flow with a temp token
-            if (isOAuth && tempToken) {
-                console.log('Processing OAuth registration with role:', role);
+            setLoading(true);
+            setError('');
 
-                // Build the URL properly
-                const apiUrl = process.env.REACT_APP_API_URL || '';
-                const completeRegistrationUrl = apiUrl + '/complete-oauth-registration';
+            const apiUrl = process.env.REACT_APP_API_URL || '';
 
-                // Make the API call with axios
-                const response = await axios.post(
-                    completeRegistrationUrl,
-                    {
-                        temp_token: tempToken,
-                        user_type: role
-                    },
-                    {
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
+            const response = await axios.post(
+                `${apiUrl}/auth/select-role`,
+                { user_type: userType },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
                     }
-                );
-
-                // Extract response data
-                const { access_token, token_type, user_type } = response.data;
-
-                if (!access_token) {
-                    throw new Error('No access token received');
                 }
+            );
 
-                // Store token and update auth state
-                localStorage.setItem('token', access_token);
-                axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
-
-                // Get user details 
+            if (response.data) {
+                // Get updated user info
                 const userResponse = await axios.get(
-                    apiUrl + '/auth/me',
+                    `${apiUrl}/auth/me`,
                     {
                         headers: {
-                            'Authorization': `Bearer ${access_token}`
+                            'Authorization': `Bearer ${token}`
                         }
                     }
                 );
@@ -91,28 +63,26 @@ const SelectRole = () => {
                 // Update Redux state
                 dispatch(
                     login({
-                        token: access_token,
+                        token: token,
                         user: {
                             ...userResponse.data,
-                            userType: user_type
+                            userType: userType
                         }
                     })
                 );
 
-                // Redirect to appropriate dashboard
-                const dashboardPath = user_type === 'client'
-                    ? '/client-dashboard'
-                    : '/developer-dashboard';
-
-                navigate(dashboardPath);
-            } else {
-                // For regular registration, redirect to registration page
-                navigate(`/register?role=${role}`);
+                // Navigate to appropriate dashboard based on role
+                if (userType === 'developer') {
+                    navigate('/developer-dashboard');
+                } else {
+                    navigate('/client-dashboard');
+                }
             }
         } catch (err) {
-            console.error('Error during role selection:', err);
+            console.error('Error selecting role:', err);
             setError(`Error: ${err.response?.data?.detail || err.message}. Please try again.`);
-            setIsLoading(false);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -129,8 +99,8 @@ const SelectRole = () => {
 
                 <div className={styles.roleButtons}>
                     <button
-                        onClick={() => handleRoleSelection('client')}
-                        disabled={isLoading}
+                        onClick={() => selectRole('client')}
+                        disabled={loading}
                         className={`${styles.roleButton} ${styles.clientButton}`}
                     >
                         <div className={styles.roleButtonContent}>
@@ -141,8 +111,8 @@ const SelectRole = () => {
                     </button>
 
                     <button
-                        onClick={() => handleRoleSelection('developer')}
-                        disabled={isLoading}
+                        onClick={() => selectRole('developer')}
+                        disabled={loading}
                         className={`${styles.roleButton} ${styles.developerButton}`}
                     >
                         <div className={styles.roleButtonContent}>
@@ -153,23 +123,15 @@ const SelectRole = () => {
                     </button>
                 </div>
 
-                {isLoading && (
+                {loading && (
                     <div className={styles.loadingContainer}>
                         <div className={styles.loadingSpinner}></div>
                         <p>Processing your selection...</p>
                     </div>
                 )}
-
-                {/* Add debug information in development environments */}
-                {process.env.NODE_ENV === 'development' && (
-                    <details className={styles.debugInfo}>
-                        <summary>Debug Information</summary>
-                        <pre>{JSON.stringify(debugInfo, null, 2)}</pre>
-                    </details>
-                )}
             </div>
         </div>
     );
-};
+}
 
 export default SelectRole;
