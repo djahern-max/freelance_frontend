@@ -4,7 +4,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { login, loginFailure, loginStart } from '../../redux/authSlice';
 import axios from 'axios';
 import { clearAuthData } from '../../utils/authCleanup';
-import { debugOAuthConnection, OAuthDebugPanel } from '../../utils/oauthDebug';
 import styles from './Login.module.css';
 
 const Login = () => {
@@ -278,13 +277,7 @@ const Login = () => {
         </div>
       </div>
 
-      {process.env.NODE_ENV === 'development' && (
-        <OAuthDebugPanel
-          googleUrl={googleLoginUrl}
-          githubUrl={githubLoginUrl}
-          linkedinUrl={linkedinLoginUrl}
-        />
-      )}
+
     </div>
   );
 };
