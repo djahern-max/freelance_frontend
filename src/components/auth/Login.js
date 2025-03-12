@@ -7,7 +7,7 @@ import axios from 'axios';
 import { clearAuthData } from '../../utils/authCleanup';
 import styles from './Login.module.css';
 import OAuthButtons from './OAuthButtons';
-import apiService from '../../utils/apiService';
+
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -65,7 +65,10 @@ const Login = () => {
     dispatch(loginStart());
 
     try {
+      // Update the URL to avoid the double /api/ issue
       const loginUrl = `${process.env.REACT_APP_API_URL}/api/auth/login`;
+      console.log("DEBUG: Attempting login at:", loginUrl);
+
       const response = await axios.post(loginUrl, formData);
       const data = response.data;
       const token = data.access_token;
@@ -78,7 +81,7 @@ const Login = () => {
 
       console.log("DEBUG: Token received, about to call /auth/me");
 
-      // Make request to /auth/me
+      // Make request to /auth/me - ensure correct URL is used here too
       const userResponse = await axios.get(`${process.env.REACT_APP_API_URL}/auth/me`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -120,7 +123,6 @@ const Login = () => {
       setIsLoading(false);
     }
   };
-
 
   const getErrorMessage = (error) => {
     if (!navigator.onLine) {
