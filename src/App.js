@@ -62,41 +62,44 @@ const LoadingFallback = () => (
 function AppContent() {
   const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   const controller = new AbortController();
-  //   const token = localStorage.getItem('token');
+  useEffect(() => {
+    const controller = new AbortController();
+    const token = localStorage.getItem('token');
 
-  //   const checkAuth = async () => {
-  //     if (!token) return;
+    const checkAuth = async () => {
+      if (!token) return;
 
-  //     try {
-  //       const response = await api.get('/auth/me', {
-  //         headers: { Authorization: `Bearer ${token}` },
-  //         signal: controller.signal
-  //       });
+      try {
+        const response = await api.get('/auth/me', {
+          headers: { Authorization: `Bearer ${token}` },
+          signal: controller.signal
+        });
 
-  //       dispatch(login({
-  //         token,
-  //         user: {
-  //           id: response.data.id,
-  //           username: response.data.username,
-  //           email: response.data.email,
-  //           fullName: response.data.full_name,
-  //           isActive: response.data.is_active,
-  //           userType: response.data.user_type,
-  //           createdAt: response.data.created_at,
-  //         },
-  //       }));
-  //     } catch (error) {
-  //       if (error.name === 'AbortError') return;
-  //       localStorage.removeItem('token');
-  //       localStorage.removeItem('user');
-  //     }
-  //   };
+        dispatch(login({
+          token,
+          user: {
+            id: response.data.id,
+            username: response.data.username,
+            email: response.data.email,
+            fullName: response.data.full_name,
+            isActive: response.data.is_active,
+            userType: response.data.user_type,
+            createdAt: response.data.created_at,
+            googleId: response.data.google_id,
+            githubId: response.data.github_id,
+            linkedinId: response.data.linkedin_id
+          },
+        }));
+      } catch (error) {
+        if (error.name === 'AbortError') return;
+        localStorage.removeItem('token');
+        // Don't remove OAuth IDs here
+      }
+    };
 
-  //   checkAuth();
-  //   return () => controller.abort();
-  // }, [dispatch]);
+    checkAuth();
+    return () => controller.abort();
+  }, [dispatch]);
 
   // 🔹 New useEffect for Google, GitHub, or LinkedIn Authentication
   // Replace the OAuth useEffect in App.js with this updated version

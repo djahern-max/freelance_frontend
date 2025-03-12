@@ -27,7 +27,7 @@ const OAuthSuccess = () => {
                 localStorage.setItem('token', token);
 
                 // Fetch user data to determine where to redirect
-                const response = await api.get('/me', {
+                const response = await api.get('/auth/me', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
