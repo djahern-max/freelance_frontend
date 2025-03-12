@@ -23,49 +23,71 @@ const OAuthSuccess = () => {
                     return;
                 }
 
-                // Store token in localStorage
-                localStorage.setItem('token', token);
+                // Store token in localStorage and API
+                api.setToken(token);
 
-                // Fetch user data to determine where to redirect
-                const response = await api.get('/auth/me', {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                try {
+                    // Use your existing profile fetch method
+                    const userData = await api.profile.fetchUserProfile();
 
-                if (response.data) {
                     // Update Redux store with user data
                     dispatch(login({
                         token,
                         user: {
-                            id: response.data.id,
-                            username: response.data.username,
-                            email: response.data.email,
-                            fullName: response.data.full_name || '',
-                            isActive: response.data.is_active,
-                            userType: response.data.user_type,
-                            createdAt: response.data.created_at,
+                            id: userData.id,
+                            username: userData.username,
+                            email: userData.email,
+                            fullName: userData.full_name || '',
+                            isActive: userData.is_active,
+                            userType: userData.user_type,
+                            createdAt: userData.created_at,
+                            needsRoleSelection: userData.needs_role_selection || false,
                         },
                     }));
 
                     // Determine redirect based on user type
                     let redirectPath = '/dashboard'; // Default fallback
 
-                    if (response.data.user_type === 'client') {
-                        redirectPath = '/client-dashboard';
-                        setStatus('Login successful! Redirecting to Client Dashboard...');
-                    } else if (response.data.user_type === 'developer') {
-                        redirectPath = '/developer-dashboard';
-                        setStatus('Login successful! Redirecting to Developer Dashboard...');
-                    } else if (!response.data.user_type) {
-                        // This shouldn't happen as users should have selected a role,
-                        // but just in case, redirect to role selection
+                    if (userData.needs_role_selection) {
                         redirectPath = '/select-role';
                         setStatus('Please select a role to continue...');
+                    } else if (userData.user_type === 'client') {
+                        redirectPath = '/client-dashboard';
+                        setStatus('Login successful! Redirecting to Client Dashboard...');
+                    } else if (userData.user_type === 'developer') {
+                        redirectPath = '/developer-dashboard';
+                        setStatus('Login successful! Redirecting to Developer Dashboard...');
                     }
 
                     // Redirect after a short delay
                     setTimeout(() => navigate(redirectPath), 1500);
-                } else {
-                    throw new Error('Failed to retrieve user data');
+                } catch (error) {
+                    console.error('Error fetching user profile:', error);
+
+                    // Try fallback to directly getting the stored user from previous logins
+                    const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
+
+                    if (storedUser) {
+                        dispatch(login({
+                            token,
+                            user: storedUser
+                        }));
+
+                        // Determine redirect based on stored user type
+                        let redirectPath = '/dashboard';
+                        if (storedUser.userType === 'client') {
+                            redirectPath = '/client-dashboard';
+                            setStatus('Login successful! Redirecting to Client Dashboard...');
+                        } else if (storedUser.userType === 'developer') {
+                            redirectPath = '/developer-dashboard';
+                            setStatus('Login successful! Redirecting to Developer Dashboard...');
+                        }
+
+                        setTimeout(() => navigate(redirectPath), 1500);
+                    } else {
+                        setStatus('Could not retrieve user profile. Redirecting to role selection...');
+                        setTimeout(() => navigate('/select-role'), 1500);
+                    }
                 }
             } catch (error) {
                 console.error('OAuth success error:', error);
