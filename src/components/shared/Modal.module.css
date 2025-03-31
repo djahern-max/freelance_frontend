@@ -2,47 +2,60 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.5);
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
+    padding: 1rem;
 }
 
 .modalContent {
-    background: white;
-    padding: 2rem;
+    background-color: white;
     border-radius: 8px;
-    max-width: 500px;
-    max-height: 80vh;
-    overflow-y: auto;
-    text-align: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 900px;
+    /* Increase this for larger videos */
+    max-height: 90vh;
+    overflow: auto;
+    position: relative;
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #e5e7eb;
 }
 
 .modalTitle {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    color: #111827;
+    margin: 0;
+    font-size: 1.25rem;
 }
 
 .modalBody {
-    font-size: 1rem;
-    color: #4b5563;
-    line-height: 1.6;
+    /* Remove or minimize padding for video content */
+    padding: 0;
+    /* No padding for video content */
+}
+
+/* For video content */
+.modalBody .videoWrapper {
+    margin: -1rem;
+    /* Remove padding from modal body */
 }
 
 .closeButton {
-    margin-top: 1.5rem;
-    padding: 0.5rem 1rem;
-    background-color: #4f46e5;
-    color: white;
-    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
     border: none;
-    border-radius: 4px;
     cursor: pointer;
+    color: #666;
 }
 
 .closeButton:hover {

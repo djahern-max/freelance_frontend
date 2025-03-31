@@ -1,0 +1,111 @@
+.container {
+    width: 100%;
+    margin-bottom: 2rem;
+}
+
+.title {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 1rem;
+    padding-left: 0.5rem;
+}
+
+.showcaseList {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.showcaseCard {
+    display: flex;
+    align-items: flex-start;
+    padding: 1rem;
+    background-color: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    transition: box-shadow 0.2s;
+}
+
+.showcaseCard:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.showcaseImage {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 1rem;
+}
+
+.placeholderImage {
+    width: 60px;
+    height: 60px;
+    background-color: #eee;
+    border-radius: 4px;
+    margin-right: 1rem;
+}
+
+.showcaseInfo {
+    flex: 1;
+}
+
+.showcaseTitle {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.rating {
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 0.25rem;
+}
+
+.ratingCount {
+    margin-left: 0.25rem;
+    font-size: 0.75rem;
+}
+
+.showcaseDescription {
+    font-size: 0.875rem;
+    color: #4b5563;
+    margin-top: 0.5rem;
+}
+
+
+
+.readMore {
+    color: #2563eb;
+    cursor: pointer;
+    margin-left: 0.5rem;
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
+.readMore:hover {
+    text-decoration: underline;
+}
+
+.rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+}
+
+.ratingText {
+    font-weight: 500;
+    font-size: 0.85rem;
+    color: #111827;
+}
+
+.ratingCount {
+    font-size: 0.8rem;
+    color: #6b7280;
+    /* Tailwind's gray-500 */
+}

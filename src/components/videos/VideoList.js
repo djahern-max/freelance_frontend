@@ -11,6 +11,7 @@ import styles from './VideoList.module.css';
 import ShareButton from './ShareButton';
 import Modal from '../shared/Modal';
 
+
 const VideoItem = ({
   video,
   onVideoClick,
@@ -113,19 +114,20 @@ const VideoItem = ({
         </div>
       </div>
 
-      <Modal
-        isOpen={isDescriptionModalOpen}
-        onClose={() => setIsDescriptionModalOpen(false)}
-        title={video.title || 'Video Description'}
-      >
-        <div className={styles.modalDescription}>
-          {video.description}
-        </div>
-      </Modal>
+      {isDescriptionModalOpen && (
+        <Modal
+          isOpen={isDescriptionModalOpen}
+          onClose={() => setIsDescriptionModalOpen(false)}
+          title={video.title || 'Video Description'}
+        >
+          <div className={styles.modalDescription}>
+            {video.description}
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };
-
 
 
 
@@ -335,9 +337,7 @@ const VideoList = () => {
           </button>
         )}
       </div>
-      <h2 className={styles.subtitle}>
-        Instructional Videos
-      </h2>
+
       <div className={styles.grid}>
         {videos.map((video) => (
           <VideoItem
@@ -371,12 +371,12 @@ const VideoList = () => {
             >
               Your browser does not support the video tag.
             </video>
-            <div className={styles.modalInfo}>
-              <h2 className={styles.videoTitle}>{selectedVideo.title}</h2>
-              {selectedVideo.description && (
-                <p className={styles.description}>{selectedVideo.description}</p>
-              )}
-            </div>
+          </div>
+          <div className={styles.modalInfo}>
+            <h2 className={styles.videoTitle}>{selectedVideo.title}</h2>
+            {selectedVideo.description && (
+              <p className={styles.description}>{selectedVideo.description}</p>
+            )}
           </div>
         </Modal>
       )}

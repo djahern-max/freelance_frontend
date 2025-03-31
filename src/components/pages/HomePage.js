@@ -1,33 +1,53 @@
+import React from 'react';
 import { useSelector } from 'react-redux';
-import { selectIsAuthenticated, selectUser } from '../../redux/authSlice';
-import ClientDashboard from '../dashboards/ClientDashboard';
-import DeveloperDashboard from '../dashboards/DeveloperDashboard';
-import Features from '../shared/Features';
-import Header from '../shared/Header';
+import { useNavigate } from 'react-router-dom';
+
+import RankedShowcaseList from '../showcase/RankedShowcaseList';
+import Footer from '../shared/Footer';
 import styles from './HomePage.module.css';
 
-function HomePage() {
-  const isAuthenticated = useSelector(selectIsAuthenticated);
-  const user = useSelector(selectUser);
-  const userType = user?.userType;
+const HomePage = () => {
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
 
-  if (isAuthenticated && userType) {
-    return (
-      <div className={styles.authenticatedContainer}>
-        {userType === 'developer' && <DeveloperDashboard />}
-        {userType === 'client' && <ClientDashboard />}
-      </div>
-    );
-  }
+  const handleNavCardClick = (path) => {
+    navigate(path);
+  };
 
   return (
-    <div className={styles.landingContainer}>
-      <Header />
+    <div className={isAuthenticated ? styles.authenticatedContainer : styles.landingContainer}>
       <div className={styles.content}>
-        <Features />
+        {/* Navigation Cards at the top */}
+        {/* <div className={styles.cardsGrid}>
+          <div className={styles.navCard} onClick={() => handleNavCardClick('/opportunities')}>
+            <div className={styles.navIcon}>🚀</div>
+            <div className={styles.navTitle}>Opportunities</div>
+          </div>
+          <div className={styles.navCard} onClick={() => handleNavCardClick('/creators')}>
+            <div className={styles.navIcon}>👨‍💻</div>
+            <div className={styles.navTitle}>Developers</div>
+          </div>
+          <div className={styles.navCard} onClick={() => handleNavCardClick('/videos')}>
+            <div className={styles.navIcon}>🎬</div>
+            <div className={styles.navTitle}>Videos</div>
+          </div>
+          <div className={styles.navCard} onClick={() => handleNavCardClick('/showcase')}>
+            <div className={styles.navIcon}>💻</div>
+            <div className={styles.navTitle}>Projects</div>
+          </div>
+
+        </div> */}
+
+        {/* Showcases below the cards */}
+        <div className={styles.showcaseSection}>
+          <RankedShowcaseList limit={10} title="Top Ranked Projects" />
+        </div>
+
+
       </div>
+      <Footer />
     </div>
   );
-}
+};
 
 export default HomePage;

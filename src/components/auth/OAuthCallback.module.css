@@ -4,15 +4,34 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 60vh;
+    min-height: 100vh;
+    /* Increased from 60vh to 100vh to center vertically in the viewport */
     padding: 2rem;
     text-align: center;
+    margin: 0 auto;
+    /* Center horizontally */
+    max-width: 600px;
+    /* Limit maximum width */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    /* Add subtle shadow */
+    border-radius: 8px;
+    /* Rounded corners */
+    background-color: #fff;
+    /* Ensure background is white */
+    position: relative;
+    /* Add positioning context */
+    top: 50%;
+    /* Position from top */
+    transform: translateY(-50%);
+    /* Center the element vertically */
 }
 
 .title {
     font-size: 1.8rem;
     margin: 1.5rem 0 0.5rem;
     color: #333;
+    font-weight: 600;
+    /* Make title slightly bolder */
 }
 
 .message {
@@ -20,6 +39,8 @@
     margin-bottom: 2rem;
     color: #666;
     max-width: 500px;
+    line-height: 1.5;
+    /* Improve readability */
 }
 
 .loader {
@@ -29,6 +50,8 @@
     width: 50px;
     height: 50px;
     animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+    /* Add space below loader */
 }
 
 .errorIcon {
@@ -40,6 +63,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-bottom: 1rem;
+    /* Add space below error icon */
 }
 
 .errorIcon:before,
@@ -67,5 +92,15 @@
 
     100% {
         transform: rotate(360deg);
+    }
+}
+
+/* For smaller screens */
+@media (max-width: 768px) {
+    .container {
+        min-height: 80vh;
+        padding: 1.5rem;
+        box-shadow: none;
+        border-radius: 0;
     }
 }

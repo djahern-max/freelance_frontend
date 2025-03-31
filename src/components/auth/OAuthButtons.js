@@ -49,7 +49,7 @@ const OAuthButtons = ({ className, buttonText = "Continue with" }) => {
             </a>
 
             {/* GitHub Login Button */}
-            {/* <a
+            <a
                 href={githubLoginUrl}
                 className={`${styles.oauthButton} ${styles.githubButton}`}
                 onClick={() => handleOAuthClick('GitHub', githubLoginUrl)}
@@ -63,10 +63,10 @@ const OAuthButtons = ({ className, buttonText = "Continue with" }) => {
                     </svg>
                 </span>
                 {buttonText} GitHub
-            </a> */}
+            </a>
 
             {/* LinkedIn Login Button */}
-            {/* <a
+            <a
                 href={linkedinLoginUrl}
                 className={`${styles.oauthButton} ${styles.linkedinButton}`}
                 onClick={() => handleOAuthClick('LinkedIn', linkedinLoginUrl)}
@@ -80,7 +80,7 @@ const OAuthButtons = ({ className, buttonText = "Continue with" }) => {
                     </svg>
                 </span>
                 {buttonText} LinkedIn
-            </a> */}
+            </a>
         </div>
     );
 };

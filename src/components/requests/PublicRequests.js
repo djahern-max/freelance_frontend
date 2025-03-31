@@ -296,31 +296,23 @@ const PublicRequests = () => {
           return publicResponse.data;
         });
 
-        if (isAuthenticated && user) {
-          const conversationsResponse = await api.get(
-            '/conversations/user/list',
+        // Fetch conversation counts - no authentication required
+        try {
+          const conversationCountsResponse = await api.get(
+            '/conversations/request/conversation-counts',
             {
               signal: abortControllerRef.current.signal,
             }
           );
 
-          const conversationCounts = conversationsResponse.data.reduce(
-            (acc, conv) => {
-              acc[conv.request_id] = (acc[conv.request_id] || 0) + 1;
-              return acc;
-            },
-            {}
-          );
+          console.log("Conversation counts:", conversationCountsResponse.data);
 
-          setConversations((prevCounts) => {
-            // Avoid unnecessary re-renders
-            if (
-              JSON.stringify(prevCounts) === JSON.stringify(conversationCounts)
-            ) {
-              return prevCounts;
-            }
-            return conversationCounts;
-          });
+          // Set the conversations directly
+          setConversations(conversationCountsResponse.data);
+        } catch (countError) {
+          console.error("Error fetching conversation counts:", countError);
+          // If we can't get counts, default to empty object
+          setConversations({});
         }
       } catch (err) {
         // Handle cancelled requests and aborts silently

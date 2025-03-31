@@ -1,80 +1,154 @@
 .landingContainer {
-    min-height: 100vh;
-    width: 100%;
-    background-color: var(--color-background-main);
-    display: flex;
-    flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--color-background-main);
+  display: flex;
+  flex-direction: column;
+}
+
+.authenticatedContainer {
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--color-background-main);
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  flex: 1;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Two-column layout for ranked showcases */
+.contentLayout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Navigation Cards Grid */
+.cardsGrid {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+.navCard {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  position: relative;
+}
+
+.navCard:hover {
+  background-color: #f9fafb;
+  box-shadow: inset 0 0 0 2px #3b82f6;
+  transform: translateY(-2px);
+}
+
+.navIcon {
+  font-size: 1.25rem;
+  color: #3b82f6;
+}
+
+.navTitle {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #111827;
+  margin: 0;
+}
+
+
+
+.featuredProjects {
+  margin: 2rem 0;
+  padding: 2rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.featuredProjects h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #333;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-style: italic;
+}
+
+.noProjects {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  background-color: #fff;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.showcaseSection {
+  margin-top: 3rem;
+  width: 100%;
+}
+
+.featuresSection {
+  margin-top: 3rem;
+  width: 100%;
+}
+
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .contentLayout {
+    grid-template-columns: 1fr;
   }
-  
-  .authenticatedContainer {
-    min-height: 100vh;
-    width: 100%;
-    background-color: var(--color-background-main);
-    display: flex;
-    flex-direction: column;
+
+  .rightColumn {
+    order: -1;
   }
-  
-  .content {
-    flex: 1;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-  
-  /* Navigation Cards Grid */
+}
+
+@media (max-width: 768px) {
   .cardsGrid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
-    margin-top: 2rem;
+    grid-template-columns: repeat(2, 1fr);
   }
-  
-  .navCard {
-    background-color: white;
-    border-radius: 0.75rem;
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+@media (max-width: 480px) {
+  .cardsGrid {
+    grid-template-columns: 1fr;
   }
-  
-  .navCard:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  .content {
+    padding: 1rem;
   }
-  
-  .navIcon {
-    width: 48px;
-    height: 48px;
-    color: var(--color-primary);
-    margin-bottom: 1rem;
-  }
-  
-  .navTitle {
-    font-weight: 500;
-    color: var(--color-text-primary);
-    margin-top: 0.5rem;
-  }
-  
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    .cardsGrid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .cardsGrid {
-      grid-template-columns: 1fr;
-    }
-    
-    .content {
-      padding: 1rem;
-    }
-  }
+}

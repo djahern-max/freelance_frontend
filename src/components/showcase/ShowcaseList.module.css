@@ -9,6 +9,77 @@
 }
 
 
+/* Make the video section container itself minimal when collapsed */
+.videoSection {
+  margin: 0.5rem 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  min-height: auto;
+  transition: all 0.3s ease;
+}
+
+/* Style for the dropdown button/header only */
+.videoSectionToggle {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8f9fa;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.videoSectionToggle:hover {
+  background: #f1f2f4;
+}
+
+/* Only add container styling when expanded */
+.videoSection.expanded {
+  background: #f8f9fa;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 0.75rem;
+  margin: 0.75rem 0;
+}
+
+/* Hide the expanded toggle button border when expanded */
+.videoSection.expanded .videoSectionToggle {
+  background: transparent;
+  border: none;
+  padding-top: 0;
+}
+
+/* Video list styling */
+.videoList {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: all 0.3s ease;
+  margin-top: 0;
+}
+
+/* Show video list when expanded */
+.videoSection.expanded .videoList {
+  max-height: 500px;
+  opacity: 1;
+  margin-top: 0.75rem;
+}
+
+/* Style for the empty state */
+.emptySection {
+  display: inline-block;
+  width: auto;
+  padding: 0.5rem 1rem;
+  background: #f8f9fa;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin: 0.5rem 0;
+}
+
 .subtitle {
   color: #6a6666;
   font-size: 1.25rem;
@@ -596,30 +667,16 @@
   /* Ensure no background on hover */
 }
 
-.videoSection {
 
 
-  background: #f8f9fa;
-  /* Light grey background */
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  text-align: center;
-  min-height: 150px;
+
+.toggleIcon {
+  transition: transform 0.3s ease;
 }
 
-.emptySection {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-  background: #f8f9fa;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  color: #6b7280;
-  min-height: 120px;
-  /* Match height of populated sections */
-}
+
+
+
 
 .videoThumbnailWrapper {
   position: relative;
@@ -657,23 +714,19 @@
   transform: translateY(-2px);
 }
 
-.videoSection {
-  margin: 1.25rem 0;
-  padding: 1rem;
-  background: #f8f9fa;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  text-align: center;
-  min-height: 180px;
-  /* Adjust based on your video section height */
-}
 
-/* Video list style instead of grid */
-.videoList {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin-top: 0.75rem;
+
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 

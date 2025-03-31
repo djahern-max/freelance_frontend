@@ -7,7 +7,7 @@ import ReadmeModal from './ReadmeModal';
 import styles from './ShowcaseList.module.css';
 import ReactDOM from 'react-dom';
 import ShowcaseShareButton from './ShowcaseShareButton';
-import { Upload } from 'lucide-react';
+import { Upload, ChevronDown, ChevronUp } from 'lucide-react';
 
 const ShowcaseList = () => {
   const dispatch = useDispatch();
@@ -20,7 +20,15 @@ const ShowcaseList = () => {
   const ITEMS_PER_FETCH = 12;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDescription, setSelectedDescription] = useState(null);
+  const [expandedVideoSections, setExpandedVideoSections] = useState({});
+  const isFetchingRef = useRef(false);
 
+  const toggleVideoSection = (showcaseId) => {
+    setExpandedVideoSections(prev => ({
+      ...prev,
+      [showcaseId]: !prev[showcaseId]
+    }));
+  };
 
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
@@ -35,20 +43,29 @@ const ShowcaseList = () => {
     if (observer.current) observer.current.disconnect();
 
     observer.current = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && hasMore) {
-        setPage(prevPage => prevPage + 1);
+      if (entries[0].isIntersecting && hasMore && !loading) {
+        setPage(prev => prev + 1);
       }
     });
 
     if (lastShowcaseRef.current) {
       observer.current.observe(lastShowcaseRef.current);
     }
+
+    return () => {
+      if (observer.current) observer.current.disconnect();
+    };
   }, [loading, hasMore]);
+
 
   useEffect(() => {
     const fetchMore = async () => {
+      if (isFetchingRef.current) return;
+      isFetchingRef.current = true;
+
       try {
         const response = await dispatch(fetchShowcases({
+
           skip: page * ITEMS_PER_FETCH,
           limit: ITEMS_PER_FETCH
         })).unwrap();
@@ -57,23 +74,27 @@ const ShowcaseList = () => {
           setHasMore(false);
         }
 
-        // Ensure no duplicates when adding new showcases
         setAllShowcases(prev => {
           const newShowcases = response.filter(
             newShowcase => !prev.some(
               existingShowcase => existingShowcase.id === newShowcase.id
             )
           );
-          return [...newShowcases.reverse(), ...prev];
+          return [...prev, ...newShowcases];
         });
       } catch (error) {
         console.error('Failed to fetch showcases:', error);
         setHasMore(false);
+      } finally {
+        isFetchingRef.current = false;
       }
     };
 
-    fetchMore();
-  }, [page, dispatch]);
+    if (hasMore) {
+      fetchMore();
+    }
+  }, [page, dispatch, hasMore]);
+
 
   const isOwner = (showcase) => {
     return user && showcase.developer_id === user.id;
@@ -127,7 +148,6 @@ const ShowcaseList = () => {
           </Link>
         )}
       </div>
-      <h2 className={styles.subtitle}>Marketplace</h2>
 
       <div className={styles.grid}>
         {allShowcases.map((showcase, index) => {
@@ -140,7 +160,6 @@ const ShowcaseList = () => {
               className={styles.card}
               ref={index === allShowcases.length - 1 ? lastShowcaseRef : null}
             >
-              {/* Rest of your showcase card JSX */}
               <div className={styles.imageContainer}>
                 <a
                   href={showcase.demo_url}
@@ -159,10 +178,6 @@ const ShowcaseList = () => {
                 </a>
               </div>
               <div className={styles.content}>
-
-
-
-
                 {/* Truncated Description */}
                 <div className={styles.descriptionWrapper}>
                   <p className={styles.description}>
@@ -184,34 +199,51 @@ const ShowcaseList = () => {
                     )}
                   </p>
                 </div>
+
+
+                {/* Collapsible Videos Section */}
                 {showcase.videos?.length > 0 ? (
-                  <div className={styles.videoSection}>
-                    <p className={styles.sectionHeading}>RELATED Videos</p>
-                    <div className={`${styles.videoList} ${showcase.videos.length === 1 ? styles.single : ''}`}>
-                      {showcase.videos.map(video => (
-                        <Link
-                          key={`${video.id}-${showcase.id}`}
-                          to={`/video_display/stream/${video.id}`}
-                          className={styles.videoItem}
-                        >
-                          <div className={styles.videoThumbnailWrapper}>
-                            <img
-                              src={video.thumbnail_path}
-                              alt={video.title}
-                              className={styles.videoThumbnail}
-                            />
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
+                  <div className={`${styles.videoSection} ${expandedVideoSections[showcase.id] ? styles.expanded : ''}`}>
+                    <button
+                      onClick={() => toggleVideoSection(showcase.id)}
+                      className={styles.videoSectionToggle}
+                      aria-expanded={expandedVideoSections[showcase.id] ? "true" : "false"}
+                    >
+                      <span className={styles.sectionHeading}>
+                        RELATED VIDEOS ({showcase.videos.length})
+                      </span>
+                      {expandedVideoSections[showcase.id] ? (
+                        <ChevronUp className={styles.toggleIcon} size={16} />
+                      ) : (
+                        <ChevronDown className={styles.toggleIcon} size={16} />
+                      )}
+                    </button>
+
+                    {expandedVideoSections[showcase.id] && (
+                      <div className={`${styles.videoList} ${showcase.videos.length === 1 ? styles.single : ''}`}>
+                        {showcase.videos.map(video => (
+                          <Link
+                            key={`${video.id}-${showcase.id}`}
+                            to={`/video_display/stream/${video.id}`}
+                            className={styles.videoItem}
+                          >
+                            <div className={styles.videoThumbnailWrapper}>
+                              <img
+                                src={video.thumbnail_path}
+                                alt={video.title}
+                                className={styles.videoThumbnail}
+                              />
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ) : (
-                  <div className={`${styles.videoSection} ${styles.emptySection}`}>
-                    <p className={styles.sectionHeading}>RELATED Videos</p>
-                    <p>No videos available</p>
+                  <div className={styles.emptySection}>
+                    <span className={styles.sectionHeading}>RELATED VIDEOS (0)</span>
                   </div>
                 )}
-
 
                 <div className={styles.titleContainer}>
                   {showcase.developer_profile && (
@@ -279,9 +311,6 @@ const ShowcaseList = () => {
                   )}
                   <ShowcaseShareButton showcaseId={showcase.id} />
                 </div>
-
-
-
 
                 <div className={styles.actions}>
                   <button

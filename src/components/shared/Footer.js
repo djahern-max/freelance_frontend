@@ -1,5 +1,5 @@
 import { MessageSquareMore, Heart, Coffee } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // Added useEffect import
 import FeedbackModal from '../feedback/FeedbackModal';
 import DonationModal from '../payments/DonationModal';
 import styles from './Footer.module.css';
@@ -10,6 +10,26 @@ const Footer = () => {
   const [isHeartHovered, setIsHeartHovered] = useState(false);
   const [isFeedbackHovered, setIsFeedbackHovered] = useState(false);
   const [isCoffeeHovered, setIsCoffeeHovered] = useState(false);
+
+
+  // useEffect(() => {
+
+  //   const img = document.createElement('img');
+  //   img.src = 'https://analytics-hub.org/api/tracking/pixel.gif?site_id=5&page=' + encodeURIComponent(window.location.pathname);
+  //   img.style.position = 'absolute';
+  //   img.style.width = '1px';
+  //   img.style.height = '1px';
+  //   img.style.top = '-1px';
+  //   img.style.left = '-1px';
+  //   document.body.appendChild(img);
+
+  //   // Clean up function
+  //   return () => {
+  //     if (img.parentNode) {
+  //       img.parentNode.removeChild(img);
+  //     }
+  //   };
+  // }, []);
 
   return (
     <footer className={styles.footer}>
