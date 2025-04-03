@@ -30,6 +30,7 @@ const PublicRequests = () => {
   const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
   const [filter, setFilter] = useState('all');
 
+
   const sortRequests = (requests) => {
     const getStatusPriority = (request) => {
       if (request.is_idea) {
@@ -57,7 +58,7 @@ const PublicRequests = () => {
     });
   };
 
-  // Then add the filteredAndSortedRequests memo after the state declarations
+  // Update the filtering logic to handle external support tickets
   const filteredAndSortedRequests = useMemo(() => {
     let filtered = publicRequests;
     if (filter !== 'all') {
@@ -67,6 +68,10 @@ const PublicRequests = () => {
         }
         if (filter === 'idea') {
           return request.is_idea && !request.seeks_collaboration;
+        }
+        if (filter === 'external_support') {
+          // Check for requests that are specifically external support tickets
+          return request.request_metadata && request.request_metadata.ticket_type === 'external_support';
         }
         return request.status?.toLowerCase() === filter;
       });
@@ -117,6 +122,7 @@ const PublicRequests = () => {
         <option value="in_progress">In Progress</option>
         <option value="completed">Completed</option>
         <option value="cancelled">Cancelled</option>
+        <option value="external_support">External Support Tickets</option> {/* Add this line */}
       </select>
     );
   };

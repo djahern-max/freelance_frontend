@@ -330,3 +330,39 @@
   ring-offset: 2px;
   ring-color: #3b82f6;
 }
+
+/* Add these styles to your PublicRequestCard.module.css file */
+
+/* External Support Card Styling */
+.externalSupportCard {
+  border-left: 4px solid #5c6bc0;
+  /* Indigo color for external support tickets */
+  background-color: rgba(92, 107, 192, 0.05);
+  /* Very light indigo background */
+}
+
+/* External Support Badge */
+.externalSupportBadge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #5c6bc0;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  z-index: 1;
+}
+
+.externalSupportBadge svg {
+  color: white;
+}
+
+/* Add a status class for external support */
+.statusExternalSupport {
+  background-color: #5c6bc0;
+}

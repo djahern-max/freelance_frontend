@@ -1,178 +1,161 @@
-import { ChevronRight } from 'lucide-react';
-import { useState, useEffect } from 'react';
+// components/RequestCard.js
+
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
-import api from '../../utils/api';
-import styles from './RequestCard.module.css';
+import { formatDistanceToNow } from 'date-fns';
 
-const RequestCard = ({ request, onUpdate }) => {
+const RequestCard = ({ request }) => {
   const navigate = useNavigate();
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [error, setError] = useState(null);
-  const [localRequest, setLocalRequest] = useState(request);
-  const token = useSelector((state) => state.auth.token);
 
-  useEffect(() => {
-    setLocalRequest(request);
-  }, [request]);
+  // Check if this is an external support ticket
+  const isExternalTicket = request.request_metadata?.ticket_type === 'external_support';
 
-  // Log the request object to see its structure
-  useEffect(() => {
-    console.log('Request object:', JSON.stringify(request, null, 2));
-    console.log('Local request object:', JSON.stringify(localRequest, null, 2));
-  }, [request, localRequest]);
+  // Format the time since creation
+  const timeAgo = formatDistanceToNow(new Date(request.created_at), { addSuffix: true });
 
-  const toggleRequestPrivacy = () => {
-    // First, log all relevant data
-    console.log('Toggle privacy called with:', {
-      id: localRequest.id,
-      current_is_public: localRequest.is_public,
-      token_exists: !!token
-    });
+  // Get external ticket info if available
+  const externalSource = isExternalTicket ? request.request_metadata.source : null;
+  const externalEmail = isExternalTicket ? request.request_metadata.email : null;
 
-    // Use direct property access like in RequestDetails.js
-    return api.put(`/requests/${localRequest.id}/privacy`, {
-      is_public: !localRequest.is_public
-    })
-      .then(() => {
-        setLocalRequest((prev) => ({
-          ...prev,
-          is_public: !prev.is_public,
-        }));
-        toast.success(
-          `Request is now ${!localRequest.is_public ? 'public' : 'private'}`
-        );
-        if (onUpdate) onUpdate();
-      })
-      .catch((error) => {
-        // Log the complete error
-        console.error('Error details:', {
-          response: error.response?.data,
-          status: error.response?.status,
-          headers: error.response?.headers,
-          config: error.config
-        });
-
-        toast.error('Failed to update request privacy');
-        setLocalRequest((prev) => ({
-          ...prev,
-          is_public: prev.is_public,
-        }));
-      });
+  // Handle click to view request details
+  const handleClick = () => {
+    navigate(`/requests/${request.id}`);
   };
-
-  const updateRequestStatus = async (requestId, newStatus) => {
-    setIsUpdating(true);
-    setError(null);
-
-    try {
-      const formattedStatus = newStatus.toLowerCase().replace(' ', '_');
-      const response = await api.put(`/requests/${requestId}`, {
-        status: formattedStatus,
-        is_idea: localRequest.is_idea || false,
-        seeks_collaboration: localRequest.seeks_collaboration || false
-      });
-
-      if (response?.data) {
-        setLocalRequest(response.data);
-        if (onUpdate) onUpdate();
-        toast.success('Status updated successfully');
-      }
-    } catch (error) {
-      console.error('Failed to update status:', error);
-      toast.error('Failed to update status');
-      setError(error.response?.data?.detail || 'Unable to update request status');
-    } finally {
-      setIsUpdating(false);
-    }
-  };
-
-  const getStatusClass = (status) => {
-    const statusMap = {
-      open: styles.open,
-      in_progress: styles.inProgress,
-      completed: styles.completed,
-      cancelled: styles.cancelled
-    };
-    return statusMap[status?.toLowerCase()] || styles.open;
-  };
-
-  if (!localRequest) {
-    return null;
-  }
 
   return (
-    <div className={`${styles.requestCard} ${isUpdating ? styles.loading : ''}`}>
-      <div className={styles.header}>
-        <h3 className={styles.title}>{localRequest.title}</h3>
-        {localRequest.estimated_budget && (
-          <div className={styles.budgetBadge}>
-            Budget: ${localRequest.estimated_budget}
-          </div>
+    <div
+      className={`request-card ${isExternalTicket ? 'external-ticket' : ''}`}
+      onClick={handleClick}
+    >
+      <div className="request-header">
+        <h3 className="request-title">{request.title}</h3>
+        {isExternalTicket && (
+          <span className="external-badge">
+            External - {externalSource || 'Unknown Source'}
+          </span>
         )}
       </div>
 
-      <div className={styles.content}>
-        <p className={styles.description}>
-          {localRequest.content?.length > 200
-            ? `${localRequest.content.substring(0, 200)}...`
-            : localRequest.content}
-        </p>
+      <div className="request-meta">
+        <span className="request-email">
+          {isExternalTicket ? externalEmail : request.user?.email || 'Unknown user'}
+        </span>
+        <span className="request-time">{timeAgo}</span>
       </div>
 
-      <div className={styles.statusSection}>
-        <select
-          value={localRequest.status || 'open'}
-          onChange={(e) => updateRequestStatus(localRequest.id, e.target.value)}
-          disabled={isUpdating}
-          className={`${styles.statusSelect} ${getStatusClass(localRequest.status)}`}
-        >
-          <option value="open">Open</option>
-          <option value="in_progress">In Progress</option>
-          <option value="completed">Completed</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
+      <div className="request-content">
+        <p>{request.content.substring(0, 150)}...</p>
       </div>
 
-      <div className={styles.footer}>
-        <div className={styles.actionButtons}>
-          <button
-            className={styles.viewDetailsButton}
-            onClick={() => navigate(`/requests/${localRequest.id}`)}
-            disabled={isUpdating}
-          >
-            View Details <ChevronRight size={16} />
-          </button>
-        </div>
+      <div className="request-footer">
+        <span className={`status-badge ${request.status}`}>
+          {request.status}
+        </span>
 
-        <div className={styles.privacyControl}>
-          <label className={styles.toggleSwitch}>
-            <input
-              type="checkbox"
-              checked={localRequest.is_public}
-              onChange={toggleRequestPrivacy}
-              disabled={isUpdating}
-            />
-            <span className={styles.slider}></span>
-          </label>
-          <span className={styles.privacyLabel}>
-            {isUpdating ? 'Updating...' : localRequest.is_public ? 'Public' : 'Private'}
+        {isExternalTicket && request.request_metadata.website_id && (
+          <span className="website-id">
+            Site ID: {request.request_metadata.website_id}
           </span>
-        </div>
+        )}
       </div>
 
-      {error && (
-        <div className={styles.error}>
-          {error}
-          <button
-            onClick={() => setError(null)}
-            className={styles.dismissError}
-          >
-            ✕
-          </button>
-        </div>
-      )}
+      <style jsx>{`
+        .request-card {
+          background-color: #fff;
+          border-radius: 8px;
+          padding: 16px;
+          margin-bottom: 16px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          cursor: pointer;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .request-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .external-ticket {
+          border-left: 4px solid #6366f1;
+        }
+        
+        .request-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 8px;
+        }
+        
+        .request-title {
+          margin: 0;
+          font-size: 18px;
+          font-weight: 600;
+        }
+        
+        .external-badge {
+          font-size: 12px;
+          padding: 4px 8px;
+          background-color: #6366f1;
+          color: white;
+          border-radius: 4px;
+          font-weight: 500;
+        }
+        
+        .request-meta {
+          display: flex;
+          justify-content: space-between;
+          font-size: 14px;
+          color: #64748b;
+          margin-bottom: 12px;
+        }
+        
+        .request-content {
+          color: #334155;
+          font-size: 15px;
+          line-height: 1.5;
+          margin-bottom: 12px;
+        }
+        
+        .request-footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        
+        .status-badge {
+          font-size: 12px;
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-weight: 500;
+          text-transform: capitalize;
+        }
+        
+        .open {
+          background-color: #fbbf24;
+          color: #7c2d12;
+        }
+        
+        .in_progress {
+          background-color: #60a5fa;
+          color: #1e3a8a;
+        }
+        
+        .completed {
+          background-color: #34d399;
+          color: #064e3b;
+        }
+        
+        .cancelled {
+          background-color: #9ca3af;
+          color: #1f2937;
+        }
+        
+        .website-id {
+          font-size: 12px;
+          color: #64748b;
+          font-weight: 500;
+        }
+      `}</style>
     </div>
   );
 };
