@@ -1,9 +1,12 @@
 // src/utils/apiService.js
 import axios from 'axios';
 
+// Define the API URL with fallback
+const API_URL = process.env.REACT_APP_API_URL || 'https://www.ryze.ai/api';
+
 // Create an axios instance with baseURL
 const api = axios.create({
-    baseURL: process.env.REACT_APP_API_URL,
+    baseURL: API_URL,
     timeout: 15000, // 15 second timeout
     headers: {
         'Content-Type': 'application/json',
@@ -62,17 +65,17 @@ const apiService = {
         delete api.defaults.headers.common['Authorization'];
     },
 
-    // OAuth URL generators
+    // OAuth URL generators - UPDATED to remove the double /api prefix
     getGoogleOAuthUrl: () => {
-        return `${process.env.REACT_APP_API_URL}/api/auth/google`;
+        return `${API_URL}/auth/google`;
     },
 
     getGithubOAuthUrl: () => {
-        return `${process.env.REACT_APP_API_URL}/api/auth/github`;
+        return `${API_URL}/auth/github`;
     },
 
     getLinkedinOAuthUrl: () => {
-        return `${process.env.REACT_APP_API_URL}/api/auth/linkedin`;
+        return `${API_URL}/auth/linkedin`;
     },
 
     // Basic HTTP methods

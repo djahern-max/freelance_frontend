@@ -105,9 +105,10 @@ const RequestDetails = () => {
         return;
       }
 
-      // Create conversation directly without subscription check
+      // Create conversation with additional metadata for external tickets
       const response = await api.post('/conversations/', {
         request_id: parseInt(requestId),
+        is_external_support: request.request_metadata?.ticket_type === "external_support"
       });
 
       navigate(`/conversations/${response.data.id}`);
@@ -292,7 +293,7 @@ const RequestDetails = () => {
                   className={styles.startConversationButton}
                   onClick={handleStartConversation}
                 >
-                  Start Conversation
+                  Start Conversation  REQUEST DETAILS TEST
                   <MessageSquare className={styles.messageIcon} />
                 </button>
               )}

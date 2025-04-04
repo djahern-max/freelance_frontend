@@ -66,7 +66,7 @@ const OAuthButtons = ({ className, buttonText = "Continue with" }) => {
             </a>
 
             {/* LinkedIn Login Button */}
-            <a
+            {/* <a
                 href={linkedinLoginUrl}
                 className={`${styles.oauthButton} ${styles.linkedinButton}`}
                 onClick={() => handleOAuthClick('LinkedIn', linkedinLoginUrl)}
@@ -80,7 +80,7 @@ const OAuthButtons = ({ className, buttonText = "Continue with" }) => {
                     </svg>
                 </span>
                 {buttonText} LinkedIn
-            </a>
+            </a> */}
         </div>
     );
 };

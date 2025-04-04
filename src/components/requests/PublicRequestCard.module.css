@@ -366,3 +366,30 @@
 .statusExternalSupport {
   background-color: #5c6bc0;
 }
+
+.support {
+  background-color: #e1ecf4;
+  color: #0366d6;
+  border-radius: 12px;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 0.5rem;
+}
+
+.externalDetails {
+  font-size: 14px;
+  line-height: 1.5;
+  margin-top: 6px;
+  color: #374151;
+}
+
+.externalDetails strong {
+  display: inline-block;
+  min-width: 80px;
+  font-weight: 600;
+  color: #111827;
+}

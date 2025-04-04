@@ -5,7 +5,6 @@ import { clearAuthData } from '../../utils/authCleanup';
 import TermsModal from '../shared/TermsModal';
 import styles from './Register.module.css';
 import OAuthButtons from './OAuthButtons';
-import apiService from '../../utils/apiService';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -70,20 +69,50 @@ const Register = () => {
         terms_accepted: formData.termsAccepted,
       };
 
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/auth/register`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(requestBody),
-        }
-      );
+      console.log('Sending registration data:', requestBody);
+
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      // In your handleRegister function, replace the "if (!response.ok)" block with this:
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.detail || 'Registration failed');
+        console.log('Registration failed:', errorData);
+
+        // Direct error handling for common error messages
+        if (errorData.detail === 'Email already registered') {
+          throw new Error('This email is already registered. Please use a different email or try logging in.');
+        }
+
+        if (errorData.detail === 'Username already taken') {
+          throw new Error('This username is already taken. Please choose a different username.');
+        }
+
+        if (errorData.detail && typeof errorData.detail === 'string') {
+          throw new Error(errorData.detail);
+        }
+
+        // For more complex validation errors
+        if (Array.isArray(errorData.detail)) {
+          const errorMessage = errorData.detail.map(err => {
+            if (err.loc && err.loc.length > 1) {
+              const field = err.loc[1];
+              return `${field.charAt(0).toUpperCase() + field.slice(1).replace('_', ' ')}: ${err.msg}`;
+            }
+            return err.msg;
+          }).join('\n');
+
+          throw new Error(errorMessage);
+        }
+
+        // Fallback error message
+        throw new Error('Registration failed. Please check your information and try again.');
       }
 
       navigate('/login', {
@@ -95,6 +124,7 @@ const Register = () => {
         },
       });
     } catch (err) {
+      // Display a user-friendly error message
       setError(err.message || 'Registration failed. Please try again.');
     } finally {
       setIsLoading(false);
@@ -108,8 +138,13 @@ const Register = () => {
           <h1 className={styles.title}>Create Account</h1>
         </div>
 
-        {error && <div className={styles.error}>{error}</div>}
-
+        {error && (
+          <div className={styles.error}>
+            {error.split('\n').map((line, index) => (
+              <div key={index}>{line}</div>
+            ))}
+          </div>
+        )}
         {/* OAuth Buttons Section */}
         <div className={styles.socialLoginContainer}>
           <OAuthButtons buttonText="Register with" />

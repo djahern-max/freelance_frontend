@@ -10,6 +10,8 @@ const PublicRequestCard = ({
   onToggleExpand,
   conversations
 }) => {
+  const isExternalSupportTicket = request.request_metadata?.ticket_type === 'external_support';
+
   const getResponseText = () => {
     const count = conversations?.[request.id] || 0;
     return `${count} ${count === 1 ? 'response' : 'responses'}`;
@@ -42,7 +44,9 @@ const PublicRequestCard = ({
             onSnag(request.id);
           }}
         >
-          <span className={styles.snagText}>Connect</span>
+          <span className={styles.snagText}>
+            {isExternalSupportTicket ? '📩 Connect' : 'Connect'}
+          </span>
         </span>
       );
     }
@@ -56,12 +60,10 @@ const PublicRequestCard = ({
   const getStatusClass = () => {
     const baseStatus = request.status?.toLowerCase() || 'open';
 
-    // Handle special cases for ideas and collaborations
     if (request.is_idea) {
       return request.seeks_collaboration ? styles.statusCollaboration : styles.statusIdea;
     }
 
-    // Map regular statuses to their respective classes
     switch (baseStatus) {
       case 'open':
         return styles.statusOpen;
@@ -77,6 +79,14 @@ const PublicRequestCard = ({
   };
 
   const getTypeBadge = () => {
+    if (isExternalSupportTicket) {
+      return (
+        <div className={`${styles.typeBadge} ${styles.support}`}>
+          📩 <span>Support Ticket</span>
+        </div>
+      );
+    }
+
     if (!request.is_idea) return null;
 
     return (
@@ -112,7 +122,7 @@ const PublicRequestCard = ({
       <div className={styles.header}>
         <div className={styles.headerContent}>
           <h2 className={styles.title}>{request.title}</h2>
-          {!request.is_idea && request.estimated_budget && (
+          {!request.is_idea && request.estimated_budget && !isExternalSupportTicket && (
             <div className={styles.budget}>
               <span>${request.estimated_budget.toLocaleString()}</span>
             </div>
@@ -120,7 +130,14 @@ const PublicRequestCard = ({
         </div>
 
         <div className={styles.description}>
-          {request.content.length > 200 && !isExpanded ? (
+          {isExternalSupportTicket ? (
+            <div className={styles.externalDetails}>
+              <div><strong>Email:</strong> {request.request_metadata?.email}</div>
+              <div><strong>Issue:</strong> {request.title.replace('Support: ', '')}</div>
+              <div><strong>Source:</strong> {request.request_metadata?.source}</div>
+              <div><strong>Platform:</strong> {request.request_metadata?.platform || 'Unknown'}</div>
+            </div>
+          ) : request.content.length > 200 && !isExpanded ? (
             <>
               {request.content.substring(0, 200)}
               <span className={styles.fade} />
@@ -158,6 +175,7 @@ const PublicRequestCard = ({
             {request.collaboration_details}
           </div>
         )}
+
         <div className={styles.metaInfo}>
           <div className={styles.metaItem}>
             <Clock size={16} />
