@@ -323,7 +323,10 @@ const ConversationDetail = () => {
               <>
                 {conversation.messages.map((message, index) => {
                   const isSentByUser = message.user_id === user.id;
-                  const currentDate = new Date(message.created_at);
+                  // Check if this is a message from RYZE.ai
+                  const isFromRyze = message.message_metadata &&
+                    message.message_metadata.source === 'ryze';
+                  const currentDate = new Date(message.created_at); // Add this line
 
                   // Helper function to check if two dates are the same day
                   const isSameDay = (date1, date2) => {
@@ -371,10 +374,11 @@ const ConversationDetail = () => {
                           {getDateDividerWithTime(currentDate)}
                         </div>
                       )}
-                      <div
-                        className={`${styles.messageWrapper} ${isSentByUser ? styles.sent : styles.received
-                          }`}
-                      >
+                      <div className={`${styles.messageWrapper} ${isSentByUser ? styles.sent :
+                        isFromRyze ? styles.fromRyze : styles.received
+                        }`}>
+                        {/* Add a special indicator for RYZE messages */}
+                        {isFromRyze && <div className={styles.ryzeIndicator}>RYZE Support</div>}
                         <div className={styles.messageContent}>
                           <div className={styles.messageText}>
                             {makeLinksClickable(message.content)}

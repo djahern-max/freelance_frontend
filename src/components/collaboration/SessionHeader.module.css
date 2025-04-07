@@ -1,0 +1,85 @@
+/* SessionHeader.module.css */
+.sessionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 25px;
+    background-color: #fff;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.ticketInfo h1 {
+    font-size: 20px;
+    margin: 0 0 5px 0;
+    color: #333;
+}
+
+.sourceSystem {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+}
+
+.sourceLabel {
+    color: #757575;
+    margin-right: 5px;
+}
+
+.sourceValue {
+    font-weight: 500;
+    color: #2196f3;
+}
+
+.statusSection {
+    display: flex;
+    align-items: center;
+}
+
+.currentStatus {
+    display: flex;
+    align-items: center;
+    margin-right: 15px;
+}
+
+.statusLabel {
+    color: #757575;
+    margin-right: 5px;
+    font-size: 14px;
+}
+
+.statusValue {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.open {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.in_progress {
+    background-color: #fff8e1;
+    color: #ff8f00;
+}
+
+.resolved {
+    background-color: #e8f5e9;
+    color: #388e3c;
+}
+
+.statusSelect {
+    padding: 8px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.statusSelect:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

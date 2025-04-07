@@ -1,10 +1,12 @@
-// src/components/auth/Register.js
+// Modified Register.js
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { clearAuthData } from '../../utils/authCleanup';
 import TermsModal from '../shared/TermsModal';
 import styles from './Register.module.css';
 import OAuthButtons from './OAuthButtons';
+import formValidation from '../../utils/formValidation';
+import apiService from '../../utils/apiService';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -16,9 +18,21 @@ const Register = () => {
     full_name: '',
     termsAccepted: false,
   });
+
+  // Track field-specific errors
+  const [fieldErrors, setFieldErrors] = useState({
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    full_name: '',
+    termsAccepted: '',
+  });
+
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
+  const [touchedFields, setTouchedFields] = useState({});
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -32,12 +46,86 @@ const Register = () => {
     }
   }, []);
 
+  // Validate a specific field
+  const validateField = (name, value) => {
+    if (formValidation[name]) {
+      // For confirmPassword, pass password value as well
+      if (name === 'confirmPassword') {
+        return formValidation[name].validate(value, { password: formData.password });
+      }
+      return formValidation[name].validate(value);
+    }
+    return null;
+  };
+
+  // Validate all fields and return whether form is valid
+  const validateForm = () => {
+    const errors = {};
+    let isValid = true;
+
+    // Validate each field
+    Object.keys(formValidation).forEach(field => {
+      if (field === 'confirmPassword') {
+        const error = validateField(field, formData[field]);
+        if (error) {
+          errors[field] = error;
+          isValid = false;
+        }
+      } else if (formData[field] !== undefined) {
+        const error = validateField(field, formData[field]);
+        if (error) {
+          errors[field] = error;
+          isValid = false;
+        }
+      }
+    });
+
+    setFieldErrors(errors);
+    return isValid;
+  };
+
   // Handle input changes
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
+    const newValue = type === 'checkbox' ? checked : value;
+
+    setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: newValue,
+    }));
+
+    // Mark field as touched
+    setTouchedFields(prev => ({
+      ...prev,
+      [name]: true
+    }));
+
+    // Validate on change if the field has been touched
+    if (touchedFields[name]) {
+      const error = validateField(name, newValue);
+      setFieldErrors(prev => ({
+        ...prev,
+        [name]: error || ''
+      }));
+    }
+  };
+
+  // Handle field blur for validation
+  const handleBlur = (e) => {
+    const { name, value, type, checked } = e.target;
+    const fieldValue = type === 'checkbox' ? checked : value;
+
+    // Mark field as touched
+    setTouchedFields(prev => ({
+      ...prev,
+      [name]: true
+    }));
+
+    // Validate field
+    const error = validateField(name, fieldValue);
+    setFieldErrors(prev => ({
+      ...prev,
+      [name]: error || ''
     }));
   };
 
@@ -45,19 +133,14 @@ const Register = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     setError('');
+
+    // Run full validation
+    if (!validateForm()) {
+      // Form has errors
+      return;
+    }
+
     setIsLoading(true);
-
-    if (!formData.termsAccepted) {
-      setError('You must accept the Terms and Conditions to register.');
-      setIsLoading(false);
-      return;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match.');
-      setIsLoading(false);
-      return;
-    }
 
     try {
       const requestBody = {
@@ -71,50 +154,9 @@ const Register = () => {
 
       console.log('Sending registration data:', requestBody);
 
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody),
-      });
+      const response = await apiService.post('/auth/register', requestBody);
 
-      // In your handleRegister function, replace the "if (!response.ok)" block with this:
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.log('Registration failed:', errorData);
-
-        // Direct error handling for common error messages
-        if (errorData.detail === 'Email already registered') {
-          throw new Error('This email is already registered. Please use a different email or try logging in.');
-        }
-
-        if (errorData.detail === 'Username already taken') {
-          throw new Error('This username is already taken. Please choose a different username.');
-        }
-
-        if (errorData.detail && typeof errorData.detail === 'string') {
-          throw new Error(errorData.detail);
-        }
-
-        // For more complex validation errors
-        if (Array.isArray(errorData.detail)) {
-          const errorMessage = errorData.detail.map(err => {
-            if (err.loc && err.loc.length > 1) {
-              const field = err.loc[1];
-              return `${field.charAt(0).toUpperCase() + field.slice(1).replace('_', ' ')}: ${err.msg}`;
-            }
-            return err.msg;
-          }).join('\n');
-
-          throw new Error(errorMessage);
-        }
-
-        // Fallback error message
-        throw new Error('Registration failed. Please check your information and try again.');
-      }
-
+      // Handle success
       navigate('/login', {
         state: {
           from,
@@ -124,8 +166,51 @@ const Register = () => {
         },
       });
     } catch (err) {
-      // Display a user-friendly error message
-      setError(err.message || 'Registration failed. Please try again.');
+      console.error('Registration error:', err);
+
+      // Handle specific error cases
+      if (err.response && err.response.data) {
+        const errorData = err.response.data;
+
+        if (errorData.detail === 'Email already registered') {
+          setFieldErrors(prev => ({
+            ...prev,
+            email: 'This email is already registered. Please use a different email or try logging in.'
+          }));
+        } else if (errorData.detail === 'Username already taken') {
+          setFieldErrors(prev => ({
+            ...prev,
+            username: 'This username is already taken. Please choose a different username.'
+          }));
+        } else if (errorData.detail && typeof errorData.detail === 'string') {
+          setError(errorData.detail);
+        } else if (Array.isArray(errorData.detail)) {
+          // Handle validation errors from FastAPI
+          const newFieldErrors = { ...fieldErrors };
+
+          errorData.detail.forEach(err => {
+            if (err.loc && err.loc.length > 1) {
+              const field = err.loc[1];
+              // Map backend field names to frontend field names if needed
+              const mappedField = field === 'full_name' ? 'full_name' : field;
+              if (newFieldErrors.hasOwnProperty(mappedField)) {
+                newFieldErrors[mappedField] = err.msg;
+              } else {
+                // If no matching field, set as general error
+                setError(prev => prev ? `${prev}\n${err.msg}` : err.msg);
+              }
+            } else {
+              setError(prev => prev ? `${prev}\n${err.msg}` : err.msg);
+            }
+          });
+
+          setFieldErrors(newFieldErrors);
+        } else {
+          setError('Registration failed. Please check your information and try again.');
+        }
+      } else {
+        setError(err.message || 'Registration failed. Please try again later.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -145,6 +230,7 @@ const Register = () => {
             ))}
           </div>
         )}
+
         {/* OAuth Buttons Section */}
         <div className={styles.socialLoginContainer}>
           <OAuthButtons buttonText="Register with" />
@@ -177,10 +263,17 @@ const Register = () => {
               name="username"
               value={formData.username}
               onChange={handleInputChange}
+              onBlur={handleBlur}
               required
-              className={styles.input}
+              className={`${styles.input} ${fieldErrors.username ? styles.inputError : ''}`}
               autoComplete="username"
             />
+            {fieldErrors.username && (
+              <div className={styles.fieldError}>{fieldErrors.username}</div>
+            )}
+            <div className={styles.fieldHint}>
+              Letters, numbers, underscores and hyphens only (no spaces)
+            </div>
           </div>
 
           <div className={styles.formGroup}>
@@ -191,10 +284,14 @@ const Register = () => {
               name="email"
               value={formData.email}
               onChange={handleInputChange}
+              onBlur={handleBlur}
               required
-              className={styles.input}
+              className={`${styles.input} ${fieldErrors.email ? styles.inputError : ''}`}
               autoComplete="email"
             />
+            {fieldErrors.email && (
+              <div className={styles.fieldError}>{fieldErrors.email}</div>
+            )}
           </div>
 
           <div className={styles.formGroup}>
@@ -205,10 +302,14 @@ const Register = () => {
               name="full_name"
               value={formData.full_name}
               onChange={handleInputChange}
+              onBlur={handleBlur}
               required
-              className={styles.input}
+              className={`${styles.input} ${fieldErrors.full_name ? styles.inputError : ''}`}
               autoComplete="name"
             />
+            {fieldErrors.full_name && (
+              <div className={styles.fieldError}>{fieldErrors.full_name}</div>
+            )}
           </div>
 
           <div className={styles.formGroup}>
@@ -219,10 +320,17 @@ const Register = () => {
               name="password"
               value={formData.password}
               onChange={handleInputChange}
+              onBlur={handleBlur}
               required
-              className={styles.input}
+              className={`${styles.input} ${fieldErrors.password ? styles.inputError : ''}`}
               autoComplete="new-password"
             />
+            {fieldErrors.password && (
+              <div className={styles.fieldError}>{fieldErrors.password}</div>
+            )}
+            <div className={styles.fieldHint}>
+              At least 8 characters
+            </div>
           </div>
 
           <div className={styles.formGroup}>
@@ -233,10 +341,14 @@ const Register = () => {
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleInputChange}
+              onBlur={handleBlur}
               required
-              className={styles.input}
+              className={`${styles.input} ${fieldErrors.confirmPassword ? styles.inputError : ''}`}
               autoComplete="new-password"
             />
+            {fieldErrors.confirmPassword && (
+              <div className={styles.fieldError}>{fieldErrors.confirmPassword}</div>
+            )}
           </div>
 
           <div className={styles.termsGroup}>
@@ -246,6 +358,7 @@ const Register = () => {
               name="termsAccepted"
               checked={formData.termsAccepted}
               onChange={handleInputChange}
+              onBlur={handleBlur}
               className={styles.checkbox}
             />
             <label htmlFor="termsAccepted" className={styles.termsLabel}>
@@ -259,6 +372,9 @@ const Register = () => {
               </button>
             </label>
           </div>
+          {fieldErrors.termsAccepted && (
+            <div className={styles.fieldError}>{fieldErrors.termsAccepted}</div>
+          )}
 
           <button
             type="submit"

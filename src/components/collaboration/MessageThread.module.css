@@ -1,0 +1,151 @@
+/* MessageThread.module.css */
+.messageThread {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+.messageGroup {
+    margin-bottom: 20px;
+}
+
+.dateHeader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px 0;
+    position: relative;
+}
+
+.dateHeader::before,
+.dateHeader::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background-color: #e0e0e0;
+}
+
+.dateHeader span {
+    padding: 0 10px;
+    background-color: #f5f5f5;
+    color: #757575;
+    font-size: 12px;
+}
+
+/* Message.module.css */
+.message {
+    max-width: 80%;
+    margin-bottom: 15px;
+    padding: 12px 15px;
+    border-radius: 12px;
+    position: relative;
+}
+
+.incoming {
+    align-self: flex-start;
+    margin-right: auto;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+}
+
+.outgoing {
+    align-self: flex-end;
+    margin-left: auto;
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.ryze_developer {
+    border-left: 4px solid #2196f3;
+}
+
+.analytics_hub_user {
+    border-left: 4px solid #ff9800;
+}
+
+.messageHeader {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.userName {
+    font-weight: 600;
+    color: #424242;
+}
+
+.userType {
+    font-size: 12px;
+    color: #757575;
+    text-transform: capitalize;
+}
+
+.messageContent {
+    margin-bottom: 5px;
+    word-break: break-word;
+}
+
+.textContent {
+    line-height: 1.5;
+}
+
+.linkContent a {
+    color: #2196f3;
+    text-decoration: none;
+    word-break: break-all;
+}
+
+.fileContent {
+    margin-top: 10px;
+}
+
+.attachment {
+    display: flex;
+    padding: 8px 12px;
+    margin-bottom: 5px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 6px;
+}
+
+.attachment a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    text-decoration: none;
+    color: inherit;
+}
+
+.fileName {
+    font-weight: 500;
+    flex: 1;
+}
+
+.fileSize {
+    font-size: 12px;
+    color: #757575;
+}
+
+.messageTime {
+    font-size: 11px;
+    color: #9e9e9e;
+    text-align: right;
+    margin-top: 3px;
+}
+
+.systemMessage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 15px 0;
+}
+
+.systemContent {
+    background-color: #f0f0f0;
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    color: #757575;
+    margin-bottom: 3px;
+}

@@ -52,9 +52,9 @@ const Header = () => {
   // Define navigation items
   const navigationItems = [
     {
-      path: '/opportunities',
+      path: '/tickets',
       icon: Search,
-      title: 'Opportunities'
+      title: 'tickets'
     },
     {
       path: '/showcase',

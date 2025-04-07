@@ -628,6 +628,23 @@
   margin-left: 8px;
 }
 
+.fromRyze {
+  background-color: #f0f8ff;
+  /* Light blue background */
+  border-left: 3px solid #0066cc;
+  /* Blue left border */
+  margin-right: auto;
+  margin-left: 0;
+  align-self: flex-start;
+}
+
+.ryzeIndicator {
+  font-size: 0.8rem;
+  color: #0066cc;
+  margin-bottom: 4px;
+  font-weight: bold;
+}
+
 /* Media Queries */
 @media (max-width: 768px) {
   .sidebar {

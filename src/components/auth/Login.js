@@ -146,7 +146,7 @@ const Login = () => {
     <div className={styles.container}>
       <div className={styles.formWrapper}>
         <div className={styles.header}>
-          <h1 className={styles.title}>Welcome Back</h1>
+          <h1 className={styles.title}>Welcome</h1>
           <p className={styles.subtitle}>Sign in to your account</p>
         </div>
 

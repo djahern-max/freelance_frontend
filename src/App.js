@@ -2,6 +2,7 @@ import React, { useEffect, Suspense } from 'react';
 import { Provider, useDispatch } from 'react-redux';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
+
 import 'react-toastify/dist/ReactToastify.css';
 import './styles/toast.css';
 import './styles/global.css';
@@ -18,6 +19,7 @@ import api from './utils/api';
 import MemoryMonitor from './utils/debug/MemoryMonitor';
 import OAuthSuccess from './components/auth/OAuthSuccess';
 import OAuthError from './components/auth/OAuthError';
+import CollaborationPortal from './components/collaboration/CollaborationPortal';
 
 // Lazy load all other components
 const Login = React.lazy(() => import('./components/auth/Login'));
@@ -173,11 +175,12 @@ function AppContent() {
             <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
+
             <Route path="/oauth-callback" element={<OAuthCallback />} />
             <Route path="/oauth-success" element={<OAuthSuccess />} />
             <Route path="/oauth-error" element={<OAuthError />} />
             <Route path="/logout" element={<Logout />} />
-            <Route path="/opportunities" element={<PublicRequests />} />
+            <Route path="/tickets" element={<PublicRequests />} />
             <Route path="/videos" element={<VideoList />} />
             <Route path="/video_display/stream/:video_id" element={<VideoList />} />
             <Route path="/profile/developers/:id/public" element={<DeveloperProfileView />} />
@@ -189,6 +192,7 @@ function AppContent() {
             <Route path="/terms-of-service" element={<TermsOfServicePage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/select-role" element={<SelectRole />} />
+            <Route path="/collaboration/:sessionId/:accessToken\" element={<CollaborationPortal />} />
 
             {/* Showcase routes */}
             <Route

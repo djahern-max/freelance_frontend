@@ -289,6 +289,35 @@
   color: #666;
 }
 
+/* Add to Register.module.css */
+.inputError {
+  border-color: var(--color-error) !important;
+  background-color: rgba(254, 226, 226, 0.2);
+}
+
+.fieldError {
+  color: var(--color-error);
+  font-size: var(--font-size-xs);
+  margin-top: 4px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.fieldHint {
+  color: var(--color-text-tertiary, #6b7280);
+  font-size: var(--font-size-xs);
+  margin-top: 4px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 
 @media (max-width: 768px) {
   .formWrapper {

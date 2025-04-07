@@ -3,6 +3,8 @@ import { clearAuthData } from './authCleanup';
 
 
 
+
+
 if (process.env.NODE_ENV === 'development') {
   const originalConsoleError = console.error;
   console.error = (...args) => {
@@ -183,12 +185,18 @@ api.interceptors.request.use(
   },
   (error) => {
     console.error('Request interceptor error:', error);
+    if (process.env.NODE_ENV === 'development' && error.config) {
+      console.log('%c🔍 OUTGOING REQUEST', 'color: blue; font-weight: bold;');
+      console.log('➡️ URL:', `${error.config.baseURL}${error.config.url}`);
+      console.log('➡️ Method:', error.config.method);
+      console.log('➡️ Headers:', error.config.headers);
+      console.log('➡️ Data:', error.config.data);
+    }
+
     return Promise.reject(error);
   }
 );
 
-// Response interceptor with comprehensive error handling
-// In api.js, update the response interceptor
 
 // Response interceptor with comprehensive error handling
 api.interceptors.response.use(

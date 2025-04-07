@@ -89,7 +89,7 @@ const AuthDialog = ({ isOpen, onClose, error, onLogin, onRegister }) => {
           </a>
 
           {/* LinkedIn Login Button */}
-          <a
+          {/* <a
             href={linkedinLoginUrl}
             className={styles.oauthButton}
             onClick={() => handleOAuthClick('LinkedIn', linkedinLoginUrl)}
@@ -103,7 +103,7 @@ const AuthDialog = ({ isOpen, onClose, error, onLogin, onRegister }) => {
               </svg>
             </span>
             Continue with LinkedIn
-          </a>
+          </a> */}
 
           <div className={styles.footer}>
             <p className={styles.registerText}>
