@@ -1,5 +1,3 @@
-// In utils/conversationService.js
-
 /**
  * Transmit a specific message to Analytics Hub
  * @param {number} conversationId - ID of the conversation
@@ -8,13 +6,22 @@
  */
 export const transmitMessageToAnalyticsHub = async (conversationId, messageId) => {
     try {
+        console.log(`Transmitting message ${messageId} in conversation ${conversationId} to Analytics Hub`);
+
         const response = await apiClient.post(
             `/api/conversations/${conversationId}/messages/${messageId}/transmit`,
             { destination: 'analytics-hub' }
         );
+
+        console.log('Transmission successful:', response.data);
         return response.data;
     } catch (error) {
         console.error('Failed to transmit message:', error);
+        // Add more detailed error information
+        if (error.response) {
+            console.error('Response data:', error.response.data);
+            console.error('Response status:', error.response.status);
+        }
         throw error;
     }
 };
