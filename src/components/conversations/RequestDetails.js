@@ -293,7 +293,7 @@ const RequestDetails = () => {
                   className={styles.startConversationButton}
                   onClick={handleStartConversation}
                 >
-                  Start Conversation  REQUEST DETAILS TEST
+                  Start Conversation
                   <MessageSquare className={styles.messageIcon} />
                 </button>
               )}

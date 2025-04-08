@@ -17,6 +17,7 @@ const Login = () => {
   const [error, setError] = useState('');
   const [errorType, setErrorType] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [loggedInUser, setLoggedInUser] = useState(null);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -66,7 +67,7 @@ const Login = () => {
 
     try {
       // Update the URL to avoid the double /api/ issue
-      const loginUrl = `${process.env.REACT_APP_API_URL}/api/auth/login`;
+      const loginUrl = `${process.env.REACT_APP_API_URL}/auth/login`;
       console.log("DEBUG: Attempting login at:", loginUrl);
 
       const response = await axios.post(loginUrl, formData);
@@ -104,12 +105,10 @@ const Login = () => {
 
       // Update Redux state
       dispatch(login({ token, user: normalizedUser }));
+      setLoggedInUser(normalizedUser);
 
       // Redirect to dashboard
-      const dashboardPath = getDashboardPath(normalizedUser.userType);
-      const redirectTo = location.state?.from || dashboardPath;
-
-      navigate(redirectTo, { replace: true });
+      handleSuccessfulLogin();
 
     } catch (err) {
       console.error('DEBUG: Login error:', err);
@@ -124,6 +123,16 @@ const Login = () => {
     }
   };
 
+  const handleSuccessfulLogin = () => {
+    let redirectPath = sessionStorage.getItem('redirectAfterLogin');
+
+    if (!redirectPath) {
+      redirectPath = getDashboardPath(loggedInUser?.userType); // use optional chaining
+    }
+
+    sessionStorage.removeItem('redirectAfterLogin');
+    navigate(redirectPath, { replace: true });
+  };
   const getErrorMessage = (error) => {
     if (!navigator.onLine) {
       return { message: 'Please check your internet connection.', type: 'connection' };

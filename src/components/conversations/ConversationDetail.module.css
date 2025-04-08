@@ -73,6 +73,7 @@
   flex-direction: column;
   overflow: hidden;
   position: relative;
+
   margin-bottom: 10px;
   /* Added margin to container bottom */
 }
@@ -97,6 +98,7 @@
   padding: 8px 12px;
   display: flex;
   align-items: center;
+  padding-top: 18px;
   gap: 8px;
   color: var(--color-text-secondary);
   font-weight: 500;
@@ -645,6 +647,22 @@
   font-weight: bold;
 }
 
+.transmitButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 8px;
+  font-size: 16px;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.transmitButton:hover {
+  opacity: 1;
+}
+
 /* Media Queries */
 @media (max-width: 768px) {
   .sidebar {
@@ -665,7 +683,9 @@
 
   .menuToggle {
     display: flex;
+    margin-top: 8px;
   }
+
 
   /* Show sidebar header only on mobile */
   .sidebarHeader {

@@ -267,6 +267,18 @@ const ConversationDetail = () => {
     return () => controller.abort();
   };
 
+
+  const transmitMessage = async (messageId) => {
+    try {
+      await api.post(`/conversations/${conversation.id}/messages/${messageId}/transmit`);
+      toast.success("Message transmitted to Analytics Hub");
+      await fetchConversation();
+    } catch (err) {
+      console.error('Failed to transmit message:', err);
+      toast.error('Failed to transmit message to Analytics Hub');
+    }
+  };
+
   if (isLoading) {
     return (
       <div className={styles.loadingContainer}>
@@ -321,17 +333,17 @@ const ConversationDetail = () => {
               </div>
             ) : (
               <>
+
+
                 {conversation.messages.map((message, index) => {
                   const isSentByUser = message.user_id === user.id;
-                  // Check if this is a message from RYZE.ai
-                  const isFromRyze = message.message_metadata &&
-                    message.message_metadata.source === 'ryze';
-                  const currentDate = new Date(message.created_at); // Add this line
+                  const isFromRyze = message.message_metadata && message.message_metadata.source === 'ryze';
+                  const currentDate = new Date(message.created_at);
 
-                  // Helper function to check if two dates are the same day
                   const isSameDay = (date1, date2) => {
                     return date1?.toDateString() === date2?.toDateString();
                   };
+
                   const showDateDivider =
                     index === 0 ||
                     !isSameDay(
@@ -339,7 +351,6 @@ const ConversationDetail = () => {
                       currentDate
                     );
 
-                  // Format date divider with time
                   const getDateDividerWithTime = (date) => {
                     const today = new Date();
                     const yesterday = new Date(today);
@@ -353,9 +364,7 @@ const ConversationDetail = () => {
 
                     if (date.toDateString() === today.toDateString()) {
                       return `Today ${timeString}`;
-                    } else if (
-                      date.toDateString() === yesterday.toDateString()
-                    ) {
+                    } else if (date.toDateString() === yesterday.toDateString()) {
                       return `Yesterday ${timeString}`;
                     } else {
                       return (
@@ -374,41 +383,28 @@ const ConversationDetail = () => {
                           {getDateDividerWithTime(currentDate)}
                         </div>
                       )}
-                      <div className={`${styles.messageWrapper} ${isSentByUser ? styles.sent :
-                        isFromRyze ? styles.fromRyze : styles.received
-                        }`}>
-                        {/* Add a special indicator for RYZE messages */}
+                      <div className={`${styles.messageWrapper} ${isSentByUser ? styles.sent : isFromRyze ? styles.fromRyze : styles.received}`}>
                         {isFromRyze && <div className={styles.ryzeIndicator}>RYZE Support</div>}
                         <div className={styles.messageContent}>
                           <div className={styles.messageText}>
                             {makeLinksClickable(message.content)}
-
-
 
                             {message.linked_content?.length > 0 && (
                               <div className={styles.linkedContent}>
                                 {message.linked_content.map((link) => (
                                   <div key={link.id} className={styles.linkItem}>
                                     {link.type === 'video' ? (
-                                      <a
-                                        href="#"
-                                        className={styles.videoLink}
-                                        onClick={(e) => {
-                                          e.preventDefault();
-                                          navigate(`/video_display/stream/${link.content_id}`);
-                                        }}
-                                      >
+                                      <a href="#" className={styles.videoLink} onClick={(e) => {
+                                        e.preventDefault();
+                                        navigate(`/video_display/stream/${link.content_id}`);
+                                      }}>
                                         📹 View Attached Video: {link.title}
                                       </a>
                                     ) : link.type === 'profile' ? (
-                                      <a
-                                        href="#"
-                                        className={styles.profileLink}
-                                        onClick={(e) => {
-                                          e.preventDefault();
-                                          navigate(`/profile/developers/${link.content_id}/public`);
-                                        }}
-                                      >
+                                      <a href="#" className={styles.profileLink} onClick={(e) => {
+                                        e.preventDefault();
+                                        navigate(`/profile/developers/${link.content_id}/public`);
+                                      }}>
                                         👤 View Developer Profile
                                       </a>
                                     ) : null}
@@ -416,16 +412,28 @@ const ConversationDetail = () => {
                                 ))}
                               </div>
                             )}
-
-
-
-
                           </div>
+
+                          {requestDetails?.request_metadata?.ticket_type === 'external_support' && (
+                            <button
+                              className={styles.transmitButton}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                transmitMessage(message.id);
+                              }}
+                              title="Transmit message to Analytics Hub"
+                            >
+                              <span>📤</span>
+                            </button>
+                          )}
                         </div>
                       </div>
                     </div>
                   );
                 })}
+
+
+
               </>
             )}
           </div>

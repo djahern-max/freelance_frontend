@@ -1,6 +1,20 @@
+// src/utils/authCleanup.js
 import { store } from "../redux/store";
 import { logout } from "../redux/authSlice";
 import axios from "axios";
+
+// Define public routes that don't require authentication
+const PUBLIC_ROUTES = [
+  '/',
+  '/home',
+  '/login',
+  '/register',
+  '/oauth/callback',
+  '/auth/github/callback',
+  '/auth/google/callback',
+  '/terms',
+  '/privacy'
+];
 
 export const clearAuthData = () => {
   // Clear localStorage
@@ -21,8 +35,17 @@ export const handleApiError = (error) => {
     (error.response.status === 401 || error.response.status === 403)
   ) {
     clearAuthData();
-    // Only redirect if not already on login page
-    if (!window.location.pathname.includes("/login")) {
+
+    // Check if current path is a public route
+    const currentPath = window.location.pathname;
+    const isPublicRoute = PUBLIC_ROUTES.some(route =>
+      currentPath === route || currentPath.startsWith(route + '/')
+    );
+
+    // Only redirect if not on a public route
+    if (!isPublicRoute) {
+      // Store current path for redirect after login
+      sessionStorage.setItem('redirectAfterLogin', currentPath);
       window.location.href = "/login";
     }
   }

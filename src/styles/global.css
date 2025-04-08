@@ -26,6 +26,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
   position: relative;
   overflow-x: hidden;
+  /* Remove any overflow-y: hidden if it exists, and ensure default scrolling behavior */
+  overflow-y: auto;
 }
 
 #root {
@@ -44,6 +46,8 @@ body {
   background-color: var(--color-background-main);
   display: flex;
   flex-direction: column;
+  /* Ensure containers can scroll if content exceeds viewport */
+  overflow-y: auto;
 }
 
 /* Links */
@@ -118,6 +122,8 @@ button {
   padding: 0;
   margin-bottom: 0;
   position: relative;
+  /* Ensure content area can scroll */
+  overflow-y: auto;
 }
 
 .container {
@@ -155,6 +161,11 @@ button {
 
 .h-full {
   height: 100%;
+}
+
+/* New class for static pages that need to prevent scrolling */
+.no-scroll {
+  overflow: hidden !important;
 }
 
 /* Toast types: success, error, warning, info */
@@ -233,7 +244,6 @@ button {
     min-height: -webkit-fill-available;
   }
 }
-
 
 /* Add this temporarily at the bottom of your global.css */
 /* [style*="background"] {

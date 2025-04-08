@@ -1,53 +1,43 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-import RankedShowcaseList from '../showcase/RankedShowcaseList';
-import Footer from '../shared/Footer';
 import styles from './HomePage.module.css';
+import Logo from '../shared/Logo';
+import OAuthButtons from '../auth/OAuthButtons';
 
-const HomePage = () => {
-  const { isAuthenticated } = useSelector((state) => state.auth);
+export default function HomePage() {
   const navigate = useNavigate();
 
-  const handleNavCardClick = (path) => {
-    navigate(path);
-  };
+  useEffect(() => {
+    // Add no-scroll class to necessary elements when this component mounts
+    document.body.classList.add('no-scroll');
+    document.documentElement.classList.add('no-scroll');
+
+    // Remove no-scroll class when component unmounts
+    return () => {
+      document.body.classList.remove('no-scroll');
+      document.documentElement.classList.remove('no-scroll');
+    };
+  }, []);
 
   return (
-    <div className={isAuthenticated ? styles.authenticatedContainer : styles.landingContainer}>
-      <div className={styles.content}>
-        {/* Navigation Cards at the top */}
-        {/* <div className={styles.cardsGrid}>
-          <div className={styles.navCard} onClick={() => handleNavCardClick('/opportunities')}>
-            <div className={styles.navIcon}>🚀</div>
-            <div className={styles.navTitle}>Opportunities</div>
-          </div>
-          <div className={styles.navCard} onClick={() => handleNavCardClick('/creators')}>
-            <div className={styles.navIcon}>👨‍💻</div>
-            <div className={styles.navTitle}>Developers</div>
-          </div>
-          <div className={styles.navCard} onClick={() => handleNavCardClick('/videos')}>
-            <div className={styles.navIcon}>🎬</div>
-            <div className={styles.navTitle}>Videos</div>
-          </div>
-          <div className={styles.navCard} onClick={() => handleNavCardClick('/showcase')}>
-            <div className={styles.navIcon}>💻</div>
-            <div className={styles.navTitle}>Projects</div>
-          </div>
-
-        </div> */}
-
-        {/* Showcases below the cards */}
-        <div className={styles.showcaseSection}>
-          <RankedShowcaseList limit={10} title="Top Ranked Projects" />
+    <div className={styles.fullPage}>
+      <div className={styles.centeredContent}>
+        <Logo className={styles.logo} width={180} />
+        <h1 className={styles.title}>
+          <span className={styles.highlight}>Connecting talent</span> with opportunity
+        </h1>
+        <p className={styles.subtitle}>A platform built for freelance developers</p>
+        <p className={styles.description}>
+          Build, showcase, and get hired for automation tools and AI-powered apps.
+        </p>
+        <div className={styles.buttonGroup}>
+          <button className={styles.login} onClick={() => navigate('/login')}>Login</button>
+          <button className={styles.register} onClick={() => navigate('/register')}>Register</button>
         </div>
-
-
+        <div className={styles.oauthWrapper}>
+          <OAuthButtons />
+        </div>
       </div>
-      <Footer />
     </div>
   );
-};
-
-export default HomePage;
+}

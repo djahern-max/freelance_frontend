@@ -1,5 +1,5 @@
 import React, { useEffect, Suspense } from 'react';
-import { Provider, useDispatch } from 'react-redux';
+import { Provider, useDispatch, useSelector } from 'react-redux'; // Add useSelector here
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 
@@ -20,6 +20,8 @@ import MemoryMonitor from './utils/debug/MemoryMonitor';
 import OAuthSuccess from './components/auth/OAuthSuccess';
 import OAuthError from './components/auth/OAuthError';
 import CollaborationPortal from './components/collaboration/CollaborationPortal';
+// Import session manager
+import { initSessionManager, stopSessionManager } from './utils/sessionManager';
 
 // Lazy load all other components
 const Login = React.lazy(() => import('./components/auth/Login'));
@@ -63,6 +65,27 @@ const LoadingFallback = () => (
 
 function AppContent() {
   const dispatch = useDispatch();
+  // Get authentication state
+  const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+
+  // Session management
+  useEffect(() => {
+    let cleanupFunction;
+
+    // Only initialize session management when user is logged in
+    if (isAuthenticated) {
+      console.log('Initializing session manager');
+      cleanupFunction = initSessionManager();
+    }
+
+    // Clean up when component unmounts or auth state changes
+    return () => {
+      if (cleanupFunction) {
+        cleanupFunction();
+      }
+      stopSessionManager();
+    };
+  }, [isAuthenticated]);
 
   useEffect(() => {
     const controller = new AbortController();

@@ -1,20 +1,7 @@
-import { useNavigate } from 'react-router-dom';
-import styles from './Logo.module.css';
+import logo from '../../../images/logo1.png'; // or wherever your logo lives
 
-const Logo = () => {
-  const navigate = useNavigate();
-
-  return (
-    <img
-      src="/favicon-32x32.png"
-      alt="RYZE.ai"
-      className={styles.logo}
-      onClick={() => navigate('/')}
-      style={{ cursor: 'pointer' }}
-      height="32"
-      width="32"
-    />
-  );
-};
+const Logo = ({ className }) => (
+  <img src={logo} alt="RYZE.ai Logo" className={className} />
+);
 
 export default Logo;
