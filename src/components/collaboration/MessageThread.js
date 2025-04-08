@@ -1,49 +1,51 @@
-// MessageThread.js
-// Displays the chronological list of messages
+// MessageThread.js - Update to show source system
 import React, { useRef, useEffect } from 'react';
 import { Message } from './Message';
 import styles from './MessageThread.module.css';
 
-export const MessageThread = ({ messages, currentUser, participants }) => {
-    const messagesEndRef = useRef(null);
+export const MessageThread = ({ messages, currentUser, participants, sourceSystem }) => {
+    const endRef = useRef(null);
 
-    // Auto-scroll to bottom when new messages are added
+    // Auto-scroll to bottom on new messages
     useEffect(() => {
-        if (messagesEndRef.current) {
-            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        if (endRef.current) {
+            endRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [messages]);
 
-    // Group messages by date for better visual separation
-    const groupedMessages = messages.reduce((groups, message) => {
-        const date = new Date(message.created_at).toLocaleDateString();
-        if (!groups[date]) {
-            groups[date] = [];
-        }
-        groups[date].push(message);
-        return groups;
-    }, {});
+    // Get participant information for a message
+    const getParticipant = (userId) => {
+        return participants.find(p => p.id === userId) || null;
+    };
+
+    // If this is an external ticket, add a source banner
+    const isExternalTicket = sourceSystem && sourceSystem !== 'ryze.ai';
 
     return (
         <div className={styles.messageThread}>
-            {Object.entries(groupedMessages).map(([date, dateMessages]) => (
-                <div key={date} className={styles.messageGroup}>
-                    <div className={styles.dateHeader}>
-                        <span>{date}</span>
+            {isExternalTicket && (
+                <div className={styles.sourceBanner}>
+                    <div className={styles.sourceIcon}>
+                        {sourceSystem === 'analytics-hub' ? '📊' : '🔄'}
                     </div>
-
-                    {dateMessages.map(message => (
-                        <Message
-                            key={message.id}
-                            message={message}
-                            isCurrentUser={message.participant_id === currentUser?.id}
-                            participant={participants.find(p => p.id === message.participant_id)}
-                        />
-                    ))}
+                    <div className={styles.sourceInfo}>
+                        <span className={styles.sourceLabel}>External Support Ticket</span>
+                        <span className={styles.sourceName}>{sourceSystem}</span>
+                    </div>
                 </div>
-            ))}
+            )}
 
-            <div ref={messagesEndRef} />
+            <div className={styles.messagesList}>
+                {messages.map(message => (
+                    <Message
+                        key={message.id}
+                        message={message}
+                        isCurrentUser={currentUser && message.participant_id === currentUser.id}
+                        participant={getParticipant(message.participant_id)}
+                    />
+                ))}
+                <div ref={endRef} />
+            </div>
         </div>
     );
 };

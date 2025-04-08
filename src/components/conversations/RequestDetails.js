@@ -93,23 +93,40 @@ const RequestDetails = () => {
 
   const handleStartConversation = async () => {
     try {
+      // Add logging here to understand request metadata and available conversations
+      console.log("Request metadata:", request.request_metadata);
+      console.log("Available conversations:", conversations);
+      console.log("Is external support ticket:", request.request_metadata?.ticket_type === "external_support");
+
       // Check for existing conversation first
       const existingConversation = conversations.find(
         (conv) =>
-          conv.starter_user_id === parseInt(user.id) ||
-          conv.recipient_user_id === parseInt(user.id)
+          (conv.starter_user_id === parseInt(user.id) ||
+            conv.recipient_user_id === parseInt(user.id)) &&
+          // Add a check for external support type if that metadata is available
+          (request.request_metadata?.ticket_type !== "external_support" ||
+            conv.is_external_support === true)
       );
+
+      // Add logging here to see what conversation was found
+      console.log("Found existing conversation:", existingConversation);
 
       if (existingConversation) {
         navigate(`/conversations/${existingConversation.id}`);
         return;
       }
 
+      // Log information about creating a new conversation
+      console.log("Creating new conversation with external support flag:",
+        request.request_metadata?.ticket_type === "external_support");
+
       // Create conversation with additional metadata for external tickets
       const response = await api.post('/conversations/', {
         request_id: parseInt(requestId),
         is_external_support: request.request_metadata?.ticket_type === "external_support"
       });
+
+      console.log("New conversation created:", response.data);
 
       navigate(`/conversations/${response.data.id}`);
     } catch (err) {

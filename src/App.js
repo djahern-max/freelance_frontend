@@ -1,5 +1,5 @@
 import React, { useEffect, Suspense } from 'react';
-import { Provider, useDispatch, useSelector } from 'react-redux'; // Add useSelector here
+import { Provider, useDispatch, useSelector } from 'react-redux';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 
@@ -55,9 +55,6 @@ const TermsOfServicePage = React.lazy(() => import('./components/legal/TermsOfSe
 const PrivacyPolicyPage = React.lazy(() => import('./components/legal/PrivacyPolicyPage'));
 const OAuthCallback = React.lazy(() => import('./components/auth/OAuthCallback'));
 const SelectRole = React.lazy(() => import('./components/auth/SelectRole'));
-
-
-
 
 const LoadingFallback = () => (
   <div className="loading-spinner">Loading...</div>
@@ -127,7 +124,6 @@ function AppContent() {
   }, [dispatch]);
 
   // 🔹 New useEffect for Google, GitHub, or LinkedIn Authentication
-  // Replace the OAuth useEffect in App.js with this updated version
   useEffect(() => {
     const googleId = localStorage.getItem("google_id");
     const githubId = localStorage.getItem("github_id");
@@ -215,7 +211,9 @@ function AppContent() {
             <Route path="/terms-of-service" element={<TermsOfServicePage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/select-role" element={<SelectRole />} />
-            <Route path="/collaboration/:sessionId/:accessToken\" element={<CollaborationPortal />} />
+
+            {/* Fixed the collaboration route - removed extra backslash */}
+            <Route path="/collaboration/:sessionId/:accessToken" element={<CollaborationPortal />} />
 
             {/* Showcase routes */}
             <Route
@@ -412,5 +410,4 @@ function App() {
   );
 }
 
-// Export without memory debugger to reduce overhead
 export default App;
