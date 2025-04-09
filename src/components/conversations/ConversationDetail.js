@@ -41,7 +41,10 @@ const ConversationDetail = () => {
 
   const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
   const [pendingMessage, setPendingMessage] = useState(null);
-
+  const isExternalSupport =
+    (requestDetails?.request_metadata?.ticket_type === 'external_support') ||
+    (requestDetails?.external_metadata?.analytics_hub_id) ||
+    (requestDetails?.content?.includes('## EXTERNAL SUPPORT TICKET'));
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -192,7 +195,11 @@ const ConversationDetail = () => {
   }, []);
 
 
-
+  useEffect(() => {
+    if (requestDetails) {
+      console.log("Request Details:", JSON.stringify(requestDetails, null, 2));
+    }
+  }, [requestDetails]);
 
 
   const sendSystemMessage = async (content) => {
@@ -247,8 +254,10 @@ const ConversationDetail = () => {
     if (!newMessage.trim()) return;
 
     const controller = new AbortController();
+
     try {
-      await axios.post(
+      console.log("Sending message:", newMessage.trim());
+      const response = await axios.post(
         `${apiUrl}/conversations/${id}/messages`,
         { content: newMessage.trim() },
         {
@@ -256,15 +265,15 @@ const ConversationDetail = () => {
           signal: controller.signal
         }
       );
+      console.log("Message sent successfully:", response.data);
       setNewMessage('');
-      await fetchConversation();
+      await fetchConversation(controller.signal);
     } catch (err) {
-      if (!controller.signal.aborted) {
-        console.error('Failed to send message:', err);
-        // toast.error('Failed to send message.');
+      if (err.name !== 'AbortError') {
+        console.error('Failed to send message:', err.response?.data || err);
+        toast.error(`Failed to send message: ${err.response?.data?.detail || err.message}`);
       }
     }
-    return () => controller.abort();
   };
 
 
@@ -312,7 +321,7 @@ const ConversationDetail = () => {
       <div className={styles.header}>
         <button className={styles.backButton} onClick={() => navigate(-1)}>
           <ArrowLeft size={20} />
-          <span className={styles.backText}>Back to Dashboard</span>
+          <span className={styles.backText}>Back</span>
         </button>
         <button
           className={styles.menuToggle}
@@ -414,7 +423,7 @@ const ConversationDetail = () => {
                             )}
                           </div>
 
-                          {requestDetails?.request_metadata?.ticket_type === 'external_support' && (
+                          {isExternalSupport && (
                             <button
                               className={styles.transmitButton}
                               onClick={(e) => {
