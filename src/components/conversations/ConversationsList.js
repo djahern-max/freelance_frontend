@@ -99,7 +99,7 @@ const ConversationsList = () => {
       setConversations(conversationsWithDetails);
     } catch (err) {
       console.error('Error fetching conversations:', err);
-      setError('Failed to load conversations');
+
     } finally {
       setLoading(false);
     }

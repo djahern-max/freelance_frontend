@@ -35,7 +35,6 @@ const ConversationDetail = () => {
 
   const [agreement, setAgreement] = useState(null);
 
-
   const [showAgreementModal, setShowAgreementModal] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
 
@@ -76,7 +75,7 @@ const ConversationDetail = () => {
     } catch (err) {
       if (!signal.aborted) {
         console.error('Error fetching conversation:', err);
-        toast.error('Failed to load conversation.');
+
         setIsLoading(false);
       }
     }
@@ -87,18 +86,13 @@ const ConversationDetail = () => {
   const makeLinksClickable = (text) => {
     if (!text) return '';
 
-    // URL regex pattern - matches common URL formats
     const urlRegex = /(https?:\/\/[^\s]+)/g;
-
-    // Split by URLs and map parts to either text or links
     const parts = text.split(urlRegex);
     const matches = text.match(urlRegex) || [];
 
     return parts.reduce((result, part, i) => {
-      // Add the text part
       result.push(part);
 
-      // Add the URL part if there is one
       if (matches[i]) {
         result.push(
           <a
@@ -107,7 +101,7 @@ const ConversationDetail = () => {
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => {
-              e.stopPropagation(); // Prevent the click from bubbling up to parent elements
+              e.stopPropagation();
             }}
           >
             {matches[i]}
@@ -149,7 +143,7 @@ const ConversationDetail = () => {
       } catch (err) {
         if (!signal.aborted) {
           console.error('Error fetching conversation:', err);
-          toast.error('Failed to load conversation.');
+
           setIsLoading(false);
         }
       }
@@ -276,18 +270,6 @@ const ConversationDetail = () => {
     }
   };
 
-
-  const transmitMessage = async (messageId) => {
-    try {
-      await api.post(`/conversations/${conversation.id}/messages/${messageId}/transmit`);
-      toast.success("Message transmitted to Analytics Hub");
-      await fetchConversation();
-    } catch (err) {
-      console.error('Failed to transmit message:', err);
-      toast.error('Failed to transmit message to Analytics Hub');
-    }
-  };
-
   if (isLoading) {
     return (
       <div className={styles.loadingContainer}>
@@ -342,8 +324,6 @@ const ConversationDetail = () => {
               </div>
             ) : (
               <>
-
-
                 {conversation.messages.map((message, index) => {
                   const isSentByUser = message.user_id === user.id;
                   const isFromRyze = message.message_metadata && message.message_metadata.source === 'ryze';
@@ -422,27 +402,11 @@ const ConversationDetail = () => {
                               </div>
                             )}
                           </div>
-
-                          {isExternalSupport && (
-                            <button
-                              className={styles.transmitButton}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                transmitMessage(message.id);
-                              }}
-                              title="Transmit message to Analytics Hub"
-                            >
-                              <span>📤</span>
-                            </button>
-                          )}
                         </div>
                       </div>
                     </div>
                   );
                 })}
-
-
-
               </>
             )}
           </div>
@@ -465,7 +429,6 @@ const ConversationDetail = () => {
         </div>
 
         {/* Sidebar */}
-
         <div
           className={`${styles.sidebar} ${isSidebarVisible ? styles.mobileVisible : ''}`}
         >
@@ -596,46 +559,20 @@ const ConversationDetail = () => {
                     {new Date(agreement.accepted_at).toLocaleDateString()}
                   </p>
                 )}
-
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* <SubscriptionDialog
-        isOpen={showSubscriptionDialog}
-        onClose={() => {
-          setShowSubscriptionDialog(false);
-          setPendingMessage(null);
-        }}
-        returnUrl={`/conversations/${id}`}  // Add this as a prop
-        onSuccess={async () => {
-          setShowSubscriptionDialog(false);
-          if (pendingMessage) {
-            try {
-              await axios.post(
-                `${apiUrl}/conversations/${id}/messages`,
-                { content: pendingMessage },
-                {
-                  headers: { Authorization: `Bearer ${token}` },
-                }
-              );
-              setNewMessage('');
-              setPendingMessage(null);
-              await fetchConversation();
-            } catch (err) {
-              console.error('Failed to send message after subscription:', err);
-              toast.error('Failed to send message.');
-            }
-          }
-        }}
-      /> */}
-
     </div>
   );
 }
 
 
-
 export default ConversationDetail;
+
+
+
+
+
