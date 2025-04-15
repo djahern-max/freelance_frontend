@@ -1,0 +1,215 @@
+/* src/components/videos/MyPlaylists.module.css */
+.myPlaylists {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 28px;
+    color: #333;
+}
+
+.createButton {
+    background-color: #4a90e2;
+    /* Brand blue */
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.createButton:hover {
+    background-color: #3a80d2;
+}
+
+.playlistsContainer {
+    width: 100%;
+}
+
+.playlistList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.playlistCard {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+}
+
+.playlistCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.cardContent {
+    padding: 20px;
+    flex-grow: 1;
+}
+
+.playlistTitle {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #333;
+}
+
+.description {
+    color: #666;
+    margin-bottom: 15px;
+    font-size: 14px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.4;
+    height: 40px;
+}
+
+.meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: #777;
+}
+
+.videoCount {
+    display: flex;
+    align-items: center;
+}
+
+.visibility {
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.public {
+    background-color: #e8f5e9;
+    color: #388e3c;
+}
+
+.private {
+    background-color: #f5f5f5;
+    color: #757575;
+}
+
+.cardActions {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    border-top: 1px solid #f0f0f0;
+}
+
+.actionButton {
+    padding: 12px 0;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    background-color: #ffffff;
+    border: none;
+}
+
+.viewButton,
+.editButton,
+.deleteButton {
+    composes: actionButton;
+}
+
+.viewButton,
+.deleteButton {
+    padding: 12px 0;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.viewButton {
+    color: #4a90e2;
+    text-decoration: none;
+    border-right: 1px solid #f0f0f0;
+}
+
+.viewButton:hover {
+    background-color: #f8f8f8;
+}
+
+.editButton {
+    color: #ff9800;
+    border-right: 1px solid #f0f0f0;
+}
+
+.editButton:hover {
+    background-color: #fff8e1;
+}
+
+.deleteButton {
+    color: #e53935;
+}
+
+.deleteButton:hover {
+    background-color: #ffebee;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #777;
+    font-size: 16px;
+}
+
+.emptyState {
+    text-align: center;
+    padding: 60px 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    color: #666;
+}
+
+.emptyState p:first-child {
+    font-size: 18px;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.emptyState p:last-child {
+    font-size: 14px;
+    color: #888;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .playlistList {
+        grid-template-columns: 1fr;
+    }
+}

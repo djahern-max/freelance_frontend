@@ -53,7 +53,8 @@ const ImageUpload = ({
       setPreviewUrl(null); // Clear preview after successful upload
     } catch (err) {
       setError('Failed to upload image. Please try again.');
-      console.error('Upload error:', err);
+      console.error('Upload error details:', err.response?.data || err.message);
+      console.error('Full error object:', err);
     } finally {
       setIsUploading(false);
     }

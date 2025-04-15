@@ -51,7 +51,7 @@ const DonationModal = ({ onClose }) => {
     return (
         <div className={styles.modalOverlay} onClick={onClose}>
             <div className={styles.modal} onClick={e => e.stopPropagation()}>
-                <h2>Support RYZE.ai</h2>
+                <h2>Support RYZE</h2>
                 <p>Choose an amount to donate</p>
 
                 <div className={styles.presetAmounts}>

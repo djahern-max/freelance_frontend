@@ -55,6 +55,11 @@ const TermsOfServicePage = React.lazy(() => import('./components/legal/TermsOfSe
 const PrivacyPolicyPage = React.lazy(() => import('./components/legal/PrivacyPolicyPage'));
 const OAuthCallback = React.lazy(() => import('./components/auth/OAuthCallback'));
 const SelectRole = React.lazy(() => import('./components/auth/SelectRole'));
+const PlaylistDetail = React.lazy(() => import('./components/videos/PlaylistDetail'));
+const DeveloperVideos = React.lazy(() => import('./components/videos/DeveloperVideos'));
+const MyPlaylists = React.lazy(() => import('./components/videos/MyPlaylists'));
+const CreatePlaylistForm = React.lazy(() => import('./components/videos/CreatePlayListForm'));
+
 
 const LoadingFallback = () => (
   <div className="loading-spinner">Loading...</div>
@@ -211,6 +216,11 @@ function AppContent() {
             <Route path="/terms-of-service" element={<TermsOfServicePage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/select-role" element={<SelectRole />} />
+            <Route path="/videos" element={<VideoList />} />
+            <Route path="/video-upload" element={<VideoUpload />} />
+            <Route path="/playlists" element={<MyPlaylists />} />
+            <Route path="/playlists/:playlistId" element={<PlaylistDetail />} />
+            <Route path="/create-playlist" element={<CreatePlaylistForm />} />
 
             {/* Fixed the collaboration route - removed extra backslash */}
             <Route path="/collaboration/:sessionId/:accessToken" element={<CollaborationPortal />} />
@@ -247,6 +257,9 @@ function AppContent() {
                 </ProtectedRoute>
               }
             />
+
+            <Route path="/playlists/:playlistId" element={<PlaylistDetail />} />
+            <Route path="/developers/:developerId/videos" element={<DeveloperVideos />} />
 
             {/* Client routes */}
             <Route

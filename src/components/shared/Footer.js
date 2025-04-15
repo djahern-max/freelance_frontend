@@ -40,7 +40,7 @@ const Footer = () => {
             onClick={() => setShowDonationModal(true)}
             onMouseEnter={() => setIsHeartHovered(true)}
             onMouseLeave={() => setIsHeartHovered(false)}
-            aria-label="Support RYZE.ai"
+            aria-label="Support RYZE"
           >
             <Heart
               size={18}
@@ -48,7 +48,7 @@ const Footer = () => {
               fill="#ef4444"
               color={isHeartHovered ? '#ef4444' : '#ef4444'}
             />
-            <span className={styles.buttonText}>Support RYZE.ai</span>
+            <span className={styles.buttonText}>Support RYZE</span>
           </button>
         </div>
 

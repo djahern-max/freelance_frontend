@@ -610,13 +610,13 @@ const DeveloperDashboard = () => {
                   Explore Open Tickets
                 </button>
 
-                <button
+                {/* <button
                   onClick={handleShowcaseClick}
                   className={styles.headerCreateButton}
                 >
                   <Plus size={24} className={styles.buttonIcon} />
                   Showcase Project
-                </button>
+                </button> */}
               </div>
             </div>
             {/* {!hasSeenTutorial && (

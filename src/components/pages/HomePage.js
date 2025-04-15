@@ -26,10 +26,8 @@ export default function HomePage() {
         <h1 className={styles.title}>
           <span className={styles.highlight}>Connecting talent</span> with opportunity
         </h1>
-        <p className={styles.subtitle}>A platform built for freelance developers</p>
-        <p className={styles.description}>
-          Build, showcase, and get hired for automation tools and AI-powered apps.
-        </p>
+        <p className={styles.subtitle}>A free platform built for freelance developers</p>
+
         <div className={styles.buttonGroup}>
           <button className={styles.login} onClick={() => navigate('/login')}>Login</button>
           <button className={styles.register} onClick={() => navigate('/register')}>Register</button>

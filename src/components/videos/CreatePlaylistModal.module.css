@@ -1,0 +1,177 @@
+/* src/components/videos/CreatePlaylistModal.module.css */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(2px);
+}
+
+.modal {
+    background-color: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 480px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    animation: slideIn 0.2s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.modalHeader h2 {
+    margin: 0;
+    font-size: 20px;
+    color: #333;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #888;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.closeButton:hover {
+    background-color: #f5f5f5;
+    color: #555;
+}
+
+form {
+    padding: 20px 24px;
+}
+
+.formGroup {
+    margin-bottom: 20px;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: #333;
+    font-size: 14px;
+}
+
+.inputField,
+.textareaField {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.inputField:focus,
+.textareaField:focus {
+    border-color: #4a90e2;
+    outline: none;
+}
+
+.textareaField {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.checkboxLabel input {
+    margin-right: 8px;
+}
+
+.helperText {
+    margin-top: 5px;
+    font-size: 12px;
+    color: #888;
+    margin-left: 24px;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.cancelButton,
+.submitButton {
+    padding: 10px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.cancelButton {
+    background-color: #f5f5f5;
+    color: #555;
+    border: none;
+}
+
+.cancelButton:hover {
+    background-color: #e8e8e8;
+}
+
+.submitButton {
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+}
+
+.submitButton:hover {
+    background-color: #3a80d2;
+}
+
+.submitButton:disabled {
+    background-color: #a0c3ea;
+    cursor: not-allowed;
+}
+
+.cancelButton:disabled {
+    background-color: #f8f8f8;
+    color: #bbb;
+    cursor: not-allowed;
+}
+
+/* For input and textarea when disabled */
+.inputField:disabled,
+.textareaField:disabled {
+    background-color: #f9f9f9;
+    cursor: not-allowed;
+}

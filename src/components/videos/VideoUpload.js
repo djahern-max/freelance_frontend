@@ -20,6 +20,8 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
   const [preview, setPreview] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
   const [projectUrl, setProjectUrl] = useState('');
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const navigate = useNavigate();
 
@@ -113,7 +115,8 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
     }
 
     setUploading(true);
-    showMessage('Upload in progress... Please wait', 'loading');
+    setUploadProgress(0);
+    showMessage('Upload in progress...', 'loading');
 
     const formData = new FormData();
     formData.append('title', title);
@@ -132,43 +135,64 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
       formData.append('request_id', requestId);
     }
 
+    if (projectUrl) {
+      formData.append('project_url', projectUrl);
+    }
+
     try {
       const apiUrl =
         process.env.NODE_ENV === 'production'
-          ? 'https://www.ryze.ai/api/videos/'
+          ? '/api/videos/'  // Use relative URL instead of absolute domain
           : 'http://localhost:8000/videos/';
 
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-          Accept: 'application/json',
-        },
-        body: formData,
+      // Create an XMLHttpRequest to track upload progress
+      const xhr = new XMLHttpRequest();
+
+      xhr.upload.addEventListener('progress', (event) => {
+        if (event.lengthComputable) {
+          const progress = Math.round((event.loaded * 100) / event.total);
+          setUploadProgress(progress);
+        }
       });
 
-      if (!response.ok) {
-        throw new Error(`Upload failed: ${response.statusText}`);
-      }
+      xhr.addEventListener('load', async () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          setIsProcessing(true);
+          const data = JSON.parse(xhr.responseText);
 
-      const data = await response.json();
+          setTitle('');
+          setDescription('');
+          setVideoFile(null);
+          setThumbnailFile(null);
+          setPreview(null);
+          setThumbnailPreview(null);
+          setProjectUrl('');
 
-      setTitle('');
-      setDescription('');
-      setVideoFile(null);
-      setThumbnailFile(null);
-      setPreview(null);
-      setThumbnailPreview(null);
+          showMessage('Video uploaded successfully!', 'success');
+          setIsProcessing(false);
+          setUploading(false);
 
-      showMessage('Video uploaded successfully!', 'success');
+          if (onUploadSuccess) {
+            onUploadSuccess(data);
+          }
+        } else {
+          throw new Error(`Upload failed: ${xhr.statusText}`);
+        }
+      });
 
-      if (onUploadSuccess) {
-        onUploadSuccess(data);
-      }
+      xhr.addEventListener('error', () => {
+        throw new Error('Network error occurred during upload');
+      });
+
+      xhr.open('POST', apiUrl, true);
+      xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('token')}`);
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.send(formData);
+
     } catch (err) {
       showMessage(`Upload failed: ${err.message}`, 'error');
-    } finally {
       setUploading(false);
+      setIsProcessing(false);
     }
   };
 
@@ -282,9 +306,24 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
             </div>
           )}
 
+          {uploading && (
+            <div className={styles.progressBarContainer}>
+              <div
+                className={styles.progressBar}
+                style={{ width: `${uploadProgress}%` }}
+              ></div>
+              <span className={styles.progressText}>
+                {isProcessing ?
+                  'Processing video...' :
+                  `Uploading: ${uploadProgress}%`
+                }
+              </span>
+            </div>
+          )}
+
           {message && (
             <div className={styles[messageType]}>
-              {uploading && <Loader className="animate-spin mr-2" />}
+              {messageType === 'loading' && <Loader className="animate-spin mr-2" />}
               {message}
             </div>
           )}

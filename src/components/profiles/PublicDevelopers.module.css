@@ -24,11 +24,13 @@
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   overflow: visible;
-  /* Allow content to overflow */
-  height: auto;
-  /* Make height dynamic */
-  padding-bottom: 2rem;
-  /* Add space for longer content */
+  height: 100%;
+  /* Make all cards the same height */
+  display: flex;
+  flex-direction: column;
+  /* Stack content vertically */
+  position: relative;
+  /* For positioning content */
 }
 
 .card:hover {
@@ -37,6 +39,35 @@
 
 .cardContent {
   padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  /* Make content take up all available space */
+}
+
+.buttonContainer {
+  margin-top: auto;
+  /* Push buttons to the bottom */
+  padding-top: 1.5rem;
+  /* Add some spacing above buttons */
+}
+
+.contactButton,
+.rateButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: #E4E6EB;
+  color: #000000;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-top: 0.5rem;
+  /* Space between buttons if there are multiple */
 }
 
 .profileHeader {

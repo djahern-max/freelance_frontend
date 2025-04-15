@@ -116,6 +116,37 @@ const apiService = {
             },
         });
     },
+
+    // ADD THE PLAYLIST METHODS HERE
+    playlists: {
+        getUserPlaylists: (userId) => {
+            return api.get(`/playlists/user/${userId}`);
+        },
+
+        getPlaylist: (playlistId) => {
+            return api.get(`/playlists/${playlistId}`);
+        },
+
+        createPlaylist: (data) => {
+            return api.post('/playlists/', data);
+        },
+
+        addVideoToPlaylist: (playlistId, videoId, order = null) => {
+            const url = order
+                ? `/playlists/${playlistId}/videos/${videoId}?order=${order}`
+                : `/playlists/${playlistId}/videos/${videoId}`;
+
+            return api.post(url);
+        },
+
+        deletePlaylist: (playlistId) => {
+            return api.delete(`/playlists/${playlistId}`);
+        },
+
+        removeVideoFromPlaylist: (playlistId, videoId) => {
+            return api.delete(`/playlists/${playlistId}/videos/${videoId}`);
+        }
+    },
 };
 
 export default apiService;

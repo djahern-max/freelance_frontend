@@ -56,26 +56,21 @@ const ConversationDetail = () => {
   // 4. Callback functions (functions that need useCallback)
   const fetchConversation = useCallback(async (signal) => {
     try {
-      const conversationsRes = await api.get('/conversations/user/list', { signal });
-      const conversation = conversationsRes.data.find(
-        (conv) => conv.id === parseInt(id)
-      );
+      // Use the dedicated endpoint that returns a single conversation with all messages
+      // This now works after our backend fix
+      const conversationRes = await api.get(`/conversations/${id}`, { signal });
 
-      if (!conversation) {
-        throw new Error('Conversation not found');
-      }
-
-      const requestRes = await api.get(`/requests/${conversation.request_id}`, { signal });
+      // Get request details
+      const requestRes = await api.get(`/requests/${conversationRes.data.request_id}`, { signal });
 
       if (!signal.aborted) {
-        setConversation(conversation);
+        setConversation(conversationRes.data);
         setRequestDetails(requestRes.data);
         setIsLoading(false);
       }
     } catch (err) {
       if (!signal.aborted) {
         console.error('Error fetching conversation:', err);
-
         setIsLoading(false);
       }
     }
@@ -113,8 +108,6 @@ const ConversationDetail = () => {
     }, []);
   };
 
-
-
   // First useEffect - Polling
   useEffect(() => {
     if (!id || !token) return;
@@ -124,26 +117,19 @@ const ConversationDetail = () => {
 
     const fetchWithSignal = async () => {
       try {
-        const conversationsRes = await api.get('/conversations/user/list', { signal });
-        const conversation = conversationsRes.data.find(
-          (conv) => conv.id === parseInt(id)
-        );
+        // Use the direct endpoint that includes all messages
+        const conversationRes = await api.get(`/conversations/${id}`, { signal });
 
-        if (!conversation) {
-          throw new Error('Conversation not found');
-        }
-
-        const requestRes = await api.get(`/requests/${conversation.request_id}`, { signal });
+        const requestRes = await api.get(`/requests/${conversationRes.data.request_id}`, { signal });
 
         if (!signal.aborted) {
-          setConversation(conversation);
+          setConversation(conversationRes.data);
           setRequestDetails(requestRes.data);
           setIsLoading(false);
         }
       } catch (err) {
         if (!signal.aborted) {
           console.error('Error fetching conversation:', err);
-
           setIsLoading(false);
         }
       }
@@ -157,6 +143,8 @@ const ConversationDetail = () => {
       clearInterval(intervalId);
     };
   }, [id, token]);
+
+
 
   // Second useEffect - State cleanup
   useEffect(() => {

@@ -1,0 +1,116 @@
+/* components/videos/EditPlaylistModal.css */
+/* Just copy the entire contents from EditVideoModal.css */
+.edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 600px;
+}
+
+.edit-error {
+    color: #e53935;
+    background-color: #ffebee;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.edit-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.edit-form-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.edit-form-group input[type="text"],
+.edit-form-group textarea,
+.edit-form-group select {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 100%;
+    background-color: #f9f9f9;
+    transition: border-color 0.2s;
+}
+
+.edit-form-group input[type="text"]:focus,
+.edit-form-group textarea:focus,
+.edit-form-group select:focus {
+    border-color: #4a90e2;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+.edit-form-group textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.edit-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    user-select: none;
+}
+
+.edit-checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+}
+
+.edit-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.edit-cancel-button {
+    background-color: #f5f5f5;
+    color: #333;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.edit-cancel-button:hover {
+    background-color: #e0e0e0;
+}
+
+.edit-submit-button {
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.edit-submit-button:hover {
+    background-color: #3a7bc8;
+}
+
+.edit-submit-button:disabled,
+.edit-cancel-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

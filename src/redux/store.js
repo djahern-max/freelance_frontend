@@ -3,7 +3,8 @@ import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './authSlice';
 import profileReducer from './profileSlice';
 import showcaseReducer from './showcaseSlice';
-import videoReducer from './videoSlice';  // Changed from videosSlice to videoSlice
+import videoReducer from './videoSlice';
+import playlistReducer from './playlistSlice';
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
     profile: profileReducer,
     showcase: showcaseReducer,
     video: videoReducer,
+    playlists: playlistReducer, // Added the new playlist reducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -20,7 +22,5 @@ export const store = configureStore({
     }).concat(/* any custom middleware */),
   devTools: process.env.NODE_ENV !== 'production',
 });
-
-
 
 export default store;

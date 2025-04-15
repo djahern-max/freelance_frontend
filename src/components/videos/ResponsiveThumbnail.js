@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Play } from 'lucide-react';
+import styles from './ResponsiveThumbnail.module.css';
 
 const ResponsiveThumbnail = ({ video, onClick, className }) => {
     const [isLoading, setIsLoading] = useState(true);

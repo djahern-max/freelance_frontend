@@ -40,7 +40,7 @@ export const API_ROUTES = {
 
   },
   VIDEOS: {
-    DISPLAY: '/video_display',
+    DISPLAY: '/video_display/',
     SHARE: (id) => `/videos/${id}/share`,
   },
   RATINGS: {
@@ -220,7 +220,9 @@ api.interceptors.response.use(
     pendingRequests.delete(requestKey);
 
     // Rest of your existing error handling code
-    if (error.name === 'CanceledError' || error.message === 'canceled') {
+    if (error.name === 'CanceledError' || error.message === 'canceled' ||
+      error.code === 'ERR_CANCELED' || error.code === 'ECONNABORTED') {
+      console.log('Request was cancelled or aborted');
       return Promise.reject(new Error('REQUEST_CANCELLED'));
     }
 
@@ -531,11 +533,17 @@ api.videos = {
 
   async getDisplayVideos() {
     try {
-      const response = await api.get(API_ROUTES.VIDEOS.DISPLAY);
+      // Always use trailing slash to avoid 307 redirects
+      const response = await api.get('/video_display/');
       return response.data;
     } catch (error) {
+      // Don't throw for cancelled requests
+      if (error.message === 'REQUEST_CANCELLED') {
+        console.log('Video display request was cancelled');
+        return { user_videos: [], other_videos: [] };
+      }
       console.error('Error fetching videos:', error);
-      throw new Error(api.helpers.handleError(error));
+      throw error;
     }
   },
 

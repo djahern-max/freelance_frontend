@@ -56,11 +56,11 @@ const Header = () => {
       icon: Search,
       title: 'tickets'
     },
-    {
-      path: '/showcase',
-      icon: CheckCircle,
-      title: 'Solutions'
-    },
+    // {
+    //   path: '/showcase',
+    //   icon: CheckCircle,
+    //   title: 'Solutions'
+    // },
     {
       path: '/creators',
       icon: UsersRound,
@@ -73,7 +73,7 @@ const Header = () => {
     },
     {
       icon: Heart,
-      title: 'Support RYZE.ai',
+      title: 'Support RYZE',
       onClick: handleDonation,
       isSpecial: true // Add this flag for special styling
     }
@@ -93,7 +93,7 @@ const Header = () => {
   const menuItems = [
     {
       icon: Heart,
-      title: 'Support RYZE.ai',
+      title: 'Support RYZE',
       onClick: handleDonation,
       isSpecial: true // Add this flag for special styling
     },

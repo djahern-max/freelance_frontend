@@ -41,14 +41,17 @@ const Login = () => {
     }
   };
 
-  const getDashboardPath = (userType) => {
-    if (!userType) {
-      console.error('User type is undefined or null');
-      return '/login';
+  const getDashboardPath = (userTypeParam) => {
+    if (!loggedInUser || !loggedInUser.userType) {
+      console.log("User type is undefined or null, waiting for data...");
+      // You might want to add a loading state here
+      return '/login';  // Return a default path
     }
 
-    const type = userType.toLowerCase();
-    switch (type) {
+    // Then proceed with the user_type check
+    const userType = loggedInUser.userType;
+
+    switch (userType.toLowerCase()) {
       case 'client':
         return '/client-dashboard';
       case 'developer':

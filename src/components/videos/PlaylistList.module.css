@@ -1,0 +1,148 @@
+.playlistList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.playlistCard {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.playlistCard:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.playlistCard h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.playlistCard h3 a {
+    color: #0070f3;
+    text-decoration: none;
+}
+
+.playlistCard h3 a:hover {
+    text-decoration: underline;
+}
+
+.description {
+    color: #666;
+    margin-bottom: 15px;
+    font-size: 14px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #777;
+}
+
+.videoCount {
+    display: flex;
+    align-items: center;
+}
+
+.visibility {
+    padding: 2px 8px;
+    background-color: #e8f5e9;
+    color: #388e3c;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-size: 16px;
+}
+
+.emptyState {
+    text-align: center;
+    padding: 40px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    color: #666;
+}
+
+/* Add these to your existing PlaylistList.module.css */
+.playlistActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.viewButton,
+.deleteButton {
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    border: none;
+}
+
+.viewButton {
+    background-color: #0070f3;
+    color: white;
+    text-decoration: none;
+}
+
+.deleteButton {
+    background-color: #f8f8f8;
+    color: #d32f2f;
+    border: 1px solid #d32f2f;
+}
+
+.deleteButton:hover {
+    background-color: #fbe9e7;
+}
+
+.titleWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.editButton {
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.editButton:hover {
+    background-color: #3a7bc8;
+}
+
+.editButton:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.3);
+}
+
+
+
+@media (max-width: 768px) {
+    .playlistList {
+        grid-template-columns: 1fr;
+    }
+}
