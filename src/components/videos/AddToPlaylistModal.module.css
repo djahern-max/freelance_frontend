@@ -17,6 +17,8 @@
     padding: 24px;
     width: 90%;
     max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -41,6 +43,21 @@
 .playlistItem {
     padding: 8px 0;
     border-bottom: 1px solid #eee;
+    margin-bottom: 8px;
+}
+
+.playlistLink {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.playlistLink:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    cursor: pointer;
 }
 
 .checkboxLabel {
@@ -97,7 +114,8 @@
     margin-top: 20px;
 }
 
-.cancelButton {
+.cancelButton,
+.closeButton {
     padding: 8px 16px;
     background-color: transparent;
     border: 1px solid #ddd;
@@ -119,4 +137,33 @@
 .createButton:disabled {
     background-color: #cccccc;
     cursor: not-allowed;
+}
+
+.playlistLink {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.playlistLink:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    text-decoration: none;
+    color: #0070f3;
+}
+
+.playlistName {
+    font-weight: 500;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.videoCount {
+    font-weight: normal;
+    color: #666;
+    font-size: 0.9em;
 }
