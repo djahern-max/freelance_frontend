@@ -1,6 +1,7 @@
 // src/redux/playlistSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import apiService from '../utils/apiService';
+import api from '../utils/api';
 
 export const fetchUserPlaylists = createAsyncThunk(
     'playlists/fetchUserPlaylists',
@@ -99,6 +100,32 @@ export const fetchVideoPlaylists = createAsyncThunk(
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || error.message);
+        }
+    }
+);
+
+
+export const generateShareLink = createAsyncThunk(
+    'playlists/generateShareLink',
+    async (playlistId, { rejectWithValue }) => {
+        try {
+            const response = await apiService.post(`/playlists/${playlistId}/share`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || 'Failed to generate share link');
+        }
+    }
+);
+
+// Fetch a shared playlist by token
+export const fetchSharedPlaylist = createAsyncThunk(
+    'playlists/fetchSharedPlaylist',
+    async (shareToken, { rejectWithValue }) => {
+        try {
+            const response = await apiService.get(`/playlists/shared/${shareToken}`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || 'Failed to fetch shared playlist');
         }
     }
 );
@@ -211,6 +238,30 @@ const playlistSlice = createSlice({
                 state.videoPlaylists = action.payload;
             })
             .addCase(fetchVideoPlaylists.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(generateShareLink.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(generateShareLink.fulfilled, (state, action) => {
+                state.loading = false;
+                state.shareLink = action.payload;
+            })
+            .addCase(generateShareLink.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(fetchSharedPlaylist.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchSharedPlaylist.fulfilled, (state, action) => {
+                state.loading = false;
+                state.currentPlaylist = action.payload;
+            })
+            .addCase(fetchSharedPlaylist.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });

@@ -7,6 +7,7 @@ import CreatePlaylistModal from './CreatePlaylistModal';
 import EditPlaylistModal from './EditPlaylistModal';
 import { toast } from 'react-toastify';
 import styles from './MyPlaylists.module.css';
+import PlaylistShareButton from './PlayListShareButton';
 
 const MyPlaylists = () => {
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -115,7 +116,6 @@ const MyPlaylists = () => {
                                                 </span>
                                             </div>
                                         </div>
-
                                         <div className={styles.cardActions}>
                                             <Link
                                                 to={`/playlists/${playlist.id}`}
@@ -123,6 +123,7 @@ const MyPlaylists = () => {
                                             >
                                                 View
                                             </Link>
+                                            <PlaylistShareButton playlistId={playlist.id} />
                                             <button
                                                 className={`${styles.actionButton} ${styles.editButton}`}
                                                 onClick={() => handleEditPlaylist(playlist)}

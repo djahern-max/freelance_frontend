@@ -24,6 +24,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // API Routes constants
+// API Routes constants
 export const API_ROUTES = {
   SHOWCASE: {
     LIST: '/project-showcase/',
@@ -37,16 +38,15 @@ export const API_ROUTES = {
     FILES: (id) => `/project-showcase/${id}/files`,
     VIDEOS: (id) => `/project-showcase/${id}/videos`,
     PROFILE: (id) => `/project-showcase/${id}/profile`
-
   },
   VIDEOS: {
     DISPLAY: '/video_display/',
     SHARE: (id) => `/videos/${id}/share`,
+    GET_SHARED: (token) => `/video_display/shared/${token}`, // Add this line
   },
   RATINGS: {
     DEVELOPER: (id) => `/ratings/developer/${id}`,
-
-    DEVELOPER_RATING: (id) => `/ratings/developer/${id}/rating`, // Add this new route
+    DEVELOPER_RATING: (id) => `/ratings/developer/${id}/rating`,
   },
   PROFILE: {
     ME: '/profile/me',
@@ -104,6 +104,17 @@ export const API_ROUTES = {
     UPLOAD_FILES: (id) => `/marketplace/products/${id}/files`,
     GET_FILES_INFO: (id) => `/marketplace/products/${id}/files/info`,
     REVIEWS: (id) => `/marketplace/products/${id}/reviews`,
+  },
+  // Add this new section
+  PLAYLISTS: {
+    LIST: '/playlists/',
+    USER: (userId) => `/playlists/user/${userId}`,
+    DETAIL: (id) => `/playlists/${id}`,
+    ADD_VIDEO: (playlistId, videoId) => `/playlists/${playlistId}/videos/${videoId}`,
+    VIDEO_PLAYLISTS: (videoId) => `/playlists/video/${videoId}`,
+    SHARE: (id) => `/playlists/${id}/share`,
+    SHARED: (token) => `/playlists/shared/${token}`, // Keep this as is
+    GET_SHARED: (token) => `/playlists/shared/${token}` // Add this line for consistency
   },
 };
 
@@ -373,9 +384,30 @@ api.helpers = {
       case 429:
         return 'Too many requests. Please try again later.';
       case 500:
-        return 'Server error. Please try again later';
-      default:
-        return error.response?.data?.detail || 'An unexpected error occurred';
+        // Check if error is related to database tables not existing
+        if (
+          error.response.data?.detail?.includes('relation') ||
+          error.response.data?.detail?.includes('table') ||
+          error.message?.includes('relation') ||
+          error.message?.includes('table')
+        ) {
+          console.warn('Database schema error - possible database reset:', error.response?.data);
+          // For playlist-related endpoints, return empty data
+          if (error.config.url.includes('/playlists')) {
+            if (error.config.method === 'get') {
+              // Return empty array or null based on endpoint
+              return Promise.resolve({
+                data: error.config.url.includes('/user/') || error.config.url.includes('/video/') ? [] : null
+              });
+            }
+            return Promise.reject(
+              new Error('The playlist service is temporarily unavailable. Please try again later.')
+            );
+          }
+        }
+        return Promise.reject(
+          new Error('Server error. Please try again later.')
+        );
     }
   },
 
@@ -518,12 +550,45 @@ api.agreements = {
 api.videos = {
   async shareVideo(videoId, projectUrl) {
     try {
+      // Log the parameters for debugging
+      console.log('Sharing video:', videoId, 'with project URL:', projectUrl);
+
       const response = await api.post(`/videos/${videoId}/share`, {
         project_url: projectUrl
       });
+
+      // Log the full response for debugging
+      console.log('Share video API response:', response.data);
+
+      // Extract the share token from the response
+      // If response.data is a string, parse it
+      const responseData = typeof response.data === 'string'
+        ? JSON.parse(response.data)
+        : response.data;
+
+      // Extract the token from whatever format the server returns
+      let shareToken;
+      if (responseData.share_token) {
+        shareToken = responseData.share_token;
+      } else if (responseData.share_url) {
+        // Extract token from URL if that's what's returned
+        const urlParts = responseData.share_url.split('/');
+        shareToken = urlParts[urlParts.length - 1];
+      } else {
+        throw new Error('Invalid response format from server');
+      }
+
+      // Make sure we have a token
+      if (!shareToken) {
+        throw new Error('No share token returned from server');
+      }
+
+      // Build the correct URL
+      const shareUrl = `${window.location.origin}/shared/videos/${shareToken}`;
+
       return {
-        ...response.data,
-        share_url: response.data.share_url // Use the URL directly from response
+        share_token: shareToken,
+        share_url: shareUrl
       };
     } catch (error) {
       console.error('Error sharing video:', error);
@@ -549,9 +614,10 @@ api.videos = {
 
   async getSharedVideo(shareToken) {
     try {
-      const response = await api.get(`/shared/videos/${shareToken}`);
+      const response = await api.get(API_ROUTES.VIDEOS.GET_SHARED(shareToken));
       return response.data;
     } catch (error) {
+      console.error('Error fetching shared video:', error);
       throw new Error(api.helpers.handleError(error));
     }
   }
@@ -695,6 +761,8 @@ api.snaggedRequests = {
   },
 
 
+
+
   async list() {
     try {
       const response = await api.get(API_ROUTES.SNAGGED_REQUESTS.LIST);
@@ -714,6 +782,183 @@ api.snaggedRequests = {
       throw new Error(api.helpers.handleError(error));
     }
   }
+};
+api.playlists = {
+  async getPlaylistDetails(playlistId) {
+    try {
+      const response = await api.get(`/playlists/${playlistId}`);
+      return response.data;
+    } catch (error) {
+      // Handle 404 errors specifically for playlists
+      if (error.response?.status === 404) {
+        console.log(`Playlist with ID ${playlistId} not found - returning null`);
+        return null;
+      }
+      // Handle database reset scenarios gracefully
+      if (error.response?.status === 500) {
+        console.log('Playlist database may be unavailable');
+        return null;
+      }
+      console.error('Error fetching playlist details:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+  async getUserPlaylists(userId) {
+    try {
+      const response = await api.get(`/playlists/user/${userId}`);
+      return response.data;
+    } catch (error) {
+      // Handle database reset scenarios gracefully
+      if (error.response?.status === 500 || error.response?.status === 404) {
+        console.log('Playlist database may be unavailable - returning empty list');
+        return [];
+      }
+      console.error('Error fetching user playlists:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async getPlaylistDetails(playlistId) {
+    try {
+      const response = await api.get(`/playlists/${playlistId}`);
+      return response.data;
+    } catch (error) {
+      // Handle database reset scenarios gracefully
+      if (error.response?.status === 500 || error.response?.status === 404) {
+        console.log('Playlist database may be unavailable');
+        return null;
+      }
+      console.error('Error fetching playlist details:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async createPlaylist(playlistData) {
+    try {
+      const response = await api.post('/playlists/', playlistData);
+      return response.data;
+    } catch (error) {
+      if (error.response?.status === 500) {
+        console.error('Database error when creating playlist');
+        throw new Error('Unable to create playlist. The service may be temporarily unavailable.');
+      }
+      console.error('Error creating playlist:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async addVideoToPlaylist(playlistId, videoId, order = null) {
+    try {
+      const url = order !== null
+        ? `/playlists/${playlistId}/videos/${videoId}?order=${order}`
+        : `/playlists/${playlistId}/videos/${videoId}`;
+
+      const response = await api.post(url);
+      return response.data;
+    } catch (error) {
+      if (error.response?.status === 500) {
+        console.error('Database error when adding video to playlist');
+        throw new Error('Unable to add video to playlist. The service may be temporarily unavailable.');
+      }
+      console.error('Error adding video to playlist:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async updatePlaylist(playlistId, playlistData) {
+    try {
+      const response = await api.put(`/playlists/${playlistId}`, playlistData);
+      return response.data;
+    } catch (error) {
+      if (error.response?.status === 500) {
+        console.error('Database error when updating playlist');
+        throw new Error('Unable to update playlist. The service may be temporarily unavailable.');
+      }
+      console.error('Error updating playlist:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async deletePlaylist(playlistId) {
+    try {
+      const response = await api.delete(`/playlists/${playlistId}`);
+      return response.data;
+    } catch (error) {
+      if (error.response?.status === 500) {
+        console.error('Database error when deleting playlist');
+        throw new Error('Unable to delete playlist. The service may be temporarily unavailable.');
+      }
+      console.error('Error deleting playlist:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async getVideoPlaylists(videoId) {
+    try {
+      const response = await api.get(`/playlists/video/${videoId}`);
+      return response.data;
+    } catch (error) {
+      // Handle database reset scenarios gracefully
+      if (error.response?.status === 500 || error.response?.status === 404) {
+        console.log('Playlist database may be unavailable - returning empty list');
+        return [];
+      }
+      console.error('Error fetching video playlists:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async generateShareLink(playlistId) {
+    try {
+      const response = await api.post(`/playlists/${playlistId}/share`);
+
+      // Make sure we have a token
+      if (!response.data.share_token) {
+        throw new Error('No share token returned from server');
+      }
+
+      // Build URL with consistent path structure
+      const shareUrl = `${window.location.origin}/shared/playlists/${response.data.share_token}`;
+
+      return {
+        share_token: response.data.share_token,
+        share_url: shareUrl
+      };
+    } catch (error) {
+      console.error('Error generating share link:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
+
+  async getSharedPlaylist(shareToken) {
+    try {
+      // Log for debugging
+      console.log('Fetching shared playlist with token:', shareToken);
+
+      // Make sure we have a token
+      if (!shareToken) {
+        console.error('Missing share token');
+        throw new Error('Invalid share token');
+      }
+
+      // Use the API endpoint for shared playlists
+      const response = await api.get(`/playlists/shared/${shareToken}`);
+
+      // Log response for debugging
+      console.log('Shared playlist API response:', response.data);
+
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching shared playlist:', error);
+
+      // Handle 404 errors
+      if (error.response?.status === 404) {
+        return null;
+      }
+
+      throw new Error(api.helpers.handleError(error));
+    }
+  },
 };
 
 api.showcase = {

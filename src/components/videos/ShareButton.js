@@ -33,8 +33,14 @@ const ShareButton = ({ videoId, projectUrl }) => {
         try {
             setIsSharing(true);
             const response = await api.videos.shareVideo(videoId, projectUrl);
-            setShareUrl(response.share_url);
-            await copyToClipboard(response.share_url);
+
+            // If the backend returns a properly constructed share_url, use it
+            // Otherwise, build it from the share_token
+            const shareUrl = response.share_url ||
+                `${window.location.origin}/shared/videos/${response.share_token}`;
+
+            setShareUrl(shareUrl);
+            await copyToClipboard(shareUrl);
         } catch (error) {
             console.error('Error sharing video:', error);
             toast.error(error.message || 'Failed to generate share link');

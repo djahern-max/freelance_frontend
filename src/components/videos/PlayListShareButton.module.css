@@ -1,0 +1,276 @@
+/* src/components/videos/SharedPlaylist.module.css */
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-size: 18px;
+}
+
+.error {
+    text-align: center;
+    padding: 40px;
+    color: #d32f2f;
+    background-color: #ffebee;
+    border-radius: 8px;
+    margin: 20px;
+    font-size: 16px;
+}
+
+.playlistDetail {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.header h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.description {
+    color: #666;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.meta {
+    display: flex;
+    gap: 20px;
+    color: #777;
+    font-size: 14px;
+}
+
+.sharedLabel {
+    background-color: #e3f2fd;
+    color: #1565c0;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.playerContainer {
+    display: flex;
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.videoPlayer {
+    flex: 2;
+}
+
+.videoElement {
+    width: 100%;
+    border-radius: 8px;
+    background-color: #000;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.videoTitle {
+    margin: 15px 0 8px 0;
+    font-size: 20px;
+    color: #333;
+}
+
+.videoDescription {
+    color: #666;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.playlist {
+    flex: 1;
+}
+
+.playlist h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 18px;
+    color: #333;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.emptyPlayer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f5f5f5;
+    height: 300px;
+    border-radius: 8px;
+    color: #666;
+}
+
+.videoList {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.videoItem {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+}
+
+.videoItem:hover {
+    background-color: #f0f0f0;
+}
+
+.videoItem.active {
+    background-color: #e3f2fd;
+    border-left: 4px solid #1976d2;
+}
+
+.thumbnail {
+    width: 100px;
+    height: 56px;
+    margin-right: 15px;
+    overflow: hidden;
+    border-radius: 4px;
+}
+
+.thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.videoInfo {
+    flex: 1;
+}
+
+.videoInfo h4 {
+    margin: 0 0 5px 0;
+    font-size: 14px;
+    color: #333;
+}
+
+.videoInfo span {
+    font-size: 12px;
+    color: #777;
+}
+
+.emptyList {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+}
+
+
+.cardActions {
+    display: flex;
+    border-top: 1px solid #f0f0f0;
+}
+
+.actionButton {
+    flex: 1;
+    padding: 12px 0;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    background-color: #ffffff;
+    border: none;
+    text-decoration: none;
+    color: #4a90e2;
+    border-right: 1px solid #f0f0f0;
+}
+
+.actionButton:last-child {
+    border-right: none;
+}
+
+.actionButton:hover {
+    background-color: #f8f8f8;
+}
+
+.editButton {
+    color: #ff9800;
+}
+
+.editButton:hover {
+    background-color: #fff8e1;
+}
+
+.deleteButton {
+    color: #e53935;
+}
+
+.deleteButton:hover {
+    background-color: #ffebee;
+}
+
+.shareButton {
+    color: #4caf50;
+}
+
+.shareButton:hover {
+    background-color: #e8f5e9;
+}
+
+.shareDialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.shareDialog.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.shareDialogContent {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(20px);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.shareDialog.visible .shareDialogContent {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .playerContainer {
+        flex-direction: column;
+    }
+
+    .meta {
+        flex-direction: column;
+        gap: 5px;
+    }
+}

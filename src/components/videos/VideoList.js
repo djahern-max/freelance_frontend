@@ -261,11 +261,50 @@ const VideoList = () => {
     }
   };
 
+  // Add this function inside the VideoList component
+  const sortVideosByPlaylist = async (videoArray) => {
+    try {
+      // First, get playlist details for playlist ID 1
+      const playlistResponse = await api.playlists.getPlaylistDetails(1);
+
+      // If no playlist exists, return videos as is
+      if (!playlistResponse) {
+        console.log('Playlist #1 not found, returning unsorted videos');
+        return videoArray;
+      }
+
+      if (!playlistResponse.videos || !Array.isArray(playlistResponse.videos)) {
+        // If playlist has no videos, return videos as is
+        return videoArray;
+      }
+
+      // Create a mapping of video IDs to their order in the playlist
+      const videoOrderMap = new Map();
+
+      playlistResponse.videos.forEach((video, index) => {
+        // Use the order property if available, otherwise use the index
+        const order = video.order !== undefined ? video.order : index;
+        videoOrderMap.set(video.id, order);
+      });
+
+      // Sort the videos based on their order in playlists
+      const sortedVideos = [...videoArray].sort((a, b) => {
+        const orderA = videoOrderMap.has(a.id) ? videoOrderMap.get(a.id) : 999999;
+        const orderB = videoOrderMap.has(b.id) ? videoOrderMap.get(b.id) : 999999;
+        return orderA - orderB;
+      });
+
+      return sortedVideos;
+    } catch (error) {
+      console.log('Returning unsorted videos due to playlist error');
+      return videoArray;
+    }
+  };
+
   useEffect(() => {
     // Flag to track if component is still mounted
     let isMounted = true;
 
-    // Define a single function to load videos
     const loadVideos = async () => {
       try {
         if (!isMounted) return;
@@ -279,7 +318,9 @@ const VideoList = () => {
         if (!isMounted) return;
 
         if (response.data && Array.isArray(response.data.other_videos)) {
-          setVideos(response.data.other_videos);
+          // Sort the videos by playlist order before setting them
+          const sortedVideos = await sortVideosByPlaylist(response.data.other_videos);
+          setVideos(sortedVideos);
         } else {
           setVideos([]);
         }

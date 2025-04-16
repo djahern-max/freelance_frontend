@@ -157,28 +157,41 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
 
       xhr.addEventListener('load', async () => {
         if (xhr.status >= 200 && xhr.status < 300) {
+          // Clear existing messages and show the processing notification
+          setUploadProgress(100);
           setIsProcessing(true);
-          const data = JSON.parse(xhr.responseText);
 
-          setTitle('');
-          setDescription('');
-          setVideoFile(null);
-          setThumbnailFile(null);
-          setPreview(null);
-          setThumbnailPreview(null);
-          setProjectUrl('');
+          // Clear previous messages
+          setMessage(null);
 
-          showMessage('Video uploaded successfully!', 'success');
-          setIsProcessing(false);
-          setUploading(false);
+          // Show new message with delay to ensure it renders
+          setTimeout(() => {
+            showMessage(`Upload complete! We're now optimizing your video for best performance. It will be ready in approximately 5 minutes. You'll be redirected shortly.`, 'success');
 
-          if (onUploadSuccess) {
-            onUploadSuccess(data);
-          }
+            // Reset form fields
+            setTitle('');
+            setDescription('');
+            setVideoFile(null);
+            setThumbnailFile(null);
+            setPreview(null);
+            setThumbnailPreview(null);
+            setProjectUrl('');
+
+            // Redirect after allowing time to read the message
+            setTimeout(() => {
+              if (onUploadSuccess) {
+                const data = JSON.parse(xhr.responseText);
+                onUploadSuccess(data);
+              }
+
+              // Navigate back to video list
+              navigate('/videos');
+            }, 4000);
+          }, 500);
         } else {
           throw new Error(`Upload failed: ${xhr.statusText}`);
         }
-      });
+      })
 
       xhr.addEventListener('error', () => {
         throw new Error('Network error occurred during upload');
@@ -314,7 +327,7 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
               ></div>
               <span className={styles.progressText}>
                 {isProcessing ?
-                  'Processing video...' :
+                  'Optimizing video for best quality playback...' :
                   `Uploading: ${uploadProgress}%`
                 }
               </span>

@@ -9,10 +9,11 @@ export const getFullAssetUrl = (path) => {
         return path;
     }
 
-    // Digital Ocean Spaces URL construction
-    const spacesRegion = 'nyc3'; // Change if needed
-    const spacesBucket = 'ryzevideosv3'; // Change if needed
+    // Digital Ocean Spaces configuration
+    const spacesRegion = 'nyc3';
+    const spacesBucket = 'ryzevideosv3';
 
+    // Construct the URL using the Spaces configuration
     return `https://${spacesBucket}.${spacesRegion}.digitaloceanspaces.com/${path}`;
 };
 

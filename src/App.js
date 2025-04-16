@@ -45,6 +45,7 @@ const VideoList = React.lazy(() => import('./components/videos/VideoList'));
 const VideoUpload = React.lazy(() => import('./components/videos/VideoUpload'));
 const DeveloperProfileView = React.lazy(() => import('./components/profiles/DeveloperProfileView'));
 const SharedVideo = React.lazy(() => import('./components/videos/SharedVideo'));
+const SharedPlaylist = React.lazy(() => import('./components/videos/SharedPlayLists'));
 const ShowcaseList = React.lazy(() => import('./components/showcase/ShowcaseList'));
 const ShowcaseForm = React.lazy(() => import('./components/showcase/ShowcaseForm'));
 const SharedShowcase = React.lazy(() => import('./components/showcase/SharedShowcase'));
@@ -221,6 +222,7 @@ function AppContent() {
             <Route path="/playlists" element={<MyPlaylists />} />
             <Route path="/playlists/:playlistId" element={<PlaylistDetail />} />
             <Route path="/create-playlist" element={<CreatePlaylistForm />} />
+            <Route path="/shared/playlists/:shareToken" element={<SharedPlaylist />} />
 
             {/* Fixed the collaboration route - removed extra backslash */}
             <Route path="/collaboration/:sessionId/:accessToken" element={<CollaborationPortal />} />

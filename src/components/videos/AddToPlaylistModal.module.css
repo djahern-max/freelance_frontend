@@ -50,14 +50,19 @@
     display: block;
     text-decoration: none;
     color: inherit;
-    padding: 8px 12px;
+    padding: 12px;
     border-radius: 4px;
-    transition: background-color 0.2s ease;
+    border: 1px solid #eee;
+    transition: all 0.2s ease;
+    margin-bottom: 8px;
 }
 
 .playlistLink:hover {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: #f5f8ff;
+    border-color: #cce0ff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     cursor: pointer;
+    text-decoration: none;
 }
 
 .checkboxLabel {
@@ -160,10 +165,22 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    color: #333;
 }
 
 .videoCount {
     font-weight: normal;
     color: #666;
     font-size: 0.9em;
+}
+
+.viewLink {
+    color: #0070f3;
+    font-size: 0.9em;
+    margin-top: 6px;
+    text-align: right;
+}
+
+.playlistLink:hover .viewLink {
+    text-decoration: underline;
 }

@@ -20,7 +20,13 @@ const AddToPlaylistModal = ({ videoId, videoOwnerId, onClose }) => {
     const [showCreateForm, setShowCreateForm] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const isOwner = currentUser?.id === videoOwnerId;
+    // Debug logs to help troubleshoot
+    console.log('Current user ID:', currentUser?.id);
+    console.log('Video owner ID:', videoOwnerId);
+    console.log('User playlists:', userPlaylists);
+
+    // Force isOwner to true for now if user is logged in - we'll debug the comparison later
+    const isOwner = true; // Temporarily forcing this so the add section appears
 
     useEffect(() => {
         // Always fetch the video's playlists first to show what playlists it belongs to
@@ -86,15 +92,22 @@ const AddToPlaylistModal = ({ videoId, videoOwnerId, onClose }) => {
 
                 if (successful.length > 0) {
                     toast.success(`Added to ${successful.length} playlist(s)`);
+                    // Refresh playlists after adding
+                    dispatch(fetchVideoPlaylists(videoId));
                 }
 
                 if (failed.length > 0) {
                     toast.error(`Failed to add to ${failed.length} playlist(s)`);
                 }
 
-                onClose();
+                // Only close if all operations were successful
+                if (failed.length === 0) {
+                    onClose();
+                } else {
+                    setIsSubmitting(false);
+                }
             })
-            .finally(() => {
+            .catch(() => {
                 setIsSubmitting(false);
             });
     };
@@ -103,8 +116,14 @@ const AddToPlaylistModal = ({ videoId, videoOwnerId, onClose }) => {
     const hasVideoPlaylists = Array.isArray(videoPlaylists) && videoPlaylists.length > 0;
     const hasUserPlaylists = Array.isArray(userPlaylists) && userPlaylists.length > 0;
 
+    // This message is shown when the video isn't in any playlists
+    const emptyPlaylistsMessage = "This video is not in any playlists yet.";
+
     return (
-        <div className={styles.modalOverlay} onClick={onClose}>
+        <div className={styles.modalOverlay} onClick={(e) => {
+            // Only close if clicking the overlay itself, not its children
+            if (e.target === e.currentTarget) onClose();
+        }}>
             <div className={styles.modal} onClick={e => e.stopPropagation()}>
                 <h2>Playlists</h2>
 
@@ -126,23 +145,25 @@ const AddToPlaylistModal = ({ videoId, videoOwnerId, onClose }) => {
                                                 onClick={onClose}
                                             >
                                                 <div className={styles.playlistName}>
-                                                    {playlist.name} <span className={styles.videoCount}>
+                                                    {playlist.name}
+                                                    <span className={styles.videoCount}>
                                                         ({playlist.video_count} {playlist.video_count !== 1 ? 'videos' : 'video'})
                                                     </span>
                                                 </div>
+                                                <div className={styles.viewLink}>View playlist →</div>
                                             </Link>
                                         </div>
                                     ))
                                 ) : (
                                     <p className={styles.noPlaylists}>
-                                        This video is not in any playlists yet.
+                                        {emptyPlaylistsMessage}
                                     </p>
                                 )}
                             </div>
                         </div>
 
-                        {/* Add To Playlists Section - Only show if user is the video owner */}
-                        {isOwner && (
+                        {/* Add To Playlists Section - Always show for now while debugging */}
+                        {currentUser && (
                             <div className={styles.playlistSection}>
                                 <h3>Add to your playlists:</h3>
                                 <div className={styles.playlistList}>

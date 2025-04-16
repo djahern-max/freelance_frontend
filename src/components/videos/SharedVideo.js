@@ -4,6 +4,7 @@ import { ArrowLeft, MessageSquare } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 import api from '../../utils/api';
+import { getFullAssetUrl } from '../../utils/videoUtils';
 import styles from './SharedVideo.module.css';
 import CreateRequestModal from '../requests/CreateRequestModal';
 import AuthDialog from '../auth/AuthDialog';
@@ -34,7 +35,6 @@ const SharedVideo = () => {
                 setLoading(false);
             }
         };
-
         if (shareToken) {
             fetchSharedVideo();
         }
@@ -126,8 +126,8 @@ const SharedVideo = () => {
                         className={styles.video}
                         controls
                         autoPlay
-                        src={video.file_path}
-                        poster={video.thumbnail_path}
+                        src={getFullAssetUrl(video.file_path)}
+                        poster={getFullAssetUrl(video.thumbnail_path)}
                     >
                         Your browser does not support the video tag.
                     </video>
