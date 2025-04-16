@@ -17,7 +17,6 @@ import DescriptionModal from './DescriptionModal';
 import EditVideoModal from './EditVideoModal'; // Import the EditVideoModal component
 
 
-
 const VideoItem = ({
   video,
   onVideoClick,
@@ -32,6 +31,8 @@ const VideoItem = ({
 }) => {
   const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
   const isOwner = user?.id === video.user_id;
+
+
 
   return (
     <div className={styles.videoCard}>
@@ -191,6 +192,7 @@ const VideoList = () => {
   const [selectedCreator, setSelectedCreator] = useState(null);
   const [showPlaylistModal, setShowPlaylistModal] = useState(false);
   const [selectedVideoForPlaylist, setSelectedVideoForPlaylist] = useState(null);
+  const [processingVideos, setProcessingVideos] = useState([]);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -300,6 +302,70 @@ const VideoList = () => {
       return videoArray;
     }
   };
+
+
+  // Add the cleanupProcessingVideos function:
+  const cleanupProcessingVideos = () => {
+    const processingVideos = JSON.parse(localStorage.getItem('processingVideos') || '[]');
+    if (processingVideos.length === 0) return;
+
+    // Remove videos that were added more than 15 minutes ago
+    const fifteenMinutesAgo = Date.now() - (15 * 60 * 1000);
+    const updatedProcessingVideos = processingVideos.filter(video => {
+      return video.timestamp && video.timestamp > fifteenMinutesAgo;
+    });
+
+    // Check if any videos in the processing list now appear in the loaded videos
+    const loadedVideoIds = videos.map(v => v.id);
+    const stillProcessing = updatedProcessingVideos.filter(video =>
+      !loadedVideoIds.includes(video.id)
+    );
+
+    if (stillProcessing.length !== processingVideos.length) {
+      localStorage.setItem('processingVideos', JSON.stringify(stillProcessing));
+      setProcessingVideos(stillProcessing);
+
+      if (processingVideos.length > stillProcessing.length) {
+        toast.success('Upload Complete!');
+      }
+    }
+  };
+
+  // Add this useEffect to run the cleanup function
+  useEffect(() => {
+    if (videos.length > 0) {
+      cleanupProcessingVideos();
+    }
+  }, [videos]);
+
+  useEffect(() => {
+    // Check for processing videos in localStorage
+    const storedProcessingVideos = localStorage.getItem('processingVideos');
+    if (storedProcessingVideos) {
+      try {
+        const parsedVideos = JSON.parse(storedProcessingVideos);
+        if (Array.isArray(parsedVideos) && parsedVideos.length > 0) {
+          setProcessingVideos(parsedVideos);
+
+          // Set up a periodic check for completed videos
+          const checkInterval = setInterval(() => {
+            fetchVideos().then(() => {
+              // After fetching videos, update processing status
+              const currentProcessing = JSON.parse(localStorage.getItem('processingVideos') || '[]');
+              if (currentProcessing.length === 0) {
+                clearInterval(checkInterval);
+              }
+            });
+          }, 30000); // Check every 30 seconds
+
+          return () => clearInterval(checkInterval);
+        }
+      } catch (error) {
+        console.error('Error parsing processing videos:', error);
+        localStorage.removeItem('processingVideos');
+      }
+    }
+  }, []);
 
   useEffect(() => {
     // Flag to track if component is still mounted
@@ -545,6 +611,30 @@ const VideoList = () => {
           )}
         </div>
       </div>
+
+      {processingVideos.length > 0 && (
+        <div className={styles.processingBanner}>
+          <div className={styles.processingInfo}>
+            <div className={styles.spinner}></div>
+            <div>
+              <h3>Videos Processing</h3>
+              <p>
+                Your videos are being optimized for best quality playback.
+                This continues in the background even if you navigate away or close this tab.
+                You'll be notified when processing is complete.
+              </p>
+            </div>
+          </div>
+
+          <ul className={styles.processingList}>
+            {processingVideos.map(video => (
+              <li key={video.id || video.tempId}>
+                {video.title} <span className={styles.processingStatus}>Processing...</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className={styles.grid}>
         {videos.map((video) => (

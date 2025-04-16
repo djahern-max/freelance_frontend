@@ -142,7 +142,7 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
     try {
       const apiUrl =
         process.env.NODE_ENV === 'production'
-          ? '/api/videos/'  // Use relative URL instead of absolute domain
+          ? '/api/videos/'
           : 'http://localhost:8000/videos/';
 
       // Create an XMLHttpRequest to track upload progress
@@ -152,46 +152,70 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
         if (event.lengthComputable) {
           const progress = Math.round((event.loaded * 100) / event.total);
           setUploadProgress(progress);
+
+          // When upload reaches 100%, show processing message
+          if (progress >= 100) {
+            // Clear the previous message
+            setMessage(null);
+
+            // Add a prominent processing message
+            setTimeout(() => {
+              const processingMsg = document.createElement('div');
+              processingMsg.innerHTML = `
+                <div style="text-align: center; margin-top: 10px;">
+                  <div style="font-weight: bold; color: #2563eb; margin-bottom: 5px;">
+                    Upload complete! Processing video...
+                  </div>
+                  <div style="color: #059669; background-color: #ecfdf5; padding: 8px; border-radius: 4px; font-size: 14px;">
+                    You can safely navigate away from this page. 
+                    Processing will continue in the background.
+                  </div>
+                </div>
+              `;
+
+              // Insert the message right after the progress bar
+              const progressBar = document.querySelector(`.${styles.progressBarContainer}`);
+              if (progressBar && progressBar.parentNode) {
+                progressBar.parentNode.insertBefore(processingMsg, progressBar.nextSibling);
+              }
+            }, 100);
+          }
         }
       });
 
       xhr.addEventListener('load', async () => {
         if (xhr.status >= 200 && xhr.status < 300) {
-          // Clear existing messages and show the processing notification
-          setUploadProgress(100);
-          setIsProcessing(true);
+          const data = JSON.parse(xhr.responseText);
 
-          // Clear previous messages
-          setMessage(null);
+          // Add to processing videos in localStorage
+          const processingVideos = JSON.parse(localStorage.getItem('processingVideos') || '[]');
+          const newVideo = {
+            id: data.id,
+            title: data.title || title,
+            tempId: Date.now(),
+            timestamp: Date.now()
+          };
 
-          // Show new message with delay to ensure it renders
+          processingVideos.push(newVideo);
+          localStorage.setItem('processingVideos', JSON.stringify(processingVideos));
+
+          // Reset form
+          setTitle('');
+          setDescription('');
+          setVideoFile(null);
+          setThumbnailFile(null);
+          setPreview(null);
+          setThumbnailPreview(null);
+          setProjectUrl('');
+
+          // Short delay before redirecting
           setTimeout(() => {
-            showMessage(`Upload complete! We're now optimizing your video for best performance. It will be ready in approximately 5 minutes. You'll be redirected shortly.`, 'success');
-
-            // Reset form fields
-            setTitle('');
-            setDescription('');
-            setVideoFile(null);
-            setThumbnailFile(null);
-            setPreview(null);
-            setThumbnailPreview(null);
-            setProjectUrl('');
-
-            // Redirect after allowing time to read the message
-            setTimeout(() => {
-              if (onUploadSuccess) {
-                const data = JSON.parse(xhr.responseText);
-                onUploadSuccess(data);
-              }
-
-              // Navigate back to video list
-              navigate('/videos');
-            }, 4000);
-          }, 500);
+            navigate('/videos');
+          }, 4000); // Give user 4 seconds to read the message
         } else {
           throw new Error(`Upload failed: ${xhr.statusText}`);
         }
-      })
+      });
 
       xhr.addEventListener('error', () => {
         throw new Error('Network error occurred during upload');
@@ -326,10 +350,17 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
                 style={{ width: `${uploadProgress}%` }}
               ></div>
               <span className={styles.progressText}>
-                {isProcessing ?
-                  'Optimizing video for best quality playback...' :
+                {uploadProgress >= 100 ? (
+                  <div className={styles.processingMessage}>
+                    <span>Upload complete! Processing video...</span>
+                    <p className={styles.processingNote}>
+                      You can safely navigate away from this page.
+                      Processing will continue in the background.
+                    </p>
+                  </div>
+                ) : (
                   `Uploading: ${uploadProgress}%`
-                }
+                )}
               </span>
             </div>
           )}

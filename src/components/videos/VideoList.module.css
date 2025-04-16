@@ -759,6 +759,63 @@
   margin-right: 6px;
 }
 
+.processingBanner {
+  background-color: #f0f8ff;
+  border: 1px solid #d0e3ff;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.processingInfo {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #e0e0e0;
+  border-radius: 50%;
+  border-top-color: #3498db;
+  animation: spin 1s linear infinite;
+  margin-right: 16px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.processingList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.processingList li {
+  padding: 8px 12px;
+  background-color: #e6f0ff;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.processingStatus {
+  color: #2980b9;
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
 @media (max-width: 768px) {
   .modalVideo {
     max-height: 50vh;

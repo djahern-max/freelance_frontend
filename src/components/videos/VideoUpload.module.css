@@ -257,6 +257,29 @@
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
 }
 
+.processingMessage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.processingMessage span {
+  font-weight: bold;
+  color: #2563eb;
+  /* Bright blue for attention */
+}
+
+.processingNote {
+  margin-top: 4px;
+  font-size: 0.85rem;
+  color: #059669;
+  /* Green to indicate safety/permission */
+  background-color: #ecfdf5;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-align: center;
+}
+
 /* Animation for loading spinner */
 @keyframes spin {
   from {
