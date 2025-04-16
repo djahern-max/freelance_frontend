@@ -34,7 +34,7 @@ const AuthDialog = ({ isOpen, onClose, error, onLogin, onRegister }) => {
       <div className={styles.dialog} onClick={(e) => e.stopPropagation()}>
         {/* Header Section */}
         <div className={styles.header}>
-          <h2 className={styles.title}>Welcome to RYZE.ai!</h2>
+          <h2 className={styles.title}>Welcome to The Free RYZE Developer Platform!</h2>
           <p className={styles.description}>
             Sign in to your account
           </p>

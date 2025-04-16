@@ -193,6 +193,8 @@ const VideoList = () => {
   const [showPlaylistModal, setShowPlaylistModal] = useState(false);
   const [selectedVideoForPlaylist, setSelectedVideoForPlaylist] = useState(null);
   const [processingVideos, setProcessingVideos] = useState([]);
+  const [videoTypeFilter, setVideoTypeFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -200,6 +202,7 @@ const VideoList = () => {
   const user = useSelector((state) => state.auth.user);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const [editingVideo, setEditingVideo] = useState(null);
+  // Add to VideoList state
 
   const handleEditVideo = (video) => {
     setEditingVideo(video);
@@ -586,6 +589,18 @@ const VideoList = () => {
     );
   }
 
+  const filteredVideos = videos.filter(video => {
+    // Type filter
+    const matchesType = videoTypeFilter === 'all' || video.video_type === videoTypeFilter;
+
+    // Search filter
+    const matchesSearch = !searchQuery ||
+      (video.title && video.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (video.description && video.description.toLowerCase().includes(searchQuery.toLowerCase()));
+
+    return matchesType && matchesSearch;
+  });
+
   return (
     <div className={styles.container}>
       <div className={styles.headerContainer}>
@@ -636,8 +651,33 @@ const VideoList = () => {
         </div>
       )}
 
+      <div className={styles.videoControlsBar}>
+        <div className={styles.searchContainer}>
+          <input
+            type="text"
+            placeholder="Search videos..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className={styles.searchInput}
+          />
+        </div>
+
+        <div className={styles.filterContainer}>
+          <select
+            value={videoTypeFilter}
+            onChange={(e) => setVideoTypeFilter(e.target.value)}
+            className={styles.filterSelect}
+          >
+            <option value="all">All Types</option>
+            <option value="solution_demo">Solution Demo</option>
+            <option value="project_overview">Project Overview</option>
+            <option value="progress_update">Progress Update</option>
+          </select>
+        </div>
+      </div>
+
       <div className={styles.grid}>
-        {videos.map((video) => (
+        {filteredVideos.map((video) => (
           <VideoItem
             key={video.id}
             video={video}
@@ -647,7 +687,7 @@ const VideoList = () => {
             onSendRequest={handleSendRequest}
             onAddToPlaylist={handleAddToPlaylist}
             onDeleteVideo={handleDeleteVideo}
-            onEditVideo={handleEditVideo} // Pass the handler here
+            onEditVideo={handleEditVideo}
             user={user}
             formatDate={formatDate}
           />
