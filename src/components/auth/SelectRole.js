@@ -105,7 +105,7 @@ const SelectRole = () => {
         <div className={styles["select-role-container"]}>
             <div className={styles["select-role-card"]}>
                 <h2>Choose Your Role</h2>
-                <p>Select a role to personalize your experience on RYZE.ai</p>
+                <p>Select a role to personalize your experience on Freelance.wtf</p>
 
                 <div className={styles["role-options"]}>
                     <button

@@ -45,7 +45,7 @@ const DonationSuccess = () => {
                         <div className={styles.icon}>❤️</div>
                         <h1 className={styles.title}>Thank You for Your Support!</h1>
                         <p className={styles.message}>
-                            Your donation helps us continue to improve RYZE.ai and support our community.
+                            Your donation helps us continue to improve Freelance.wtf.ai and support our community.
                         </p>
                         <p className={styles.redirect}>Redirecting to home page in a few seconds...</p>
                         <button

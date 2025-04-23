@@ -73,7 +73,7 @@ const Header = () => {
     },
     {
       icon: Heart,
-      title: 'Support RYZE',
+      title: 'Support Freelance.wtf',
       onClick: handleDonation,
       isSpecial: true // Add this flag for special styling
     }
@@ -93,7 +93,7 @@ const Header = () => {
   const menuItems = [
     {
       icon: Heart,
-      title: 'Support RYZE',
+      title: 'Support Freelance.wtf',
       onClick: handleDonation,
       isSpecial: true // Add this flag for special styling
     },

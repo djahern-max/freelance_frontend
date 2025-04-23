@@ -78,7 +78,7 @@ const ResponsivePlaylistViewer = ({ playlist, videos, currentVideoId }) => {
 
             <div className={styles.playlistFooter}>
                 <button className={styles.supportButton}>
-                    <span className={styles.heartIcon}>♥</span> Support RYZE
+                    <span className={styles.heartIcon}>♥</span> Support Freelance.wtf
                 </button>
                 <div className={styles.footerActions}>
                     <button className={styles.actionButton}>

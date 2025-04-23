@@ -30,7 +30,7 @@ export const Message = ({ message, isCurrentUser, participant }) => {
     const messageClasses = [
         styles.message,
         isCurrentUser ? styles.outgoing : styles.incoming,
-        styles[userType] // e.g. styles.ryze_developer or styles.analytics_hub_user
+        styles[userType]
     ].join(' ');
 
     return (

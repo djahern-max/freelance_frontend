@@ -19,7 +19,7 @@ export const MessageThread = ({ messages, currentUser, participants, sourceSyste
     };
 
     // If this is an external ticket, add a source banner
-    const isExternalTicket = sourceSystem && sourceSystem !== 'ryze.ai';
+    const isExternalTicket = sourceSystem && sourceSystem !== 'Freelance.wtf';
 
     return (
         <div className={styles.messageThread}>

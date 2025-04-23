@@ -1,11 +1,11 @@
 #!/bin/bash
-# Simple script to deploy RYZE AI frontend from Mac to Ubuntu server
+
 
 # Server details
 SERVER_USER="dane"
 SERVER_IP="161.35.96.28"
 
-echo "Building RYZE AI frontend..."
+echo "Building Freelance.wtf frontend..."
 npm run build
 
 if [ $? -ne 0 ]; then

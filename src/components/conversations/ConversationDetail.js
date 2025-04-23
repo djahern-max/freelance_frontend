@@ -314,7 +314,7 @@ const ConversationDetail = () => {
               <>
                 {conversation.messages.map((message, index) => {
                   const isSentByUser = message.user_id === user.id;
-                  const isFromRyze = message.message_metadata && message.message_metadata.source === 'ryze';
+                  const isFromFreelance = message.message_metadata && message.message_metadata.source === 'freelance';
                   const currentDate = new Date(message.created_at);
 
                   const isSameDay = (date1, date2) => {
@@ -360,8 +360,8 @@ const ConversationDetail = () => {
                           {getDateDividerWithTime(currentDate)}
                         </div>
                       )}
-                      <div className={`${styles.messageWrapper} ${isSentByUser ? styles.sent : isFromRyze ? styles.fromRyze : styles.received}`}>
-                        {isFromRyze && <div className={styles.ryzeIndicator}>RYZE Support</div>}
+                      <div className={`${styles.messageWrapper} ${isSentByUser ? styles.sent : isFromFreelance.wtf ? styles.fromFreelance.wtf : styles.received}`}>
+                        {isFromFreelance.wtf && <div className={styles.Freelance.wtfIndicator}>Freelance.wtf Support</div>}
                         <div className={styles.messageContent}>
                           <div className={styles.messageText}>
                             {makeLinksClickable(message.content)}

@@ -33,7 +33,7 @@ const DonationButton = () => {
                 className={styles.donateButton}
             >
                 <span className={styles.icon}>♥</span>
-                {loading ? 'Processing...' : 'Support RYZE'}
+                {loading ? 'Processing...' : 'Support Freelance.wtf'}
             </button>
 
             {error && (

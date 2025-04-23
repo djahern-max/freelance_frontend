@@ -8,7 +8,7 @@ const PrivacyPolicyPage = () => {
                 <h1 className={styles.legalTitle}>Privacy Policy</h1>
                 <div className={styles.legalSection}>
                     <p>
-                        At RYZE.ai ("we," "us," "our"), we are committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our platform. Please read this privacy policy carefully.
+                        At Freelance.wtf.ai ("we," "us," "our"), we are committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our platform. Please read this privacy policy carefully.
                     </p>
 
                     <h2>1. Information We Collect</h2>
@@ -30,7 +30,7 @@ const PrivacyPolicyPage = () => {
 
                     <h2>2. QuickBooks Data Collection</h2>
                     <p>
-                        When you connect your QuickBooks account to RYZE.ai, we collect the following types of data:
+                        When you connect your QuickBooks account to Freelance.wtf.ai, we collect the following types of data:
                     </p>
                     <ul>
                         <li>
@@ -170,7 +170,7 @@ const PrivacyPolicyPage = () => {
 
                     <h2>11. Contact Us</h2>
                     <p>
-                        If you have questions or concerns about this Privacy Policy, please contact us at privacy@ryze.ai.
+                        If you have questions or concerns about this Privacy Policy, please contact us at privacy@Freelance.wtf.ai.
                     </p>
                 </div>
                 <div className={styles.lastUpdated}>Last updated: February 24, 2025</div>

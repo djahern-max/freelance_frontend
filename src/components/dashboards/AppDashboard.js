@@ -109,7 +109,7 @@ const AppDashboard = () => {
           This is just placeholder data for now, stay tuned for the completed
           application within a couple of weeks (11.10.2024). The idea is that
           developers can submit their applications and users can vote on them.
-          ... and RYZE to the top of the list!
+          ... and Freelance.wtf to the top of the list!
         </p>
 
         <div className={styles.dashboardGrid}>
@@ -120,15 +120,14 @@ const AppDashboard = () => {
                   {applications.map((app, index) => (
                     <li
                       key={app.id}
-                      className={`${styles.applicationItem} ${
-                        index < 2
+                      className={`${styles.applicationItem} ${index < 2
                           ? styles.topRankGreen
                           : index < 4
-                          ? styles.topRankYellow
-                          : index < 6
-                          ? styles.topRankRed
-                          : ""
-                      }`}
+                            ? styles.topRankYellow
+                            : index < 6
+                              ? styles.topRankRed
+                              : ""
+                        }`}
                     >
                       <div className={styles.applicationInfo}>
                         <a

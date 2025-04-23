@@ -4,10 +4,10 @@ import React from 'react';
 import styles from './SessionHeader.module.css';
 
 export const SessionHeader = ({ session, currentUser, onStatusChange }) => {
-    const isRyzeUser = currentUser?.user_type === 'ryze_developer';
+    const isFreelanceUser = currentUser?.user_type === 'Freelance.wtf_developer';
 
-    // Only RYZE developers can change status
-    const canChangeStatus = isRyzeUser;
+
+    const canChangeStatus = isFreelanceUser;
 
     const statusOptions = [
         { value: 'open', label: 'Open' },
