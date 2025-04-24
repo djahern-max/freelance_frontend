@@ -177,9 +177,14 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
           processingVideos.push(newVideo);
           localStorage.setItem('processingVideos', JSON.stringify(processingVideos));
 
-          showMessage('Upload successful! Video is now processing.', 'success');
+          // Set processing to true explicitly
+          setIsProcessing(true);
+          setUploading(true); // Keep this true so progress bar remains visible
 
-          // Reset form
+          // Message should be very clear
+          showMessage('PROCESSING VIDEO - You can navigate away!', 'processing');
+
+          // Reset form fields but keep message visible
           setTitle('');
           setDescription('');
           setVideoFile(null);
@@ -188,10 +193,10 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
           setThumbnailPreview(null);
           setProjectUrl('');
 
-          // Short delay before redirecting
+          // Redirect after a longer delay to ensure user sees the message
           setTimeout(() => {
             navigate('/videos');
-          }, 4000); // Give user 4 seconds to read the message
+          }, 8000); // Give user 8 seconds to read the message
         } else {
           throw new Error(`Upload failed: ${xhr.statusText}`);
         }
@@ -352,21 +357,55 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
 
           {/* New message that shows after uploading is complete */}
           {isProcessing && (
-            <div className={styles.processingBanner}>
-              <div className={styles.processingContent}>
-                <Loader className={styles.spinningLoader} size={20} />
-                <div className={styles.processingText}>
-                  <h3>FFMPEG Compression In Progress</h3>
-                  <p>Your video is being compressed in the background. This may take several minutes depending on the file size.</p>
-                  <p><strong>You can safely navigate away</strong> - your video will appear in your library when ready.</p>
+            <div className={styles.processingOverlay}>
+              <div className={styles.processingCard}>
+                <div className={styles.processingIcon}>
+                  <Loader size={36} className={styles.processingLoader} />
                 </div>
+                <h2 className={styles.processingTitle}>Video Processing Started</h2>
+                <div className={styles.processingInfo}>
+                  <p className={styles.processingMainMessage}>
+                    <strong>Your video is being compressed with FFMPEG</strong>
+                  </p>
+                  <div className={styles.processingDivider}></div>
+                  <p className={styles.processingDirections}>
+                    This process will continue in the background and may take several minutes.
+                  </p>
+                  <p className={styles.processingAction}>
+                    <strong>You can safely navigate away from this page.</strong>
+                  </p>
+                  <p className={styles.processingFinalNote}>
+                    Your video will appear in your library when processing is complete.
+                  </p>
+                </div>
+                <button
+                  className={styles.processingContinueButton}
+                  onClick={() => navigate('/videos')}
+                >
+                  Go to Video Library
+                </button>
               </div>
             </div>
           )}
 
+          {/* Regular upload progress bar (only show when not processing) */}
+          {uploading && !isProcessing && (
+            <div className={styles.progressBarContainer}>
+              <div
+                className={styles.progressBar}
+                style={{ width: `${uploadProgress}%` }}
+              ></div>
+              <span className={styles.progressText}>
+                Uploading: {uploadProgress}%
+              </span>
+            </div>
+          )}
+
+          {/* Message display - add 'processing' message type */}
           {message && (
             <div className={styles[messageType]}>
-              {messageType === 'loading' && <Loader className="animate-spin mr-2" />}
+              {messageType === 'loading' && <Loader className="animate-spin mr-2" size={16} />}
+              {messageType === 'processing' && <Loader className="animate-spin mr-2" size={16} />}
               {message}
             </div>
           )}

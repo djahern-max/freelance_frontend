@@ -263,103 +263,141 @@
   align-items: center;
 }
 
-.processingMessage span {
+/* Add these new styles to your VideoUpload.module.css */
+
+/* New message type for processing status */
+.processing {
+  composes: message;
+  background: #f0f9ff;
+  color: #0369a1;
+  border: 1px solid #0369a1;
   font-weight: bold;
-  color: #2563eb;
-  /* Bright blue for attention */
 }
 
-.processingNote {
-  margin-top: 4px;
-  font-size: 0.85rem;
-  color: #059669;
-  /* Green to indicate safety/permission */
-  background-color: #ecfdf5;
-  padding: 4px 8px;
-  border-radius: 4px;
-  text-align: center;
+/* Processing overlay - takes over the whole form area */
+.processingOverlay {
+  margin: 20px 0;
+  animation: fadeIn 0.3s ease-in-out;
 }
 
-/* Add these styles to your VideoUpload.module.css file */
-
-.processingMessage {
+.processingCard {
+  background: white;
+  border: 2px solid #3b82f6;
+  border-radius: 10px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  width: 100%;
+  text-align: center;
 }
 
-.processingMessage span {
-  font-weight: bold;
-  color: #2563eb;
-}
-
-.processingAlert {
+.processingIcon {
+  background: #eff6ff;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: #059669;
-  font-weight: 500;
+  justify-content: center;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.15);
 }
 
-.spinningLoader {
+.processingLoader {
+  color: #2563eb;
   animation: spin 1.5s linear infinite;
 }
 
-.processingNote {
-  margin-top: 4px;
-  font-size: 0.9rem;
-  color: #4b5563;
-  background-color: #f3f4f6;
-  padding: 8px 12px;
-  border-radius: 6px;
-  text-align: center;
-  width: 100%;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+.processingTitle {
+  color: #1e40af;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 16px 0;
 }
 
-.processingBanner {
-  background-color: #eef2ff;
-  border: 1px solid #c7d2fe;
+.processingInfo {
+  background: #f0f9ff;
   border-radius: 8px;
   padding: 16px;
-  margin-top: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  margin-bottom: 20px;
 }
 
-.processingContent {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.processingText {
-  flex: 1;
-}
-
-.processingText h3 {
-  margin: 0 0 8px 0;
+.processingMainMessage {
   font-size: 1.1rem;
-  color: #4f46e5;
+  color: #0369a1;
+  margin: 0 0 12px 0;
 }
 
-.processingText p {
-  margin: 0 0 8px 0;
-  font-size: 0.9rem;
+.processingDivider {
+  height: 1px;
+  background: #bfdbfe;
+  margin: 12px 0;
+}
+
+.processingDirections {
   color: #4b5563;
-  line-height: 1.4;
+  margin: 0 0 12px 0;
+  font-size: 1rem;
 }
 
-.processingText p:last-child {
-  margin-bottom: 0;
+.processingAction {
+  color: #1e40af;
+  margin: 0 0 12px 0;
+  font-size: 1.05rem;
+  animation: pulse 2s infinite;
 }
 
-.processingText strong {
-  color: #1f2937;
+.processingFinalNote {
+  color: #4b5563;
+  margin: 0;
+  font-size: 0.9rem;
 }
 
-/* Keep the existing spin animation */
+.processingContinueButton {
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 24px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 1rem;
+}
+
+.processingContinueButton:hover {
+  background: #1d4ed8;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.8;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
 @keyframes spin {
   from {
     transform: rotate(0deg);
@@ -370,7 +408,28 @@
   }
 }
 
-/* Update responsive styling to accommodate our new elements */
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .processingCard {
+    padding: 16px;
+  }
+
+  .processingIcon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .processingTitle {
+    font-size: 1.25rem;
+  }
+
+  .processingMainMessage {
+    font-size: 1rem;
+  }
+}
+
+
+
 @media (max-width: 640px) {
   .processingContent {
     flex-direction: column;
