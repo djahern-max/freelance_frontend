@@ -23,9 +23,7 @@ export default function HomePage() {
     <div className={styles.fullPage}>
       <div className={styles.centeredContent}>
         <Logo className={styles.logo} width={180} />
-        <h1 className={styles.title}>
-          <span className={styles.highlight}>Connecting talent</span> with opportunity
-        </h1>
+
         <p className={styles.subtitle}>A free platform built for freelance developers</p>
 
         <div className={styles.buttonGroup}>
