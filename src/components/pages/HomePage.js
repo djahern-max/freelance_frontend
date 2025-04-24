@@ -30,6 +30,11 @@ export default function HomePage() {
           <button className={styles.login} onClick={() => navigate('/login')}>Login</button>
           <button className={styles.register} onClick={() => navigate('/register')}>Register</button>
         </div>
+
+        <div className={styles.divider}>
+          <span>or</span>
+        </div>
+
         <div className={styles.oauthWrapper}>
           <OAuthButtons />
         </div>
