@@ -280,6 +280,109 @@
   text-align: center;
 }
 
+/* Add these styles to your VideoUpload.module.css file */
+
+.processingMessage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.processingMessage span {
+  font-weight: bold;
+  color: #2563eb;
+}
+
+.processingAlert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #059669;
+  font-weight: 500;
+}
+
+.spinningLoader {
+  animation: spin 1.5s linear infinite;
+}
+
+.processingNote {
+  margin-top: 4px;
+  font-size: 0.9rem;
+  color: #4b5563;
+  background-color: #f3f4f6;
+  padding: 8px 12px;
+  border-radius: 6px;
+  text-align: center;
+  width: 100%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.processingBanner {
+  background-color: #eef2ff;
+  border: 1px solid #c7d2fe;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.processingContent {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.processingText {
+  flex: 1;
+}
+
+.processingText h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.1rem;
+  color: #4f46e5;
+}
+
+.processingText p {
+  margin: 0 0 8px 0;
+  font-size: 0.9rem;
+  color: #4b5563;
+  line-height: 1.4;
+}
+
+.processingText p:last-child {
+  margin-bottom: 0;
+}
+
+.processingText strong {
+  color: #1f2937;
+}
+
+/* Keep the existing spin animation */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Update responsive styling to accommodate our new elements */
+@media (max-width: 640px) {
+  .processingContent {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .processingText h3 {
+    margin-top: 8px;
+  }
+}
+
 /* Animation for loading spinner */
 @keyframes spin {
   from {

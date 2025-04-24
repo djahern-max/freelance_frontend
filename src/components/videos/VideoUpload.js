@@ -332,15 +332,35 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
               <span className={styles.progressText}>
                 {isProcessing ? (
                   <div className={styles.processingMessage}>
-                    <span>Upload complete! Processing video...</span>
+                    <span>Upload complete!</span>
+                    <div className={styles.processingAlert}>
+                      <Loader className={styles.spinningLoader} size={16} />
+                      <span>Video is processing - this may take several minutes</span>
+                    </div>
                     <p className={styles.processingNote}>
-                      FFMPEG BackGround Compression Happening.  Navigate Away!
+                      You can safely navigate away from this page.
+                      <br />
+                      Your video will be available in the videos section when ready.
                     </p>
                   </div>
                 ) : (
                   `Uploading: ${uploadProgress}%`
                 )}
               </span>
+            </div>
+          )}
+
+          {/* New message that shows after uploading is complete */}
+          {isProcessing && (
+            <div className={styles.processingBanner}>
+              <div className={styles.processingContent}>
+                <Loader className={styles.spinningLoader} size={20} />
+                <div className={styles.processingText}>
+                  <h3>FFMPEG Compression In Progress</h3>
+                  <p>Your video is being compressed in the background. This may take several minutes depending on the file size.</p>
+                  <p><strong>You can safely navigate away</strong> - your video will appear in your library when ready.</p>
+                </div>
+              </div>
             </div>
           )}
 
