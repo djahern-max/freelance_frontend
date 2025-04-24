@@ -19,7 +19,7 @@ import api from './utils/api';
 import MemoryMonitor from './utils/debug/MemoryMonitor';
 import OAuthSuccess from './components/auth/OAuthSuccess';
 import OAuthError from './components/auth/OAuthError';
-import CollaborationPortal from './components/collaboration/CollaborationPortal';
+
 // Import session manager
 import { initSessionManager, stopSessionManager } from './utils/sessionManager';
 
@@ -224,8 +224,6 @@ function AppContent() {
             <Route path="/create-playlist" element={<CreatePlaylistForm />} />
             <Route path="/shared/playlists/:shareToken" element={<SharedPlaylist />} />
 
-            {/* Fixed the collaboration route - removed extra backslash */}
-            <Route path="/collaboration/:sessionId/:accessToken" element={<CollaborationPortal />} />
 
             {/* Showcase routes */}
             <Route

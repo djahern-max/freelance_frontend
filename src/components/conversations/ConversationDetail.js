@@ -10,20 +10,18 @@ import {
   User,
   XCircle,
 } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import api from '../../utils/api';
 import styles from './ConversationDetail.module.css';
-import SubscriptionDialog from '../payments/SubscriptionDialog';
 
 const ConversationDetail = () => {
   // 1. Hooks and constants first
   const { id } = useParams();
   const navigate = useNavigate();
-  const messagesEndRef = useRef(null);
   const { token, user } = useSelector((state) => state.auth);
   const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -32,18 +30,10 @@ const ConversationDetail = () => {
   const [requestDetails, setRequestDetails] = useState(null);
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-
   const [agreement, setAgreement] = useState(null);
-
   const [showAgreementModal, setShowAgreementModal] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
 
-  const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
-  const [pendingMessage, setPendingMessage] = useState(null);
-  const isExternalSupport =
-    (requestDetails?.request_metadata?.ticket_type === 'external_support') ||
-    (requestDetails?.external_metadata?.analytics_hub_id) ||
-    (requestDetails?.content?.includes('## EXTERNAL SUPPORT TICKET'));
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -57,7 +47,6 @@ const ConversationDetail = () => {
   const fetchConversation = useCallback(async (signal) => {
     try {
       // Use the dedicated endpoint that returns a single conversation with all messages
-      // This now works after our backend fix
       const conversationRes = await api.get(`/conversations/${id}`, { signal });
 
       // Get request details
@@ -75,7 +64,6 @@ const ConversationDetail = () => {
       }
     }
   }, [id]);
-
 
   // Add this outside your component function
   const makeLinksClickable = (text) => {
@@ -144,8 +132,6 @@ const ConversationDetail = () => {
     };
   }, [id, token]);
 
-
-
   // Second useEffect - State cleanup
   useEffect(() => {
     return () => {
@@ -156,8 +142,6 @@ const ConversationDetail = () => {
       setAgreement(null);
       setShowAgreementModal(false);
       setIsSidebarVisible(false);
-      setShowSubscriptionDialog(false);
-      setPendingMessage(null);
     };
   }, []);
 
@@ -176,13 +160,11 @@ const ConversationDetail = () => {
     };
   }, []);
 
-
   useEffect(() => {
     if (requestDetails) {
       console.log("Request Details:", JSON.stringify(requestDetails, null, 2));
     }
   }, [requestDetails]);
-
 
   const sendSystemMessage = async (content) => {
     try {
@@ -198,7 +180,6 @@ const ConversationDetail = () => {
       console.error('Failed to send system message:', err);
     }
   };
-
 
   const handleProposal = async (accept) => {
     try {
@@ -314,7 +295,7 @@ const ConversationDetail = () => {
               <>
                 {conversation.messages.map((message, index) => {
                   const isSentByUser = message.user_id === user.id;
-                  const isFromFreelance = message.message_metadata && message.message_metadata.source === 'freelance';
+                  const isFreelanceSupport = message.message_metadata && message.message_metadata.source === 'freelance';
                   const currentDate = new Date(message.created_at);
 
                   const isSameDay = (date1, date2) => {
@@ -360,8 +341,8 @@ const ConversationDetail = () => {
                           {getDateDividerWithTime(currentDate)}
                         </div>
                       )}
-                      <div className={`${styles.messageWrapper} ${isSentByUser ? styles.sent : isFromFreelance.wtf ? styles.fromFreelance.wtf : styles.received}`}>
-                        {isFromFreelance.wtf && <div className={styles.Freelance.wtfIndicator}>Freelance.wtf Support</div>}
+                      <div className={`${styles.messageWrapper} ${isSentByUser ? styles.sent : isFreelanceSupport ? styles.fromFreelanceWtf : styles.received}`}>
+                        {isFreelanceSupport && <div className={styles.freelanceWtfIndicator}>Freelance.wtf Support</div>}
                         <div className={styles.messageContent}>
                           <div className={styles.messageText}>
                             {makeLinksClickable(message.content)}
@@ -371,19 +352,19 @@ const ConversationDetail = () => {
                                 {message.linked_content.map((link) => (
                                   <div key={link.id} className={styles.linkItem}>
                                     {link.type === 'video' ? (
-                                      <a href="#" className={styles.videoLink} onClick={(e) => {
-                                        e.preventDefault();
-                                        navigate(`/video_display/stream/${link.content_id}`);
-                                      }}>
+                                      <button
+                                        className={styles.videoLink}
+                                        onClick={() => navigate(`/video_display/stream/${link.content_id}`)}
+                                      >
                                         📹 View Attached Video: {link.title}
-                                      </a>
+                                      </button>
                                     ) : link.type === 'profile' ? (
-                                      <a href="#" className={styles.profileLink} onClick={(e) => {
-                                        e.preventDefault();
-                                        navigate(`/profile/developers/${link.content_id}/public`);
-                                      }}>
+                                      <button
+                                        className={styles.profileLink}
+                                        onClick={() => navigate(`/profile/developers/${link.content_id}/public`)}
+                                      >
                                         👤 View Developer Profile
-                                      </a>
+                                      </button>
                                     ) : null}
                                   </div>
                                 ))}
@@ -552,15 +533,8 @@ const ConversationDetail = () => {
           </div>
         </div>
       )}
-
     </div>
   );
 }
 
-
 export default ConversationDetail;
-
-
-
-
-
