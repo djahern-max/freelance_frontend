@@ -340,7 +340,7 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
                     <span>Upload complete!</span>
                     <div className={styles.processingAlert}>
                       <Loader className={styles.spinningLoader} size={16} />
-                      <span>Video is processing - this may take several minutes</span>
+
                     </div>
                     <p className={styles.processingNote}>
                       You can safely navigate away from this page.
