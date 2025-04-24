@@ -8,11 +8,9 @@ export default function HomePage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Add no-scroll class to necessary elements when this component mounts
     document.body.classList.add('no-scroll');
     document.documentElement.classList.add('no-scroll');
 
-    // Remove no-scroll class when component unmounts
     return () => {
       document.body.classList.remove('no-scroll');
       document.documentElement.classList.remove('no-scroll');
