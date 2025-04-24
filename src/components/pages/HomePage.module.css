@@ -7,23 +7,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #0e0e12;
-  /* Dark background for rebel vibe */
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   text-align: center;
   overflow: hidden;
-  position: relative;
-}
-
-.noise {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-  opacity: 0.04;
-  pointer-events: none;
-  z-index: 1;
 }
 
 .centeredContent {
@@ -31,299 +17,164 @@
   flex-direction: column;
   align-items: center;
   max-width: 600px;
-  padding: 3rem;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 0;
-  /* Sharp edges for a more edgy look */
-  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.5);
-  transform: skew(-1deg, 0deg);
-  /* Slightly skewed for a rebellious feel */
-  position: relative;
-  z-index: 10;
-  animation: slideUp 0.8s cubic-bezier(0.17, 0.67, 0.35, 1.02) forwards;
+  padding: 0 var(--spacing-lg);
+  animation: fadeInUp 0.6s ease-out forwards;
   opacity: 0;
-}
-
-.centeredContent::before {
-  content: '';
-  position: absolute;
-  top: -3px;
-  left: -3px;
-  right: -3px;
-  bottom: -3px;
-  background: linear-gradient(135deg, #15408c, #0074e8, transparent, transparent);
-  z-index: -1;
-  pointer-events: none;
+  transform: translateY(20px);
 }
 
 .logo {
-  width: 220px;
+  width: 180px;
   height: auto;
-  margin-bottom: 1.5rem;
-  filter: drop-shadow(0 5px 10px rgba(0, 60, 140, 0.3));
+  margin-bottom: 10px;
+  /* Reduced from var(--spacing-sm) */
+  max-width: none;
+  animation: fadeIn 1s ease-out forwards;
+  opacity: 0;
 }
 
 .title {
-  margin-bottom: 1.2rem;
-  line-height: 1;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+  /* Increased from var(--spacing-sm) */
+  line-height: 1.2;
 }
 
 .highlight {
-  color: #ff5722;
-  /* Vibrant orange-red */
-  font-family: 'Permanent Marker', cursive;
-  /* Graffiti/marker style font */
-  font-weight: 400;
-  font-size: 3.5rem;
-  letter-spacing: 1px;
-  transform: rotate(-1deg);
-  /* Slightly rotated for a hand-written feel */
-  margin-bottom: 0.5rem;
-  text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
-}
-
-.titleBottom {
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: 1rem;
-}
-
-.withText {
-  color: #555;
-  font-size: 2.2rem;
-  font-weight: 300;
-  font-style: italic;
-}
-
-.opportunityText {
-  color: #0c3583;
-  /* Deep blue */
-  font-family: 'Permanent Marker', cursive;
-  font-weight: 400;
-  font-size: 3.4rem;
-  letter-spacing: 1px;
-  transform: rotate(1deg);
-  /* Counter-rotation for visual interest */
-  text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
+  color: var(--color-accent);
 }
 
 .subtitle {
-  font-size: 1.1rem;
-  color: #555;
-  margin-bottom: 2rem;
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-lg);
+  /* Increased from var(--spacing-sm) to add more space */
   max-width: 480px;
-  font-style: italic;
-  letter-spacing: 0.5px;
+}
+
+.description {
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-xl);
+  max-width: 480px;
 }
 
 .buttonGroup {
   display: flex;
-  gap: 1.2rem;
-  margin-bottom: 2rem;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  margin-top: var(--spacing-md);
+  /* Added to create more space above buttons */
   justify-content: center;
   width: 100%;
+  flex-wrap: wrap;
 }
 
 .login {
-  background-color: #0c3583;
-  color: white;
-  border: none;
-  min-width: 140px;
-  padding: 0.9rem 1.8rem;
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-  transform: skew(-5deg);
-  /* Skewed button for a rebel look */
-}
-
-.login::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(45deg, transparent 50%, rgba(255, 255, 255, 0.1) 50%);
-  background-size: 250% 250%;
-  background-position: 100% 100%;
-  transition: all 0.4s ease;
-}
-
-.login:hover::after {
-  background-position: 0 0;
+  composes: buttonPrimary from '../../styles/components.module.css';
+  min-width: 130px;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .register {
-  background-color: transparent;
-  color: #0c3583;
-  border: 2px solid #0c3583;
-  min-width: 140px;
-  padding: 0.85rem 1.8rem;
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  transform: skew(-5deg);
-  /* Skewed button for a rebel look */
+  composes: buttonSecondary from '../../styles/components.module.css';
+  min-width: 130px;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.login:hover,
 .register:hover {
-  background-color: rgba(12, 53, 131, 0.07);
-}
-
-.oauthDivider {
-  display: flex;
-  align-items: center;
-  width: 80%;
-  margin: 0.5rem 0 1.5rem;
-}
-
-.dividerLine {
-  flex: 1;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #ddd, transparent);
-}
-
-.oauthDivider span {
-  padding: 0 1rem;
-  color: #777;
-  font-size: 0.9rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
 .oauthWrapper {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: var(--spacing-md);
   width: 100%;
-  max-width: 300px;
+  max-width: 280px;
 }
 
-/* Decorative elements for rebel artistic vibe */
-.decorElements {
+/* Optional footer if you want one */
+.footer {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.slashOne {
-  position: absolute;
-  width: 180px;
-  height: 8px;
-  background: #ff5722;
-  top: 15%;
-  right: 8%;
-  transform: rotate(-35deg);
-  opacity: 0.7;
-  border-radius: 4px;
-}
-
-.slashTwo {
-  position: absolute;
-  width: 120px;
-  height: 6px;
-  background: #0c3583;
-  bottom: 20%;
-  left: 10%;
-  transform: rotate(25deg);
-  opacity: 0.7;
-  border-radius: 3px;
-}
-
-.circle {
-  position: absolute;
-  width: 300px;
-  height: 300px;
-  border: 8px solid rgba(12, 53, 131, 0.15);
-  border-radius: 50%;
-  bottom: -100px;
-  right: -100px;
-}
-
-.dot {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  background: #ff5722;
-  border-radius: 50%;
-  top: 25%;
-  left: 18%;
+  bottom: var(--spacing-md);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
 }
 
 /* Animations */
-@keyframes slideUp {
-  0% {
-    opacity: 0;
-    transform: translateY(40px) skew(-1deg, 0deg);
-  }
-
-  100% {
+@keyframes fadeInUp {
+  to {
     opacity: 1;
-    transform: translateY(0) skew(-1deg, 0deg);
+    transform: translateY(0);
   }
 }
 
-/* Mobile responsiveness */
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
 @media (max-width: 600px) {
-  .centeredContent {
-    padding: 2rem 1.5rem;
-    margin: 0 1rem;
-    max-width: 100%;
-  }
-
-  .logo {
-    width: 180px;
-    margin-bottom: 1rem;
-  }
-
-  .highlight {
-    font-size: 2.6rem;
-  }
-
-  .withText {
-    font-size: 1.6rem;
-  }
-
-  .opportunityText {
-    font-size: 2.8rem;
+  .title {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+    /* Increased from 0.5rem */
   }
 
   .subtitle {
-    font-size: 1rem;
+    font-size: 0.95rem;
     margin-bottom: 1.5rem;
+    /* Increased from 0.5rem to add more space */
+  }
+
+  .description {
+    font-size: 0.85rem;
+    padding: 0 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .logo {
+    width: 120px;
+    /* smaller for mobile */
+    margin-bottom: 8px;
+    /* Reduced from 12px */
   }
 
   .buttonGroup {
     flex-direction: column;
-    gap: 0.8rem;
+    gap: 12px;
+    margin-top: 0.5rem;
+    /* Added spacing */
   }
 
   .login,
   .register {
     width: 100%;
-    padding: 0.7rem;
+    font-size: 1rem;
+    padding: 12px;
   }
 
-  .titleBottom {
-    flex-direction: column;
-    gap: 0;
+  .oauthWrapper {
+    gap: 10px;
+    max-width: 100%;
+    padding: 0 1rem;
+  }
+
+  .centeredContent {
+    padding: 1rem;
+    max-width: 100%;
+  }
+
+  .fullPage {
+    padding: 1rem 0;
+    /* adds vertical breathing room */
   }
 }
