@@ -39,12 +39,10 @@ const SelectRole = () => {
             return;
         }
 
-        // Store token
+        // Store token AND set it in the API utility
         setToken(urlToken);
         localStorage.setItem('token', urlToken);
-
-        // We don't need to fetch user data here since we'll handle everything
-        // during role selection - the user is already authenticated with a token
+        api.setToken(urlToken); // Add this line to set token in the API utility
     }, [location.search]);
 
     const handleRoleSelection = async (userType) => {
@@ -55,21 +53,17 @@ const SelectRole = () => {
                 return;
             }
 
-            // Send role selection to backend
-            const response = await api.post('/auth/select-role',
-                {
-                    user_type: userType // This endpoint will get current_user from JWT token
-                },
-                {
-                    headers: { Authorization: `Bearer ${token}` }
-                }
-            );
+            // Set the token in the api utility to ensure it's used consistently
+            api.setToken(token);
+
+            // Make the API call without manually adding headers
+            const response = await api.post('/auth/select-role', {
+                user_type: userType
+            });
 
             if (response.data) {
-                // Fetch user data to get updated information
-                const userResponse = await api.get('/auth/me', {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                // Get user data
+                const userResponse = await api.get('/auth/me');
 
                 if (!userResponse.data) {
                     throw new Error('Failed to retrieve user data');
@@ -84,7 +78,7 @@ const SelectRole = () => {
                         email: userResponse.data.email,
                         fullName: userResponse.data.full_name || '',
                         isActive: userResponse.data.is_active,
-                        userType: userType, // Use the selected role
+                        userType: userType,
                         createdAt: userResponse.data.created_at,
                     },
                 }));
@@ -95,7 +89,7 @@ const SelectRole = () => {
             }
         } catch (err) {
             console.error('Error setting role:', err);
-            setError('Failed to set your role. Please try again.');
+            setError(`Failed to set your role: ${err.message || 'Please try again.'}`);
         } finally {
             setLoading(false);
         }
