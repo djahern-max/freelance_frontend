@@ -19,13 +19,17 @@ export default function HomePage() {
 
   return (
     <div className={styles.fullPage}>
+      <div className={styles.noise}></div>
+
       <div className={styles.centeredContent}>
         <Logo className={styles.logo} width={220} />
 
         <h1 className={styles.title}>
           <span className={styles.highlight}>Connecting talent</span>
-          <span className={styles.withText}>with</span>
-          <span className={styles.opportunityText}>opportunity</span>
+          <div className={styles.titleBottom}>
+            <span className={styles.withText}>with</span>
+            <span className={styles.opportunityText}>opportunity</span>
+          </div>
         </h1>
 
         <p className={styles.subtitle}>A free platform built for freelance developers</p>
@@ -36,7 +40,9 @@ export default function HomePage() {
         </div>
 
         <div className={styles.oauthDivider}>
+          <div className={styles.dividerLine}></div>
           <span>or</span>
+          <div className={styles.dividerLine}></div>
         </div>
 
         <div className={styles.oauthWrapper}>
@@ -44,11 +50,11 @@ export default function HomePage() {
         </div>
       </div>
 
-      <div className={styles.backgroundElements}>
-        <div className={styles.circle1}></div>
-        <div className={styles.circle2}></div>
-        <div className={styles.squiggle1}></div>
-        <div className={styles.squiggle2}></div>
+      <div className={styles.decorElements}>
+        <div className={styles.slashOne}></div>
+        <div className={styles.slashTwo}></div>
+        <div className={styles.circle}></div>
+        <div className={styles.dot}></div>
       </div>
     </div>
   );
