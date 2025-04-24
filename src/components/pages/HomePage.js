@@ -22,7 +22,7 @@ export default function HomePage() {
       <div className={styles.centeredContent}>
         <Logo className={styles.logo} width={180} />
 
-        <p className={styles.subtitle}>A free platform built for freelance developers</p>
+        <p className={styles.subtitle}>What can we build for you?</p>
 
         <div className={styles.buttonGroup}>
           <button className={styles.login} onClick={() => navigate('/login')}>Login</button>

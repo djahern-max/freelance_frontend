@@ -66,7 +66,7 @@ const Footer = () => {
                 className={styles.buttonIcon}
                 color={isCoffeeHovered ? '#ef4444' : '#6b7280'}
               />
-              <span>Help us empower more creators</span>
+              <span>Help empower more creators</span>
             </div>
           </button>
         </div>
