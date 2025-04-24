@@ -137,7 +137,7 @@ const getBaseURL = () => {
     return process.env.REACT_APP_API_URL;
   }
   return process.env.NODE_ENV === 'production'
-    ? 'https://www.Freelance.wtf.ai/api'
+    ? 'https://www.Freelance.wtf/api'
     : 'http://localhost:8000';
 };
 
