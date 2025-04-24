@@ -28,8 +28,8 @@
 .logo {
   width: 180px;
   height: auto;
-  margin-bottom: 35px;
-  /* Increased space after logo */
+  margin-bottom: 20px;
+  /* Reduced from 35px to 20px */
   max-width: none;
   animation: fadeIn 1s ease-out forwards;
   opacity: 0;
@@ -39,7 +39,7 @@
   font-size: var(--font-size-base);
   color: var(--color-text-secondary);
   margin-bottom: 35px;
-  /* Equal spacing before buttons */
+  /* Keeps space before buttons consistent */
   max-width: 480px;
 }
 
@@ -126,8 +126,8 @@
 
   .logo {
     width: 120px;
-    margin-bottom: 25px;
-    /* Equal spacing on mobile */
+    margin-bottom: 15px;
+    /* Reduced from 25px to 15px for mobile */
   }
 
   .subtitle {
