@@ -116,6 +116,7 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
 
     setUploading(true);
     setUploadProgress(0);
+    setIsProcessing(false);
     showMessage('Upload in progress...', 'loading');
 
     const formData = new FormData();
@@ -154,31 +155,8 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
           setUploadProgress(progress);
 
           // When upload reaches 100%, show processing message
-          if (progress >= 100) {
-            // Clear the previous message
-            setMessage(null);
-
-            // Add a prominent processing message
-            setTimeout(() => {
-              const processingMsg = document.createElement('div');
-              processingMsg.innerHTML = `
-                <div style="text-align: center; margin-top: 10px;">
-                  <div style="font-weight: bold; color: #2563eb; margin-bottom: 5px;">
-                    Upload complete! Processing video...
-                  </div>
-                  <div style="color: #059669; background-color: #ecfdf5; padding: 8px; border-radius: 4px; font-size: 14px;">
-                    You can safely navigate away from this page. 
-                    Processing will continue in the background.
-                  </div>
-                </div>
-              `;
-
-              // Insert the message right after the progress bar
-              const progressBar = document.querySelector(`.${styles.progressBarContainer}`);
-              if (progressBar && progressBar.parentNode) {
-                progressBar.parentNode.insertBefore(processingMsg, progressBar.nextSibling);
-              }
-            }, 100);
+          if (progress >= 100 && !isProcessing) {
+            setIsProcessing(true);
           }
         }
       });
@@ -198,6 +176,8 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
 
           processingVideos.push(newVideo);
           localStorage.setItem('processingVideos', JSON.stringify(processingVideos));
+
+          showMessage('Upload successful! Video is now processing.', 'success');
 
           // Reset form
           setTitle('');
@@ -350,7 +330,7 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
                 style={{ width: `${uploadProgress}%` }}
               ></div>
               <span className={styles.progressText}>
-                {uploadProgress >= 100 ? (
+                {isProcessing ? (
                   <div className={styles.processingMessage}>
                     <span>Upload complete! Processing video...</span>
                     <p className={styles.processingNote}>
