@@ -334,8 +334,7 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
                   <div className={styles.processingMessage}>
                     <span>Upload complete! Processing video...</span>
                     <p className={styles.processingNote}>
-                      You can safely navigate away from this page.
-                      Processing will continue in the background.
+                      FFMPEG BackGround Compression Happening.  Navigate Away!
                     </p>
                   </div>
                 ) : (
