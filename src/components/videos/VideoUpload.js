@@ -328,32 +328,7 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
             </div>
           )}
 
-          {uploading && (
-            <div className={styles.progressBarContainer}>
-              <div
-                className={styles.progressBar}
-                style={{ width: `${uploadProgress}%` }}
-              ></div>
-              <span className={styles.progressText}>
-                {isProcessing ? (
-                  <div className={styles.processingMessage}>
-                    <span>Upload complete!</span>
-                    <div className={styles.processingAlert}>
-                      <Loader className={styles.spinningLoader} size={16} />
 
-                    </div>
-                    <p className={styles.processingNote}>
-                      You can safely navigate away from this page.
-                      <br />
-                      Your video will be available in the videos section when ready.
-                    </p>
-                  </div>
-                ) : (
-                  `Uploading: ${uploadProgress}%`
-                )}
-              </span>
-            </div>
-          )}
 
           {/* New message that shows after uploading is complete */}
           {isProcessing && (
