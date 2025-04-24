@@ -269,8 +269,17 @@ const VideoList = () => {
   // Add this function inside the VideoList component
   const sortVideosByPlaylist = async (videoArray) => {
     try {
-      // First, get playlist details for playlist ID 1
-      const playlistResponse = await api.playlists.getPlaylistDetails(1);
+      // First, check if user has any playlists at all
+      const userPlaylists = await api.get('/playlists/user/' + (user?.id || 0));
+
+      if (!userPlaylists.data || !userPlaylists.data.length) {
+        console.log('No playlists found for user, returning unsorted videos');
+        return videoArray;
+      }
+
+      // Use the first playlist instead of hardcoding ID 1
+      const firstPlaylistId = userPlaylists.data[0].id;
+      const playlistResponse = await api.playlists.getPlaylistDetails(firstPlaylistId);
 
       // If no playlist exists, return videos as is
       if (!playlistResponse) {
@@ -710,6 +719,10 @@ const VideoList = () => {
               controls
               autoPlay
               src={selectedVideo.streamUrl}
+              onError={(e) => {
+                console.error("Video loading error:", e);
+                console.log("Attempted URL:", selectedVideo.streamUrl);
+              }}
             >
               Your browser does not support the video tag.
             </video>
