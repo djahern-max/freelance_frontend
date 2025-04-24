@@ -56,11 +56,11 @@ const Header = () => {
       icon: Search,
       title: 'tickets'
     },
-    // {
-    //   path: '/showcase',
-    //   icon: CheckCircle,
-    //   title: 'Solutions'
-    // },
+    {
+      path: '/showcase',
+      icon: CheckCircle,
+      title: 'Solutions'
+    },
     {
       path: '/creators',
       icon: UsersRound,
