@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useSelector } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { createShowcase } from '../../redux/showcaseSlice';
 import LinkedContent from './LinkedContent';
@@ -386,11 +386,11 @@ const ImprovedShowcaseForm = ({
                     </div>
 
                     {/* Videos section - Full width */}
-                    {Array.isArray(availableVideos) && availableVideos.length > 0 ? (
+                    {Array.isArray(availableUserVideos) && availableUserVideos.length > 0 ? (
                         <div className={styles.formGroup}>
-                            <label>Link Videos (Available: {availableVideos.length})</label>
+                            <label>Link Videos (Available: {availableUserVideos.length})</label>
                             <div className={styles.videoGrid}>
-                                {availableVideos.map(video => (
+                                {availableUserVideos.map(video => (
                                     <div
                                         key={video.id}
                                         className={`${styles.videoItem} ${selectedVideos.includes(video.id) ? styles.selected : ''}`}
@@ -406,8 +406,10 @@ const ImprovedShowcaseForm = ({
                             </div>
                         </div>
                     ) : (
-                        <div className={styles.noVideosMessage}>
-                            <p>No videos available to link. Upload videos first.</p>
+                        <div className={styles.formGroup}>
+                            <p className={styles.noVideosMessage}>
+                                {loadingVideos ? 'Loading videos...' : 'No videos available to link. Upload videos first.'}
+                            </p>
                         </div>
                     )}
 
