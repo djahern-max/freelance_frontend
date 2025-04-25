@@ -35,6 +35,8 @@ const ImprovedShowcaseForm = ({
     const [apiError, setApiError] = useState(null);
     const [showLinkedContent, setShowLinkedContent] = useState(false);
     const [createdShowcase, setCreatedShowcase] = useState(null);
+    const [availableUserVideos, setAvailableUserVideos] = useState([]);
+    const [loadingVideos, setLoadingVideos] = useState(true);
 
     // Initialize form with initial data if editing
     useEffect(() => {
@@ -52,6 +54,29 @@ const ImprovedShowcaseForm = ({
             setIncludeProfile(initialData.includeProfile || false);
         }
     }, [initialData]);
+
+    useEffect(() => {
+        const fetchUserVideos = async () => {
+            try {
+                setLoadingVideos(true);
+                const response = await api.get('/video_display/');
+
+                // Make sure to use user_videos array, not other_videos
+                if (response.data && Array.isArray(response.data.user_videos)) {
+                    setAvailableUserVideos(response.data.user_videos);
+                } else {
+                    setAvailableUserVideos([]);
+                }
+            } catch (error) {
+                console.error('Error fetching user videos:', error);
+                setAvailableUserVideos([]);
+            } finally {
+                setLoadingVideos(false);
+            }
+        };
+
+        fetchUserVideos();
+    }, []);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
