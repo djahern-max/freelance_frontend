@@ -6,7 +6,7 @@ import LinkedContent from './LinkedContent';
 import styles from './ShowcaseForm.module.css';
 import api from '../../utils/api';
 
-const ImprovedShowcaseForm = ({
+const ShowcaseForm = ({
     isEditing = false,
     initialData = {},
     onSubmit,
@@ -26,6 +26,17 @@ const ImprovedShowcaseForm = ({
         readme_file: null
     });
 
+    const getFullAssetUrl = (thumbnailPath) => {
+        // If it's already a full URL, return it
+        if (thumbnailPath && (thumbnailPath.startsWith('http://') || thumbnailPath.startsWith('https://'))) {
+            return thumbnailPath;
+        }
+
+        // Otherwise, construct the full URL
+        const baseUrl = 'https://www.freelance.wtf/api/assets/';
+        return thumbnailPath ? `${baseUrl}${thumbnailPath}` : '/placeholder-thumbnail.png';
+    };
+
     const [selectedVideos, setSelectedVideos] = useState([]);
     const [includeProfile, setIncludeProfile] = useState(false);
     const [preview, setPreview] = useState({ image: null, readme: null });
@@ -38,6 +49,7 @@ const ImprovedShowcaseForm = ({
     const [availableUserVideos, setAvailableUserVideos] = useState([]);
     const [loadingVideos, setLoadingVideos] = useState(true);
     const user = useSelector(state => state.auth.user);
+
 
     // Initialize form with initial data if editing
     useEffect(() => {
@@ -134,17 +146,7 @@ const ImprovedShowcaseForm = ({
         }
     };
 
-    const getFullImageUrl = (thumbnailPath) => {
-        // If it's already a full URL, return it
-        if (thumbnailPath && (thumbnailPath.startsWith('http://') || thumbnailPath.startsWith('https://'))) {
-            return thumbnailPath;
-        }
 
-        // Otherwise, construct the full URL
-        // Adjust this base URL to match your API's asset hosting location
-        const baseUrl = 'https://www.freelance.wtf/api/assets/';
-        return thumbnailPath ? `${baseUrl}${thumbnailPath}` : '/placeholder-thumbnail.png';
-    };
 
     const handleFileChange = (e) => {
         const { name, files } = e.target;
@@ -397,8 +399,7 @@ const ImprovedShowcaseForm = ({
                         </div>
                     </div>
 
-                    {/* Videos section - Full width */}
-                    {/* Videos section - Full width */}
+
                     {Array.isArray(availableUserVideos) && availableUserVideos.length > 0 ? (
                         <div className={styles.formGroup}>
                             <label>Link Videos (Available: {availableUserVideos.length})</label>
@@ -449,4 +450,4 @@ const ImprovedShowcaseForm = ({
     );
 };
 
-export default ImprovedShowcaseForm;
+export default ShowcaseForm;
