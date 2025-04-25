@@ -37,6 +37,7 @@ const ImprovedShowcaseForm = ({
     const [createdShowcase, setCreatedShowcase] = useState(null);
     const [availableUserVideos, setAvailableUserVideos] = useState([]);
     const [loadingVideos, setLoadingVideos] = useState(true);
+    const user = useSelector(state => state.auth.user);
 
     // Initialize form with initial data if editing
     useEffect(() => {
@@ -61,12 +62,23 @@ const ImprovedShowcaseForm = ({
                 setLoadingVideos(true);
                 const response = await api.get('/video_display/');
 
-                // Make sure to use user_videos array, not other_videos
+                // Combine videos from both arrays where user_id matches current user
+                let userVideos = [];
+
+                // First add any videos from user_videos array
                 if (response.data && Array.isArray(response.data.user_videos)) {
-                    setAvailableUserVideos(response.data.user_videos);
-                } else {
-                    setAvailableUserVideos([]);
+                    userVideos = [...response.data.user_videos];
                 }
+
+                // Then add videos from other_videos array that belong to the current user
+                if (response.data && Array.isArray(response.data.other_videos) && user) {
+                    const userOtherVideos = response.data.other_videos.filter(
+                        video => video.user_id === user.id
+                    );
+                    userVideos = [...userVideos, ...userOtherVideos];
+                }
+
+                setAvailableUserVideos(userVideos);
             } catch (error) {
                 console.error('Error fetching user videos:', error);
                 setAvailableUserVideos([]);
@@ -76,7 +88,7 @@ const ImprovedShowcaseForm = ({
         };
 
         fetchUserVideos();
-    }, []);
+    }, [user]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
