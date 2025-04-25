@@ -26,15 +26,23 @@ const ShowcaseForm = ({
         readme_file: null
     });
 
-    const getFullAssetUrl = (thumbnailPath) => {
+    const getFullAssetUrl = (path) => {
+        if (!path) return '/placeholder-thumbnail.png';
+
         // If it's already a full URL, return it
-        if (thumbnailPath && (thumbnailPath.startsWith('http://') || thumbnailPath.startsWith('https://'))) {
-            return thumbnailPath;
+        if (path.startsWith('http://') || path.startsWith('https://')) {
+            return path;
         }
 
-        // Otherwise, construct the full URL
-        const baseUrl = 'https://www.freelance.wtf/api/assets/';
-        return thumbnailPath ? `${baseUrl}${thumbnailPath}` : '/placeholder-thumbnail.png';
+        // Check if we're in development or production
+        const isProduction = window.location.hostname !== 'localhost';
+
+        // Get the correct bucket and region from your environment
+        const bucket = 'freelance-wtf-storage'; // replace with your actual bucket name
+        const region = 'nyc3'; // replace with your actual region
+
+        // Construct URL for DigitalOcean Spaces
+        return `https://${bucket}.${region}.digitaloceanspaces.com/${path}`;
     };
 
     const [selectedVideos, setSelectedVideos] = useState([]);
