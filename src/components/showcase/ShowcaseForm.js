@@ -3,10 +3,10 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { createShowcase } from '../../redux/showcaseSlice';
 import LinkedContent from './LinkedContent';
-import styles from './ShowcaseForm.module.css';
+import styles from './ImprovedShowcaseForm.module.css';
 import api from '../../utils/api';
 
-const ShowcaseForm = ({
+const ImprovedShowcaseForm = ({
     isEditing = false,
     initialData = {},
     onSubmit,
@@ -127,18 +127,6 @@ const ShowcaseForm = ({
         }
     };
 
-    const handleDemoUrlAutoLink = (e) => {
-        const { value } = e.target;
-        // If this is a video share URL, try to find the matching video to auto-select
-        if (value && value.includes('/shared/videos/')) {
-            const shareToken = value.split('/').pop();
-            const matchingVideo = availableVideos.find(v => v.share_token === shareToken);
-            if (matchingVideo && !selectedVideos.includes(matchingVideo.id)) {
-                setSelectedVideos(prev => [...prev, matchingVideo.id]);
-            }
-        }
-    };
-
     const validateForm = () => {
         const errors = {};
         if (!formData.title.trim()) errors.title = 'Title is required';
@@ -219,173 +207,190 @@ const ShowcaseForm = ({
     }
 
     return (
-        <form className={styles.form} onSubmit={handleSubmit}>
-            {successMessage && (
-                <div className={styles.successMessage}>{successMessage}</div>
-            )}
-            {apiError && (
-                <div className={styles.errorMessage}>{apiError}</div>
-            )}
+        <div className={styles.pageContainer}>
+            <div className={styles.container}>
+                <h2 className={styles.formTitle}>{isEditing ? 'Edit Showcase' : 'Create New Showcase'}</h2>
 
-            <div className={styles.formGroup}>
-                <label htmlFor="title">Title *</label>
-                <input
-                    type="text"
-                    id="title"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleInputChange}
-                    required
-                    className={`${styles.input} ${formErrors.title ? styles.inputError : ''}`}
-                />
-                {formErrors.title && <span className={styles.errorMessage}>{formErrors.title}</span>}
-            </div>
+                <form className={styles.form} onSubmit={handleSubmit}>
+                    {successMessage && (
+                        <div className={styles.successMessage}>{successMessage}</div>
+                    )}
+                    {apiError && (
+                        <div className={styles.errorMessage}>{apiError}</div>
+                    )}
 
-            <div className={styles.formGroup}>
-                <label htmlFor="description">Description *</label>
-                <textarea
-                    id="description"
-                    name="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
-                    required
-                    className={`${styles.textarea} ${formErrors.description ? styles.inputError : ''}`}
-                />
-                {formErrors.description && <span className={styles.errorMessage}>{formErrors.description}</span>}
-            </div>
-
-            <div className={styles.formGroup}>
-                <label htmlFor="project_url">Project URL *</label>
-                <input
-                    type="url"
-                    id="project_url"
-                    name="project_url"
-                    value={formData.project_url}
-                    onChange={handleInputChange}
-                    required
-                    className={`${styles.input} ${formErrors.project_url ? styles.inputError : ''}`}
-                    placeholder="https://"
-                />
-                {formErrors.project_url && <span className={styles.errorMessage}>{formErrors.project_url}</span>}
-            </div>
-
-            <div className={styles.formGroup}>
-                <label htmlFor="repository_url">Repository URL</label>
-                <input
-                    type="url"
-                    id="repository_url"
-                    name="repository_url"
-                    value={formData.repository_url}
-                    onChange={handleInputChange}
-                    className={`${styles.input} ${formErrors.repository_url ? styles.inputError : ''}`}
-                    placeholder="https://"
-                />
-            </div>
-
-            <div className={styles.formGroup}>
-                <label htmlFor="demo_url">Demo URL</label>
-                <input
-                    type="url"
-                    id="demo_url"
-                    name="demo_url"
-                    value={formData.demo_url}
-                    onChange={(e) => {
-                        handleInputChange(e);
-                        handleDemoUrlAutoLink(e);
-                    }}
-                    className={`${styles.input} ${formErrors.demo_url ? styles.inputError : ''}`}
-                    placeholder="https://"
-                />
-            </div>
-
-            <div className={styles.formGroup}>
-                <label htmlFor="image_file">Project Image {!isEditing && '*'}</label>
-                <input
-                    type="file"
-                    id="image_file"
-                    name="image_file"
-                    onChange={handleFileChange}
-                    accept="image/*"
-                    required={!isEditing}
-                    className={`${styles.fileInput} ${formErrors.image_file ? styles.inputError : ''}`}
-                />
-                {formErrors.image_file && <span className={styles.errorMessage}>{formErrors.image_file}</span>}
-                {preview.image && (
-                    <div className={styles.imagePreview}>
-                        <img src={preview.image} alt="Preview" />
-                    </div>
-                )}
-            </div>
-
-            <div className={styles.formGroup}>
-                <label htmlFor="readme_file">README File {!isEditing && '*'}</label>
-                <input
-                    type="file"
-                    id="readme_file"
-                    name="readme_file"
-                    onChange={handleFileChange}
-                    accept=".md"
-                    required={!isEditing}
-                    className={`${styles.fileInput} ${formErrors.readme_file ? styles.inputError : ''}`}
-                />
-                {formErrors.readme_file && <span className={styles.errorMessage}>{formErrors.readme_file}</span>}
-                {preview.readme && (
-                    <div className={styles.readmePreview}>
-                        <pre>{preview.readme}</pre>
-                    </div>
-                )}
-            </div>
-            {Array.isArray(availableVideos) && availableVideos.length > 0 ? (
-                <div className={styles.formGroup}>
-                    <label>Link Videos (Available: {availableVideos.length})</label>
-                    <div className={styles.videoGrid}>
-                        {availableVideos.map(video => (
-                            <div
-                                key={video.id}
-                                className={`${styles.videoItem} ${selectedVideos.includes(video.id) ? styles.selected : ''}`}
-                                onClick={() => handleVideoSelection(video.id)}
-                            >
-                                <img
-                                    src={video.thumbnail_path || '/placeholder-thumbnail.png'}
-                                    alt={video.title}
+                    <div className={styles.formLayout}>
+                        {/* Left column - Basic info */}
+                        <div className={styles.formColumn}>
+                            <div className={styles.formGroup}>
+                                <label htmlFor="title">Title *</label>
+                                <input
+                                    type="text"
+                                    id="title"
+                                    name="title"
+                                    value={formData.title}
+                                    onChange={handleInputChange}
+                                    required
+                                    className={`${styles.input} ${formErrors.title ? styles.inputError : ''}`}
                                 />
-                                <span>{video.title}</span>
+                                {formErrors.title && <span className={styles.errorText}>{formErrors.title}</span>}
                             </div>
-                        ))}
+
+                            <div className={styles.formGroup}>
+                                <label htmlFor="description">Description *</label>
+                                <textarea
+                                    id="description"
+                                    name="description"
+                                    value={formData.description}
+                                    onChange={handleInputChange}
+                                    required
+                                    className={`${styles.textarea} ${formErrors.description ? styles.inputError : ''}`}
+                                />
+                                {formErrors.description && <span className={styles.errorText}>{formErrors.description}</span>}
+                            </div>
+
+                            <div className={styles.formGroup}>
+                                <label htmlFor="project_url">Project URL *</label>
+                                <input
+                                    type="url"
+                                    id="project_url"
+                                    name="project_url"
+                                    value={formData.project_url}
+                                    onChange={handleInputChange}
+                                    required
+                                    className={`${styles.input} ${formErrors.project_url ? styles.inputError : ''}`}
+                                    placeholder="https://"
+                                />
+                                {formErrors.project_url && <span className={styles.errorText}>{formErrors.project_url}</span>}
+                            </div>
+
+                            <div className={styles.formRow}>
+                                <div className={styles.formGroup}>
+                                    <label htmlFor="repository_url">Repository URL</label>
+                                    <input
+                                        type="url"
+                                        id="repository_url"
+                                        name="repository_url"
+                                        value={formData.repository_url}
+                                        onChange={handleInputChange}
+                                        className={styles.input}
+                                        placeholder="https://"
+                                    />
+                                </div>
+
+                                <div className={styles.formGroup}>
+                                    <label htmlFor="demo_url">Demo URL</label>
+                                    <input
+                                        type="url"
+                                        id="demo_url"
+                                        name="demo_url"
+                                        value={formData.demo_url}
+                                        onChange={handleInputChange}
+                                        className={styles.input}
+                                        placeholder="https://"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Right column - Files and videos */}
+                        <div className={styles.formColumn}>
+                            <div className={styles.formGroup}>
+                                <label htmlFor="image_file">Project Image {!isEditing && '*'}</label>
+                                <input
+                                    type="file"
+                                    id="image_file"
+                                    name="image_file"
+                                    onChange={handleFileChange}
+                                    accept="image/*"
+                                    required={!isEditing}
+                                    className={styles.fileInput}
+                                />
+                                {formErrors.image_file && <span className={styles.errorText}>{formErrors.image_file}</span>}
+                                {preview.image && (
+                                    <div className={styles.imagePreview}>
+                                        <img src={preview.image} alt="Preview" />
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className={styles.formGroup}>
+                                <label htmlFor="readme_file">README File {!isEditing && '*'}</label>
+                                <input
+                                    type="file"
+                                    id="readme_file"
+                                    name="readme_file"
+                                    onChange={handleFileChange}
+                                    accept=".md"
+                                    required={!isEditing}
+                                    className={styles.fileInput}
+                                />
+                                {formErrors.readme_file && <span className={styles.errorText}>{formErrors.readme_file}</span>}
+                                {preview.readme && (
+                                    <div className={styles.readmePreview}>
+                                        <pre>{preview.readme.slice(0, 200)}...</pre>
+                                    </div>
+                                )}
+                            </div>
+
+                            {developerProfile && (
+                                <div className={styles.checkboxGroup}>
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            checked={includeProfile}
+                                            onChange={(e) => setIncludeProfile(e.target.checked)}
+                                        />
+                                        <span>Link Developer Profile</span>
+                                    </label>
+                                </div>
+                            )}
+                        </div>
                     </div>
-                </div>
-            ) : (
-                <div className={styles.formGroup}>
-                    <p className={styles.noVideosMessage}>No videos available to link. Upload videos first.</p>
-                </div>
-            )}
 
-            {developerProfile && (
-                <div className={styles.formGroup}>
-                    <label>
-                        <input
-                            type="checkbox"
-                            checked={includeProfile}
-                            onChange={(e) => setIncludeProfile(e.target.checked)}
-                        />
-                        Link Developer Profile
-                    </label>
-                </div>
-            )}
+                    {/* Videos section - Full width */}
+                    {Array.isArray(availableVideos) && availableVideos.length > 0 ? (
+                        <div className={styles.formGroup}>
+                            <label>Link Videos (Available: {availableVideos.length})</label>
+                            <div className={styles.videoGrid}>
+                                {availableVideos.map(video => (
+                                    <div
+                                        key={video.id}
+                                        className={`${styles.videoItem} ${selectedVideos.includes(video.id) ? styles.selected : ''}`}
+                                        onClick={() => handleVideoSelection(video.id)}
+                                    >
+                                        <img
+                                            src={video.thumbnail_path || '/placeholder-thumbnail.png'}
+                                            alt={video.title}
+                                        />
+                                        <span>{video.title}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ) : (
+                        <div className={styles.noVideosMessage}>
+                            <p>No videos available to link. Upload videos first.</p>
+                        </div>
+                    )}
 
-            <button
-                type="submit"
-                className={`${styles.submitButton} ${isSubmitting ? styles.submitting : ''}`}
-                disabled={isSubmitting}
-            >
-                {isSubmitting
-                    ? 'Submitting...'
-                    : isEditing
-                        ? 'Update Showcase'
-                        : 'Create Showcase'}
-            </button>
-        </form>
+                    <div className={styles.formActions}>
+                        <button
+                            type="submit"
+                            className={`${styles.submitButton} ${isSubmitting ? styles.submitting : ''}`}
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting
+                                ? 'Submitting...'
+                                : isEditing
+                                    ? 'Update Showcase'
+                                    : 'Create Showcase'}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     );
 };
 
-export default ShowcaseForm;
+export default ImprovedShowcaseForm;
