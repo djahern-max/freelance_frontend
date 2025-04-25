@@ -134,6 +134,18 @@ const ImprovedShowcaseForm = ({
         }
     };
 
+    const getFullImageUrl = (thumbnailPath) => {
+        // If it's already a full URL, return it
+        if (thumbnailPath && (thumbnailPath.startsWith('http://') || thumbnailPath.startsWith('https://'))) {
+            return thumbnailPath;
+        }
+
+        // Otherwise, construct the full URL
+        // Adjust this base URL to match your API's asset hosting location
+        const baseUrl = 'https://www.freelance.wtf/api/assets/';
+        return thumbnailPath ? `${baseUrl}${thumbnailPath}` : '/placeholder-thumbnail.png';
+    };
+
     const handleFileChange = (e) => {
         const { name, files } = e.target;
         if (files && files[0]) {
@@ -386,6 +398,7 @@ const ImprovedShowcaseForm = ({
                     </div>
 
                     {/* Videos section - Full width */}
+                    {/* Videos section - Full width */}
                     {Array.isArray(availableUserVideos) && availableUserVideos.length > 0 ? (
                         <div className={styles.formGroup}>
                             <label>Link Videos (Available: {availableUserVideos.length})</label>
@@ -397,8 +410,12 @@ const ImprovedShowcaseForm = ({
                                         onClick={() => handleVideoSelection(video.id)}
                                     >
                                         <img
-                                            src={video.thumbnail_path || '/placeholder-thumbnail.png'}
+                                            src={getFullAssetUrl(video.thumbnail_path)}
                                             alt={video.title}
+                                            onError={(e) => {
+                                                e.target.src = '/placeholder-thumbnail.png';
+                                                console.error(`Failed to load image: ${video.thumbnail_path}`);
+                                            }}
                                         />
                                         <span>{video.title}</span>
                                     </div>
