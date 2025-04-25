@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { createShowcase } from '../../redux/showcaseSlice';
 import LinkedContent from './LinkedContent';
-import styles from './ImprovedShowcaseForm.module.css';
+import styles from './ShowcaseForm.module.css';
 import api from '../../utils/api';
 
 const ImprovedShowcaseForm = ({
