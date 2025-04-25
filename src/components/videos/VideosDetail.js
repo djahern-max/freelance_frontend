@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { fetchVideoById } from '../../redux/videoSlice';
 import AddToPlaylistButton from './AddToPlaylistButton';
 import ShareButton from './ShareButton';
-import EditVideoModal from './EditVideoModal'; // Add this import
+import EditVideoModal from './VideoEdit'; // Add this import
 import { getFullAssetUrl, deleteVideo } from '../../utils/videoUtils';
 import styles from './VideosDetail.module.css';
 

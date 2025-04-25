@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { createPlaylist } from '../../redux/playlistSlice';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import styles from './CreatePlaylistForm.module.css';
+import styles from './CreatePlayListForm.module.css';
 
 const CreatePlaylistForm = () => {
     const [name, setName] = useState('');

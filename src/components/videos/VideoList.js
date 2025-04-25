@@ -1,4 +1,4 @@
-import { MessageSquare, Play, ThumbsUp, Upload, X, List, Plus, Trash2, Edit } from 'lucide-react';
+import { MessageSquare, Play, ThumbsUp, Upload, X, List, Plus, Trash2, Edit, ChevronDown, ChevronUp } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -10,13 +10,14 @@ import styles from './VideoList.module.css';
 import ShareButton from './ShareButton';
 import Modal from '../shared/Modal';
 import api from '../../utils/api';
-import { fetchUserPlaylists, addVideoToPlaylist, createPlaylist } from '../../redux/playlistSlice';
+import { fetchUserPlaylists } from '../../redux/playlistSlice';
 import { getFullAssetUrl } from '../../utils/videoUtils';
 import AddToPlaylistModal from './AddToPlaylistModal';
 import DescriptionModal from './DescriptionModal';
-import EditVideoModal from './EditVideoModal'; // Import the EditVideoModal component
+import EditVideoModal from './VideoEdit';
 
 
+// Individual video item component remains mostly the same
 const VideoItem = ({
   video,
   onVideoClick,
@@ -25,17 +26,16 @@ const VideoItem = ({
   onSendRequest,
   onAddToPlaylist,
   onDeleteVideo,
-  onEditVideo, // Add this prop
+  onEditVideo,
   user,
-  formatDate
+  formatDate,
+  isInPlaylist = false
 }) => {
   const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
   const isOwner = user?.id === video.user_id;
 
-
-
   return (
-    <div className={styles.videoCard}>
+    <div className={`${styles.videoCard} ${isInPlaylist ? styles.playlistVideoCard : ''}`}>
       <div
         className={styles.thumbnailContainer}
         onClick={() => onVideoClick(video)}
@@ -63,7 +63,6 @@ const VideoItem = ({
           {video.title || 'Untitled Video'}
         </h2>
 
-        {/* In your VideoItem component */}
         <div className={styles.actionButtons}>
           {user?.userType !== 'developer' && (
             <button
@@ -102,7 +101,7 @@ const VideoItem = ({
                 className={styles.actionButton}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onEditVideo(video); // Use the passed handler
+                  onEditVideo(video);
                 }}
               >
                 <Edit size={16} className={styles.icon} />
@@ -167,20 +166,71 @@ const VideoItem = ({
         </div>
       </div>
 
-      {/* Using the new portal-based modal component */}
       <DescriptionModal
         isOpen={isDescriptionModalOpen}
         onClose={() => setIsDescriptionModalOpen(false)}
         title={video.title}
         description={video.description}
       />
-
     </div>
   );
-
 };
 
+const PlaylistGroup = ({
+  playlist,
+  videos,
+  onVideoClick,
+  isAuthenticated,
+  onVote,
+  onSendRequest,
+  onAddToPlaylist,
+  onDeleteVideo,
+  onEditVideo,
+  user,
+  formatDate
+}) => {
+  // Start collapsed by default
+  const [expanded, setExpanded] = useState(false);
 
+  // Get the video count for display
+  const videoCount = videos.length;
+
+  return (
+    <div className={styles.playlistGroup}>
+      <div className={styles.playlistHeader} onClick={() => setExpanded(!expanded)}>
+        <div className={styles.playlistInfo}>
+          {/* Use name property instead of title */}
+          <h2 className={styles.playlistTitle}>{playlist.name || playlist.title || 'Unnamed Playlist'}</h2>
+          <span className={styles.videoCount}>{videoCount} video{videoCount !== 1 ? 's' : ''}</span>
+        </div>
+        <button className={styles.expandButton}>
+          {expanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+        </button>
+      </div>
+
+      {expanded && (
+        <div className={styles.playlistVideos}>
+          {videos.map((video) => (
+            <VideoItem
+              key={video.id}
+              video={video}
+              onVideoClick={onVideoClick}
+              isAuthenticated={isAuthenticated}
+              onVote={onVote}
+              onSendRequest={onSendRequest}
+              onAddToPlaylist={onAddToPlaylist}
+              onDeleteVideo={onDeleteVideo}
+              onEditVideo={onEditVideo}
+              user={user}
+              formatDate={formatDate}
+              isInPlaylist={true}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const VideoList = () => {
   const [videos, setVideos] = useState([]);
@@ -195,20 +245,24 @@ const VideoList = () => {
   const [processingVideos, setProcessingVideos] = useState([]);
   const [videoTypeFilter, setVideoTypeFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [editingVideo, setEditingVideo] = useState(null);
+
+  const [playlists, setPlaylists] = useState([]);
+  const [playlistsLoaded, setPlaylistsLoaded] = useState(false);
+  const [displayMode, setDisplayMode] = useState('all'); // 'all', 'playlists', 'individual'
+
+  const user = useSelector((state) => state.auth.user);
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.auth.user);
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  const [editingVideo, setEditingVideo] = useState(null);
-  // Add to VideoList state
+
 
   const handleEditVideo = (video) => {
     setEditingVideo(video);
   };
 
-  // MOVE THESE FUNCTIONS HERE - Outside of any other component
   const deleteVideo = async (videoId) => {
     try {
       await api.delete(`/videos/${videoId}`);
@@ -222,7 +276,6 @@ const VideoList = () => {
   const handleDeleteVideo = async (videoId) => {
     try {
       await deleteVideo(videoId);
-      // Update the videos list after deletion
       setVideos(prevVideos => prevVideos.filter(v => v.id !== videoId));
       toast.success('Video deleted successfully');
     } catch (error) {
@@ -231,77 +284,78 @@ const VideoList = () => {
     }
   };
 
-  // In VideoList.js, modify the fetchVideos function
+  // Enhanced fetchVideos to also retrieve playlist information
   const fetchVideos = async () => {
     try {
       setLoading(true);
       setError(null);
       const response = await api.get('/video_display/');
 
-      // Only process the response if the component is still mounted
       if (response.data && Array.isArray(response.data.other_videos)) {
         setVideos(response.data.other_videos);
       } else {
         setVideos([]);
       }
-    } catch (err) {
-      console.error('Video fetch error:', err);
 
-      // Skip error handling for cancelled requests
+      // Fetch all playlists
+      if (isAuthenticated && user) {
+        try {
+          const playlistsResponse = await api.get(`/playlists/user/${user.id}`);
+          if (Array.isArray(playlistsResponse.data)) {
+            // For each playlist, fetch its videos
+            const playlistsWithVideos = await Promise.all(
+              playlistsResponse.data.map(async (playlist) => {
+                const playlistDetails = await api.playlists.getPlaylistDetails(playlist.id);
+                return {
+                  ...playlist,
+                  videos: playlistDetails?.videos || []
+                };
+              })
+            );
+            setPlaylists(playlistsWithVideos);
+          }
+        } catch (error) {
+          console.error('Error fetching playlists:', error);
+        }
+      }
+    } catch (err) {
+      console.error('Fetch error:', err);
+
       if (err.message === 'REQUEST_CANCELLED') {
         console.log('Request was cancelled, likely due to component unmount');
         return;
       }
 
-      // Don't treat 401 as an error for public routes
       if (err.response?.status === 401) {
         setVideos([]);
       } else {
-        setError(
-          "We're having trouble loading the videos. Please try again later."
-        );
+        setError("We're having trouble loading the videos. Please try again later.");
       }
     } finally {
       setLoading(false);
     }
   };
 
-  // Add this function inside the VideoList component
   const sortVideosByPlaylist = async (videoArray) => {
     try {
-      // First, check if user has any playlists at all
-      const userPlaylists = await api.get('/playlists/user/' + (user?.id || 0));
+      const playlistResponse = await api.playlists.getPlaylistDetails(1);
 
-      if (!userPlaylists.data || !userPlaylists.data.length) {
-        console.log('No playlists found for user, returning unsorted videos');
-        return videoArray;
-      }
-
-      // Use the first playlist instead of hardcoding ID 1
-      const firstPlaylistId = userPlaylists.data[0].id;
-      const playlistResponse = await api.playlists.getPlaylistDetails(firstPlaylistId);
-
-      // If no playlist exists, return videos as is
       if (!playlistResponse) {
         console.log('Playlist #1 not found, returning unsorted videos');
         return videoArray;
       }
 
       if (!playlistResponse.videos || !Array.isArray(playlistResponse.videos)) {
-        // If playlist has no videos, return videos as is
         return videoArray;
       }
 
-      // Create a mapping of video IDs to their order in the playlist
       const videoOrderMap = new Map();
 
       playlistResponse.videos.forEach((video, index) => {
-        // Use the order property if available, otherwise use the index
         const order = video.order !== undefined ? video.order : index;
         videoOrderMap.set(video.id, order);
       });
 
-      // Sort the videos based on their order in playlists
       const sortedVideos = [...videoArray].sort((a, b) => {
         const orderA = videoOrderMap.has(a.id) ? videoOrderMap.get(a.id) : 999999;
         const orderB = videoOrderMap.has(b.id) ? videoOrderMap.get(b.id) : 999999;
@@ -315,19 +369,15 @@ const VideoList = () => {
     }
   };
 
-
-  // Add the cleanupProcessingVideos function:
   const cleanupProcessingVideos = () => {
     const processingVideos = JSON.parse(localStorage.getItem('processingVideos') || '[]');
     if (processingVideos.length === 0) return;
 
-    // Remove videos that were added more than 15 minutes ago
     const fifteenMinutesAgo = Date.now() - (15 * 60 * 1000);
     const updatedProcessingVideos = processingVideos.filter(video => {
       return video.timestamp && video.timestamp > fifteenMinutesAgo;
     });
 
-    // Check if any videos in the processing list now appear in the loaded videos
     const loadedVideoIds = videos.map(v => v.id);
     const stillProcessing = updatedProcessingVideos.filter(video =>
       !loadedVideoIds.includes(video.id)
@@ -343,7 +393,6 @@ const VideoList = () => {
     }
   };
 
-  // Add this useEffect to run the cleanup function
   useEffect(() => {
     if (videos.length > 0) {
       cleanupProcessingVideos();
@@ -351,7 +400,6 @@ const VideoList = () => {
   }, [videos]);
 
   useEffect(() => {
-    // Check for processing videos in localStorage
     const storedProcessingVideos = localStorage.getItem('processingVideos');
     if (storedProcessingVideos) {
       try {
@@ -359,16 +407,14 @@ const VideoList = () => {
         if (Array.isArray(parsedVideos) && parsedVideos.length > 0) {
           setProcessingVideos(parsedVideos);
 
-          // Set up a periodic check for completed videos
           const checkInterval = setInterval(() => {
             fetchVideos().then(() => {
-              // After fetching videos, update processing status
               const currentProcessing = JSON.parse(localStorage.getItem('processingVideos') || '[]');
               if (currentProcessing.length === 0) {
                 clearInterval(checkInterval);
               }
             });
-          }, 30000); // Check every 30 seconds
+          }, 30000);
 
           return () => clearInterval(checkInterval);
         }
@@ -380,7 +426,6 @@ const VideoList = () => {
   }, []);
 
   useEffect(() => {
-    // Flag to track if component is still mounted
     let isMounted = true;
 
     const loadVideos = async () => {
@@ -390,13 +435,11 @@ const VideoList = () => {
         setLoading(true);
         setError(null);
 
-        // Always use trailing slash to prevent 307 redirects
         const response = await api.get('/video_display/');
 
         if (!isMounted) return;
 
         if (response.data && Array.isArray(response.data.other_videos)) {
-          // Sort the videos by playlist order before setting them
           const sortedVideos = await sortVideosByPlaylist(response.data.other_videos);
           setVideos(sortedVideos);
         } else {
@@ -405,7 +448,6 @@ const VideoList = () => {
       } catch (err) {
         if (!isMounted) return;
 
-        // Ignore cancelled requests
         if (err.message === 'REQUEST_CANCELLED') {
           console.log('Video request was cancelled');
           return;
@@ -413,7 +455,6 @@ const VideoList = () => {
 
         console.error('Video fetch error:', err);
 
-        // Handle 401 for public routes
         if (err.response?.status === 401) {
           setVideos([]);
         } else {
@@ -426,22 +467,87 @@ const VideoList = () => {
       }
     };
 
-    // Load videos once
     loadVideos();
 
-    // Return cleanup function
     return () => {
       isMounted = false;
     };
-  }, []); // Empty dependency array means this runs only once on mount
+  }, []);
 
-  // Separate useEffect for playlist loading to avoid excessive requests
-  useEffect(() => {
-    if (isAuthenticated && user?.id) {
-      dispatch(fetchUserPlaylists(user.id));
+  // Fetch all playlists and their videos for the current user
+  const fetchUserPlaylists = async () => {
+    if (!isAuthenticated || !user) return;
+
+    try {
+      // Get all playlists for the current user
+      const playlistsResponse = await api.get(`/playlists/user/${user.id}`);
+
+      if (!Array.isArray(playlistsResponse.data)) {
+        console.error('Unexpected playlist response format:', playlistsResponse.data);
+        return;
+      }
+
+      // When fetching playlist details:
+      const detailedPlaylists = await Promise.all(
+        playlistsResponse.data.map(async (playlist) => {
+          try {
+            const detailResponse = await api.get(`/playlists/${playlist.id}`);
+            // Make sure to preserve ALL properties from both responses
+            return {
+              ...playlist,                   // Original playlist data
+              ...detailResponse.data,        // Detailed playlist data
+              videos: detailResponse.data.videos || []
+            };
+          } catch (error) {
+            console.error(`Error fetching playlist ${playlist.id} details:`, error);
+            return {
+              ...playlist,
+              videos: []
+            };
+          }
+        })
+      );
+      setPlaylists(detailedPlaylists);
+      setPlaylistsLoaded(true);
+    } catch (error) {
+      console.error('Error fetching user playlists:', error);
     }
-  }, [isAuthenticated, user, dispatch]);
+  };
 
+  // Fetch both videos and playlists when component mounts
+  useEffect(() => {
+    fetchVideos(); // Your existing function to fetch videos
+
+    if (isAuthenticated && user) {
+      fetchUserPlaylists();
+    }
+  }, [isAuthenticated, user]);
+
+  // Get videos that are part of playlists
+  const getPlaylistVideos = () => {
+    const videosInPlaylists = new Set();
+
+    playlists.forEach(playlist => {
+      playlist.videos.forEach(video => {
+        videosInPlaylists.add(video.id);
+      });
+    });
+
+    return videosInPlaylists;
+  };
+
+
+  // Filter videos based on current filters (search query and video type)
+  const filterVideos = (videoList) => {
+    return videoList.filter(video => {
+      const matchesType = videoTypeFilter === 'all' || video.video_type === videoTypeFilter;
+      const matchesSearch = !searchQuery ||
+        (video.title && video.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (video.description && video.description.toLowerCase().includes(searchQuery.toLowerCase()));
+
+      return matchesType && matchesSearch;
+    });
+  };
 
   const formatDate = (dateString) => {
     try {
@@ -470,7 +576,6 @@ const VideoList = () => {
     }
 
     try {
-      // Optimistically update the UI
       setVideos((prevVideos) =>
         prevVideos.map((video) =>
           video.id === videoId
@@ -483,7 +588,6 @@ const VideoList = () => {
         )
       );
 
-      // Make API call - note the endpoint is just '/vote'
       const response = await api.post('/vote', {
         video_id: videoId,
         dir: currentlyLiked ? 0 : 1,
@@ -494,7 +598,6 @@ const VideoList = () => {
       }
     } catch (error) {
       console.error('Error voting:', error);
-      // Revert the optimistic update
       setVideos((prevVideos) =>
         prevVideos.map((video) =>
           video.id === videoId
@@ -581,8 +684,34 @@ const VideoList = () => {
     setShowVideoModal(true);
   };
 
-  // Your existing empty state check
-  if (error || !videos || videos.length === 0) {
+  // Get videos that are not in any playlist
+  const getNonPlaylistVideos = () => {
+    const playlistVideoIds = new Set();
+    playlists.forEach(playlist => {
+      playlist.videos.forEach(video => {
+        playlistVideoIds.add(video.id);
+      });
+    });
+
+    return videos.filter(video => !playlistVideoIds.has(video.id));
+  };
+
+  // Filter videos based on current filters
+  const getFilteredVideos = (videoList) => {
+    return videoList.filter(video => {
+      // Type filter
+      const matchesType = videoTypeFilter === 'all' || video.video_type === videoTypeFilter;
+
+      // Search filter
+      const matchesSearch = !searchQuery ||
+        (video.title && video.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (video.description && video.description.toLowerCase().includes(searchQuery.toLowerCase()));
+
+      return matchesType && matchesSearch;
+    });
+  };
+
+  if (error || (!loading && videos.length === 0)) {
     return (
       <div className={styles.container}>
         <VideoEmptyState
@@ -598,17 +727,10 @@ const VideoList = () => {
     );
   }
 
-  const filteredVideos = videos.filter(video => {
-    // Type filter
-    const matchesType = videoTypeFilter === 'all' || video.video_type === videoTypeFilter;
 
-    // Search filter
-    const matchesSearch = !searchQuery ||
-      (video.title && video.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (video.description && video.description.toLowerCase().includes(searchQuery.toLowerCase()));
 
-    return matchesType && matchesSearch;
-  });
+  const individualVideos = getNonPlaylistVideos();
+  const filteredIndividualVideos = filterVideos(individualVideos);
 
   return (
     <div className={styles.container}>
@@ -633,6 +755,28 @@ const VideoList = () => {
               </button>
             </>
           )}
+        </div>
+
+        {/* Display mode toggle */}
+        <div className={styles.displayToggle}>
+          <button
+            className={`${styles.displayToggleButton} ${displayMode === 'all' ? styles.active : ''}`}
+            onClick={() => setDisplayMode('all')}
+          >
+            All Videos
+          </button>
+          <button
+            className={`${styles.displayToggleButton} ${displayMode === 'playlists' ? styles.active : ''}`}
+            onClick={() => setDisplayMode('playlists')}
+          >
+            Playlists
+          </button>
+          <button
+            className={`${styles.displayToggleButton} ${displayMode === 'individual' ? styles.active : ''}`}
+            onClick={() => setDisplayMode('individual')}
+          >
+            Individual Videos
+          </button>
         </div>
       </div>
 
@@ -685,24 +829,83 @@ const VideoList = () => {
         </div>
       </div>
 
-      <div className={styles.grid}>
-        {filteredVideos.map((video) => (
-          <VideoItem
-            key={video.id}
-            video={video}
-            onVideoClick={handleVideoClick}
-            isAuthenticated={isAuthenticated}
-            onVote={handleVote}
-            onSendRequest={handleSendRequest}
-            onAddToPlaylist={handleAddToPlaylist}
-            onDeleteVideo={handleDeleteVideo}
-            onEditVideo={handleEditVideo}
-            user={user}
-            formatDate={formatDate}
-          />
-        ))}
-      </div>
+      {/* Playlists */}
+      {(displayMode === 'all' || displayMode === 'playlists') && playlists.length > 0 && (
+        <div className={styles.playlistsContainer}>
+          {playlists.map(playlist => {
+            const filteredPlaylistVideos = filterVideos(playlist.videos);
+            if (filteredPlaylistVideos.length === 0) return null;
 
+            // Use ONE of these two approaches, not both:
+
+            // EITHER use the PlaylistGroup component:
+            return (
+              <PlaylistGroup
+                key={playlist.id}
+                playlist={playlist}
+                videos={filteredPlaylistVideos}
+                onVideoClick={handleVideoClick}
+                isAuthenticated={isAuthenticated}
+                onVote={handleVote}
+                onSendRequest={handleSendRequest}
+                onAddToPlaylist={handleAddToPlaylist}
+                onDeleteVideo={handleDeleteVideo}
+                onEditVideo={handleEditVideo}
+                user={user}
+                formatDate={formatDate}
+              />
+            );
+
+            return (
+              <div key={playlist.id} className={styles.playlistGroup}>
+                <div className={styles.playlistHeader}>
+                  <h2 className={styles.playlistTitle}>{playlist.title || 'Unnamed Playlist'}</h2>
+                </div>
+                <div className={styles.playlistVideos}>
+                  {filteredPlaylistVideos.map(video => (
+                    <VideoItem
+                      key={video.id}
+                      video={video}
+                      onVideoClick={handleVideoClick}
+                      isAuthenticated={isAuthenticated}
+                      onVote={handleVote}
+                      onSendRequest={handleSendRequest}
+                      onAddToPlaylist={handleAddToPlaylist}
+                      onDeleteVideo={handleDeleteVideo}
+                      onEditVideo={handleEditVideo}
+                      user={user}
+                      formatDate={formatDate}
+                    />
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+      {/* Individual videos */}
+      {(displayMode === 'all' || displayMode === 'individual') && filteredIndividualVideos.length > 0 && (
+        <div>
+          {displayMode === 'all' && <h2 className={styles.sectionTitle}>Individual Videos</h2>}
+          <div className={styles.grid}>
+            {filteredIndividualVideos.map(video => (
+              <VideoItem
+                key={video.id}
+                video={video}
+                onVideoClick={handleVideoClick}
+                isAuthenticated={isAuthenticated}
+                onVote={handleVote}
+                onSendRequest={handleSendRequest}
+                onAddToPlaylist={handleAddToPlaylist}
+                onDeleteVideo={handleDeleteVideo}
+                onEditVideo={handleEditVideo}
+                user={user}
+                formatDate={formatDate}
+              />
+            ))}
+          </div>
+        </div>
+      )}
 
       {showVideoModal && selectedVideo && (
         <Modal
@@ -719,14 +922,9 @@ const VideoList = () => {
               controls
               autoPlay
               src={selectedVideo.streamUrl}
-              onError={(e) => {
-                console.error("Video loading error:", e);
-                console.log("Attempted URL:", selectedVideo.streamUrl);
-              }}
             >
               Your browser does not support the video tag.
             </video>
-            {/* Improved video info section */}
             <div className={styles.modalInfo}>
               <h2 className={styles.videoTitle}>{selectedVideo.title}</h2>
               {selectedVideo.description && (
@@ -777,6 +975,7 @@ const VideoList = () => {
           }}
         />
       )}
+
       {editingVideo && (
         <EditVideoModal
           isOpen={true}
@@ -787,7 +986,5 @@ const VideoList = () => {
     </div>
   );
 };
-
-
 
 export default VideoList;

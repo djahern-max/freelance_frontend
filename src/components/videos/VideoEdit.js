@@ -1,13 +1,11 @@
-// components/videos/EditVideoModal.js
+// components/videos/VideoEdit.js
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import Modal from '../shared/Modal';
 import { updateVideo } from '../../redux/videoSlice';
-import './EditVideoModal.css';  // Use regular CSS import
+import styles from './VideoEdit.module.css';
 
-const EditVideoModal = ({ isOpen, onClose, video }) => {
-    console.log('EditVideoModal rendering with video:', video);  // Add this debug log
-
+const VideoEdit = ({ isOpen, onClose, video }) => {
     const dispatch = useDispatch();
     const [formData, setFormData] = useState({
         title: '',
@@ -20,19 +18,28 @@ const EditVideoModal = ({ isOpen, onClose, video }) => {
 
     useEffect(() => {
         if (video) {
+            // Force boolean conversion for is_public
             setFormData({
                 title: video.title || '',
                 description: video.description || '',
-                is_public: video.is_public || false,
+                is_public: Boolean(video.is_public),
                 video_type: video.video_type || 'solution_demo',
                 project_id: video.project_id || null,
                 request_id: video.request_id || null
+            });
+            console.log("Video data loaded:", {
+                is_public: Boolean(video.is_public),
+                video_type: video.video_type || 'solution_demo'
             });
         }
     }, [video]);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
+
+        // Debug the change
+        console.log(`Field changed: ${name}, value: ${type === 'checkbox' ? checked : value}`);
+
         setFormData({
             ...formData,
             [name]: type === 'checkbox' ? checked : value
@@ -59,10 +66,10 @@ const EditVideoModal = ({ isOpen, onClose, video }) => {
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="Edit Video">
-            <form onSubmit={handleSubmit} className="edit-form">
-                {error && <div className="edit-error">{error}</div>}
+            <form onSubmit={handleSubmit} className={styles['edit-form']}>
+                {error && <div className={styles['edit-error']}>{error}</div>}
 
-                <div className="edit-form-group">
+                <div className={styles['edit-form-group']}>
                     <label htmlFor="title">Title</label>
                     <input
                         type="text"
@@ -74,7 +81,7 @@ const EditVideoModal = ({ isOpen, onClose, video }) => {
                     />
                 </div>
 
-                <div className="edit-form-group">
+                <div className={styles['edit-form-group']}>
                     <label htmlFor="description">Description</label>
                     <textarea
                         id="description"
@@ -85,7 +92,7 @@ const EditVideoModal = ({ isOpen, onClose, video }) => {
                     />
                 </div>
 
-                <div className="edit-form-group">
+                <div className={styles['edit-form-group']}>
                     <label htmlFor="video_type">Video Type</label>
                     <select
                         id="video_type"
@@ -99,22 +106,28 @@ const EditVideoModal = ({ isOpen, onClose, video }) => {
                     </select>
                 </div>
 
-                <div className="edit-form-group">
-                    <label className="edit-checkbox-label">
+                <div className={styles['edit-form-group']}>
+                    <label className={styles['edit-checkbox-label']}>
                         <input
                             type="checkbox"
+                            id="is_public"
                             name="is_public"
                             checked={formData.is_public}
                             onChange={handleChange}
                         />
                         Public Video
                     </label>
+                    <p className={styles['privacy-hint']}>
+                        {formData.is_public
+                            ? "This video will be visible to anyone with the link"
+                            : "This video will only be visible to you"}
+                    </p>
                 </div>
 
-                <div className="edit-form-actions">
+                <div className={styles['edit-form-actions']}>
                     <button
                         type="button"
-                        className="edit-cancel-button"
+                        className={styles['edit-cancel-button']}
                         onClick={onClose}
                         disabled={isLoading}
                     >
@@ -122,7 +135,7 @@ const EditVideoModal = ({ isOpen, onClose, video }) => {
                     </button>
                     <button
                         type="submit"
-                        className="edit-submit-button"
+                        className={styles['edit-submit-button']}
                         disabled={isLoading}
                     >
                         {isLoading ? 'Saving...' : 'Save Changes'}
@@ -133,4 +146,4 @@ const EditVideoModal = ({ isOpen, onClose, video }) => {
     );
 };
 
-export default EditVideoModal;
+export default VideoEdit;

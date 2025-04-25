@@ -1,5 +1,5 @@
-/* components/videos/EditPlaylistModal.css */
-/* Just copy the entire contents from EditVideoModal.css */
+/* components/videos/VideoEdit.module.css */
+
 .edit-form {
     display: flex;
     flex-direction: column;
@@ -68,6 +68,14 @@
     width: 18px;
     height: 18px;
     margin-right: 8px;
+}
+
+/* Add the privacy hint styling */
+.privacy-hint {
+    font-size: 12px;
+    margin-top: 4px;
+    color: #666;
+    font-style: italic;
 }
 
 .edit-form-actions {
