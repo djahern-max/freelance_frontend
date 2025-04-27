@@ -1,9 +1,9 @@
 // components/videos/EditPlaylistModal.js
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import Modal from '../shared/Modal';
+import FormModalWrapper from '../shared/FormModalWrapper';
 import { updatePlaylist } from '../../redux/playlistSlice';
-import './EditPlaylistModal.css';  // Use regular CSS import
+import styles from './EditPlaylistModal.module.css';
 
 const EditPlaylistModal = ({ isOpen, onClose, playlist }) => {
     const dispatch = useDispatch();
@@ -52,11 +52,11 @@ const EditPlaylistModal = ({ isOpen, onClose, playlist }) => {
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title="Edit Playlist">
-            <form onSubmit={handleSubmit} className="edit-form">
-                {error && <div className="edit-error">{error}</div>}
+        <FormModalWrapper isOpen={isOpen} onClose={onClose} title="Edit Playlist">
+            <form onSubmit={handleSubmit} className={styles['edit-form']}>
+                {error && <div className={styles['edit-error']}>{error}</div>}
 
-                <div className="edit-form-group">
+                <div className={styles['edit-form-group']}>
                     <label htmlFor="name">Playlist Name</label>
                     <input
                         type="text"
@@ -68,7 +68,7 @@ const EditPlaylistModal = ({ isOpen, onClose, playlist }) => {
                     />
                 </div>
 
-                <div className="edit-form-group">
+                <div className={styles['edit-form-group']}>
                     <label htmlFor="description">Description</label>
                     <textarea
                         id="description"
@@ -80,8 +80,8 @@ const EditPlaylistModal = ({ isOpen, onClose, playlist }) => {
                     />
                 </div>
 
-                <div className="edit-form-group">
-                    <label className="edit-checkbox-label">
+                <div className={styles['edit-form-group']}>
+                    <label className={styles['edit-checkbox-label']}>
                         <input
                             type="checkbox"
                             name="is_public"
@@ -92,10 +92,10 @@ const EditPlaylistModal = ({ isOpen, onClose, playlist }) => {
                     </label>
                 </div>
 
-                <div className="edit-form-actions">
+                <div className={styles['edit-form-actions']}>
                     <button
                         type="button"
-                        className="edit-cancel-button"
+                        className={styles['edit-cancel-button']}
                         onClick={onClose}
                         disabled={isLoading}
                     >
@@ -103,14 +103,14 @@ const EditPlaylistModal = ({ isOpen, onClose, playlist }) => {
                     </button>
                     <button
                         type="submit"
-                        className="edit-submit-button"
+                        className={styles['edit-submit-button']}
                         disabled={isLoading}
                     >
                         {isLoading ? 'Saving...' : 'Save Changes'}
                     </button>
                 </div>
             </form>
-        </Modal>
+        </FormModalWrapper>
     );
 };
 

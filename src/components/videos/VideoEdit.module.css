@@ -1,11 +1,12 @@
 /* components/videos/VideoEdit.module.css */
-
 .edit-form {
     display: flex;
     flex-direction: column;
     gap: 16px;
     width: 100%;
     max-width: 600px;
+    /* Add padding to compensate for modal's lack of padding */
+    padding: 20px;
 }
 
 .edit-error {
@@ -70,7 +71,6 @@
     margin-right: 8px;
 }
 
-/* Add the privacy hint styling */
 .privacy-hint {
     font-size: 12px;
     margin-top: 4px;

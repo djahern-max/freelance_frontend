@@ -1,7 +1,7 @@
 // components/videos/VideoEdit.js
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import Modal from '../shared/Modal';
+import FormModalWrapper from '../shared/FormModalWrapper';
 import { updateVideo } from '../../redux/videoSlice';
 import styles from './VideoEdit.module.css';
 
@@ -65,7 +65,7 @@ const VideoEdit = ({ isOpen, onClose, video }) => {
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title="Edit Video">
+        <FormModalWrapper isOpen={isOpen} onClose={onClose} title="Edit Video">
             <form onSubmit={handleSubmit} className={styles['edit-form']}>
                 {error && <div className={styles['edit-error']}>{error}</div>}
 
@@ -142,7 +142,7 @@ const VideoEdit = ({ isOpen, onClose, video }) => {
                     </button>
                 </div>
             </form>
-        </Modal>
+        </FormModalWrapper>
     );
 };
 
