@@ -970,6 +970,7 @@ const VideoList = () => {
             <option value="solution_demo">Solution Demo</option>
             <option value="project_overview">Project Overview</option>
             <option value="progress_update">Progress Update</option>
+            <option value="pitch_contest">Pitch Contest</option>  {/* Add this option */}
           </select>
         </div>
       </div>
