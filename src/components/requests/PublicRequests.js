@@ -122,7 +122,7 @@ const PublicRequests = () => {
         <option value="in_progress">In Progress</option>
         <option value="completed">Completed</option>
         <option value="cancelled">Cancelled</option>
-        <option value="external_support">External Support Tickets</option> {/* Add this line */}
+
       </select>
     );
   };
