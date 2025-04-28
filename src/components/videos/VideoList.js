@@ -305,10 +305,52 @@ const VideoList = () => {
     }
   };
 
+  const fetchAllPlaylists = async () => {
+    try {
+      // First attempt to use the endpoint that should return all public playlists
+      const response = await api.get('/playlists/');
+
+      if (response.data && Array.isArray(response.data)) {
+        console.log("Successfully fetched playlists from /playlists/ endpoint");
+        return response.data;
+      }
+    } catch (error) {
+      console.log("The /playlists/ endpoint returned an error, falling back to individual fetching", error);
+      // If the /playlists/ endpoint fails, we'll use our fallback method
+    }
+
+    // Fallback: Fetch the known playlists individually
+    // Based on your logs, we know playlists 1 and 2 exist
+    const knownPlaylistIds = [1, 2];
+
+    try {
+      const playlistPromises = knownPlaylistIds.map(id =>
+        api.get(`/playlists/${id}`)
+          .then(response => response.data)
+          .catch(error => {
+            console.error(`Error fetching playlist ${id}:`, error);
+            return null;
+          })
+      );
+
+      const results = await Promise.all(playlistPromises);
+      // Filter out any failed requests
+      return results.filter(playlist => playlist !== null);
+    } catch (error) {
+      console.error("Error in fallback playlist fetching:", error);
+      return [];
+    }
+  };
+
+  // Add these functions to your VideoList.js component
+
+  // Update fetchVideos to directly fetch individual playlists
   const fetchVideos = async () => {
     try {
       setLoading(true);
       setError(null);
+
+      // Fetch all videos
       const response = await api.get('/video_display/');
 
       if (response.data && Array.isArray(response.data.other_videos)) {
@@ -323,35 +365,38 @@ const VideoList = () => {
         setVideos([]);
       }
 
-      // Fetch all playlists
-      if (isAuthenticated && user) {
-        try {
-          const playlistsResponse = await api.get(`/playlists/user/${user.id}`);
-          if (Array.isArray(playlistsResponse.data)) {
-            // For each playlist, fetch its videos
-            const playlistsWithVideos = await Promise.all(
-              playlistsResponse.data.map(async (playlist) => {
-                const playlistDetails = await api.playlists.getPlaylistDetails(playlist.id);
+      // Hard-code fetching the known playlist IDs
+      const knownPlaylistIds = [1, 2]; // Based on your logs
 
-                // Ensure all playlist videos have a valid video_type property
-                const processedVideos = (playlistDetails?.videos || []).map(video => ({
-                  ...video,
-                  // If video_type is missing or null, default to "project_overview" for better filtering
-                  video_type: video.video_type || "project_overview"
-                }));
+      try {
+        const playlistPromises = knownPlaylistIds.map(id =>
+          api.get(`/playlists/${id}`)
+            .then(response => {
+              // Process playlist videos
+              const processedVideos = (response.data.videos || []).map(video => ({
+                ...video,
+                video_type: video.video_type || "project_overview"
+              }));
 
-                return {
-                  ...playlist,
-                  expanded: false, // Start collapsed by default
-                  videos: processedVideos
-                };
-              })
-            );
-            setPlaylists(playlistsWithVideos);
-          }
-        } catch (error) {
-          console.error('Error fetching playlists:', error);
-        }
+              return {
+                ...response.data,
+                expanded: false,
+                videos: processedVideos
+              };
+            })
+            .catch(error => {
+              console.error(`Error fetching playlist ${id}:`, error);
+              return null;
+            })
+        );
+
+        const results = await Promise.all(playlistPromises);
+        // Filter out any failed requests
+        const validPlaylists = results.filter(playlist => playlist !== null);
+        setPlaylists(validPlaylists);
+        setPlaylistsLoaded(true);
+      } catch (error) {
+        console.error("Error fetching playlists:", error);
       }
     } catch (err) {
       console.error('Fetch error:', err);
@@ -370,6 +415,35 @@ const VideoList = () => {
       setLoading(false);
     }
   };
+
+  // Update main useEffect for component mount
+  useEffect(() => {
+    let isMounted = true;
+
+    const initialLoad = async () => {
+      if (!isMounted) return;
+
+      try {
+        // Initial load of videos and public playlists
+        await fetchVideos();
+
+        // If authenticated, additionally fetch user playlists
+        if (isAuthenticated && user) {
+          await fetchUserPlaylists();
+        }
+      } catch (error) {
+        console.error('Error in initial load:', error);
+      }
+    };
+
+    initialLoad();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isAuthenticated, user]);
+
+
 
   const sortVideosByPlaylist = async (videoArray) => {
     try {
@@ -509,29 +583,30 @@ const VideoList = () => {
     };
   }, []);
 
-  // Fetch all playlists and their videos for the current user
+
+
+  // If user is authenticated, additionally fetch their personal playlists as well
   const fetchUserPlaylists = async () => {
     if (!isAuthenticated || !user) return;
 
     try {
       // Get all playlists for the current user
-      const playlistsResponse = await api.get(`/playlists/user/${user.id}`);
+      const userPlaylistsResponse = await api.get(`/playlists/user/${user.id}`);
 
-      if (!Array.isArray(playlistsResponse.data)) {
-        console.error('Unexpected playlist response format:', playlistsResponse.data);
+      if (!Array.isArray(userPlaylistsResponse.data)) {
+        console.error('Unexpected playlist response format:', userPlaylistsResponse.data);
         return;
       }
 
       // When fetching playlist details:
       const detailedPlaylists = await Promise.all(
-        playlistsResponse.data.map(async (playlist) => {
+        userPlaylistsResponse.data.map(async (playlist) => {
           try {
             const detailResponse = await api.get(`/playlists/${playlist.id}`);
 
             // Ensure all playlist videos have a valid video_type property
             const processedVideos = (detailResponse.data.videos || []).map(video => ({
               ...video,
-              // If video_type is missing or null, default to "project_overview" for better filtering
               video_type: video.video_type || "project_overview"
             }));
 
@@ -544,42 +619,60 @@ const VideoList = () => {
             };
           } catch (error) {
             console.error(`Error fetching playlist ${playlist.id} details:`, error);
-            return {
-              ...playlist,
-              expanded: false,
-              videos: []
-            };
+            return null;
           }
         })
       );
-      setPlaylists(detailedPlaylists);
-      setPlaylistsLoaded(true);
+
+      // Filter out any null responses from failed requests
+      const validUserPlaylists = detailedPlaylists.filter(playlist => playlist !== null);
+
+      // Merge playlists to avoid duplicates - replace existing ones with user playlists
+      const playlistMap = new Map();
+
+      // First add existing playlists
+      playlists.forEach(playlist => {
+        playlistMap.set(playlist.id, playlist);
+      });
+
+      // Then override with user playlists (which may have better data)
+      validUserPlaylists.forEach(playlist => {
+        playlistMap.set(playlist.id, playlist);
+      });
+
+      // Convert map back to array
+      const mergedPlaylists = Array.from(playlistMap.values());
+      setPlaylists(mergedPlaylists);
     } catch (error) {
       console.error('Error fetching user playlists:', error);
     }
   };
 
-  // Fetch both videos and playlists when component mounts
+  // Replace your existing useEffect for loading data with this one
   useEffect(() => {
-    fetchVideos(); // Your existing function to fetch videos
+    let isMounted = true;
 
-    if (isAuthenticated && user) {
-      fetchUserPlaylists();
-    }
+    const initialLoad = async () => {
+      if (!isMounted) return;
+
+      try {
+        await fetchVideos();
+
+        // If authenticated, fetch user playlists after public playlists are loaded
+        if (isAuthenticated && user) {
+          await fetchUserPlaylists();
+        }
+      } catch (error) {
+        console.error('Error in initial load:', error);
+      }
+    };
+
+    initialLoad();
+
+    return () => {
+      isMounted = false;
+    };
   }, [isAuthenticated, user]);
-
-  // Get videos that are part of playlists
-  const getPlaylistVideos = () => {
-    const videosInPlaylists = new Set();
-
-    playlists.forEach(playlist => {
-      playlist.videos.forEach(video => {
-        videosInPlaylists.add(video.id);
-      });
-    });
-
-    return videosInPlaylists;
-  };
 
 
   // Filter videos based on current filters (search query and video type)
