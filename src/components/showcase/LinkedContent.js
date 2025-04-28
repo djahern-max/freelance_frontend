@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { linkProfile, linkVideos } from '../../redux/showcaseSlice';
 import api from '../../utils/api';
 import styles from './LinkedContent.module.css';
+import { getFullAssetUrl } from '../../utils/videoUtils';
 
 const LinkedContent = ({ showcase, onComplete }) => {
     const dispatch = useDispatch();
@@ -88,7 +89,7 @@ const LinkedContent = ({ showcase, onComplete }) => {
                                     <div className={styles.videoInfo}>
                                         {video.thumbnail_path && (
                                             <img
-                                                src={video.thumbnail_path}
+                                                src={getFullAssetUrl(video.thumbnail_path)}
                                                 alt={video.title}
                                                 className={styles.thumbnail}
                                             />

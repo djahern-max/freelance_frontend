@@ -8,6 +8,7 @@ import styles from './ShowcaseList.module.css';
 import ReactDOM from 'react-dom';
 import ShowcaseShareButton from './ShowcaseShareButton';
 import { Upload, ChevronDown, ChevronUp } from 'lucide-react';
+import { getFullAssetUrl } from '../../utils/videoUtils';
 
 const ShowcaseList = () => {
   const dispatch = useDispatch();
@@ -229,10 +230,12 @@ const ShowcaseList = () => {
                           >
                             <div className={styles.videoThumbnailWrapper}>
                               <img
-                                src={video.thumbnail_path}
+                                src={getFullAssetUrl(video.thumbnail_path)}
                                 alt={video.title}
                                 className={styles.videoThumbnail}
                               />
+
+
                             </div>
                           </Link>
                         ))}

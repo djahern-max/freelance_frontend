@@ -2,30 +2,19 @@
 import api from './api';
 
 export const getFullAssetUrl = (path) => {
-    if (!path) {
-        console.log('Empty path received in getFullAssetUrl');
-        return null;
-    }
+    if (!path) return null;
 
     // If it's already a full URL (starts with http:// or https://)
     if (path.startsWith('http')) {
         return path;
     }
 
-    // Remove any leading slash if present
-    const cleanPath = path.startsWith('/') ? path.substring(1) : path;
-
     // Digital Ocean Spaces configuration
     const spacesRegion = 'nyc3';
     const spacesBucket = 'freelance-wtf-storage';
 
-    // Construct the URL using the Spaces configuration
-    const fullUrl = `https://${spacesBucket}.${spacesRegion}.digitaloceanspaces.com/${cleanPath}`;
-
-    // For debugging
-    console.log(`Converted ${path} to ${fullUrl}`);
-
-    return fullUrl;
+    // Construct the URL using the Spaces configuration 
+    return `https://${spacesBucket}.${spacesRegion}.digitaloceanspaces.com/${path}`;
 };
 
 export const deleteVideo = async (videoId) => {
