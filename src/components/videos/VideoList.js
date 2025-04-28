@@ -176,9 +176,12 @@ const VideoItem = ({
   );
 };
 
+// Updated PlaylistGroup component with improved styling
 const PlaylistGroup = ({
   playlist,
   videos,
+  videoTypeFilter,
+  searchQuery,
   onVideoClick,
   isAuthenticated,
   onVote,
@@ -192,14 +195,32 @@ const PlaylistGroup = ({
   // Start collapsed by default
   const [expanded, setExpanded] = useState(false);
 
-  // Get the video count for display
-  const videoCount = videos.length;
+  // Filter videos based on current filter criteria
+  const filteredVideos = videos.filter(video => {
+    // Type filter - handle undefined or null video_type for playlist videos
+    const matchesType = videoTypeFilter === 'all' ||
+      video.video_type === videoTypeFilter;
+
+    // Search filter
+    const matchesSearch = !searchQuery ||
+      (video.title && video.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (video.description && video.description.toLowerCase().includes(searchQuery.toLowerCase()));
+
+    return matchesType && matchesSearch;
+  });
+
+  // Get the video count for display - only count filtered videos
+  const videoCount = filteredVideos.length;
+
+  // If no videos match the filter, don't show this playlist
+  if (videoCount === 0) {
+    return null;
+  }
 
   return (
     <div className={styles.playlistGroup}>
       <div className={styles.playlistHeader} onClick={() => setExpanded(!expanded)}>
         <div className={styles.playlistInfo}>
-          {/* Use name property instead of title */}
           <h2 className={styles.playlistTitle}>{playlist.name || playlist.title || 'Unnamed Playlist'}</h2>
           <span className={styles.videoCount}>{videoCount} video{videoCount !== 1 ? 's' : ''}</span>
         </div>
@@ -210,7 +231,7 @@ const PlaylistGroup = ({
 
       {expanded && (
         <div className={styles.playlistVideos}>
-          {videos.map((video) => (
+          {filteredVideos.map((video) => (
             <VideoItem
               key={video.id}
               video={video}
@@ -284,7 +305,6 @@ const VideoList = () => {
     }
   };
 
-  // Enhanced fetchVideos to also retrieve playlist information
   const fetchVideos = async () => {
     try {
       setLoading(true);
@@ -292,7 +312,13 @@ const VideoList = () => {
       const response = await api.get('/video_display/');
 
       if (response.data && Array.isArray(response.data.other_videos)) {
-        setVideos(response.data.other_videos);
+        // Ensure all videos have a valid video_type property
+        const processedVideos = response.data.other_videos.map(video => ({
+          ...video,
+          // If video_type is missing or null, default to "project_overview" for better filtering
+          video_type: video.video_type || "project_overview"
+        }));
+        setVideos(processedVideos);
       } else {
         setVideos([]);
       }
@@ -306,9 +332,18 @@ const VideoList = () => {
             const playlistsWithVideos = await Promise.all(
               playlistsResponse.data.map(async (playlist) => {
                 const playlistDetails = await api.playlists.getPlaylistDetails(playlist.id);
+
+                // Ensure all playlist videos have a valid video_type property
+                const processedVideos = (playlistDetails?.videos || []).map(video => ({
+                  ...video,
+                  // If video_type is missing or null, default to "project_overview" for better filtering
+                  video_type: video.video_type || "project_overview"
+                }));
+
                 return {
                   ...playlist,
-                  videos: playlistDetails?.videos || []
+                  expanded: false, // Start collapsed by default
+                  videos: processedVideos
                 };
               })
             );
@@ -492,16 +527,26 @@ const VideoList = () => {
         playlistsResponse.data.map(async (playlist) => {
           try {
             const detailResponse = await api.get(`/playlists/${playlist.id}`);
+
+            // Ensure all playlist videos have a valid video_type property
+            const processedVideos = (detailResponse.data.videos || []).map(video => ({
+              ...video,
+              // If video_type is missing or null, default to "project_overview" for better filtering
+              video_type: video.video_type || "project_overview"
+            }));
+
             // Make sure to preserve ALL properties from both responses
             return {
               ...playlist,                   // Original playlist data
               ...detailResponse.data,        // Detailed playlist data
-              videos: detailResponse.data.videos || []
+              expanded: false,               // Start collapsed by default
+              videos: processedVideos
             };
           } catch (error) {
             console.error(`Error fetching playlist ${playlist.id} details:`, error);
             return {
               ...playlist,
+              expanded: false,
               videos: []
             };
           }
@@ -540,7 +585,11 @@ const VideoList = () => {
   // Filter videos based on current filters (search query and video type)
   const filterVideos = (videoList) => {
     return videoList.filter(video => {
-      const matchesType = videoTypeFilter === 'all' || video.video_type === videoTypeFilter;
+      // Type filter - be more flexible with type matching
+      const matchesType = videoTypeFilter === 'all' ||
+        video.video_type === videoTypeFilter;
+
+      // Search filter
       const matchesSearch = !searchQuery ||
         (video.title && video.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (video.description && video.description.toLowerCase().includes(searchQuery.toLowerCase()));
@@ -732,6 +781,8 @@ const VideoList = () => {
   const individualVideos = getNonPlaylistVideos();
   const filteredIndividualVideos = filterVideos(individualVideos);
 
+
+
   return (
     <div className={styles.container}>
       <div className={styles.headerContainer}>
@@ -804,6 +855,7 @@ const VideoList = () => {
         </div>
       )}
 
+      {/* Re-enabled search controls with improved styling */}
       <div className={styles.videoControlsBar}>
         <div className={styles.searchContainer}>
           <input
@@ -829,64 +881,83 @@ const VideoList = () => {
         </div>
       </div>
 
-      {/* Playlists */}
+      {/* Playlists Section with Label */}
       {(displayMode === 'all' || displayMode === 'playlists') && playlists.length > 0 && (
-        <div className={styles.playlistsContainer}>
-          {playlists.map(playlist => {
-            const filteredPlaylistVideos = filterVideos(playlist.videos);
-            if (filteredPlaylistVideos.length === 0) return null;
+        <div className={styles.sectionContainer}>
+          <h2 className={styles.sectionTitle}>
+            <List size={20} className={styles.sectionIcon} />
+            <span>Playlists</span>
+            <span className={styles.videoCountBadge}>
+              {playlists.reduce((count, playlist) => {
+                // Count videos in each playlist that match current filters
+                const filteredCount = filterVideos(playlist.videos).length;
+                return count + filteredCount;
+              }, 0)} videos
+            </span>
+          </h2>
 
-            // Use ONE of these two approaches, not both:
+          <div className={styles.playlistsContainer}>
+            {playlists.map(playlist => {
+              const filteredPlaylistVideos = filterVideos(playlist.videos);
+              if (filteredPlaylistVideos.length === 0) return null;
 
-            // EITHER use the PlaylistGroup component:
-            return (
-              <PlaylistGroup
-                key={playlist.id}
-                playlist={playlist}
-                videos={filteredPlaylistVideos}
-                onVideoClick={handleVideoClick}
-                isAuthenticated={isAuthenticated}
-                onVote={handleVote}
-                onSendRequest={handleSendRequest}
-                onAddToPlaylist={handleAddToPlaylist}
-                onDeleteVideo={handleDeleteVideo}
-                onEditVideo={handleEditVideo}
-                user={user}
-                formatDate={formatDate}
-              />
-            );
+              return (
+                <div key={playlist.id} className={styles.playlistGroup}>
+                  <div className={styles.playlistHeader} onClick={() => {
+                    // Find the playlist in state and toggle its expanded property
+                    setPlaylists(prevPlaylists =>
+                      prevPlaylists.map(p =>
+                        p.id === playlist.id ? { ...p, expanded: !p.expanded } : p
+                      )
+                    );
+                  }}>
+                    <div className={styles.playlistInfo}>
+                      <h2 className={styles.playlistTitle}>{playlist.name || playlist.title || 'Unnamed Playlist'}</h2>
+                      <span className={styles.videoCount}>{filteredPlaylistVideos.length} video{filteredPlaylistVideos.length !== 1 ? 's' : ''}</span>
+                    </div>
+                    <button className={styles.expandButton}>
+                      {playlist.expanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                    </button>
+                  </div>
 
-            return (
-              <div key={playlist.id} className={styles.playlistGroup}>
-                <div className={styles.playlistHeader}>
-                  <h2 className={styles.playlistTitle}>{playlist.title || 'Unnamed Playlist'}</h2>
+                  {playlist.expanded && (
+                    <div className={styles.playlistVideos}>
+                      {filteredPlaylistVideos.map(video => (
+                        <VideoItem
+                          key={video.id}
+                          video={video}
+                          onVideoClick={handleVideoClick}
+                          isAuthenticated={isAuthenticated}
+                          onVote={handleVote}
+                          onSendRequest={handleSendRequest}
+                          onAddToPlaylist={handleAddToPlaylist}
+                          onDeleteVideo={handleDeleteVideo}
+                          onEditVideo={handleEditVideo}
+                          user={user}
+                          formatDate={formatDate}
+                          isInPlaylist={true}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
-                <div className={styles.playlistVideos}>
-                  {filteredPlaylistVideos.map(video => (
-                    <VideoItem
-                      key={video.id}
-                      video={video}
-                      onVideoClick={handleVideoClick}
-                      isAuthenticated={isAuthenticated}
-                      onVote={handleVote}
-                      onSendRequest={handleSendRequest}
-                      onAddToPlaylist={handleAddToPlaylist}
-                      onDeleteVideo={handleDeleteVideo}
-                      onEditVideo={handleEditVideo}
-                      user={user}
-                      formatDate={formatDate}
-                    />
-                  ))}
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       )}
-      {/* Individual videos */}
+
+      {/* Individual videos section with Label */}
       {(displayMode === 'all' || displayMode === 'individual') && filteredIndividualVideos.length > 0 && (
-        <div>
-          {displayMode === 'all' && <h2 className={styles.sectionTitle}>Individual Videos</h2>}
+        <div className={styles.sectionContainer}>
+          <h2 className={styles.sectionTitle}>
+            <Play size={20} className={styles.sectionIcon} />
+            <span>Individual Videos</span>
+            <span className={styles.videoCountBadge}>
+              {filteredIndividualVideos.length} videos
+            </span>
+          </h2>
+
           <div className={styles.grid}>
             {filteredIndividualVideos.map(video => (
               <VideoItem
@@ -906,6 +977,33 @@ const VideoList = () => {
           </div>
         </div>
       )}
+
+      {/* No results message */}
+      {searchQuery &&
+        ((displayMode === 'all' &&
+          filteredIndividualVideos.length === 0 &&
+          playlists.every(p => filterVideos(p.videos).length === 0)) ||
+          (displayMode === 'playlists' &&
+            playlists.every(p => filterVideos(p.videos).length === 0)) ||
+          (displayMode === 'individual' &&
+            filteredIndividualVideos.length === 0)) && (
+          <div className={styles.noResultsContainer}>
+            <div className={styles.noResultsContent}>
+              <MessageSquare size={32} className={styles.noResultsIcon} />
+              <h3>No matching videos found</h3>
+              <p>Try adjusting your search or filter criteria</p>
+              <button
+                className={styles.clearFiltersButton}
+                onClick={() => {
+                  setSearchQuery('');
+                  setVideoTypeFilter('all');
+                }}
+              >
+                Clear filters
+              </button>
+            </div>
+          </div>
+        )}
 
       {showVideoModal && selectedVideo && (
         <Modal
