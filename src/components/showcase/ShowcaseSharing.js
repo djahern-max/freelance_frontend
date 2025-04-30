@@ -12,24 +12,38 @@ const ShowcaseSharing = ({ showcaseId, onShare }) => {
         setLoading(true);
         setError('');
         try {
-            const response = await fetch(`/project-showcase/${showcaseId}/share`, {
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                throw new Error('You must be logged in to share a showcase');
+            }
+
+            // Use the correct endpoint path without /api prefix
+            // Your NGINX config is handling the /api prefix
+            const response = await fetch(`/api/project-showcase/${showcaseId}/share`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
 
             if (!response.ok) {
+                if (response.status === 401) {
+                    throw new Error('Authentication failed. Please log in again.');
+                }
                 throw new Error('Failed to generate share link');
             }
 
             const data = await response.json();
-            const fullShareUrl = `${window.location.origin}/showcase/${showcaseId}`;
+
+            // Use the exact format returned by the server, plus origin
+            const fullShareUrl = `${window.location.origin}${data.share_url}`;
             setShareUrl(fullShareUrl);
             if (onShare) onShare(fullShareUrl);
         } catch (err) {
-            setError('Failed to generate share link. Please try again.');
+            console.error('Share error:', err);
+            setError(err.message || 'Failed to generate share link. Please try again.');
         } finally {
             setLoading(false);
         }
