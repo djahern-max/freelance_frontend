@@ -2,65 +2,100 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8" />
-  <!-- Basic favicon -->
-  <link rel="icon" type="image/svg+xml" href="%PUBLIC_URL%/favicon.svg" />
-  <link rel="icon" type="image/png" href="%PUBLIC_URL%/favicon.png?v=2" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>freelance.wtf - WTF Can I Do for You?</title>
+  <meta name="description" content="freelance.wtf - Professional freelance services with attitude">
 
-  <!-- Updated Script -->
-  <script defer data-domain="freelance.wtf" src="https://analytics-hub.xyz/api/tracking/script.js"></script>
+  <!-- Favicon links -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="manifest" href="/site.webmanifest">
 
-  <!-- Viewport and theme -->
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#0066ff" />
-  <!-- Updated to match your blue -->
+  <!-- Open Graph / Social Media Meta Tags -->
+  <meta property="og:title" content="freelance.wtf - WTF Can I Do for You?">
+  <meta property="og:description"
+    content="Direct, no-nonsense freelance services with a dash of attitude. Find out WTF we can do for you.">
+  <meta property="og:image" content="/og-image.png">
+  <meta property="og:url" content="https://freelance.wtf">
+  <meta property="og:type" content="website">
 
-  <!-- Various favicon sizes -->
-  <link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/favicon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="%PUBLIC_URL%/favicon-16x16.png" />
-  <link rel="apple-touch-icon" sizes="180x180" href="%PUBLIC_URL%/apple-touch-icon.png" />
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="freelance.wtf - WTF Can I Do for You?">
+  <meta name="twitter:description"
+    content="Direct, no-nonsense freelance services with a dash of attitude. Find out WTF we can do for you.">
+  <meta name="twitter:image" content="/og-image.png">
 
-  <!-- Description and Open Graph tags -->
-  <meta name="description" content="WTF Can I Build For You?" />
-  <meta property="og:title" content="freelance.wtf" />
-  <meta property="og:description" content="Connecting AI Creators with Clients" />
-  <meta property="og:image" content="https://freelance.wtf/og-image.png" />
-  <meta property="og:url" content="https://freelance.wtf" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="freelance.wtf" />
-  <meta name="twitter:description" content="Connecting AI Creators with Clients" />
-  <meta property="twitter:image" content="https://freelance.wtf/og-image.png" />
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      padding: 2rem;
+      background-color: #0f0f0f;
+      color: #f5f5f5;
+    }
 
-  <!-- Web App Manifest -->
-  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    .logo {
+      max-width: 200px;
+      margin-bottom: 2rem;
+    }
 
-  <link rel="preload" href="/favicon.svg" as="image" type="image/svg+xml">
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: #ffffff;
+      text-transform: lowercase;
+      font-weight: 700;
+    }
 
-  <title>freelance.wtf</title>
+    .slogan {
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+      color: #ff3e3e;
+      font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      .slogan {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
 </head>
 
 <body>
-  <noscript>
-    <div style="text-align: center; padding: 20px">
-      <h1>WTF Can I Build For You?</h1>
-      <p>
-        WTF Can I Build For You?
-      </p>
-    </div>
-  </noscript>
+  <img src="/android-chrome-512x512.png" alt="freelance.wtf Logo" class="logo">
+  <h1>freelance.wtf</h1>
+  <p class="slogan">WTF Can I Do for You?</p>
+
+  <!-- This is just a placeholder. In a React app, your React root would go here -->
   <div id="root"></div>
-  <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
 
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
+  <!-- These script tags would be replaced by your React build process -->
+  <script>
+    // This is where your React app would initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('freelance.wtf React application initializing...');
+    });
+  </script>
 </body>
 
 </html>
