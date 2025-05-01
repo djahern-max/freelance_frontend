@@ -3,48 +3,70 @@
 
 <head>
   <meta charset="utf-8" />
-  <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-  <!-- 100% privacy-first analytics -->
+  <!-- Basic favicon -->
+  <link rel="icon" type="image/svg+xml" href="%PUBLIC_URL%/favicon.svg" />
+  <link rel="icon" type="image/png" href="%PUBLIC_URL%/favicon.png?v=2" />
+
+  <meta name="apple-mobile-web-app-title" content="freelance.wtf">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+
+  <!-- Updated Script -->
   <script defer data-domain="freelance.wtf" src="https://analytics-hub.xyz/api/tracking/script.js"></script>
 
+  <!-- Viewport and theme -->
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#3B82F6" />
+  <meta name="theme-color" content="#0066ff" />
+  <!-- Updated to match your blue -->
 
-  <!-- Primary Meta Tags -->
-  <title>freelance.wtf</title>
-  <meta name="description" content="Freelancer Platform" />
-
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://analytics-hub.xyz" />
-  <meta property="og:title" content="Analytics Hub - AI Enhanced Web Analytics" />
-  <meta property="og:description" content="AI Enhanced Web Analytics" />
-  <meta property="og:image" content="https://analytics-hub.xyz/preview-banner-2025.png" />
-
-
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:url" content="https://analytics-hub.xyz" />
-  <meta name="twitter:title" content="Analytics Hub - AI Enhanced Web Analytics" />
-  <meta name="twitter:description" content="AI Enhanced Web Analytics" />
-  <meta name="twitter:image" content="https://analytics-hub.xyz/preview-banner-2025.png" />
-
-
-  <!-- Favicons -->
-  <link rel="apple-touch-icon" href="%PUBLIC_URL%/apple-touch-icon.png" />
+  <!-- Various favicon sizes -->
   <link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="%PUBLIC_URL%/favicon-16x16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="%PUBLIC_URL%/apple-touch-icon.png" />
+
+  <!-- Description and Open Graph tags -->
+  <meta name="description" content="freelance.wtf - Connecting AI Creators with Clients" />
+  <meta property="og:title" content="freelance.wtf" />
+  <meta property="og:description" content="Connecting AI Creators with Clients" />
+  <meta property="og:image" content="https://freelance.wtf/og-image.png" />
+  <meta property="og:url" content="https://freelance.wtf" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="freelance.wtf" />
+  <meta name="twitter:description" content="Connecting AI Creators with Clients" />
+  <meta property="twitter:image" content="https://freelance.wtf/og-image.png" />
+
+  <!-- Web App Manifest -->
   <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+
+  <link rel="preload" href="/favicon.svg" as="image" type="image/svg+xml">
+
+  <title>freelance.wtf</title>
 </head>
 
 <body>
   <noscript>
-    <div style="text-align: center; padding: 20px; font-family: sans-serif;">
-      <h2>Analytics Hub</h2>
-      <p>AI Enhanced Web Analytics Platform.</p>
+    <div style="text-align: center; padding: 20px">
+      <h1>Connecting clients and AI Creators</h1>
+      <p>
+        freelance.wtf is a site that allows users to post request for services and allows AI Creators to bid on those
+        requests. Currently only 5% of businesses are using AI, and freelance.wtf is here to help bridge that gap.
+      </p>
     </div>
   </noscript>
   <div id="root"></div>
+  <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
+
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
+
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
 </body>
 
 </html>
