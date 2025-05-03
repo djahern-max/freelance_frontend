@@ -814,15 +814,11 @@ const VideoList = () => {
   };
 
   const handleVideoClick = (video) => {
-    if (!isAuthenticated) {
-      setSelectedVideo(video);
-      setShowAuthDialog(true);
-      return;
-    }
     if (!video || !video.file_path) {
       console.error('Invalid video data:', video);
       return;
     }
+
     setSelectedVideo({
       ...video,
       streamUrl: getFullAssetUrl(video.file_path)
