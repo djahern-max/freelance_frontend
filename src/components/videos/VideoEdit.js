@@ -103,9 +103,10 @@ const VideoEdit = ({ isOpen, onClose, video }) => {
                         <option value="solution_demo">Solution Demo</option>
                         <option value="project_overview">Project Overview</option>
                         <option value="progress_update">Progress Update</option>
+                        <option value="pitch_contest">Pitch Contest</option>
+                        <option value="tutorials">Tutorials</option>
                     </select>
                 </div>
-
                 <div className={styles['edit-form-group']}>
                     <label className={styles['edit-checkbox-label']}>
                         <input

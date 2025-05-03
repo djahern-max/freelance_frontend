@@ -859,18 +859,27 @@
   margin-bottom: 2rem;
 }
 
+
+/* For videos inside playlists */
+.playlistVideoCard {
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Update these styles in your VideoList.module.css file */
+
 .playlistGroup {
   margin-bottom: 2rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid #e5e7eb;
   border-radius: 0.75rem;
   overflow: hidden;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   background-color: white;
   transition: box-shadow 0.3s;
 }
 
 .playlistGroup:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .playlistHeader {
@@ -878,16 +887,16 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.5rem;
-  background-color: #e5edff;
-  /* Light blue background to make it stand out */
+  background-color: #f8f9fa;
+  /* Changed from purple to light gray */
   cursor: pointer;
-  border-bottom: 1px solid #d1d5db;
+  border-bottom: 1px solid #e5e7eb;
   transition: background-color 0.2s;
 }
 
 .playlistHeader:hover {
-  background-color: #d3e3ff;
-  /* Slightly darker on hover */
+  background-color: #f3f4f6;
+  /* Changed from purple to slightly darker gray */
 }
 
 .playlistInfo {
@@ -905,6 +914,7 @@
 
 .videoCount {
   background-color: #3b82f6;
+  /* Keep the blue for the video count badge */
   color: white;
   padding: 0.25rem 0.75rem;
   border-radius: 1rem;
@@ -922,7 +932,6 @@
   align-items: center;
   justify-content: center;
   transition: color 0.2s, background-color 0.2s;
-  background-color: rgba(255, 255, 255, 0.5);
   border-radius: 50%;
   width: 2rem;
   height: 2rem;
@@ -930,7 +939,7 @@
 
 .expandButton:hover {
   color: #111827;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .playlistVideos {
@@ -939,12 +948,6 @@
   gap: 1rem;
   padding: 1.5rem;
   background-color: #f9fafb;
-}
-
-/* For videos inside playlists */
-.playlistVideoCard {
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 /* Section titles */

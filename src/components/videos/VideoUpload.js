@@ -9,6 +9,7 @@ import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './VideoUpload.module.css';
 
+
 const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -22,6 +23,8 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
   const [projectUrl, setProjectUrl] = useState('');
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [videoType, setVideoType] = useState('solution_demo');
+
 
   const navigate = useNavigate();
 
@@ -119,6 +122,8 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
     setIsProcessing(false);
     showMessage('Upload in progress...', 'loading');
 
+
+
     const formData = new FormData();
     formData.append('title', title);
     formData.append('description', description);
@@ -138,8 +143,9 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
 
     if (projectUrl) {
       formData.append('project_url', projectUrl);
-    }
 
+    }
+    formData.append('video_type', videoType);
     try {
       const apiUrl =
         process.env.NODE_ENV === 'production'
@@ -262,6 +268,21 @@ const VideoUpload = ({ projectId, requestId, onUploadSuccess }) => {
               placeholder="Enter project URL (optional)"
               disabled={uploading}
             />
+          </div>
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>Video Type</label>
+            <select
+              className={styles.input}
+              value={videoType}
+              onChange={(e) => setVideoType(e.target.value)}
+              disabled={uploading}
+            >
+              <option value="solution_demo">Solution Demo</option>
+              <option value="project_overview">Project Overview</option>
+              <option value="progress_update">Progress Update</option>
+              <option value="pitch_contest">Pitch Contest</option>
+              <option value="tutorials">Tutorials</option>
+            </select>
           </div>
 
           <div className={styles.uploadButtons}>
