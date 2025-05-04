@@ -34,7 +34,7 @@ const Footer = () => {
   return (
     <footer className={styles.footer}>
       <div className={styles.footerContent}>
-        <div className={styles.section}>
+        {/* <div className={styles.section}>
           <button
             className={styles.donateButton}
             onClick={() => setShowDonationModal(true)}
@@ -50,7 +50,7 @@ const Footer = () => {
             />
             <span className={styles.buttonText}>Support Freelance.wtf</span>
           </button>
-        </div>
+        </div> */}
 
         <div className={styles.section}>
           <button
@@ -96,9 +96,9 @@ const Footer = () => {
         />
       )}
 
-      {showDonationModal && (
+      {/* {showDonationModal && (
         <DonationModal onClose={() => setShowDonationModal(false)} />
-      )}
+      )} */}
     </footer>
   );
 };

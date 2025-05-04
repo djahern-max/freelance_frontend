@@ -71,12 +71,12 @@ const Header = () => {
       icon: Video,
       title: 'Videos'
     },
-    {
-      icon: Heart,
-      title: 'Support Freelance.wtf',
-      onClick: handleDonation,
-      isSpecial: true // Add this flag for special styling
-    }
+    // {
+    //   icon: Heart,
+    //   title: 'Support Freelance.wtf',
+    //   onClick: handleDonation,
+    //   isSpecial: true 
+    // }
   ];
 
   // Only add Dashboard if user is authenticated
