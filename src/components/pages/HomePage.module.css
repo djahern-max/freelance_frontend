@@ -18,42 +18,19 @@
   align-items: center;
   max-width: 600px;
   padding: 0 var(--spacing-lg);
-  margin-top: -50px;
+  margin-top: -80px;
   animation: fadeInUp 0.6s ease-out forwards;
   opacity: 0;
   transform: translateY(20px);
 }
 
-.logoContainer {
+.logo {
+  width: 720px;
+  max-width: 90vw;
+  height: auto;
+  margin-bottom: 2rem;
   animation: fadeIn 1s ease-out forwards;
   opacity: 0;
-  margin-bottom: 2rem;
-}
-
-.name {
-  font-size: 3.5rem;
-  font-weight: 700;
-  margin: 0;
-  color: var(--color-text-secondary);
-  line-height: 1.1;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-  letter-spacing: 0.02em;
-}
-
-.titleDivider {
-  height: 3px;
-  width: 80px;
-  background: var(--color-primary);
-  margin: 0.75rem auto;
-  border-radius: var(--radius-sm);
-}
-
-.title {
-  font-size: var(--font-size-lg);
-  font-weight: 400;
-  color: var(--color-primary-dark);
-  margin: 0.5rem 0 0;
-  letter-spacing: 0.05em;
 }
 
 .subtitle {
@@ -137,19 +114,57 @@
   }
 }
 
+/* Extra large screens */
+@media (min-width: 1400px) {
+  .logo {
+    width: 820px;
+  }
+}
+
+/* Large screens */
+@media (max-width: 1399px) {
+  .logo {
+    width: 720px;
+  }
+}
+
+/* Medium screens */
+@media (max-width: 1024px) {
+  .logo {
+    width: 600px;
+  }
+
+  .centeredContent {
+    margin-top: -60px;
+  }
+}
+
+/* Tablet screens */
+@media (max-width: 768px) {
+  .logo {
+    width: 520px;
+  }
+
+  .centeredContent {
+    margin-top: -40px;
+  }
+
+  .subtitle {
+    font-size: 1.1rem;
+  }
+}
+
+/* Mobile screens */
 @media (max-width: 600px) {
+  .logo {
+    width: 85vw;
+    margin-bottom: 1.5rem;
+  }
+
   .centeredContent {
     padding: var(--spacing-md);
     max-width: 100%;
-    margin-top: -25px;
-  }
-
-  .name {
-    font-size: 2.5rem;
-  }
-
-  .title {
-    font-size: var(--font-size-base);
+    margin-top: -20px;
   }
 
   .subtitle {
@@ -178,5 +193,21 @@
 
   .fullPage {
     padding: 0;
+  }
+}
+
+/* Small mobile screens */
+@media (max-width: 375px) {
+  .logo {
+    width: 90vw;
+    margin-bottom: 1rem;
+  }
+
+  .centeredContent {
+    margin-top: -10px;
+  }
+
+  .subtitle {
+    font-size: 0.85rem;
   }
 }
