@@ -7,7 +7,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  background: var(--color-background-main);
   text-align: center;
   overflow: hidden;
 }
@@ -19,27 +19,45 @@
   max-width: 600px;
   padding: 0 var(--spacing-lg);
   margin-top: -50px;
-  /* Shift everything up */
   animation: fadeInUp 0.6s ease-out forwards;
   opacity: 0;
   transform: translateY(20px);
 }
 
-.logo {
-  width: 180px;
-  height: auto;
-  margin-bottom: -15px;
-  /* Reduced from 35px to 20px */
-  max-width: none;
+.logoContainer {
   animation: fadeIn 1s ease-out forwards;
   opacity: 0;
+  margin-bottom: 2rem;
+}
+
+.name {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--color-text-primary);
+  line-height: 1.1;
+}
+
+.titleDivider {
+  height: 3px;
+  width: 80px;
+  background: var(--color-primary);
+  margin: 0.75rem auto;
+  border-radius: var(--radius-sm);
+}
+
+.title {
+  font-size: var(--font-size-lg);
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  margin: 0.5rem 0 0;
+  letter-spacing: 0.05em;
 }
 
 .subtitle {
   font-size: var(--font-size-base);
   color: var(--color-text-secondary);
   margin-bottom: 35px;
-  /* Keeps space before buttons consistent */
   max-width: 480px;
 }
 
@@ -85,13 +103,13 @@
   content: "";
   flex: 1;
   height: 1px;
-  background-color: #ccc;
+  background-color: var(--color-border);
 }
 
 .divider span {
   margin: 0 10px;
-  color: #666;
-  font-size: 14px;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
 }
 
 .oauthWrapper {
@@ -118,41 +136,41 @@
 
 @media (max-width: 600px) {
   .centeredContent {
-    padding: 1rem;
+    padding: var(--spacing-md);
     max-width: 100%;
     margin-top: -25px;
-    /* Less shift on mobile */
   }
 
-  .logo {
-    width: 120px;
-    margin-bottom: 15px;
-    /* Reduced from 25px to 15px for mobile */
+  .name {
+    font-size: 2.5rem;
+  }
+
+  .title {
+    font-size: var(--font-size-base);
   }
 
   .subtitle {
     font-size: 0.95rem;
-    margin-bottom: 25px;
-    /* Equal spacing on mobile */
+    margin-bottom: var(--spacing-lg);
   }
 
   .buttonGroup {
     flex-direction: column;
-    gap: 12px;
-    margin-bottom: 15px;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
   }
 
   .login,
   .register {
     width: 100%;
-    font-size: 1rem;
-    padding: 12px;
+    font-size: var(--font-size-base);
+    padding: var(--spacing-sm);
   }
 
   .oauthWrapper {
-    gap: 10px;
+    gap: var(--spacing-sm);
     max-width: 100%;
-    padding: 0 1rem;
+    padding: 0 var(--spacing-md);
   }
 
   .fullPage {
