@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styles from './Footer.module.css';
 import ImageModal from './ImageModal';
 import CodingBootcamp from '../../images/CodingBootcamp.png';
-import CodingBootcamp from '../../images/CodingBootcamp.png'; // Assuming second image has different name
+import CPALicense from '../../images/CPALicense.png';
 
 export default function Footer() {
   const [modalImage, setModalImage] = useState(null);
@@ -29,10 +29,10 @@ export default function Footer() {
             View Bootcamp Certificate
           </button>
           <button
-            onClick={() => openModal(CodingBootcamp, 'Additional Certificate')}
+            onClick={() => openModal(CPALicense, 'CPA License')}
             className={styles.imageLink}
           >
-            View Additional Certificate
+            View CPA License
           </button>
         </div>
 

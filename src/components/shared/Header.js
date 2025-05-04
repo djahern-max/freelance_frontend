@@ -3,12 +3,11 @@ import {
   LogIn,
   LogOut,
   MessageSquareMore,
-  Search,
   UserCircle,
   User,
   CheckCircle,
   Video,
-  Heart
+  Award
 } from 'lucide-react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,44 +17,33 @@ import FeedbackModal from '../feedback/FeedbackModal';
 import SharedRequestNotification from '../requests/SharedRequestNotification';
 import styles from './Header.module.css';
 import HeaderMenu from './HeaderMenu';
-import { stripeService } from '../../utils/stripeService';
-import DonationModal from '../payments/DonationModal';
+import ImageModal from './ImageModal';
+import CodingBootcamp from '../../images/CodingBootcamp.png';
+import CPALicense from '../../images/CPALicense.png';
 
 const Header = () => {
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [modalImage, setModalImage] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const userType = useSelector((state) => state.auth.userType);
   const navigate = useNavigate();
-  const [showDonationModal, setShowDonationModal] = useState(false);
 
-  const handleDonation = async () => {
-    try {
-      const response = await stripeService.createDonationSession({
-        amount: 500, // $5 default donation
-        currency: 'usd'
-      });
-      if (response.url) {
-        window.location.href = response.url;
-      }
-    } catch (error) {
-      console.error('Donation error:', error);
-      // You could add toast notification here if you want
-    }
+  const openModal = (imageSrc, alt) => {
+    setModalImage({ src: imageSrc, alt });
+    setIsModalOpen(true);
   };
 
-  const handleDonationClick = () => {
-    setShowDonationModal(true);
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setModalImage(null);
   };
 
   // Define navigation items
   const navigationItems = [
-    // {
-    //   path: '/tickets',
-    //   icon: Search,
-    //   title: 'tickets'
-    // },
     {
       path: '/showcase',
       icon: CheckCircle,
@@ -70,13 +58,7 @@ const Header = () => {
       path: '/videos',
       icon: Video,
       title: 'Videos'
-    },
-    // {
-    //   icon: Heart,
-    //   title: 'Support Freelance.wtf',
-    //   onClick: handleDonation,
-    //   isSpecial: true 
-    // }
+    }
   ];
 
   // Only add Dashboard if user is authenticated
@@ -88,14 +70,16 @@ const Header = () => {
     });
   }
 
-
-
   const menuItems = [
     {
-      icon: Heart,
-      title: 'Support Freelance.wtf',
-      onClick: handleDonation,
-      isSpecial: true // Add this flag for special styling
+      icon: Award,
+      title: 'Bootcamp Certificate',
+      onClick: () => openModal(CodingBootcamp, 'Coding Bootcamp Certificate')
+    },
+    {
+      icon: Award,
+      title: 'CPA License',
+      onClick: () => openModal(CPALicense, 'CPA License')
     },
     {
       icon: MessageSquareMore,
@@ -120,6 +104,7 @@ const Header = () => {
       ]
       : [])
   ];
+
   return (
     <header className={styles.header}>
       <div className={styles.iconBar}>
@@ -127,27 +112,18 @@ const Header = () => {
           {navigationItems.map((item) => (
             <div
               key={item.path || item.title}
-              className={`${styles.icon} ${item.isSpecial ? styles.specialIcon : ''}`}
-              onClick={item.isSpecial ? handleDonationClick : (() => navigate(item.path))}
+              className={styles.icon}
+              onClick={() => navigate(item.path)}
               title={item.title}
             >
               <item.icon
                 className={styles.iconImage}
                 size={24}
                 strokeWidth={1.5}
-                style={item.isSpecial ? {
-                  color: '#ef4444',
-                  fill: '#ef4444',
-                  transform: 'scale(1.1)'
-                } : {}}
               />
             </div>
           ))}
         </div>
-
-        {showDonationModal && (
-          <DonationModal onClose={() => setShowDonationModal(false)} />
-        )}
 
         <div className={styles.rightSection}>
           {isAuthenticated && userType === 'developer' && (
@@ -161,16 +137,10 @@ const Header = () => {
               {menuItems.map((item, index) => (
                 <button
                   key={index}
-                  className={`${styles.menuItem} ${item.isSpecial ? styles.specialMenuItem : ''}`}
+                  className={styles.menuItem}
                   onClick={item.onClick}
                 >
-                  <item.icon
-                    size={20}
-                    style={item.isSpecial ? {
-                      color: '#ef4444',
-                      fill: '#ef4444'
-                    } : {}}
-                  />
+                  <item.icon size={20} />
                   <span>{item.title}</span>
                 </button>
               ))}
@@ -207,6 +177,13 @@ const Header = () => {
           setShowAuthDialog(false);
           navigate('/register');
         }}
+      />
+
+      <ImageModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        imageSrc={modalImage?.src}
+        alt={modalImage?.alt}
       />
     </header>
   );
