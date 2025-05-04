@@ -34,8 +34,10 @@
   font-size: 3.5rem;
   font-weight: 700;
   margin: 0;
-  color: var(--color-accent);
+  color: var(--color-text-secondary);
   line-height: 1.1;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.02em;
 }
 
 .titleDivider {
@@ -55,10 +57,11 @@
 }
 
 .subtitle {
-  font-size: var(--font-size-base);
-  color: var(--color-text-secondary);
+  font-size: var(--font-size-lg);
+  color: var(--color-accent);
   margin-bottom: 35px;
   max-width: 480px;
+  font-weight: 500;
 }
 
 .buttonGroup {
