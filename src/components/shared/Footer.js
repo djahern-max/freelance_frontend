@@ -26,7 +26,7 @@ export default function Footer() {
           <button
             onClick={() => openModal(CodingBootcamp, 'Coding Bootcamp Certificate')}
             className={`${styles.certificateButton} ${styles.bootcampButton}`}
-            title="View Bootcamp Certificate"
+            title="I went to Coding Bootcamp"
           >
             <Award size={20} />
             <span className={styles.buttonText}>View Bootcamp Certificate</span>
@@ -34,7 +34,7 @@ export default function Footer() {
           <button
             onClick={() => openModal(CPALicense, 'CPA License')}
             className={`${styles.certificateButton} ${styles.cpaButton}`}
-            title="View CPA License"
+            title="And I got my CPA License"
           >
             <FileText size={20} />
             <span className={styles.buttonText}>View CPA License</span>
