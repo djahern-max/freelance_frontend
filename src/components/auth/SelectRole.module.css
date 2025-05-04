@@ -17,8 +17,6 @@
     width: 100%;
     max-width: 900px;
     text-align: center;
-    overflow: visible;
-    /* Changed to visible to prevent edge cutting */
 }
 
 /* Heading styles */
@@ -38,39 +36,33 @@
     margin-right: auto;
 }
 
-/* Features grid */
+/* Features grid - No cards, just simple layout */
 .features-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
     margin-bottom: 3rem;
     padding: 0 1rem;
 }
 
 .feature-item {
-    background: #f8fafc;
-    border-radius: 12px;
-    padding: 1.5rem;
     text-align: center;
-    position: relative;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.feature-item:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+    padding: 0 1rem;
 }
 
 .feature-icon {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 60px;
-    height: 60px;
-    border-radius: 12px;
+    width: 48px;
+    height: 48px;
     margin: 0 auto 1rem;
-    background-color: #e2e8f0;
-    color: #3182ce;
+    color: #3a86ff;
+}
+
+.feature-icon svg {
+    width: 100%;
+    height: 100%;
 }
 
 .feature-item h4 {
@@ -83,7 +75,7 @@
 .feature-item p {
     font-size: 0.9rem;
     color: #718096;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
     line-height: 1.5;
 }
 
@@ -95,7 +87,16 @@
     padding: 0.25rem 0.75rem;
     border-radius: 12px;
     text-decoration: none;
-    margin-top: 0.5rem;
+}
+
+/* Divider line above role options */
+.role-options::before {
+    content: '';
+    display: block;
+    width: 100px;
+    height: 2px;
+    background-color: #e2e8f0;
+    margin: 2rem auto;
 }
 
 /* Role options */
@@ -104,6 +105,7 @@
     justify-content: center;
     gap: 2rem;
     margin-top: 2rem;
+    position: relative;
 }
 
 .role-option {
@@ -269,6 +271,10 @@
         gap: 1.5rem;
     }
 
+    .feature-item {
+        padding: 0;
+    }
+
     .role-options {
         flex-direction: column;
     }
@@ -296,10 +302,6 @@
 
     .select-role-card h2 {
         font-size: 1.75rem;
-    }
-
-    .feature-item {
-        padding: 1rem;
     }
 
     .role-option {
