@@ -3,7 +3,7 @@ import styles from './Footer.module.css';
 import ImageModal from './ImageModal';
 import CodingBootcamp from '../../images/CodingBootcamp.png';
 import CPALicense from '../../images/CPALicense.png';
-import { Award, FileText } from 'lucide-react';
+import { Award, FileText, Calendar } from 'lucide-react';
 
 export default function Footer() {
   const [modalImage, setModalImage] = useState(null);
@@ -19,6 +19,14 @@ export default function Footer() {
     setModalImage(null);
   };
 
+  // Placeholder function for Cal.com integration
+  const handleBookingClick = () => {
+    // This will be replaced with Cal.com integration
+    console.log('Booking button clicked - Cal.com integration coming soon');
+    // For now, you could show an alert, open a modal, redirect to a contact form, etc.
+    alert('Cal.com integration coming soon! For now, please contact me at [your email]');
+  };
+
   return (
     <footer className={styles.footer}>
       <div className={styles.container}>
@@ -26,18 +34,26 @@ export default function Footer() {
           <button
             onClick={() => openModal(CodingBootcamp, 'Coding Bootcamp Certificate')}
             className={`${styles.certificateButton} ${styles.bootcampButton}`}
-            title="I went to Coding Bootcamp"
+            title="View Bootcamp Certificate"
           >
             <Award size={20} />
-            <span className={styles.buttonText}>View Bootcamp Certificate</span>
+            <span className={styles.buttonText}>I Went to Coding Bootcamp</span>
           </button>
           <button
             onClick={() => openModal(CPALicense, 'CPA License')}
             className={`${styles.certificateButton} ${styles.cpaButton}`}
-            title="And I got my CPA License"
+            title="View CPA License"
           >
             <FileText size={20} />
-            <span className={styles.buttonText}>View CPA License</span>
+            <span className={styles.buttonText}>And I Got my CPA License</span>
+          </button>
+          <button
+            onClick={handleBookingClick}
+            className={`${styles.certificateButton} ${styles.bookingButton}`}
+            title="Schedule a call with me"
+          >
+            <Calendar size={20} />
+            <span className={styles.buttonText}>So We Should Book a Call!</span>
           </button>
         </div>
       </div>

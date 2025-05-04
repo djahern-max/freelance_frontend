@@ -51,6 +51,21 @@
   color: #cc6600;
 }
 
+/* New booking button styles */
+.bookingButton {
+  color: #059669;
+  /* Green color for the booking button */
+  font-weight: 600;
+  border: 2px solid #059669;
+  padding: 0.5rem 1rem;
+}
+
+.bookingButton:hover {
+  background-color: #059669;
+  color: white;
+  transform: translateY(-1px);
+}
+
 .buttonText {
   display: none;
 }
@@ -78,5 +93,11 @@
 
   .certificateLinks {
     gap: 1rem;
+  }
+
+  /* Make booking button more prominent on mobile */
+  .bookingButton {
+    border-width: 1.5px;
+    padding: 0.5rem;
   }
 }
