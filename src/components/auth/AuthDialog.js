@@ -34,7 +34,7 @@ const AuthDialog = ({ isOpen, onClose, error, onLogin, onRegister }) => {
       <div className={styles.dialog} onClick={(e) => e.stopPropagation()}>
         {/* Header Section */}
         <div className={styles.header}>
-          <h2 className={styles.title}>Welcome to Freelance.wtf!</h2>
+          <h2 className={styles.title}>Welcome to My Site!</h2>
           <p className={styles.description}>
             Sign in to your account
           </p>
