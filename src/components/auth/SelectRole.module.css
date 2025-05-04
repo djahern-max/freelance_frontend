@@ -89,27 +89,30 @@
     text-decoration: none;
 }
 
-/* Divider line above role options */
-.role-options::before {
-    content: '';
-    display: block;
-    width: 100px;
-    height: 2px;
-    background-color: #e2e8f0;
-    margin: 2rem auto;
-}
-
 /* Role options */
 .role-options {
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 2rem;
     margin-top: 2rem;
     position: relative;
 }
 
+/* Add padding-top to create space for the divider */
+.role-options::before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: -2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 2px;
+    background-color: #e2e8f0;
+}
+
 .role-option {
-    flex: 1;
     max-width: 400px;
     padding: 2rem 1.5rem;
     border: none;
@@ -120,11 +123,14 @@
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
+    text-align: center;
 }
 
 /* When there's only one option */
 .role-options:has(.role-option:only-child) {
-    gap: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .role-option::before {
@@ -139,13 +145,21 @@
 }
 
 .role-option.client::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
     background-color: #3a86ff;
+    opacity: 0.8;
+    transition: height 0.3s ease;
 }
 
-.role-option:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+.role-option:hover::before {
+    height: 8px;
 }
+
 
 .role-option:hover::before {
     height: 8px;
@@ -159,7 +173,7 @@
     height: 80px;
     border-radius: 20px;
     margin: 0 auto 1.5rem;
-    background-color: #f8fafc;
+    background-color: rgba(58, 134, 255, 0.1);
     transition: all 0.3s ease;
 }
 
