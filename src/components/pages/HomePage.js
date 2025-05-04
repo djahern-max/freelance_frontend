@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './HomePage.module.css';
+import Logo from '../shared/Logo';
 import OAuthButtons from '../auth/OAuthButtons';
 
 export default function HomePage() {
@@ -19,14 +20,9 @@ export default function HomePage() {
   return (
     <div className={styles.fullPage}>
       <div className={styles.centeredContent}>
-        <div className={styles.logoContainer}>
-          <h1 className={styles.name}>Dane J Ahern</h1>
-          <div className={styles.titleDivider}></div>
-          <h2 className={styles.title}>Full-Stack Developer &</h2>
-          <h2 className={styles.title}>Certified Public Accountant</h2>
-        </div>
+        <Logo className={styles.logo} width={180} />
 
-        <p className={styles.subtitle}>What can I build for you?</p>
+        <p className={styles.subtitle}> ...can I build for you?</p>
 
         <div className={styles.buttonGroup}>
           <button className={styles.login} onClick={() => navigate('/login')}>Login</button>
