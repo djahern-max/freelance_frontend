@@ -20,9 +20,7 @@ export default function HomePage() {
   return (
     <div className={styles.fullPage}>
       <div className={styles.centeredContent}>
-        <Logo className={styles.logo} width={250} />
-
-
+        <Logo className={styles.logo} width={240} />
 
         <div className={styles.buttonGroup}>
           <button className={styles.login} onClick={() => navigate('/login')}>Login</button>

@@ -26,7 +26,8 @@
 }
 
 .logo {
-  width: 180px;
+  width: 240px;
+  /* Increased from 180px to 240px */
   height: auto;
   margin-bottom: -15px;
   /* Reduced from 35px to 20px */
@@ -125,7 +126,8 @@
   }
 
   .logo {
-    width: 120px;
+    width: 160px;
+    /* Increased from 120px to 160px for mobile */
     margin-bottom: 15px;
     /* Reduced from 25px to 15px for mobile */
   }
