@@ -3,7 +3,7 @@ import styles from './Footer.module.css';
 import ImageModal from './ImageModal';
 import CodingBootcamp from '../../images/CodingBootcamp.png';
 import CPALicense from '../../images/CPALicense.png';
-import { Award, FileText, Calendar } from 'lucide-react';
+import { Award, FileText, Calendar, ChevronRight } from 'lucide-react';
 
 export default function Footer() {
   const [modalImage, setModalImage] = useState(null);
@@ -39,6 +39,9 @@ export default function Footer() {
             <Award size={20} />
             <span className={styles.buttonText}>I Went to Coding Bootcamp</span>
           </button>
+
+          <ChevronRight className={styles.arrow} size={20} />
+
           <button
             onClick={() => openModal(CPALicense, 'CPA License')}
             className={`${styles.certificateButton} ${styles.cpaButton}`}
@@ -47,6 +50,9 @@ export default function Footer() {
             <FileText size={20} />
             <span className={styles.buttonText}>And I Got my CPA License</span>
           </button>
+
+          <ChevronRight className={styles.arrow} size={20} />
+
           <button
             onClick={handleBookingClick}
             className={`${styles.certificateButton} ${styles.bookingButton}`}
