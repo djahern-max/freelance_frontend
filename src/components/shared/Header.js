@@ -5,7 +5,7 @@ import {
   MessageSquareMore,
   Search,
   UserCircle,
-  UsersRound,
+  User,
   CheckCircle,
   Video,
   Heart
@@ -51,11 +51,11 @@ const Header = () => {
 
   // Define navigation items
   const navigationItems = [
-    {
-      path: '/tickets',
-      icon: Search,
-      title: 'tickets'
-    },
+    // {
+    //   path: '/tickets',
+    //   icon: Search,
+    //   title: 'tickets'
+    // },
     {
       path: '/showcase',
       icon: CheckCircle,
@@ -63,7 +63,7 @@ const Header = () => {
     },
     {
       path: '/creators',
-      icon: UsersRound,
+      icon: User,
       title: 'Creators'
     },
     {
