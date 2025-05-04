@@ -23,7 +23,7 @@ export default function HomePage() {
           <h1 className={styles.name}>Dane J Ahern</h1>
           <div className={styles.titleDivider}></div>
           <h2 className={styles.title}>Full-Stack Developer &</h2>
-          <h2 className={styles.title}>Workflow Automation Specialist</h2>
+          <h2 className={styles.title}>Certified Public Accountant</h2>
         </div>
 
         <p className={styles.subtitle}>What can I build for you?</p>
