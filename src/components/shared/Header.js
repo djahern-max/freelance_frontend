@@ -7,7 +7,8 @@ import {
   User,
   CheckCircle,
   Video,
-  Award
+  Award,
+  FileText  // Add this import
 } from 'lucide-react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
