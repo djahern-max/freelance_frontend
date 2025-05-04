@@ -74,12 +74,14 @@ const Header = () => {
     {
       icon: Award,
       title: 'Bootcamp Certificate',
-      onClick: () => openModal(CodingBootcamp, 'Coding Bootcamp Certificate')
+      onClick: () => openModal(CodingBootcamp, 'Coding Bootcamp Certificate'),
+      className: styles.bootcampMenuItem
     },
     {
-      icon: Award,
+      icon: FileText,
       title: 'CPA License',
-      onClick: () => openModal(CPALicense, 'CPA License')
+      onClick: () => openModal(CPALicense, 'CPA License'),
+      className: styles.cpaMenuItem
     },
     {
       icon: MessageSquareMore,
@@ -137,7 +139,7 @@ const Header = () => {
               {menuItems.map((item, index) => (
                 <button
                   key={index}
-                  className={styles.menuItem}
+                  className={`${styles.menuItem} ${item.className || ''}`}
                   onClick={item.onClick}
                 >
                   <item.icon size={20} />

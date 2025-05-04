@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styles from './HomePage.module.css';
 import Logo from '../shared/Logo';
 import OAuthButtons from '../auth/OAuthButtons';
+import Footer from '../shared/Footer';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ export default function HomePage() {
   return (
     <div className={styles.fullPage}>
       <div className={styles.centeredContent}>
-        <Logo className={styles.logo} width={240} />
+        <Logo className={styles.logo} width={400} /> {/* Increased size */}
 
         <div className={styles.buttonGroup}>
           <button className={styles.login} onClick={() => navigate('/login')}>Login</button>
@@ -35,6 +36,8 @@ export default function HomePage() {
           <OAuthButtons />
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 }

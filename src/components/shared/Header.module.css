@@ -167,6 +167,22 @@
   animation: pulse 2s infinite;
 }
 
+.bootcampMenuItem {
+  color: #0066cc !important;
+}
+
+.bootcampMenuItem:hover {
+  background-color: rgba(0, 102, 204, 0.1) !important;
+}
+
+.cpaMenuItem {
+  color: #cc6600 !important;
+}
+
+.cpaMenuItem:hover {
+  background-color: rgba(204, 102, 0, 0.1) !important;
+}
+
 @keyframes pulse {
   0% {
     transform: scale(1);
