@@ -26,19 +26,17 @@ export default function Footer() {
             onClick={() => openModal(CodingBootcamp, 'Coding Bootcamp Certificate')}
             className={styles.imageLink}
           >
-            View Bootcamp Certificate
+            Coding Bootcamp Certificate
           </button>
           <button
             onClick={() => openModal(CPALicense, 'CPA License')}
             className={styles.imageLink}
           >
-            View CPA License
+            CPA License
           </button>
         </div>
 
-        <div className={styles.copyright}>
-          © {new Date().getFullYear()} RYZE.ai. All rights reserved.
-        </div>
+
       </div>
 
       <ImageModal
