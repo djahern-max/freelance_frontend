@@ -7,7 +7,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: var(--color-background-main);
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   text-align: center;
   overflow: hidden;
 }
@@ -18,27 +18,29 @@
   align-items: center;
   max-width: 600px;
   padding: 0 var(--spacing-lg);
-  margin-top: -80px;
+  margin-top: -50px;
+  /* Shift everything up */
   animation: fadeInUp 0.6s ease-out forwards;
   opacity: 0;
   transform: translateY(20px);
 }
 
 .logo {
-  width: 720px;
-  max-width: 90vw;
+  width: 180px;
   height: auto;
-  margin-bottom: 2rem;
+  margin-bottom: -15px;
+  /* Reduced from 35px to 20px */
+  max-width: none;
   animation: fadeIn 1s ease-out forwards;
   opacity: 0;
 }
 
 .subtitle {
-  font-size: var(--font-size-lg);
-  color: var(--color-accent);
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
   margin-bottom: 35px;
+  /* Keeps space before buttons consistent */
   max-width: 480px;
-  font-weight: 500;
 }
 
 .buttonGroup {
@@ -83,13 +85,13 @@
   content: "";
   flex: 1;
   height: 1px;
-  background-color: var(--color-border);
+  background-color: #ccc;
 }
 
 .divider span {
   margin: 0 10px;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
+  color: #666;
+  font-size: 14px;
 }
 
 .oauthWrapper {
@@ -114,100 +116,46 @@
   }
 }
 
-/* Extra large screens */
-@media (min-width: 1400px) {
-  .logo {
-    width: 820px;
-  }
-}
-
-/* Large screens */
-@media (max-width: 1399px) {
-  .logo {
-    width: 720px;
-  }
-}
-
-/* Medium screens */
-@media (max-width: 1024px) {
-  .logo {
-    width: 600px;
-  }
-
-  .centeredContent {
-    margin-top: -60px;
-  }
-}
-
-/* Tablet screens */
-@media (max-width: 768px) {
-  .logo {
-    width: 520px;
-  }
-
-  .centeredContent {
-    margin-top: -40px;
-  }
-
-  .subtitle {
-    font-size: 1.1rem;
-  }
-}
-
-/* Mobile screens */
 @media (max-width: 600px) {
-  .logo {
-    width: 85vw;
-    margin-bottom: 1.5rem;
+  .centeredContent {
+    padding: 1rem;
+    max-width: 100%;
+    margin-top: -25px;
+    /* Less shift on mobile */
   }
 
-  .centeredContent {
-    padding: var(--spacing-md);
-    max-width: 100%;
-    margin-top: -20px;
+  .logo {
+    width: 120px;
+    margin-bottom: 15px;
+    /* Reduced from 25px to 15px for mobile */
   }
 
   .subtitle {
     font-size: 0.95rem;
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: 25px;
+    /* Equal spacing on mobile */
   }
 
   .buttonGroup {
     flex-direction: column;
-    gap: var(--spacing-sm);
-    margin-bottom: var(--spacing-md);
+    gap: 12px;
+    margin-bottom: 15px;
   }
 
   .login,
   .register {
     width: 100%;
-    font-size: var(--font-size-base);
-    padding: var(--spacing-sm);
+    font-size: 1rem;
+    padding: 12px;
   }
 
   .oauthWrapper {
-    gap: var(--spacing-sm);
+    gap: 10px;
     max-width: 100%;
-    padding: 0 var(--spacing-md);
+    padding: 0 1rem;
   }
 
   .fullPage {
     padding: 0;
-  }
-}
-
-/* Small mobile screens */
-@media (max-width: 375px) {
-  .logo {
-    width: 90vw;
-    margin-bottom: 1rem;
-  }
-
-  .centeredContent {
-    margin-top: -10px;
-  }
-
-  .subtitle {
-    font-size: 0.85rem;
   }
 }

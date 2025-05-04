@@ -20,7 +20,7 @@ export default function HomePage() {
   return (
     <div className={styles.fullPage}>
       <div className={styles.centeredContent}>
-        <Logo className={styles.logo} />
+        <Logo className={styles.logo} width={180} />
 
         <p className={styles.subtitle}> ...can I build for you?</p>
 
