@@ -53,7 +53,7 @@ const Footer = () => {
         </div> */}
 
         <div className={styles.section}>
-          <button
+          {/* <button
             className={styles.coffeeButton}
             onClick={() => setShowDonationModal(true)}
             onMouseEnter={() => setIsCoffeeHovered(true)}
@@ -68,7 +68,7 @@ const Footer = () => {
               />
               <span>Help empower more creators</span>
             </div>
-          </button>
+          </button> */}
         </div>
 
         <div className={`${styles.section} ${styles.rightSection}`}>
