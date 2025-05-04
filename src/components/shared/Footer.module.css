@@ -1,81 +1,82 @@
 .footer {
   position: fixed;
   bottom: 0;
+  left: 0;
+  right: 0;
   width: 100%;
-  padding: 1rem;
-  background: transparent;
+  padding: 0.75rem;
+  background: white;
+  border-top: 1px solid #e5e7eb;
+  z-index: 10;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1rem;
-  text-align: center;
+  display: flex;
+  justify-content: center;
 }
 
 .certificateLinks {
   display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
 .certificateButton {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-  text-decoration: underline;
-  transition: opacity 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  color: inherit;
+  border-radius: 6px;
 }
 
 .certificateButton:hover {
-  opacity: 0.8;
+  background-color: #f3f4f6;
 }
 
-/* Different colors for certificates */
 .bootcampButton {
   color: #0066cc;
-  /* Blue for bootcamp */
 }
 
 .cpaButton {
   color: #cc6600;
-  /* Orange for CPA */
 }
 
-.iconMobile {
+.buttonText {
   display: none;
 }
 
-.desktopText {
-  display: inline;
+@media (min-width: 768px) {
+  .footer {
+    padding: 1rem;
+  }
+
+  .buttonText {
+    display: inline;
+  }
+
+  .certificateButton {
+    font-size: 1rem;
+  }
 }
 
-@media (max-width: 600px) {
-  .footer {
+/* Compact style for small screens */
+@media (max-width: 767px) {
+  .certificateButton {
     padding: 0.5rem;
+    gap: 0;
   }
 
   .certificateLinks {
     gap: 1rem;
-  }
-
-  .certificateButton {
-    padding: 0.75rem;
-    text-decoration: none;
-  }
-
-  /* Show icons only on mobile */
-  .iconMobile {
-    display: block;
-  }
-
-  .desktopText {
-    display: none;
   }
 }

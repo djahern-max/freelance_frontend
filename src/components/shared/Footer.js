@@ -26,20 +26,20 @@ export default function Footer() {
           <button
             onClick={() => openModal(CodingBootcamp, 'Coding Bootcamp Certificate')}
             className={`${styles.certificateButton} ${styles.bootcampButton}`}
+            title="View Bootcamp Certificate"
           >
-            <Award className={styles.iconMobile} size={20} />
-            <span className={styles.desktopText}>View Bootcamp Certificate</span>
+            <Award size={20} />
+            <span className={styles.buttonText}>View Bootcamp Certificate</span>
           </button>
           <button
             onClick={() => openModal(CPALicense, 'CPA License')}
             className={`${styles.certificateButton} ${styles.cpaButton}`}
+            title="View CPA License"
           >
-            <FileText className={styles.iconMobile} size={20} />
-            <span className={styles.desktopText}>View CPA License</span>
+            <FileText size={20} />
+            <span className={styles.buttonText}>View CPA License</span>
           </button>
         </div>
-
-        {/* Removed copyright/all rights reserved */}
       </div>
 
       <ImageModal
