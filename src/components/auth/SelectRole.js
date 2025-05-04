@@ -6,14 +6,6 @@ import { login } from '../../redux/authSlice';
 import styles from './SelectRole.module.css';
 
 // SVG Icons (inline for simplicity)
-const DeveloperIcon = () => (
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M8 18L3 12L8 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M16 6L21 12L16 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M10 20L14 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-);
-
 const ClientIcon = () => (
     <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M20 7L12 3L4 7M20 7L12 11M20 7V17L12 21M12 11L4 7M12 11V21M4 7V17L12 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -98,38 +90,27 @@ const SelectRole = () => {
     return (
         <div className={styles["select-role-container"]}>
             <div className={styles["select-role-card"]}>
-                <h2>Choose Your Role</h2>
-                <p>Select a role to personalize your experience on Freelance.wtf</p>
+                <h2>Welcome to DaneJahern.com</h2>
+                <p>Let's get started with your account</p>
 
-                <div className={styles["role-options"]}>
-                    <button
-                        className={`${styles["role-option"]} ${styles["developer"]}`}
-                        onClick={() => handleRoleSelection('developer')}
-                        disabled={loading}
-                    >
-                        <div className={styles["role-icon-container"]}>
-                            <span className={styles["role-icon"]}><DeveloperIcon /></span>
-                        </div>
-                        <h3>Developer</h3>
-                        <p>I provide software development services</p>
-                    </button>
-
+                <div className={styles["role-options"]} style={{ justifyContent: 'center' }}>
                     <button
                         className={`${styles["role-option"]} ${styles["client"]}`}
                         onClick={() => handleRoleSelection('client')}
                         disabled={loading}
+                        style={{ width: '400px' }}
                     >
                         <div className={styles["role-icon-container"]}>
                             <span className={styles["role-icon"]}><ClientIcon /></span>
                         </div>
-                        <h3>Client</h3>
-                        <p>I'm looking to hire developers</p>
+                        <h3>Continue</h3>
+                        <p>Access development resources and connect with Dane</p>
                     </button>
                 </div>
 
                 {error && <div className={styles["error-message"]}>{error}</div>}
 
-                {loading && <div className={styles["loading"]}>Processing your selection...</div>}
+                {loading && <div className={styles["loading"]}>Setting up your account...</div>}
             </div>
         </div>
     );

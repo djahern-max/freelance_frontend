@@ -33,25 +33,19 @@
 
 .role-options {
     display: flex;
-    gap: 2rem;
     justify-content: center;
-    margin-bottom: 2.5rem;
+    gap: 2rem;
+    margin-top: 2rem;
 }
 
 .role-option {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2.5rem 2rem;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
-    background-color: white;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    flex: 1;
-    min-width: 240px;
-    position: relative;
-    overflow: hidden;
+    min-width: 300px;
+    max-width: 400px;
+}
+
+/* When there's only one option */
+.role-options:has(.role-option:only-child) {
+    gap: 0;
 }
 
 .role-option::before {
