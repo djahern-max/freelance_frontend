@@ -8,7 +8,8 @@ import {
   CheckCircle,
   Video,
   Award,
-  FileText  // Add this import
+  FileText,
+  Home  // Add this import
 } from 'lucide-react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -62,12 +63,18 @@ const Header = () => {
     }
   ];
 
-  // Only add Dashboard if user is authenticated
+  // Add Home or Dashboard based on authentication status
   if (isAuthenticated) {
     navigationItems.unshift({
       path: userType === 'client' ? '/client-dashboard' : '/developer-dashboard',
       icon: LayoutDashboard,
       title: 'Dashboard'
+    });
+  } else {
+    navigationItems.unshift({
+      path: '/',
+      icon: Home,
+      title: 'Home'
     });
   }
 
