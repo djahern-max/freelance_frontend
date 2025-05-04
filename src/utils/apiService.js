@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 // Define the API URL with fallback
-const API_URL = process.env.REACT_APP_API_URL || 'https://www.freelance.wtf/api';
+const API_URL = process.env.REACT_APP_API_URL || 'https://danejahern.com/api';
 
 // Create an axios instance with baseURL
 const api = axios.create({
