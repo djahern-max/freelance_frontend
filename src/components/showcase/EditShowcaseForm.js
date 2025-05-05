@@ -119,6 +119,25 @@ const EditShowcaseForm = () => {
         }
     };
 
+    const handleUnlinkVideo = async (videoId) => {
+        try {
+            console.log(`Unlinking video ${videoId} from showcase ${id}`);
+
+            // You'll need to create this API endpoint if it doesn't exist
+            await api.delete(`/project-showcase/${id}/link-video/${videoId}`);
+
+            // Update selected videos state
+            setSelectedVideos(prev => prev.filter(id => id !== videoId));
+
+            console.log('Video unlinked successfully');
+        } catch (error) {
+            console.error('Error unlinking video:', error);
+            if (error.response) {
+                console.error('Error details:', error.response.data);
+            }
+        }
+    };
+
     // Update handleUpdate to skip the bulk video update
     const handleUpdate = async (formData) => {
         try {
@@ -202,7 +221,6 @@ const EditShowcaseForm = () => {
                 {/* Log the data to ensure it's available */}
                 {console.log('Rendering with videos:', userVideos)}
                 {console.log('Selected videos:', selectedVideos)}
-
                 <ShowcaseForm
                     isEditing={true}
                     initialData={{
@@ -211,8 +229,9 @@ const EditShowcaseForm = () => {
                         includeProfile
                     }}
                     onSubmit={handleUpdate}
-                    onLinkVideo={handleLinkVideo} // Add this line
-                    availableVideos={userVideos || []} // Ensure this is never undefined
+                    onLinkVideo={handleLinkVideo}
+                    onUnlinkVideo={handleUnlinkVideo} // Add this line
+                    availableVideos={userVideos || []}
                     developerProfile={developerProfile}
                 />
             </div>
