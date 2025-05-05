@@ -557,54 +557,7 @@ const VideoList = () => {
     }
   }, []);
 
-  useEffect(() => {
-    let isMounted = true;
 
-    const loadVideos = async () => {
-      try {
-        if (!isMounted) return;
-
-        setLoading(true);
-        setError(null);
-
-        const response = await api.get('/video_display/');
-
-        if (!isMounted) return;
-
-        if (response.data && Array.isArray(response.data.other_videos)) {
-          const sortedVideos = await sortVideosByPlaylist(response.data.other_videos);
-          setVideos(sortedVideos);
-        } else {
-          setVideos([]);
-        }
-      } catch (err) {
-        if (!isMounted) return;
-
-        if (err.message === 'REQUEST_CANCELLED') {
-          console.log('Video request was cancelled');
-          return;
-        }
-
-        console.error('Video fetch error:', err);
-
-        if (err.response?.status === 401) {
-          setVideos([]);
-        } else {
-          setError("We're having trouble loading the videos. Please try again later.");
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    loadVideos();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
 
 
@@ -665,7 +618,6 @@ const VideoList = () => {
 
 
 
-
   // Replace your existing useEffect for loading data with this one
   useEffect(() => {
     const controller = new AbortController();
@@ -694,6 +646,7 @@ const VideoList = () => {
       controller.abort();
     };
   }, [isAuthenticated, user]);
+
 
 
   // Filter videos based on current filters (search query and video type)
@@ -1010,53 +963,57 @@ const VideoList = () => {
             <List size={20} className={styles.sectionIcon} />
             <span>Playlists</span>
             <span className={styles.videoCountBadge}>
-              {[...playlists, ...userPlaylists].reduce((count, playlist) => {
-                // Count videos in each playlist that match current filters
-                const filteredCount = playlist.videos.filter(video => {
+              {/* Count filtered videos in playlists */}
+            </span>
+          </h2>
+          <div className={styles.playlistsContainer}>
+            {/* Create a Map to store unique playlists by ID */}
+            {(() => {
+              const uniquePlaylists = new Map();
+
+              // Add public playlists to the map
+              playlists.forEach(playlist => {
+                uniquePlaylists.set(playlist.id, playlist);
+              });
+
+              // Add user playlists to the map - this will overwrite any duplicates
+              userPlaylists.forEach(playlist => {
+                uniquePlaylists.set(playlist.id, playlist);
+              });
+
+              // Convert the Map values back to an array
+              return Array.from(uniquePlaylists.values()).map(playlist => {
+                const filteredPlaylistVideos = playlist.videos.filter(video => {
                   const matchesType = videoTypeFilter === 'all' ||
                     (video.video_type && video.video_type === videoTypeFilter);
                   const matchesSearch = !searchQuery ||
                     (video.title && video.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
                     (video.description && video.description.toLowerCase().includes(searchQuery.toLowerCase()));
                   return matchesType && matchesSearch;
-                }).length;
-                return count + filteredCount;
-              }, 0)} videos
-            </span>
-          </h2>
-          <div className={styles.playlistsContainer}>
-            {/* Public playlists */}
-            {playlists.map(playlist => {
-              const filteredPlaylistVideos = playlist.videos.filter(video => {
-                const matchesType = videoTypeFilter === 'all' ||
-                  (video.video_type && video.video_type === videoTypeFilter);
-                const matchesSearch = !searchQuery ||
-                  (video.title && video.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                  (video.description && video.description.toLowerCase().includes(searchQuery.toLowerCase()));
-                return matchesType && matchesSearch;
+                });
+
+                if (filteredPlaylistVideos.length === 0) return null;
+
+                return (
+                  <PlaylistGroup
+                    key={playlist.id}
+                    playlist={playlist}
+                    videos={playlist.videos}
+                    videoTypeFilter={videoTypeFilter}
+                    searchQuery={searchQuery}
+                    onVideoClick={handleVideoClick}
+                    isAuthenticated={isAuthenticated}
+                    onVote={handleVote}
+                    onSendRequest={handleSendRequest}
+                    onAddToPlaylist={handleAddToPlaylist}
+                    onDeleteVideo={handleDeleteVideo}
+                    onEditVideo={handleEditVideo}
+                    user={user}
+                    formatDate={formatDate}
+                  />
+                );
               });
-
-              if (filteredPlaylistVideos.length === 0) return null;
-
-              return (
-                <PlaylistGroup
-                  key={playlist.id}
-                  playlist={playlist}
-                  videos={playlist.videos}
-                  videoTypeFilter={videoTypeFilter}
-                  searchQuery={searchQuery}
-                  onVideoClick={handleVideoClick}
-                  isAuthenticated={isAuthenticated}
-                  onVote={handleVote}
-                  onSendRequest={handleSendRequest}
-                  onAddToPlaylist={handleAddToPlaylist}
-                  onDeleteVideo={handleDeleteVideo}
-                  onEditVideo={handleEditVideo}
-                  user={user}
-                  formatDate={formatDate}
-                />
-              );
-            })}
+            })()}
 
             {/* User's personal playlists */}
             {userPlaylists.map(playlist => {
