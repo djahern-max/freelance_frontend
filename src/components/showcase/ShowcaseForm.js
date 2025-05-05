@@ -40,7 +40,7 @@ const ShowcaseForm = ({
         const isProduction = window.location.hostname !== 'localhost';
 
         // Get the correct bucket and region from your environment
-        const bucket = 'freelance-wtf-storage'; // replace with your actual bucket name
+        const bucket = 'danejahern'; // replace with your actual bucket name
         const region = 'nyc3'; // replace with your actual region
 
         // Construct URL for DigitalOcean Spaces

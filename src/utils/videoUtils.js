@@ -11,7 +11,7 @@ export const getFullAssetUrl = (path) => {
 
     // Digital Ocean Spaces configuration
     const spacesRegion = 'nyc3';
-    const spacesBucket = 'freelance-wtf-storage';
+    const spacesBucket = 'danejahern';
 
     // Construct the URL using the Spaces configuration 
     return `https://${spacesBucket}.${spacesRegion}.digitaloceanspaces.com/${path}`;
