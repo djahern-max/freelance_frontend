@@ -112,8 +112,9 @@ const Header = () => {
     },
     {
       icon: MessageSquareMore,
-      title: 'Feedback',
-      onClick: () => setShowFeedbackModal(true)
+      title: 'Feedback?',
+      onClick: () => setShowFeedbackModal(true),
+      className: styles.feedbackMenuItem  // Add this line
     },
     ...(isAuthenticated
       ? [

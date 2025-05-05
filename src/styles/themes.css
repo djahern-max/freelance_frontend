@@ -8,5 +8,8 @@
     --color-text-secondary: #6b7280;
     --color-background-main: red;
     --color-background: #ffffff;
-    /* ... rest of your variables ... */
+    --color-accent-dark: #ea580c;
+    /* Add this */
+    --color-accent-light: #fb923c;
+    /* Optional: lighter version */
 }
