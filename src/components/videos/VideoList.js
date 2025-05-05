@@ -270,6 +270,7 @@ const VideoList = () => {
 
   const [playlists, setPlaylists] = useState([]);
   const [playlistsLoaded, setPlaylistsLoaded] = useState(false);
+  const [userPlaylists, setUserPlaylists] = useState([]);
   const [displayMode, setDisplayMode] = useState('all'); // 'all', 'playlists', 'individual'
 
   const user = useSelector((state) => state.auth.user);
@@ -844,7 +845,16 @@ const VideoList = () => {
   // Get videos that are not in any playlist
   const getNonPlaylistVideos = () => {
     const playlistVideoIds = new Set();
+
+    // Include videos from public playlists
     playlists.forEach(playlist => {
+      playlist.videos.forEach(video => {
+        playlistVideoIds.add(video.id);
+      });
+    });
+
+    // Include videos from user playlists
+    userPlaylists.forEach(playlist => {
       playlist.videos.forEach(video => {
         playlistVideoIds.add(video.id);
       });
@@ -852,6 +862,8 @@ const VideoList = () => {
 
     return videos.filter(video => !playlistVideoIds.has(video.id));
   };
+
+
 
   // Filter videos based on current filters
   const getFilteredVideos = (videoList) => {
@@ -992,13 +1004,13 @@ const VideoList = () => {
       </div>
 
       {/* Playlists Section with Label */}
-      {(displayMode === 'all' || displayMode === 'playlists') && playlists.length > 0 && (
+      {(displayMode === 'all' || displayMode === 'playlists') && (playlists.length > 0 || userPlaylists.length > 0) && (
         <div className={styles.sectionContainer}>
           <h2 className={styles.sectionTitle}>
             <List size={20} className={styles.sectionIcon} />
             <span>Playlists</span>
             <span className={styles.videoCountBadge}>
-              {playlists.reduce((count, playlist) => {
+              {[...playlists, ...userPlaylists].reduce((count, playlist) => {
                 // Count videos in each playlist that match current filters
                 const filteredCount = playlist.videos.filter(video => {
                   const matchesType = videoTypeFilter === 'all' ||
@@ -1013,6 +1025,7 @@ const VideoList = () => {
             </span>
           </h2>
           <div className={styles.playlistsContainer}>
+            {/* Public playlists */}
             {playlists.map(playlist => {
               const filteredPlaylistVideos = playlist.videos.filter(video => {
                 const matchesType = videoTypeFilter === 'all' ||
@@ -1044,40 +1057,43 @@ const VideoList = () => {
                 />
               );
             })}
+
+            {/* User's personal playlists */}
+            {userPlaylists.map(playlist => {
+              const filteredPlaylistVideos = playlist.videos.filter(video => {
+                const matchesType = videoTypeFilter === 'all' ||
+                  (video.video_type && video.video_type === videoTypeFilter);
+                const matchesSearch = !searchQuery ||
+                  (video.title && video.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                  (video.description && video.description.toLowerCase().includes(searchQuery.toLowerCase()));
+                return matchesType && matchesSearch;
+              });
+
+              if (filteredPlaylistVideos.length === 0) return null;
+
+              return (
+                <PlaylistGroup
+                  key={`user-${playlist.id}`}  // Use a unique key for user playlists
+                  playlist={playlist}
+                  videos={playlist.videos}
+                  videoTypeFilter={videoTypeFilter}
+                  searchQuery={searchQuery}
+                  onVideoClick={handleVideoClick}
+                  isAuthenticated={isAuthenticated}
+                  onVote={handleVote}
+                  onSendRequest={handleSendRequest}
+                  onAddToPlaylist={handleAddToPlaylist}
+                  onDeleteVideo={handleDeleteVideo}
+                  onEditVideo={handleEditVideo}
+                  user={user}
+                  formatDate={formatDate}
+                />
+              );
+            })}
           </div>
         </div>
       )}
 
-      {/* Individual videos section with Label */}
-      {(displayMode === 'all' || displayMode === 'individual') && filteredIndividualVideos.length > 0 && (
-        <div className={styles.sectionContainer}>
-          <h2 className={styles.sectionTitle}>
-            <Play size={20} className={styles.sectionIcon} />
-            <span>Individual Videos</span>
-            <span className={styles.videoCountBadge}>
-              {filteredIndividualVideos.length} videos
-            </span>
-          </h2>
-
-          <div className={styles.grid}>
-            {filteredIndividualVideos.map(video => (
-              <VideoItem
-                key={video.id}
-                video={video}
-                onVideoClick={handleVideoClick}
-                isAuthenticated={isAuthenticated}
-                onVote={handleVote}
-                onSendRequest={handleSendRequest}
-                onAddToPlaylist={handleAddToPlaylist}
-                onDeleteVideo={handleDeleteVideo}
-                onEditVideo={handleEditVideo}
-                user={user}
-                formatDate={formatDate}
-              />
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* No results message */}
       {searchQuery &&
