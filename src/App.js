@@ -42,7 +42,7 @@ const PublicRequests = React.lazy(() => import('./components/requests/PublicRequ
 const Requests = React.lazy(() => import('./components/requests/Request'));
 const Settings = React.lazy(() => import('./components/settings/Settings'));
 const VideoList = React.lazy(() => import('./components/videos/VideoList'));
-
+const VideoUpload = React.lazy(() => import('./components/videos/VideoUpload'));
 const DeveloperProfileView = React.lazy(() => import('./components/profiles/DeveloperProfileView'));
 const SharedVideo = React.lazy(() => import('./components/videos/SharedVideo'));
 const SharedPlaylist = React.lazy(() => import('./components/videos/SharedPlayLists'));
@@ -218,7 +218,7 @@ function AppContent() {
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/select-role" element={<SelectRole />} />
             <Route path="/videos" element={<VideoList />} />
-            <Route path="/video-upload" element={<VideoUpload />} />
+
             <Route path="/playlists" element={<MyPlaylists />} />
             <Route path="/playlists/:playlistId" element={<PlaylistDetail />} />
             <Route path="/create-playlist" element={<CreatePlaylistForm />} />
