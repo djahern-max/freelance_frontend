@@ -19,7 +19,7 @@ import api from './utils/api';
 import MemoryMonitor from './utils/debug/MemoryMonitor';
 import OAuthSuccess from './components/auth/OAuthSuccess';
 import OAuthError from './components/auth/OAuthError';
-import CollaborationPortal from './components/collaboration/CollaborationPortal';
+
 // Import session manager
 import { initSessionManager, stopSessionManager } from './utils/sessionManager';
 
@@ -42,7 +42,7 @@ const PublicRequests = React.lazy(() => import('./components/requests/PublicRequ
 const Requests = React.lazy(() => import('./components/requests/Request'));
 const Settings = React.lazy(() => import('./components/settings/Settings'));
 const VideoList = React.lazy(() => import('./components/videos/VideoList'));
-const VideoUpload = React.lazy(() => import('./components/videos/VideoUpload'));
+
 const DeveloperProfileView = React.lazy(() => import('./components/profiles/DeveloperProfileView'));
 const SharedVideo = React.lazy(() => import('./components/videos/SharedVideo'));
 const SharedPlaylist = React.lazy(() => import('./components/videos/SharedPlayLists'));
@@ -218,13 +218,12 @@ function AppContent() {
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/select-role" element={<SelectRole />} />
             <Route path="/videos" element={<VideoList />} />
+            <Route path="/video-upload" element={<VideoUpload />} />
             <Route path="/playlists" element={<MyPlaylists />} />
             <Route path="/playlists/:playlistId" element={<PlaylistDetail />} />
             <Route path="/create-playlist" element={<CreatePlaylistForm />} />
             <Route path="/shared/playlists/:shareToken" element={<SharedPlaylist />} />
 
-            {/* Fixed the collaboration route - removed extra backslash */}
-            <Route path="/collaboration/:sessionId/:accessToken" element={<CollaborationPortal />} />
 
             {/* Showcase routes */}
             <Route
@@ -258,6 +257,7 @@ function AppContent() {
                 </ProtectedRoute>
               }
             />
+
             <Route path="/playlists/:playlistId" element={<PlaylistDetail />} />
             <Route path="/developers/:developerId/videos" element={<DeveloperVideos />} />
 
