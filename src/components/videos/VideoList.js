@@ -270,7 +270,6 @@ const VideoList = () => {
 
   const [playlists, setPlaylists] = useState([]);
   const [playlistsLoaded, setPlaylistsLoaded] = useState(false);
-  const [userPlaylists, setUserPlaylists] = useState([]);
   const [displayMode, setDisplayMode] = useState('all'); // 'all', 'playlists', 'individual'
 
   const user = useSelector((state) => state.auth.user);
@@ -343,13 +342,13 @@ const VideoList = () => {
     }
   };
 
-  const fetchVideos = async (signal) => {
+  const fetchVideos = async () => {
     try {
       setLoading(true);
       setError(null);
 
       // Fetch all videos
-      const response = await api.get('/video_display/', { signal });
+      const response = await api.get('/video_display/');
 
       if (response.data && Array.isArray(response.data.other_videos)) {
         const processedVideos = response.data.other_videos.map(video => ({
@@ -361,13 +360,10 @@ const VideoList = () => {
         setVideos([]);
       }
 
-
-
-
-      // Fetch playlists
+      // Fetch playlists - use an API endpoint that doesn't require authentication
       try {
+        // Try to get public playlists without authentication
         const playlistsResponse = await api.get('/playlists/', {
-          signal,
           headers: !isAuthenticated ? { 'Authorization': '' } : undefined
         });
 
@@ -376,7 +372,6 @@ const VideoList = () => {
           const detailedPlaylistsPromises = playlistsResponse.data.map(async (playlist) => {
             try {
               const detailResponse = await api.get(`/playlists/${playlist.id}`, {
-                signal,
                 headers: !isAuthenticated ? { 'Authorization': '' } : undefined
               });
 
@@ -392,9 +387,6 @@ const VideoList = () => {
                 videos: processedVideos
               };
             } catch (error) {
-              if (error.name === 'AbortError') {
-                return null;
-              }
               console.error(`Error fetching playlist ${playlist.id} details:`, error);
               return null;
             }
@@ -406,19 +398,12 @@ const VideoList = () => {
           setPlaylistsLoaded(true);
         }
       } catch (error) {
-        if (error.name === 'AbortError') {
-          return;
-        }
         console.error("Error fetching playlists:", error);
+        // Don't fail silently - set an empty array
         setPlaylists([]);
         setPlaylistsLoaded(true);
       }
     } catch (err) {
-      if (err.name === 'AbortError') {
-        console.log('Video request was cancelled');
-        return;
-      }
-
       console.error('Fetch error:', err);
 
       if (err.message === 'REQUEST_CANCELLED') {
@@ -438,22 +423,20 @@ const VideoList = () => {
 
   // Update main useEffect for component mount
   useEffect(() => {
-    const controller = new AbortController();
+    let isMounted = true;
 
     const initialLoad = async () => {
+      if (!isMounted) return;
+
       try {
         // Initial load of videos and public playlists
-        await fetchVideos(controller.signal);
+        await fetchVideos();
 
         // If authenticated, additionally fetch user playlists
         if (isAuthenticated && user) {
-          await fetchUserPlaylists(controller.signal);
+          await fetchUserPlaylists();
         }
       } catch (error) {
-        if (error.name === 'AbortError') {
-          console.log('Component unmounted, requests cancelled');
-          return;
-        }
         console.error('Error in initial load:', error);
       }
     };
@@ -461,10 +444,9 @@ const VideoList = () => {
     initialLoad();
 
     return () => {
-      controller.abort();
+      isMounted = false;
     };
   }, [isAuthenticated, user]);
-
 
 
 
@@ -557,17 +539,64 @@ const VideoList = () => {
     }
   }, []);
 
+  useEffect(() => {
+    let isMounted = true;
 
+    const loadVideos = async () => {
+      try {
+        if (!isMounted) return;
+
+        setLoading(true);
+        setError(null);
+
+        const response = await api.get('/video_display/');
+
+        if (!isMounted) return;
+
+        if (response.data && Array.isArray(response.data.other_videos)) {
+          const sortedVideos = await sortVideosByPlaylist(response.data.other_videos);
+          setVideos(sortedVideos);
+        } else {
+          setVideos([]);
+        }
+      } catch (err) {
+        if (!isMounted) return;
+
+        if (err.message === 'REQUEST_CANCELLED') {
+          console.log('Video request was cancelled');
+          return;
+        }
+
+        console.error('Video fetch error:', err);
+
+        if (err.response?.status === 401) {
+          setVideos([]);
+        } else {
+          setError("We're having trouble loading the videos. Please try again later.");
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadVideos();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
 
 
   // If user is authenticated, additionally fetch their personal playlists as well
-  const fetchUserPlaylists = async (signal) => {
+  const fetchUserPlaylists = async () => {
     if (!isAuthenticated || !user) return;
 
     try {
       // Get all playlists for the current user
-      const userPlaylistsResponse = await api.get(`/playlists/user/${user.id}`, { signal });
+      const userPlaylistsResponse = await api.get(`/playlists/user/${user.id}`);
 
       if (!Array.isArray(userPlaylistsResponse.data)) {
         console.error('Unexpected playlist response format:', userPlaylistsResponse.data);
@@ -578,7 +607,7 @@ const VideoList = () => {
       const detailedPlaylists = await Promise.all(
         userPlaylistsResponse.data.map(async (playlist) => {
           try {
-            const detailResponse = await api.get(`/playlists/${playlist.id}`, { signal });
+            const detailResponse = await api.get(`/playlists/${playlist.id}`);
 
             // Ensure all playlist videos have a valid video_type property
             const processedVideos = (detailResponse.data.videos || []).map(video => ({
@@ -594,48 +623,51 @@ const VideoList = () => {
               videos: processedVideos
             };
           } catch (error) {
-            if (error.name === 'AbortError') {
-              return null;
-            }
             console.error(`Error fetching playlist ${playlist.id} details:`, error);
             return null;
           }
         })
       );
 
-      // Filter out null results (from aborted requests)
+      // Filter out any null responses from failed requests
       const validUserPlaylists = detailedPlaylists.filter(playlist => playlist !== null);
-      setUserPlaylists(validUserPlaylists);
+
+      // Merge playlists to avoid duplicates - replace existing ones with user playlists
+      const playlistMap = new Map();
+
+      // First add existing playlists
+      playlists.forEach(playlist => {
+        playlistMap.set(playlist.id, playlist);
+      });
+
+      // Then override with user playlists (which may have better data)
+      validUserPlaylists.forEach(playlist => {
+        playlistMap.set(playlist.id, playlist);
+      });
+
+      // Convert map back to array
+      const mergedPlaylists = Array.from(playlistMap.values());
+      setPlaylists(mergedPlaylists);
     } catch (error) {
-      if (error.name === 'AbortError') {
-        console.log('User playlists request was cancelled');
-        return;
-      }
-      console.error("Error fetching user playlists:", error);
-      setUserPlaylists([]);
+      console.error('Error fetching user playlists:', error);
     }
   };
 
-
-
   // Replace your existing useEffect for loading data with this one
   useEffect(() => {
-    const controller = new AbortController();
+    let isMounted = true;
 
     const initialLoad = async () => {
-      try {
-        // Initial load of videos and public playlists
-        await fetchVideos(controller.signal);
+      if (!isMounted) return;
 
-        // If authenticated, additionally fetch user playlists
+      try {
+        await fetchVideos();
+
+        // If authenticated, fetch user playlists after public playlists are loaded
         if (isAuthenticated && user) {
-          await fetchUserPlaylists(controller.signal);
+          await fetchUserPlaylists();
         }
       } catch (error) {
-        if (error.name === 'AbortError') {
-          console.log('Component unmounted, requests cancelled');
-          return;
-        }
         console.error('Error in initial load:', error);
       }
     };
@@ -643,10 +675,9 @@ const VideoList = () => {
     initialLoad();
 
     return () => {
-      controller.abort();
+      isMounted = false;
     };
   }, [isAuthenticated, user]);
-
 
 
   // Filter videos based on current filters (search query and video type)
@@ -783,11 +814,15 @@ const VideoList = () => {
   };
 
   const handleVideoClick = (video) => {
+    if (!isAuthenticated) {
+      setSelectedVideo(video);
+      setShowAuthDialog(true);
+      return;
+    }
     if (!video || !video.file_path) {
       console.error('Invalid video data:', video);
       return;
     }
-
     setSelectedVideo({
       ...video,
       streamUrl: getFullAssetUrl(video.file_path)
@@ -798,16 +833,7 @@ const VideoList = () => {
   // Get videos that are not in any playlist
   const getNonPlaylistVideos = () => {
     const playlistVideoIds = new Set();
-
-    // Include videos from public playlists
     playlists.forEach(playlist => {
-      playlist.videos.forEach(video => {
-        playlistVideoIds.add(video.id);
-      });
-    });
-
-    // Include videos from user playlists
-    userPlaylists.forEach(playlist => {
       playlist.videos.forEach(video => {
         playlistVideoIds.add(video.id);
       });
@@ -815,8 +841,6 @@ const VideoList = () => {
 
     return videos.filter(video => !playlistVideoIds.has(video.id));
   };
-
-
 
   // Filter videos based on current filters
   const getFilteredVideos = (videoList) => {
@@ -839,7 +863,7 @@ const VideoList = () => {
         <VideoEmptyState
           isAuthenticated={isAuthenticated}
           userType={user?.userType}
-          onCreateVideo={() => navigate('/video-upload')}
+          onCreateVideo={() => navigate('/video-upload/')}
           onSignUp={() => setShowAuthDialog(true)}
           error={error}
           onRetry={fetchVideos}
@@ -864,7 +888,7 @@ const VideoList = () => {
             <>
               <button
                 className={styles.uploadVideoButton}
-                onClick={() => navigate('/video-upload')}
+                onClick={() => navigate('/video-upload/')}
               >
                 <Upload size={16} />
                 <span>Upload</span>
@@ -957,69 +981,92 @@ const VideoList = () => {
       </div>
 
       {/* Playlists Section with Label */}
-      {(displayMode === 'all' || displayMode === 'playlists') && (playlists.length > 0 || userPlaylists.length > 0) && (
+      {(displayMode === 'all' || displayMode === 'playlists') && playlists.length > 0 && (
         <div className={styles.sectionContainer}>
           <h2 className={styles.sectionTitle}>
             <List size={20} className={styles.sectionIcon} />
             <span>Playlists</span>
             <span className={styles.videoCountBadge}>
-              {/* Count filtered videos in playlists */}
-            </span>
-          </h2>
-          <div className={styles.playlistsContainer}>
-            {/* Create a Map to store unique playlists by ID */}
-            {(() => {
-              const uniquePlaylists = new Map();
-
-              // Add public playlists to the map
-              playlists.forEach(playlist => {
-                uniquePlaylists.set(playlist.id, playlist);
-              });
-
-              // Add user playlists to the map - this will overwrite any duplicates
-              userPlaylists.forEach(playlist => {
-                uniquePlaylists.set(playlist.id, playlist);
-              });
-
-              // Convert the Map values back to an array
-              return Array.from(uniquePlaylists.values()).map(playlist => {
-                const filteredPlaylistVideos = playlist.videos.filter(video => {
+              {playlists.reduce((count, playlist) => {
+                // Count videos in each playlist that match current filters
+                const filteredCount = playlist.videos.filter(video => {
                   const matchesType = videoTypeFilter === 'all' ||
                     (video.video_type && video.video_type === videoTypeFilter);
                   const matchesSearch = !searchQuery ||
                     (video.title && video.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
                     (video.description && video.description.toLowerCase().includes(searchQuery.toLowerCase()));
                   return matchesType && matchesSearch;
-                });
+                }).length;
+                return count + filteredCount;
+              }, 0)} videos
+            </span>
+          </h2>
+          <div className={styles.playlistsContainer}>
+            {playlists.map(playlist => {
+              const filteredPlaylistVideos = playlist.videos.filter(video => {
+                const matchesType = videoTypeFilter === 'all' ||
+                  (video.video_type && video.video_type === videoTypeFilter);
+                const matchesSearch = !searchQuery ||
+                  (video.title && video.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                  (video.description && video.description.toLowerCase().includes(searchQuery.toLowerCase()));
+                return matchesType && matchesSearch;
+              });
 
-                if (filteredPlaylistVideos.length === 0) return null;
+              if (filteredPlaylistVideos.length === 0) return null;
 
-                return (
-                  <PlaylistGroup
-                    key={playlist.id}
-                    playlist={playlist}
-                    videos={playlist.videos}
-                    videoTypeFilter={videoTypeFilter}
-                    searchQuery={searchQuery}
-                    onVideoClick={handleVideoClick}
-                    isAuthenticated={isAuthenticated}
-                    onVote={handleVote}
-                    onSendRequest={handleSendRequest}
-                    onAddToPlaylist={handleAddToPlaylist}
-                    onDeleteVideo={handleDeleteVideo}
-                    onEditVideo={handleEditVideo}
-                    user={user}
-                    formatDate={formatDate}
-                  />
-                );
-              }).filter(Boolean);
-            })()}
-
-
+              return (
+                <PlaylistGroup
+                  key={playlist.id}
+                  playlist={playlist}
+                  videos={playlist.videos}
+                  videoTypeFilter={videoTypeFilter}
+                  searchQuery={searchQuery}
+                  onVideoClick={handleVideoClick}
+                  isAuthenticated={isAuthenticated}
+                  onVote={handleVote}
+                  onSendRequest={handleSendRequest}
+                  onAddToPlaylist={handleAddToPlaylist}
+                  onDeleteVideo={handleDeleteVideo}
+                  onEditVideo={handleEditVideo}
+                  user={user}
+                  formatDate={formatDate}
+                />
+              );
+            })}
           </div>
         </div>
       )}
 
+      {/* Individual videos section with Label */}
+      {(displayMode === 'all' || displayMode === 'individual') && filteredIndividualVideos.length > 0 && (
+        <div className={styles.sectionContainer}>
+          <h2 className={styles.sectionTitle}>
+            <Play size={20} className={styles.sectionIcon} />
+            <span>Individual Videos</span>
+            <span className={styles.videoCountBadge}>
+              {filteredIndividualVideos.length} videos
+            </span>
+          </h2>
+
+          <div className={styles.grid}>
+            {filteredIndividualVideos.map(video => (
+              <VideoItem
+                key={video.id}
+                video={video}
+                onVideoClick={handleVideoClick}
+                isAuthenticated={isAuthenticated}
+                onVote={handleVote}
+                onSendRequest={handleSendRequest}
+                onAddToPlaylist={handleAddToPlaylist}
+                onDeleteVideo={handleDeleteVideo}
+                onEditVideo={handleEditVideo}
+                user={user}
+                formatDate={formatDate}
+              />
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* No results message */}
       {searchQuery &&

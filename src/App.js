@@ -19,7 +19,7 @@ import api from './utils/api';
 import MemoryMonitor from './utils/debug/MemoryMonitor';
 import OAuthSuccess from './components/auth/OAuthSuccess';
 import OAuthError from './components/auth/OAuthError';
-
+import CollaborationPortal from './components/collaboration/CollaborationPortal';
 // Import session manager
 import { initSessionManager, stopSessionManager } from './utils/sessionManager';
 
@@ -218,12 +218,13 @@ function AppContent() {
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/select-role" element={<SelectRole />} />
             <Route path="/videos" element={<VideoList />} />
-            <Route path="/video-upload" element={<VideoUpload />} />
             <Route path="/playlists" element={<MyPlaylists />} />
             <Route path="/playlists/:playlistId" element={<PlaylistDetail />} />
             <Route path="/create-playlist" element={<CreatePlaylistForm />} />
             <Route path="/shared/playlists/:shareToken" element={<SharedPlaylist />} />
 
+            {/* Fixed the collaboration route - removed extra backslash */}
+            <Route path="/collaboration/:sessionId/:accessToken" element={<CollaborationPortal />} />
 
             {/* Showcase routes */}
             <Route
@@ -250,14 +251,13 @@ function AppContent() {
 
             {/* Video routes */}
             <Route
-              path="/video-upload"
+              path="/video-upload/*"
               element={
                 <ProtectedRoute>
                   <VideoUpload />
                 </ProtectedRoute>
               }
             />
-
             <Route path="/playlists/:playlistId" element={<PlaylistDetail />} />
             <Route path="/developers/:developerId/videos" element={<DeveloperVideos />} />
 
