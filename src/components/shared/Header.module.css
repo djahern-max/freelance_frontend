@@ -176,6 +176,8 @@
   font-size: var(--font-size-base);
   transition: all 0.2s ease;
   border-radius: var(--radius-md);
+  justify-content: flex-start;
+  text-align: left;
 }
 
 .menuItem span {
@@ -183,10 +185,12 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: left;
+  margin-left: var(--spacing-sm);
 }
 
 .menuItem svg:first-child {
-  margin-right: var(--spacing-sm);
+  margin-right: 0;
   flex-shrink: 0;
 }
 
@@ -329,6 +333,18 @@ solidcolor .menuContainer {
   margin-right: 0;
   margin-left: auto;
   animation: sparkle 1.5s infinite alternate;
+}
+
+.checkmark,
+.sparkles {
+  margin-left: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
+.menuContainer ul,
+.menuContainer li {
+  padding-left: 0;
+  text-align: left;
 }
 
 @keyframes sparkle {
