@@ -67,6 +67,27 @@
   max-height: 500px;
   opacity: 1;
   margin-top: 0.75rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Nice scrollbar for video list */
+.videoList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.videoList::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.videoList::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+.videoList::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
 }
 
 /* Style for the empty state */
