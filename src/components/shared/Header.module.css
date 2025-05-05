@@ -92,12 +92,15 @@
 }
 
 .navVideos {
-  color: #ea580c !important;
+  color: #eab308 !important;
+  /* Changed from #ea580c to #eab308 (yellow) */
 }
 
 .navVideos:hover {
-  background-color: rgba(234, 88, 12, 0.1) !important;
-  color: #c2410c !important;
+  background-color: rgba(234, 179, 8, 0.1) !important;
+  /* Changed to match new yellow */
+  color: #ca8a04 !important;
+  /* Darker yellow */
 }
 
 .icon.active {
@@ -118,7 +121,8 @@
 }
 
 .icon.active.navVideos {
-  background-color: rgba(234, 88, 12, 0.15) !important;
+  background-color: rgba(234, 179, 8, 0.15) !important;
+  /* Changed to match new yellow */
 }
 
 .leftSection {
@@ -160,8 +164,10 @@
 }
 
 .menuItem {
+  position: relative;
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: var(--spacing-sm);
   width: 100%;
   padding: var(--spacing-sm) var(--spacing-md);
@@ -244,11 +250,12 @@
   font-weight: 600;
 }
 
-.feedbackMenuItem {
-  color: #ea580c !important;
-  /* Orange color like Videos */
-  font-weight: 600;
+.feedbackMenuItem:hover {
+  background-color: rgba(234, 179, 8, 0.1) !important;
+  /* Light yellow background */
+  transform: translateY(-1px);
 }
+
 
 .feedbackMenuItem:hover {
   background-color: rgba(234, 88, 12, 0.1) !important;
@@ -293,6 +300,34 @@
   /* 10% opacity of accent color */
   color: #ea580c !important;
 }
+
+.checkmark {
+  color: #10b981;
+  margin-left: 8px;
+  margin-right: 0;
+  margin-left: auto;
+}
+
+.sparkles {
+  color: #f59e0b;
+  margin-left: 8px;
+  margin-right: 0;
+  margin-left: auto;
+  animation: sparkle 1.5s infinite alternate;
+}
+
+@keyframes sparkle {
+  0% {
+    opacity: 0.7;
+    transform: scale(0.9);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
 
 @keyframes pulse {
   0% {
@@ -341,6 +376,16 @@
 
 /* Mobile */
 @media (max-width: 640px) {
+
+  .checkmark,
+  .sparkles {
+    margin-left: 4px;
+  }
+
+  .menuItem {
+    padding: var(--spacing-sm) var(--spacing-sm);
+  }
+
   .signInButton {
     padding: 6px;
   }

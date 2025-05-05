@@ -10,7 +10,9 @@ import {
   Award,
   FileText,
   Home,
-  Calendar
+  Calendar,
+  Check,
+  Sparkles
 } from 'lucide-react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -96,25 +98,31 @@ const Header = () => {
       icon: Award,
       title: 'Bootcamp Certificate',
       onClick: () => openModal(CodingBootcamp, 'Coding Bootcamp Certificate'),
-      className: styles.bootcampMenuItem
+      className: styles.bootcampMenuItem,
+      rightIcon: Check,
+      rightIconClass: styles.checkmark
     },
     {
       icon: FileText,
       title: 'CPA License',
       onClick: () => openModal(CPALicense, 'CPA License'),
-      className: styles.cpaMenuItem
+      className: styles.cpaMenuItem,
+      rightIcon: Check,
+      rightIconClass: styles.checkmark
     },
     {
       icon: Calendar,
       title: 'Book a Call',
       onClick: handleBookingClick,
-      className: styles.bookingMenuItem
+      className: styles.bookingMenuItem,
+      rightIcon: Sparkles,
+      rightIconClass: styles.sparkles
     },
     {
       icon: MessageSquareMore,
       title: 'Feedback?',
       onClick: () => setShowFeedbackModal(true),
-      className: styles.feedbackMenuItem  // Add this line
+      className: styles.feedbackMenuItem
     },
     ...(isAuthenticated
       ? [
@@ -176,6 +184,9 @@ const Header = () => {
                 >
                   <item.icon size={20} />
                   <span>{item.title}</span>
+                  {item.rightIcon && (
+                    <item.rightIcon size={16} className={item.rightIconClass} />
+                  )}
                 </button>
               ))}
             </HeaderMenu>
