@@ -123,8 +123,7 @@ const EditShowcaseForm = () => {
         try {
             console.log(`Unlinking video ${videoId} from showcase ${id}`);
 
-            // You'll need to create this API endpoint if it doesn't exist
-            await api.delete(`/project-showcase/${id}/link-video/${videoId}`);
+            await api.showcase.unlinkVideo(id, videoId);
 
             // Update selected videos state
             setSelectedVideos(prev => prev.filter(id => id !== videoId));

@@ -1092,6 +1092,15 @@ api.showcase = {
       throw new Error(api.helpers.handleError(error));
     }
   },
+  async unlinkVideo(showcaseId, videoId) {
+    try {
+      const response = await api.delete(`/project-showcase/${showcaseId}/link-video/${videoId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error unlinking video from showcase:', error);
+      throw new Error(api.helpers.handleError(error));
+    }
+  }
 };
 
 
