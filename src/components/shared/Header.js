@@ -96,7 +96,7 @@ const Header = () => {
   const menuItems = [
     {
       icon: Award,
-      title: 'Bootcamp Certificate',
+      title: 'Coding Bootcamp',
       onClick: () => openModal(CodingBootcamp, 'Coding Bootcamp Certificate'),
       className: styles.bootcampMenuItem,
       rightIcon: Check,
@@ -112,7 +112,7 @@ const Header = () => {
     },
     {
       icon: Calendar,
-      title: 'Book a Call',
+      title: 'Book a Call!',
       onClick: handleBookingClick,
       className: styles.bookingMenuItem,
       rightIcon: Sparkles,
