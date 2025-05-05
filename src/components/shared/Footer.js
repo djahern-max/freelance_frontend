@@ -37,7 +37,7 @@ export default function Footer() {
             title="View Bootcamp Certificate"
           >
             <Award size={20} />
-            <span className={styles.buttonText}>I Went to Coding Bootcamp</span>
+            <span className={styles.buttonText}>Coding Bootcamp</span>
           </button>
 
           <ChevronRight className={styles.arrow} size={20} />
@@ -48,7 +48,7 @@ export default function Footer() {
             title="View CPA License"
           >
             <FileText size={20} />
-            <span className={styles.buttonText}>And I Got my CPA License</span>
+            <span className={styles.buttonText}>CPA License</span>
           </button>
 
           <ChevronRight className={styles.arrow} size={20} />
@@ -59,7 +59,7 @@ export default function Footer() {
             title="Schedule a call with me"
           >
             <Calendar size={20} />
-            <span className={styles.buttonText}>So We Should Book a Call!</span>
+            <span className={styles.buttonText}>Book a Call!</span>
           </button>
         </div>
       </div>
