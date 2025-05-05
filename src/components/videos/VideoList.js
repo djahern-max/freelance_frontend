@@ -1,5 +1,5 @@
 import { MessageSquare, Play, ThumbsUp, Upload, X, List, Plus, Trash2, Edit, ChevronDown, ChevronUp } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -268,6 +268,9 @@ const VideoList = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [editingVideo, setEditingVideo] = useState(null);
 
+  const isMounted = useRef(true);
+
+
   const [playlists, setPlaylists] = useState([]);
   const [playlistsLoaded, setPlaylistsLoaded] = useState(false);
   const [displayMode, setDisplayMode] = useState('all'); // 'all', 'playlists', 'individual'
@@ -423,31 +426,40 @@ const VideoList = () => {
 
   // Update main useEffect for component mount
   useEffect(() => {
-    let isMounted = true;
+    // Set up the mount flag
+    isMounted.current = true;
 
-    const initialLoad = async () => {
-      if (!isMounted) return;
-
+    const fetchVideos = async () => {
       try {
-        // Initial load of videos and public playlists
-        await fetchVideos();
+        const response = await fetch('/api/video_display/', {
+          headers: {
+            'Authorization': `Bearer ${yourAuthToken}`
+          }
+        });
 
-        // If authenticated, additionally fetch user playlists
-        if (isAuthenticated && user) {
-          await fetchUserPlaylists();
+        if (!response.ok) throw new Error('Failed to fetch videos');
+
+        const data = await response.json();
+
+        // Only update state if component is still mounted
+        if (isMounted.current) {
+          setVideos(data.user_videos || []);
         }
       } catch (error) {
-        console.error('Error in initial load:', error);
+        // Only log error if it's not a cancellation
+        if (error.message !== 'REQUEST_CANCELLED' && isMounted.current) {
+          console.error('Error fetching videos:', error);
+        }
       }
     };
 
-    initialLoad();
+    fetchVideos();
 
+    // Cleanup function to set mount flag to false
     return () => {
-      isMounted = false;
+      isMounted.current = false;
     };
-  }, [isAuthenticated, user]);
-
+  }, []);
 
 
   const sortVideosByPlaylist = async (videoArray) => {
