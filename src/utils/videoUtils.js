@@ -9,14 +9,14 @@ export const getFullAssetUrl = (path) => {
         return path;
     }
 
-    // Digital Ocean Spaces configuration
+    // DigitalOcean Spaces configuration
     const spacesRegion = 'nyc3';
     const spacesBucket = 'danejahern';
+    const folderPrefix = 'danejahern'; // Add this folder prefix
 
-    // Construct the URL using the Spaces configuration 
-    return `https://${spacesBucket}.${spacesRegion}.digitaloceanspaces.com/${path}`;
+    // Construct the URL using the Spaces configuration with the folder prefix
+    return `https://${spacesBucket}.${spacesRegion}.digitaloceanspaces.com/${folderPrefix}/${path}`;
 };
-
 export const deleteVideo = async (videoId) => {
     try {
         const response = await api.delete(`/videos/${videoId}`);
