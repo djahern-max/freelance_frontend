@@ -3,7 +3,7 @@ import styles from './Footer.module.css';
 import ImageModal from './ImageModal';
 import CodingBootcamp from '../../images/CodingBootcamp.png';
 import CPALicense from '../../images/CPALicense.png';
-import { Award, FileText, Calendar, ChevronRight } from 'lucide-react';
+import { Award, FileText, Calendar, ChevronRight, Check, Sparkles } from 'lucide-react';
 
 export default function Footer() {
   const [modalImage, setModalImage] = useState(null);
@@ -38,6 +38,7 @@ export default function Footer() {
           >
             <Award size={20} />
             <span className={styles.buttonText}>Coding Bootcamp</span>
+            <Check size={16} className={styles.checkmark} />
           </button>
 
           <ChevronRight className={styles.arrow} size={20} />
@@ -49,6 +50,7 @@ export default function Footer() {
           >
             <FileText size={20} />
             <span className={styles.buttonText}>CPA License</span>
+            <Check size={16} className={styles.checkmark} />
           </button>
 
           <ChevronRight className={styles.arrow} size={20} />
@@ -60,6 +62,7 @@ export default function Footer() {
           >
             <Calendar size={20} />
             <span className={styles.buttonText}>Book a Call!</span>
+            <Sparkles size={16} className={styles.sparkles} />
           </button>
         </div>
       </div>

@@ -77,6 +77,29 @@
   display: none;
 }
 
+.checkmark {
+  color: #10b981;
+  margin-left: 4px;
+}
+
+.sparkles {
+  color: #f59e0b;
+  margin-left: 4px;
+  animation: sparkle 1.5s infinite alternate;
+}
+
+@keyframes sparkle {
+  0% {
+    opacity: 0.7;
+    transform: scale(0.9);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
 @media (min-width: 768px) {
   .footer {
     padding: 1rem;
@@ -98,11 +121,29 @@
     gap: 0;
   }
 
+  .checkmark,
+  .sparkles {
+    display: none;
+  }
+
   .certificateLinks {
     gap: 0.5rem;
   }
 
   .arrow {
     margin: 0 0.25rem;
+  }
+}
+
+/* Show the icons on very small screens */
+@media (max-width: 360px) {
+  .certificateButton {
+    padding: 0.5rem 0.25rem;
+  }
+
+  .checkmark,
+  .sparkles {
+    display: inline;
+    margin-left: 2px;
   }
 }
