@@ -424,26 +424,21 @@ const VideoList = () => {
     }
   };
 
-  // Update main useEffect for component mount
   useEffect(() => {
     // Set up the mount flag
     isMounted.current = true;
 
     const fetchVideos = async () => {
       try {
-        const response = await fetch('/api/video_display/', {
-          headers: {
-            'Authorization': `Bearer ${yourAuthToken}`
-          }
-        });
+        // Use the existing api utility which handles authentication
+        const response = await api.get('/video_display/');
 
         if (!response.ok) throw new Error('Failed to fetch videos');
 
-        const data = await response.json();
-
         // Only update state if component is still mounted
         if (isMounted.current) {
-          setVideos(data.user_videos || []);
+          // Assuming the response shape from api.get is similar to fetch
+          setVideos(response.data?.user_videos || []);
         }
       } catch (error) {
         // Only log error if it's not a cancellation
@@ -460,7 +455,6 @@ const VideoList = () => {
       isMounted.current = false;
     };
   }, []);
-
 
   const sortVideosByPlaylist = async (videoArray) => {
     try {
