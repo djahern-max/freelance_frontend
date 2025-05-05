@@ -18,7 +18,6 @@ const VideoSelectionComponent = ({
         }
     }, [selectedVideos, onSelectionChange]);
 
-    // Handle video selection with API calls if in edit mode
     const handleVideoSelection = async (videoId, event) => {
         // Prevent default behavior if event is provided
         if (event) {
@@ -31,15 +30,6 @@ const VideoSelectionComponent = ({
         setIsSelectionBusy(true);
 
         try {
-            // Update local state for immediate UI feedback
-            setSelectedVideos(prev => {
-                if (prev.includes(videoId)) {
-                    return prev.filter(id => id !== videoId);
-                } else {
-                    return [...prev, videoId];
-                }
-            });
-
             // If in edit mode and has showcaseId, call API to link/unlink video
             if (isEditing && showcaseId) {
                 const isCurrentlySelected = selectedVideos.includes(videoId);
@@ -51,23 +41,49 @@ const VideoSelectionComponent = ({
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${localStorage.getItem('token')}` // Add auth token
                             },
                         });
                         console.log(`Video ${videoId} linked successfully`);
+
+                        // Update local state after successful API call
+                        setSelectedVideos(prev => [...prev, videoId]);
                     } catch (error) {
                         console.error('Error linking video:', error);
-                        // Revert the selection if API call fails
-                        setSelectedVideos(prev => prev.filter(id => id !== videoId));
+                        throw error; // Let the outer catch handle the error
                     }
                 } else {
-                    // Video is being deselected - would need an unlink endpoint
-                    console.log(`Video ${videoId} would be unlinked if endpoint existed`);
-                    // Note: Your API might not have an unlink endpoint
-                    // The changes will be submitted when the form is saved
+                    // Video is being deselected - unlink it
+                    try {
+                        await fetch(`/api/project-showcase/${showcaseId}/link-video/${videoId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${localStorage.getItem('token')}` // Add auth token
+                            },
+                        });
+                        console.log(`Video ${videoId} unlinked successfully`);
+
+                        // Update local state after successful API call
+                        setSelectedVideos(prev => prev.filter(id => id !== videoId));
+                    } catch (error) {
+                        console.error('Error unlinking video:', error);
+                        throw error; // Let the outer catch handle the error
+                    }
                 }
+            } else {
+                // If not editing, just update local state
+                setSelectedVideos(prev => {
+                    if (prev.includes(videoId)) {
+                        return prev.filter(id => id !== videoId);
+                    } else {
+                        return [...prev, videoId];
+                    }
+                });
             }
         } catch (error) {
             console.error('Error in video selection:', error);
+            // Don't update local state if API call failed
         } finally {
             // Release busy state after a short delay
             setTimeout(() => {
