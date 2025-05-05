@@ -342,13 +342,13 @@ const VideoList = () => {
     }
   };
 
-  const fetchVideos = async () => {
+  const fetchVideos = async (signal) => {
     try {
       setLoading(true);
       setError(null);
 
       // Fetch all videos
-      const response = await api.get('/video_display/');
+      const response = await api.get('/video_display/', { signal });
 
       if (response.data && Array.isArray(response.data.other_videos)) {
         const processedVideos = response.data.other_videos.map(video => ({
@@ -360,10 +360,13 @@ const VideoList = () => {
         setVideos([]);
       }
 
-      // Fetch playlists - use an API endpoint that doesn't require authentication
+
+
+
+      // Fetch playlists
       try {
-        // Try to get public playlists without authentication
         const playlistsResponse = await api.get('/playlists/', {
+          signal,
           headers: !isAuthenticated ? { 'Authorization': '' } : undefined
         });
 
@@ -372,6 +375,7 @@ const VideoList = () => {
           const detailedPlaylistsPromises = playlistsResponse.data.map(async (playlist) => {
             try {
               const detailResponse = await api.get(`/playlists/${playlist.id}`, {
+                signal,
                 headers: !isAuthenticated ? { 'Authorization': '' } : undefined
               });
 
@@ -387,6 +391,9 @@ const VideoList = () => {
                 videos: processedVideos
               };
             } catch (error) {
+              if (error.name === 'AbortError') {
+                return null;
+              }
               console.error(`Error fetching playlist ${playlist.id} details:`, error);
               return null;
             }
@@ -398,12 +405,19 @@ const VideoList = () => {
           setPlaylistsLoaded(true);
         }
       } catch (error) {
+        if (error.name === 'AbortError') {
+          return;
+        }
         console.error("Error fetching playlists:", error);
-        // Don't fail silently - set an empty array
         setPlaylists([]);
         setPlaylistsLoaded(true);
       }
     } catch (err) {
+      if (err.name === 'AbortError') {
+        console.log('Video request was cancelled');
+        return;
+      }
+
       console.error('Fetch error:', err);
 
       if (err.message === 'REQUEST_CANCELLED') {
@@ -423,20 +437,22 @@ const VideoList = () => {
 
   // Update main useEffect for component mount
   useEffect(() => {
-    let isMounted = true;
+    const controller = new AbortController();
 
     const initialLoad = async () => {
-      if (!isMounted) return;
-
       try {
         // Initial load of videos and public playlists
-        await fetchVideos();
+        await fetchVideos(controller.signal);
 
         // If authenticated, additionally fetch user playlists
         if (isAuthenticated && user) {
-          await fetchUserPlaylists();
+          await fetchUserPlaylists(controller.signal);
         }
       } catch (error) {
+        if (error.name === 'AbortError') {
+          console.log('Component unmounted, requests cancelled');
+          return;
+        }
         console.error('Error in initial load:', error);
       }
     };
@@ -444,9 +460,10 @@ const VideoList = () => {
     initialLoad();
 
     return () => {
-      isMounted = false;
+      controller.abort();
     };
   }, [isAuthenticated, user]);
+
 
 
 
@@ -591,12 +608,12 @@ const VideoList = () => {
 
 
   // If user is authenticated, additionally fetch their personal playlists as well
-  const fetchUserPlaylists = async () => {
+  const fetchUserPlaylists = async (signal) => {
     if (!isAuthenticated || !user) return;
 
     try {
       // Get all playlists for the current user
-      const userPlaylistsResponse = await api.get(`/playlists/user/${user.id}`);
+      const userPlaylistsResponse = await api.get(`/playlists/user/${user.id}`, { signal });
 
       if (!Array.isArray(userPlaylistsResponse.data)) {
         console.error('Unexpected playlist response format:', userPlaylistsResponse.data);
@@ -607,7 +624,7 @@ const VideoList = () => {
       const detailedPlaylists = await Promise.all(
         userPlaylistsResponse.data.map(async (playlist) => {
           try {
-            const detailResponse = await api.get(`/playlists/${playlist.id}`);
+            const detailResponse = await api.get(`/playlists/${playlist.id}`, { signal });
 
             // Ensure all playlist videos have a valid video_type property
             const processedVideos = (detailResponse.data.videos || []).map(video => ({
@@ -623,51 +640,49 @@ const VideoList = () => {
               videos: processedVideos
             };
           } catch (error) {
+            if (error.name === 'AbortError') {
+              return null;
+            }
             console.error(`Error fetching playlist ${playlist.id} details:`, error);
             return null;
           }
         })
       );
 
-      // Filter out any null responses from failed requests
+      // Filter out null results (from aborted requests)
       const validUserPlaylists = detailedPlaylists.filter(playlist => playlist !== null);
-
-      // Merge playlists to avoid duplicates - replace existing ones with user playlists
-      const playlistMap = new Map();
-
-      // First add existing playlists
-      playlists.forEach(playlist => {
-        playlistMap.set(playlist.id, playlist);
-      });
-
-      // Then override with user playlists (which may have better data)
-      validUserPlaylists.forEach(playlist => {
-        playlistMap.set(playlist.id, playlist);
-      });
-
-      // Convert map back to array
-      const mergedPlaylists = Array.from(playlistMap.values());
-      setPlaylists(mergedPlaylists);
+      setUserPlaylists(validUserPlaylists);
     } catch (error) {
-      console.error('Error fetching user playlists:', error);
+      if (error.name === 'AbortError') {
+        console.log('User playlists request was cancelled');
+        return;
+      }
+      console.error("Error fetching user playlists:", error);
+      setUserPlaylists([]);
     }
   };
 
+
+
+
   // Replace your existing useEffect for loading data with this one
   useEffect(() => {
-    let isMounted = true;
+    const controller = new AbortController();
 
     const initialLoad = async () => {
-      if (!isMounted) return;
-
       try {
-        await fetchVideos();
+        // Initial load of videos and public playlists
+        await fetchVideos(controller.signal);
 
-        // If authenticated, fetch user playlists after public playlists are loaded
+        // If authenticated, additionally fetch user playlists
         if (isAuthenticated && user) {
-          await fetchUserPlaylists();
+          await fetchUserPlaylists(controller.signal);
         }
       } catch (error) {
+        if (error.name === 'AbortError') {
+          console.log('Component unmounted, requests cancelled');
+          return;
+        }
         console.error('Error in initial load:', error);
       }
     };
@@ -675,7 +690,7 @@ const VideoList = () => {
     initialLoad();
 
     return () => {
-      isMounted = false;
+      controller.abort();
     };
   }, [isAuthenticated, user]);
 
