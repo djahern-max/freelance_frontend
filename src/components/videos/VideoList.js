@@ -1012,41 +1012,10 @@ const VideoList = () => {
                     formatDate={formatDate}
                   />
                 );
-              });
+              }).filter(Boolean);
             })()}
 
-            {/* User's personal playlists */}
-            {userPlaylists.map(playlist => {
-              const filteredPlaylistVideos = playlist.videos.filter(video => {
-                const matchesType = videoTypeFilter === 'all' ||
-                  (video.video_type && video.video_type === videoTypeFilter);
-                const matchesSearch = !searchQuery ||
-                  (video.title && video.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                  (video.description && video.description.toLowerCase().includes(searchQuery.toLowerCase()));
-                return matchesType && matchesSearch;
-              });
 
-              if (filteredPlaylistVideos.length === 0) return null;
-
-              return (
-                <PlaylistGroup
-                  key={`user-${playlist.id}`}  // Use a unique key for user playlists
-                  playlist={playlist}
-                  videos={playlist.videos}
-                  videoTypeFilter={videoTypeFilter}
-                  searchQuery={searchQuery}
-                  onVideoClick={handleVideoClick}
-                  isAuthenticated={isAuthenticated}
-                  onVote={handleVote}
-                  onSendRequest={handleSendRequest}
-                  onAddToPlaylist={handleAddToPlaylist}
-                  onDeleteVideo={handleDeleteVideo}
-                  onEditVideo={handleEditVideo}
-                  user={user}
-                  formatDate={formatDate}
-                />
-              );
-            })}
           </div>
         </div>
       )}
