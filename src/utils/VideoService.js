@@ -10,7 +10,7 @@ export const getFullAssetUrl = (path) => {
     }
 
     // DigitalOcean Spaces configuration from your .env
-    const spacesBucket = 'Freelance.wtfvideosv3';
+    const spacesBucket = 'danejahern';
     const spacesRegion = 'nyc3';
 
     // Construct the URL using the Spaces configuration
