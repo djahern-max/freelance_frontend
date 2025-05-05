@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './ShowcaseForm.module.css';
+import api from '../../utils/api'; // Import the API module
 
 const VideoSelectionComponent = ({
     availableVideos = [],
@@ -18,6 +19,7 @@ const VideoSelectionComponent = ({
         }
     }, [selectedVideos, onSelectionChange]);
 
+    // Handle video selection with API calls if in edit mode
     const handleVideoSelection = async (videoId, event) => {
         // Prevent default behavior if event is provided
         if (event) {
@@ -37,13 +39,7 @@ const VideoSelectionComponent = ({
                 if (!isCurrentlySelected) {
                     // Video is being selected - link it
                     try {
-                        await fetch(`/api/project-showcase/${showcaseId}/link-video/${videoId}`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${localStorage.getItem('token')}` // Add auth token
-                            },
-                        });
+                        await api.showcase.linkVideo(showcaseId, videoId);
                         console.log(`Video ${videoId} linked successfully`);
 
                         // Update local state after successful API call
@@ -55,13 +51,7 @@ const VideoSelectionComponent = ({
                 } else {
                     // Video is being deselected - unlink it
                     try {
-                        await fetch(`/api/project-showcase/${showcaseId}/link-video/${videoId}`, {
-                            method: 'DELETE',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${localStorage.getItem('token')}` // Add auth token
-                            },
-                        });
+                        await api.showcase.unlinkVideo(showcaseId, videoId);
                         console.log(`Video ${videoId} unlinked successfully`);
 
                         // Update local state after successful API call
@@ -91,6 +81,8 @@ const VideoSelectionComponent = ({
             }, 300);
         }
     };
+
+    // Rest of the component remains the same...
 
     // If no videos available
     if (!availableVideos || availableVideos.length === 0) {

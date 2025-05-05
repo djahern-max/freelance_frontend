@@ -10,6 +10,8 @@ const ShowcaseForm = ({
     isEditing = false,
     initialData = {},
     onSubmit,
+    onLinkVideo,      // Add this
+    onUnlinkVideo,    // Add this
     availableVideos = [],
     developerProfile = null
 }) => {
@@ -122,22 +124,18 @@ const ShowcaseForm = ({
     };
 
     const handleVideoSelection = async (videoId) => {
-        if (isEditing) {
+        if (isEditing && (onLinkVideo || onUnlinkVideo)) {
             try {
-                // Use the showcase ID from initialData
-                const showcaseId = initialData.id;
-
-                // Check if we're adding or removing the video
                 if (!selectedVideos.includes(videoId)) {
-                    // Adding a video - use the new linkVideo API method
-                    await api.showcase.linkVideo(showcaseId, videoId);
-
-                    // Update local state on success
-                    setSelectedVideos(prev => [...prev, videoId]);
+                    // Adding a video - use the onLinkVideo prop
+                    if (onLinkVideo) {
+                        await onLinkVideo(videoId);
+                    }
                 } else {
-                    // For removing videos, you might still need the bulk update
-                    // or implement a similar "unlinkVideo" endpoint
-                    setSelectedVideos(prev => prev.filter(id => id !== videoId));
+                    // Removing a video - use the onUnlinkVideo prop
+                    if (onUnlinkVideo) {
+                        await onUnlinkVideo(videoId);
+                    }
                 }
             } catch (error) {
                 console.error('Error updating video selection:', error);
@@ -153,7 +151,6 @@ const ShowcaseForm = ({
             });
         }
     };
-
 
 
     const handleFileChange = (e) => {
