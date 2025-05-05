@@ -151,7 +151,22 @@ const SharedPlaylist = () => {
                     </div>
                 </div>
 
-
+                {/* Footer with support buttons */}
+                {/* <div className={styles.footer}>
+                    <button className={styles.supportButton}>
+                        <Heart size={16} className={styles.heartIcon} />
+                        Support RYZE
+                    </button>
+                    <div className={styles.footerActions}>
+                        <button className={styles.actionButton}>
+                            Help us empower more creators
+                        </button>
+                        <button className={styles.actionButton}>
+                            <MessageSquare size={14} style={{ marginRight: '4px' }} />
+                            Feedback
+                        </button>
+                    </div>
+                </div> */}
             </div>
         </div>
     );
