@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import AuthDialog from '../auth/AuthDialog';
 import FeedbackModal from '../feedback/FeedbackModal';
 import SharedRequestNotification from '../requests/SharedRequestNotification';
@@ -34,6 +34,7 @@ const Header = () => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const userType = useSelector((state) => state.auth.userType);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const openModal = (imageSrc, alt) => {
     setModalImage({ src: imageSrc, alt });
@@ -47,9 +48,7 @@ const Header = () => {
 
   // Placeholder function for Cal.com integration
   const handleBookingClick = () => {
-    // This will be replaced with Cal.com integration
     console.log('Booking button clicked - Cal.com integration coming soon');
-    // For now, you could show an alert, open a modal, redirect to a contact form, etc.
     alert('Cal.com integration coming soon! For now, please contact me at [your email]');
   };
 
@@ -58,17 +57,20 @@ const Header = () => {
     {
       path: '/showcase',
       icon: CheckCircle,
-      title: 'Solutions'
+      title: 'Solutions',
+      className: 'navSolutions'
     },
     {
       path: '/creators',
       icon: User,
-      title: 'Creators'
+      title: 'Creators',
+      className: 'navCreators'
     },
     {
       path: '/videos',
       icon: Video,
-      title: 'Videos'
+      title: 'Videos',
+      className: 'navVideos'
     }
   ];
 
@@ -77,13 +79,15 @@ const Header = () => {
     navigationItems.unshift({
       path: userType === 'client' ? '/client-dashboard' : '/developer-dashboard',
       icon: LayoutDashboard,
-      title: 'Dashboard'
+      title: 'Dashboard',
+      className: 'navDashboard'
     });
   } else {
     navigationItems.unshift({
       path: '/',
       icon: Home,
-      title: 'Home'
+      title: 'Home',
+      className: 'navHome'
     });
   }
 
@@ -130,6 +134,10 @@ const Header = () => {
       : [])
   ];
 
+  const isActivePath = (path) => {
+    return location.pathname === path;
+  };
+
   return (
     <header className={styles.header}>
       <div className={styles.iconBar}>
@@ -137,7 +145,7 @@ const Header = () => {
           {navigationItems.map((item) => (
             <div
               key={item.path || item.title}
-              className={styles.icon}
+              className={`${styles.icon} ${styles[item.className]} ${isActivePath(item.path) ? styles.active : ''}`}
               onClick={() => navigate(item.path)}
               title={item.title}
             >
