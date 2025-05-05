@@ -9,7 +9,8 @@ import {
   Video,
   Award,
   FileText,
-  Home  // Add this import
+  Home,
+  Calendar
 } from 'lucide-react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -42,6 +43,14 @@ const Header = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setModalImage(null);
+  };
+
+  // Placeholder function for Cal.com integration
+  const handleBookingClick = () => {
+    // This will be replaced with Cal.com integration
+    console.log('Booking button clicked - Cal.com integration coming soon');
+    // For now, you could show an alert, open a modal, redirect to a contact form, etc.
+    alert('Cal.com integration coming soon! For now, please contact me at [your email]');
   };
 
   // Define navigation items
@@ -90,6 +99,12 @@ const Header = () => {
       title: 'CPA License',
       onClick: () => openModal(CPALicense, 'CPA License'),
       className: styles.cpaMenuItem
+    },
+    {
+      icon: Calendar,
+      title: 'Book a Call',
+      onClick: handleBookingClick,
+      className: styles.bookingMenuItem
     },
     {
       icon: MessageSquareMore,
