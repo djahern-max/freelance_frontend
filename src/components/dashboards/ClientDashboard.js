@@ -22,6 +22,7 @@ import Header from '../shared/Header';
 import styles from './ClientDashboard.module.css';
 import DashboardSections from './DashboardSections';
 import axios from 'axios';
+import ProfileButton from '../profiles/ProfileButton';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
@@ -678,6 +679,7 @@ const ClientDashboard = () => {
       <Header />
       <div className={styles.content}>
         <div className={styles.dashboardHeader}>
+          <ProfileButton />
           <button
             onClick={() => setShowCreateModal(true)}
             className={styles.headerCreateButton}

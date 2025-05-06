@@ -17,7 +17,7 @@ import api from '../../utils/api';
 import Header from '../shared/Header';
 import DashboardSections from './DashboardSections';
 import styles from './DeveloperDashboard.module.css';
-
+import ProfileButton from '../profiles/ProfileButton';
 
 
 
@@ -602,6 +602,7 @@ const DeveloperDashboard = () => {
 
             <div className={styles.dashboardHeader}>
               <div className={styles.headerButtons}>
+                <ProfileButton />
                 <button
                   onClick={() => navigate('/opportunities')}
                   className={styles.headerCreateButton}
@@ -609,21 +610,9 @@ const DeveloperDashboard = () => {
                   <Plus size={24} className={styles.buttonIcon} />
                   Explore Open Tickets
                 </button>
-
-                {/* <button
-                  onClick={handleShowcaseClick}
-                  className={styles.headerCreateButton}
-                >
-                  <Plus size={24} className={styles.buttonIcon} />
-                  Showcase Project
-                </button> */}
               </div>
             </div>
-            {/* {!hasSeenTutorial && (
-              <div className={styles.tutorialHint}>
-                Click any card to view more details
-              </div>
-            )} */}
+
             <DashboardSections sections={sections} renderSection={renderSection} />
           </div>
 
