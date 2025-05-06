@@ -7,6 +7,7 @@ import {
   Plus,
   Share2,
   User,
+  UserCircle
 } from 'lucide-react';
 
 import { useEffect, useState, useCallback } from 'react';
@@ -17,7 +18,6 @@ import api from '../../utils/api';
 import Header from '../shared/Header';
 import DashboardSections from './DashboardSections';
 import styles from './DeveloperDashboard.module.css';
-import ProfileButton from '../profiles/ProfileButton';
 
 
 
@@ -26,8 +26,6 @@ const RequestCard = ({ request, navigate }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const maxLength = 150;
   const needsTruncation = request.content.length > maxLength;
-
-
 
 
 
@@ -217,6 +215,8 @@ const DeveloperDashboard = () => {
   const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
   const [pendingRequest, setPendingRequest] = useState(null);  // Fixed this line
   const [pendingNavigation, setPendingNavigation] = useState('');
+  const [profileExists, setProfileExists] = useState(null);
+  const [checkingProfile, setCheckingProfile] = useState(true);
 
 
   const navigate = useNavigate();
@@ -268,6 +268,23 @@ const DeveloperDashboard = () => {
       count: snaggedRequests.length, // You'll need to add this state
     },
   ];
+
+  useEffect(() => {
+    const checkProfile = async () => {
+      try {
+        // Note: the endpoint should be '/profile/check-profile' without '/api'
+        const response = await api.get('/profile/check-profile');
+        setProfileExists(response.data.has_profile);
+      } catch (error) {
+        console.error('Error checking profile:', error);
+        setProfileExists(false);
+      } finally {
+        setCheckingProfile(false);
+      }
+    };
+
+    checkProfile();
+  }, []);
 
   // Add this render function
   const renderSection = (sectionId) => {
@@ -602,13 +619,25 @@ const DeveloperDashboard = () => {
 
             <div className={styles.dashboardHeader}>
               <div className={styles.headerButtons}>
-                <ProfileButton />
+                <button
+                  className={styles.profileButton}
+                  onClick={() => navigate(profileExists ? '/profile' : '/profile/create')}
+                  disabled={checkingProfile}
+                >
+                  <UserCircle size={20} />
+                  <span>
+                    {checkingProfile
+                      ? 'Checking profile...'
+                      : profileExists ? 'View Profile' : 'Create Profile'}
+                  </span>
+                </button>
+
                 <button
                   onClick={() => navigate('/opportunities')}
-                  className={styles.headerCreateButton}
+                  className={styles.profileButton}
                 >
-                  <Plus size={24} className={styles.buttonIcon} />
-                  Explore Open Tickets
+                  <Plus size={20} />
+                  <span>Explore Open Tickets</span>
                 </button>
               </div>
             </div>

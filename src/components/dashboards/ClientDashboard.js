@@ -6,6 +6,7 @@ import {
   Plus,
   Share2,
   User,
+  UserCircle,
 } from 'lucide-react';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
@@ -62,6 +63,8 @@ const ClientDashboard = () => {
 
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
+  const [profileExists, setProfileExists] = useState(null);
+  const [checkingProfile, setCheckingProfile] = useState(true);
 
   const toggleSection = (section) => {
     setExpandedSections((prev) => ({
@@ -120,6 +123,22 @@ const ClientDashboard = () => {
       });
       controllersRef.current = {};
     };
+  }, []);
+
+  useEffect(() => {
+    const checkProfile = async () => {
+      try {
+        const response = await api.get('/api/profile/check-profile');
+        setProfileExists(response.data.has_profile);
+      } catch (error) {
+        console.error('Error checking profile:', error);
+        setProfileExists(false);
+      } finally {
+        setCheckingProfile(false);
+      }
+    };
+
+    checkProfile();
   }, []);
 
   const fetchProjects = useCallback(async () => {
@@ -678,14 +697,27 @@ const ClientDashboard = () => {
     <div className={styles.dashboardContainer}>
       <Header />
       <div className={styles.content}>
+
         <div className={styles.dashboardHeader}>
-          <ProfileButton />
+          <button
+            className={styles.profileButton}
+            onClick={() => navigate(profileExists ? '/profile' : '/profile/create')}
+            disabled={checkingProfile}
+          >
+            <UserCircle size={20} />
+            <span>
+              {checkingProfile
+                ? 'Checking profile...'
+                : profileExists ? 'View Profile' : 'Create Profile'}
+            </span>
+          </button>
+
           <button
             onClick={() => setShowCreateModal(true)}
-            className={styles.headerCreateButton}
+            className={styles.profileButton}
           >
-            <Plus className={styles.buttonIcon} />
-            Create Ticket
+            <Plus size={20} />
+            <span>Create Ticket</span>
           </button>
         </div>
 
