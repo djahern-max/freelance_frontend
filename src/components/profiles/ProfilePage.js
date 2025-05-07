@@ -62,9 +62,11 @@ const ProfilePage = () => {
                         <span className={styles.company}>RYZE.ai & Analytics Hub</span>
                     </div>
                     <div className={styles.experienceSubheader}>
-                        <span className={styles.dateRange}>May 2024 to Present</span>
-                        <span className={styles.separator}>|</span>
-                        <span className={styles.location}>Exeter, NH</span>
+                        <div className={styles.dateLocation}>
+                            <span className={styles.dateRange}>May 2024 to Present</span>
+                            <span className={styles.separator}>|</span>
+                            <span className={styles.location}>Exeter, NH</span>
+                        </div>
                     </div>
                     <ul className={styles.responsibilitiesList}>
                         <li>
@@ -228,7 +230,7 @@ const ProfilePage = () => {
             </section>
 
             <section className={styles.section}>
-                <h2 className={styles.sectionHeading}>About Me</h2>
+                <h2 className={styles.sectionHeading}>About</h2>
                 <div className={styles.videoContainer}>
 
                     <div className={styles.videoWrapper}>
@@ -247,7 +249,7 @@ const ProfilePage = () => {
             </section>
 
             <section className={styles.section}>
-                <h2 className={styles.sectionHeading}>Contact Me</h2>
+                <h2 className={styles.sectionHeading}>Contact</h2>
                 <div className={styles.contactContainer}>
                     <p className={styles.contactText}>
                         Interested in working together or learning more about my projects? Feel free to reach out!
