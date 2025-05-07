@@ -62,11 +62,9 @@ const ProfilePage = () => {
                         <span className={styles.company}>RYZE.ai & Analytics Hub</span>
                     </div>
                     <div className={styles.experienceSubheader}>
-                        <div className={styles.dateLocation}>
-                            <span className={styles.dateRange}>May 2024 to Present</span>
-                            <span className={styles.separator}>|</span>
-                            <span className={styles.location}>Exeter, NH</span>
-                        </div>
+                        <span className={styles.dateRange}>May 2024 to Present</span>
+                        <span className={styles.separator}>|</span>
+                        <span className={styles.location}>Exeter, NH</span>
                     </div>
                     <ul className={styles.responsibilitiesList}>
                         <li>

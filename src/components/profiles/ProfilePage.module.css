@@ -50,6 +50,7 @@
     font-size: 1rem;
     margin-bottom: 8px;
     color: var(--color-text-secondary);
+    white-space: nowrap;
 }
 
 .contact {
@@ -114,6 +115,7 @@
 
 .separator {
     color: var(--color-text-secondary);
+    margin: 0 8px;
 }
 
 .section {
@@ -171,28 +173,36 @@
     margin-bottom: 4px;
 }
 
-.experienceSubheader {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+/* NEW STYLES - Should fix alignment issues */
+.experienceSubheader,
+.educationSubheader {
+    display: block;
+    /* Change from flex to block display */
     margin-bottom: 12px;
     color: var(--color-text-secondary);
-    gap: 8px;
-    /* Add consistent gap */
+    line-height: 1.5;
 }
 
-.dateLocation {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: nowrap;
-    /* Prevent wrapping between date and location */
+.experienceSubheader>*,
+.educationSubheader>* {
+    display: inline;
+    /* Make all elements display inline */
 }
 
-/* Remove the margin-right that was causing alignment issues */
-.experienceSubheader>* {
-    margin-right: 0;
-    /* Changed from 8px */
+.dateRange {
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+}
+
+.institution {
+    font-weight: 500;
+    color: var(--color-text-primary);
+    white-space: nowrap;
+}
+
+.company {
+    font-weight: 500;
+    color: var(--color-text-primary);
 }
 
 .positionTitle,
@@ -201,18 +211,9 @@
     font-weight: 600;
     color: var(--color-text-primary);
     margin-right: 8px;
-}
-
-.company,
-.institution {
-    font-weight: 500;
-    color: var(--color-text-primary);
-}
-
-.location,
-.dateRange {
-    color: var(--color-text-secondary);
-    white-space: nowrap;
+    display: block;
+    /* Make title display as block so it's on its own line */
+    margin-bottom: 4px;
 }
 
 .responsibilitiesList,
@@ -350,21 +351,20 @@
     }
 
     .experienceHeader,
-    .experienceSubheader {
-        justify-content: center;
+    .experienceSubheader,
+    .educationSubheader {
+        text-align: center;
     }
 
-    .experienceSubheader {
-        /* Keep flex-direction as row instead of column */
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 8px;
+    .positionTitle,
+    .degreeTitle {
+        margin-right: 0;
     }
 
-    .separator {
-        display: inline;
-        /* Keep visible on tablet */
+    /* Important - keep text alignment consistent */
+    .experienceSubheader,
+    .educationSubheader {
+        text-align: center;
     }
 
     .responsibilitiesList li,
@@ -392,8 +392,14 @@
         gap: 5px;
     }
 
+    /* For very small screens */
+    .experienceSubheader,
+    .educationSubheader {
+        line-height: 1.8;
+    }
+
     .separator {
-        display: none;
-        /* Hide on very small screens */
+        display: inline;
+        margin: 0 4px;
     }
 }
