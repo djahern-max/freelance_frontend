@@ -3,136 +3,108 @@ import {
   LogIn,
   LogOut,
   MessageSquareMore,
+  Search,
   UserCircle,
-  User,
+  UsersRound,
   CheckCircle,
   Video,
-  Award,
-  FileText,
-  Home,
-  Calendar,
-  Check,
-  Sparkles,
-  Info
+  Heart
 } from 'lucide-react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import AuthDialog from '../auth/AuthDialog';
 import FeedbackModal from '../feedback/FeedbackModal';
 import SharedRequestNotification from '../requests/SharedRequestNotification';
 import styles from './Header.module.css';
 import HeaderMenu from './HeaderMenu';
-import ImageModal from './ImageModal';
-import CodingBootcamp from '../../images/CodingBootcamp.png';
-import CPALicense from '../../images/CPALicense.png';
+import { stripeService } from '../../utils/stripeService';
+import DonationModal from '../payments/DonationModal';
 
 const Header = () => {
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
-  const [modalImage, setModalImage] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const userType = useSelector((state) => state.auth.userType);
   const navigate = useNavigate();
-  const location = useLocation();
+  const [showDonationModal, setShowDonationModal] = useState(false);
 
-  const openModal = (imageSrc, alt) => {
-    setModalImage({ src: imageSrc, alt });
-    setIsModalOpen(true);
+  const handleDonation = async () => {
+    try {
+      const response = await stripeService.createDonationSession({
+        amount: 500, // $5 default donation
+        currency: 'usd'
+      });
+      if (response.url) {
+        window.location.href = response.url;
+      }
+    } catch (error) {
+      console.error('Donation error:', error);
+      // You could add toast notification here if you want
+    }
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setModalImage(null);
-  };
-
-  // Placeholder function for Cal.com integration
-  const handleBookingClick = () => {
-    console.log('Booking button clicked - Cal.com integration coming soon');
-    alert('Cal.com integration coming soon! For now, please contact me at [your email]');
+  const handleDonationClick = () => {
+    setShowDonationModal(true);
   };
 
   // Define navigation items
   const navigationItems = [
     {
-      path: '/about',
-      icon: Info,
-      title: 'About',
-      className: 'navAbout'
+      path: '/tickets',
+      icon: Search,
+      title: 'tickets'
     },
     {
       path: '/showcase',
       icon: CheckCircle,
-      title: 'Solutions',
-      className: 'navSolutions'
+      title: 'Solutions'
     },
     {
-      path: '/creators',
-      icon: User,
-      title: 'Creators',
-      className: 'navCreators'
+      path: '/about',
+      icon: UsersRound,
+      title: 'Creators'
     },
     {
       path: '/videos',
       icon: Video,
-      title: 'Videos',
-      className: 'navVideos'
+      title: 'Videos'
+    },
+    {
+      icon: Heart,
+      title: 'Support RYZE',
+      onClick: handleDonation,
+      isSpecial: true // Add this flag for special styling
     }
   ];
 
-  // Add Home or Dashboard based on authentication status
+  // Only add Dashboard if user is authenticated
   if (isAuthenticated) {
     navigationItems.unshift({
       path: userType === 'client' ? '/client-dashboard' : '/developer-dashboard',
       icon: LayoutDashboard,
-      title: 'Dashboard',
-      className: 'navDashboard'
-    });
-  } else {
-    navigationItems.unshift({
-      path: '/',
-      icon: Home,
-      title: 'Home',
-      className: 'navHome'
+      title: 'Dashboard'
     });
   }
 
+
+
   const menuItems = [
     {
-      icon: Award,
-      title: 'Coding Bootcamp',
-      onClick: () => openModal(CodingBootcamp, 'Coding Bootcamp Certificate'),
-      className: styles.bootcampMenuItem,
-      rightIcon: Check,
-      rightIconClass: styles.checkmark
-    },
-    {
-      icon: FileText,
-      title: 'CPA License',
-      onClick: () => openModal(CPALicense, 'CPA License'),
-      className: styles.cpaMenuItem,
-      rightIcon: Check,
-      rightIconClass: styles.checkmark
-    },
-    {
-      icon: Calendar,
-      title: 'Book a Call!',
-      onClick: handleBookingClick,
-      className: styles.bookingMenuItem,
-      rightIcon: Sparkles,
-      rightIconClass: styles.sparkles
+      icon: Heart,
+      title: 'Support RYZE',
+      onClick: handleDonation,
+      isSpecial: true // Add this flag for special styling
     },
     {
       icon: MessageSquareMore,
-      title: 'Feedback?',
-      onClick: () => setShowFeedbackModal(true),
-      className: styles.feedbackMenuItem
+      title: 'Feedback',
+      onClick: () => setShowFeedbackModal(true)
     },
     ...(isAuthenticated
       ? [
+
         {
           icon: LogOut,
           title: 'Logout',
@@ -144,11 +116,6 @@ const Header = () => {
       ]
       : [])
   ];
-
-  const isActivePath = (path) => {
-    return location.pathname === path;
-  };
-
   return (
     <header className={styles.header}>
       <div className={styles.iconBar}>
@@ -156,18 +123,27 @@ const Header = () => {
           {navigationItems.map((item) => (
             <div
               key={item.path || item.title}
-              className={`${styles.icon} ${styles[item.className]} ${isActivePath(item.path) ? styles.active : ''}`}
-              onClick={() => navigate(item.path)}
+              className={`${styles.icon} ${item.isSpecial ? styles.specialIcon : ''}`}
+              onClick={item.isSpecial ? handleDonationClick : (() => navigate(item.path))}
               title={item.title}
             >
               <item.icon
                 className={styles.iconImage}
                 size={24}
                 strokeWidth={1.5}
+                style={item.isSpecial ? {
+                  color: '#ef4444',
+                  fill: '#ef4444',
+                  transform: 'scale(1.1)'
+                } : {}}
               />
             </div>
           ))}
         </div>
+
+        {showDonationModal && (
+          <DonationModal onClose={() => setShowDonationModal(false)} />
+        )}
 
         <div className={styles.rightSection}>
           {isAuthenticated && userType === 'developer' && (
@@ -181,14 +157,17 @@ const Header = () => {
               {menuItems.map((item, index) => (
                 <button
                   key={index}
-                  className={`${styles.menuItem} ${item.className || ''}`}
+                  className={`${styles.menuItem} ${item.isSpecial ? styles.specialMenuItem : ''}`}
                   onClick={item.onClick}
                 >
-                  <item.icon size={20} />
+                  <item.icon
+                    size={20}
+                    style={item.isSpecial ? {
+                      color: '#ef4444',
+                      fill: '#ef4444'
+                    } : {}}
+                  />
                   <span>{item.title}</span>
-                  {item.rightIcon && (
-                    <item.rightIcon size={16} className={item.rightIconClass} />
-                  )}
                 </button>
               ))}
             </HeaderMenu>
@@ -224,13 +203,6 @@ const Header = () => {
           setShowAuthDialog(false);
           navigate('/register');
         }}
-      />
-
-      <ImageModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        imageSrc={modalImage?.src}
-        alt={modalImage?.alt}
       />
     </header>
   );

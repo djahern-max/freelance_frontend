@@ -42,8 +42,10 @@
 .icon:hover {
   transform: translateY(-2px);
   background-color: var(--color-background-hover);
+  color: var(--color-primary);
 }
 
+/* Add to your Header.module.css */
 .iconImage {
   transition: all 0.2s ease;
   width: 24px;
@@ -54,75 +56,13 @@
   transform: scale(1.1);
 }
 
-/* Navigation item colors */
-.navHome {
-  color: #0066cc !important;
-}
-
-.navHome:hover {
-  background-color: rgba(0, 102, 204, 0.1) !important;
-  color: #0052a3 !important;
-}
-
-.navDashboard {
-  color: #0066cc !important;
-}
-
-.navDashboard:hover {
-  background-color: rgba(0, 102, 204, 0.1) !important;
-  color: #0052a3 !important;
-}
-
-.navSolutions {
-  color: #059669 !important;
-}
-
-.navSolutions:hover {
-  background-color: rgba(5, 150, 105, 0.1) !important;
-  color: #047857 !important;
-}
-
-.navCreators {
-  color: #7c3aed !important;
-}
-
-.navCreators:hover {
-  background-color: rgba(124, 58, 237, 0.1) !important;
-  color: #6d28d9 !important;
-}
-
-.navVideos {
-  color: #f43f5e !important;
-  /* Changed to rose color */
-}
-
-.navVideos:hover {
-  background-color: rgba(244, 63, 94, 0.1) !important;
-  /* Rose background */
-  color: #e11d48 !important;
-  /* Darker rose */
-}
-
 .icon.active {
   background-color: var(--color-background-hover);
+  color: var(--color-primary);
 }
 
-.icon.active.navHome,
-.icon.active.navDashboard {
-  background-color: rgba(0, 102, 204, 0.15) !important;
-}
-
-.icon.active.navSolutions {
-  background-color: rgba(5, 150, 105, 0.15) !important;
-}
-
-.icon.active.navCreators {
-  background-color: rgba(124, 58, 237, 0.15) !important;
-}
-
-.icon.active.navVideos {
-  background-color: rgba(244, 63, 94, 0.15) !important;
-  /* Rose active state */
+.icon.active .iconImage {
+  color: var(--color-primary);
 }
 
 .leftSection {
@@ -164,9 +104,9 @@
 }
 
 .menuItem {
-  position: relative;
   display: flex;
   align-items: center;
+  gap: var(--spacing-sm);
   width: 100%;
   padding: var(--spacing-sm) var(--spacing-md);
   border: none;
@@ -176,22 +116,6 @@
   font-size: var(--font-size-base);
   transition: all 0.2s ease;
   border-radius: var(--radius-md);
-  justify-content: flex-start;
-  text-align: left;
-}
-
-.menuItem span {
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: left;
-  margin-left: var(--spacing-sm);
-}
-
-.menuItem svg:first-child {
-  margin-right: 0;
-  flex-shrink: 0;
 }
 
 .menuItem:hover {
@@ -199,13 +123,7 @@
   color: var(--color-primary);
 }
 
-.checkmark,
-.sparkles {
-  margin-left: auto;
-  flex-shrink: 0;
-}
-
-solidcolor .menuContainer {
+.menuContainer {
   margin-left: 0;
 }
 
@@ -248,117 +166,6 @@ solidcolor .menuContainer {
 .specialIcon .iconImage {
   animation: pulse 2s infinite;
 }
-
-.bootcampMenuItem {
-  color: #0066cc !important;
-}
-
-.bootcampMenuItem:hover {
-  background-color: rgba(0, 102, 204, 0.1) !important;
-}
-
-.cpaMenuItem {
-  color: #7c3aed !important;
-}
-
-.cpaMenuItem:hover {
-  background-color: #f3e8ff !important;
-}
-
-.bookingMenuItem {
-  color: #059669 !important;
-  font-weight: 600;
-}
-
-.feedbackMenuItem {
-  color: #f43f5e !important;
-  /* Rose/pink color */
-  font-weight: 600;
-}
-
-.feedbackMenuItem:hover {
-  background-color: rgba(244, 63, 94, 0.1) !important;
-  /* Light rose background */
-  transform: translateY(-1px);
-}
-
-
-
-.bookingMenuItem:hover {
-  background-color: #ecfdf5 !important;
-  transform: translateY(-1px);
-}
-
-/* Add this new class to your Header.module.css */
-.accentMenuItem {
-  color: var(--color-accent) !important;
-}
-
-
-
-/* If you want to use it for navigation buttons */
-.navAccent {
-  color: var(--color-accent) !important;
-}
-
-.navAccent:hover {
-  background-color: rgba(249, 115, 22, 0.1) !important;
-  color: #ea580c !important;
-  /* Darker orange */
-}
-
-/* Active state for accent nav item */
-.icon.active.navAccent {
-  background-color: rgba(249, 115, 22, 0.15) !important;
-}
-
-.accentMenuItem:hover {
-  color: var(--color-accent);
-  filter: brightness(0.9);
-  background-color: rgba(249, 115, 22, 0.1) !important;
-  /* 10% opacity of accent color */
-  color: #ea580c !important;
-}
-
-.checkmark {
-  color: #10b981;
-  margin-left: 8px;
-  margin-right: 0;
-  margin-left: auto;
-}
-
-.sparkles {
-  color: #f59e0b;
-  margin-left: 8px;
-  margin-right: 0;
-  margin-left: auto;
-  animation: sparkle 1.5s infinite alternate;
-}
-
-.checkmark,
-.sparkles {
-  margin-left: var(--spacing-sm);
-  flex-shrink: 0;
-}
-
-.menuContainer ul,
-.menuContainer li {
-  padding-left: 0;
-  text-align: left;
-}
-
-@keyframes sparkle {
-  0% {
-    opacity: 0.7;
-    transform: scale(0.9);
-  }
-
-  100% {
-    opacity: 1;
-    transform: scale(1.1);
-  }
-}
-
 
 @keyframes pulse {
   0% {
@@ -407,16 +214,6 @@ solidcolor .menuContainer {
 
 /* Mobile */
 @media (max-width: 640px) {
-
-  .checkmark,
-  .sparkles {
-    margin-left: 4px;
-  }
-
-  .menuItem {
-    padding: var(--spacing-sm) var(--spacing-sm);
-  }
-
   .signInButton {
     padding: 6px;
   }
