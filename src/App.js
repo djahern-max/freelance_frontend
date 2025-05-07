@@ -61,7 +61,7 @@ const DeveloperVideos = React.lazy(() => import('./components/videos/DeveloperVi
 const MyPlaylists = React.lazy(() => import('./components/videos/MyPlaylists'));
 const CreatePlaylistForm = React.lazy(() => import('./components/videos/CreatePlayListForm'));
 // Import the ProfilePage component
-const ProfilePage = React.lazy(() => import('./components/profile/ProfilePage'));
+const ProfilePage = React.lazy(() => import('./components/profiles/ProfilePage'));
 
 
 const LoadingFallback = () => (
