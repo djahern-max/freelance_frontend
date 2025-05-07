@@ -76,7 +76,10 @@ const ProfilePage = () => {
                         <ul className={styles.specialtiesList}>
                             <li>Database design and optimization</li>
                             <li>API development</li>
-
+                            <li>Analytics implementation</li>
+                            <li>Data visualization</li>
+                            <li>Full-stack web development</li>
+                            <li>SEO-optimized code structure</li>
                         </ul>
                     </div>
                 </div>
