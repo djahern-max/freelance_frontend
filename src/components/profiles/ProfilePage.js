@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styles from './ProfilePage.module.css';
+import headshot from '../../images/headshot.png';
 
 const ProfilePage = () => {
     const [showCopyTooltip, setShowCopyTooltip] = useState(false);
@@ -15,13 +16,9 @@ const ProfilePage = () => {
             <div className={styles.profileHeader}>
                 <div className={styles.profileImageContainer}>
                     <img
-                        src="images/headshot.png"
+                        src={headshot}
                         alt="Dane Ahern"
                         className={styles.profileImage}
-                        onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = "https://via.placeholder.com/200x200?text=DA";
-                        }}
                     />
                 </div>
                 <div className={styles.profileHeaderContent}>
