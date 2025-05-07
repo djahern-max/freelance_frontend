@@ -60,6 +60,8 @@ const PlaylistDetail = React.lazy(() => import('./components/videos/PlaylistDeta
 const DeveloperVideos = React.lazy(() => import('./components/videos/DeveloperVideos'));
 const MyPlaylists = React.lazy(() => import('./components/videos/MyPlaylists'));
 const CreatePlaylistForm = React.lazy(() => import('./components/videos/CreatePlayListForm'));
+// Import the ProfilePage component
+const ProfilePage = React.lazy(() => import('./components/profile/ProfilePage'));
 
 
 const LoadingFallback = () => (
@@ -200,6 +202,9 @@ function AppContent() {
             <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
+
+            {/* Add the new ProfilePage route */}
+            <Route path="/about" element={<ProfilePage />} />
 
             <Route path="/oauth-callback" element={<OAuthCallback />} />
             <Route path="/oauth-success" element={<OAuthSuccess />} />
