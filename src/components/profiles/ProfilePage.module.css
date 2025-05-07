@@ -1,6 +1,6 @@
 .profileContainer {
     max-width: 1000px;
-    margin: 0 auto;
+    margin: 40px auto;
     padding: 40px 20px;
     color: var(--color-text-primary);
     background-color: var(--color-background);
@@ -59,15 +59,57 @@
     font-size: 1rem;
 }
 
-.contactLink {
+.contactLink,
+.emailButton {
     color: var(--color-primary);
     text-decoration: none;
     transition: color 0.2s;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font-size: inherit;
+    cursor: pointer;
+    position: relative;
 }
 
-.contactLink:hover {
+.contactLink:hover,
+.emailButton:hover {
     color: var(--color-primary-dark);
     text-decoration: underline;
+}
+
+.tooltip {
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--color-text-primary);
+    color: white;
+    padding: 5px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    z-index: 100;
+    white-space: nowrap;
+}
+
+.tooltip:before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid var(--color-text-primary);
+}
+
+.tooltip.show {
+    opacity: 1;
+    visibility: visible;
 }
 
 .separator {
@@ -122,20 +164,23 @@
 }
 
 .experienceHeader {
-    margin-bottom: 4px;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 8px;
+    margin-bottom: 4px;
 }
 
 .experienceSubheader {
-    margin-bottom: 12px;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 8px;
+    margin-bottom: 12px;
     color: var(--color-text-secondary);
+}
+
+.experienceSubheader>* {
+    margin-right: 8px;
 }
 
 .positionTitle,
@@ -143,7 +188,7 @@
     font-size: 1.25rem;
     font-weight: 600;
     color: var(--color-text-primary);
-    margin-right: 5px;
+    margin-right: 8px;
 }
 
 .company,
@@ -152,11 +197,7 @@
     color: var(--color-text-primary);
 }
 
-.location {
-    color: var(--color-text-secondary);
-    white-space: nowrap;
-}
-
+.location,
 .dateRange {
     color: var(--color-text-secondary);
     white-space: nowrap;
@@ -187,7 +228,7 @@
 
 .skillsContainer {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 25px;
 }
 
@@ -196,6 +237,7 @@
     border-radius: var(--radius-md);
     padding: 15px;
     border-left: 3px solid var(--color-primary);
+    height: 100%;
 }
 
 .skillCategoryTitle {
@@ -236,12 +278,6 @@
     border-radius: var(--radius-md);
 }
 
-.videoDescription {
-    font-size: 1rem;
-    line-height: 1.5;
-    color: var(--color-text-secondary);
-}
-
 .contactContainer {
     display: flex;
     flex-direction: column;
@@ -266,19 +302,22 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    position: relative;
     padding: 10px 25px;
     background-color: var(--color-primary);
-    color: white;
+    color: white !important;
     border-radius: var(--radius-md);
     text-decoration: none;
     font-weight: 500;
+    border: none;
+    cursor: pointer;
     transition: background-color 0.2s, transform 0.2s;
 }
 
 .contactButton:hover {
     background-color: var(--color-primary-dark);
     transform: translateY(-2px);
-    text-decoration: none;
+    text-decoration: none !important;
 }
 
 /* Media Queries */
@@ -299,15 +338,23 @@
     }
 
     .experienceHeader,
-    .experienceSubheader,
-    .educationItem {
+    .experienceSubheader {
+        justify-content: center;
+    }
+
+    .experienceSubheader {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center;
         gap: 5px;
     }
 
     .separator {
         display: none;
+    }
+
+    .responsibilitiesList li,
+    .specialtiesList li {
+        text-align: left;
     }
 }
 

@@ -1,19 +1,44 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './ProfilePage.module.css';
 
 const ProfilePage = () => {
+    const [showCopyTooltip, setShowCopyTooltip] = useState(false);
+
+    const copyEmailToClipboard = () => {
+        navigator.clipboard.writeText('dane@ryze.ai');
+        setShowCopyTooltip(true);
+        setTimeout(() => setShowCopyTooltip(false), 2000);
+    };
+
     return (
         <div className={styles.profileContainer}>
             <div className={styles.profileHeader}>
                 <div className={styles.profileImageContainer}>
-                    <img src="images/headshot.png" alt="Dane Ahern" className={styles.profileImage} />
+                    <img
+                        src="/images/headshot.png"
+                        alt="Dane Ahern"
+                        className={styles.profileImage}
+                        onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "https://via.placeholder.com/200x200?text=DA";
+                        }}
+                    />
                 </div>
                 <div className={styles.profileHeaderContent}>
                     <h1 className={styles.name}>Dane Ahern</h1>
                     <h2 className={styles.title}>Full-Stack Developer & Finance Professional</h2>
                     <div className={styles.location}>Exeter, NH 03833</div>
                     <div className={styles.contact}>
-                        <a href="mailto:dane@ryze.ai" className={styles.contactLink}>dane@ryze.ai</a>
+                        <button
+                            onClick={copyEmailToClipboard}
+                            className={styles.emailButton}
+                            aria-label="Copy email to clipboard"
+                        >
+                            dane@ryze.ai
+                            <span className={`${styles.tooltip} ${showCopyTooltip ? styles.show : ''}`}>
+                                Copied!
+                            </span>
+                        </button>
                         <span className={styles.separator}>|</span>
                         <a href="tel:6038125654" className={styles.contactLink}>(603) 812-5654</a>
                     </div>
@@ -40,9 +65,9 @@ const ProfilePage = () => {
                         <span className={styles.company}>RYZE.ai & Analytics Hub</span>
                     </div>
                     <div className={styles.experienceSubheader}>
-                        <span className={styles.location}>Exeter, NH</span>
-                        <span className={styles.separator}>|</span>
                         <span className={styles.dateRange}>May 2024 to Present</span>
+                        <span className={styles.separator}>|</span>
+                        <span className={styles.location}>Exeter, NH</span>
                     </div>
                     <ul className={styles.responsibilitiesList}>
                         <li>
@@ -112,9 +137,9 @@ const ProfilePage = () => {
                         <span className={styles.company}>Severino Construction Co., Inc.</span>
                     </div>
                     <div className={styles.experienceSubheader}>
-                        <span className={styles.location}>Candia, NH</span>
-                        <span className={styles.separator}>|</span>
                         <span className={styles.dateRange}>December 2023 to December 2024</span>
+                        <span className={styles.separator}>|</span>
+                        <span className={styles.location}>Candia, NH</span>
                     </div>
                     <ul className={styles.responsibilitiesList}>
                         <li>Implemented data systems to automate financial reporting and enhance decision-making processes</li>
@@ -130,9 +155,9 @@ const ProfilePage = () => {
                         <span className={styles.company}>CW Keller & Associates, Inc.</span>
                     </div>
                     <div className={styles.experienceSubheader}>
-                        <span className={styles.location}>Plaistow, NH</span>
-                        <span className={styles.separator}>|</span>
                         <span className={styles.dateRange}>January 2020 to November 2023</span>
+                        <span className={styles.separator}>|</span>
+                        <span className={styles.location}>Plaistow, NH</span>
                     </div>
                     <ul className={styles.responsibilitiesList}>
                         <li>Designed and implemented KPI dashboards using data visualization techniques to improve executive decision-making</li>
@@ -148,9 +173,9 @@ const ProfilePage = () => {
                         <span className={styles.company}>CW Keller & Associates, Inc.</span>
                     </div>
                     <div className={styles.experienceSubheader}>
-                        <span className={styles.location}>Plaistow, NH</span>
-                        <span className={styles.separator}>|</span>
                         <span className={styles.dateRange}>August 2014 to January 2020</span>
+                        <span className={styles.separator}>|</span>
+                        <span className={styles.location}>Plaistow, NH</span>
                     </div>
                     <ul className={styles.responsibilitiesList}>
                         <li>Built data systems using SQL and Excel to track performance metrics and support revenue growth</li>
@@ -167,40 +192,40 @@ const ProfilePage = () => {
                 <div className={styles.educationItem}>
                     <h3 className={styles.degreeTitle}>Coding Boot Camp</h3>
                     <div className={styles.experienceSubheader}>
+                        <span className={styles.dateRange}>2017-2018</span>
+                        <span className={styles.separator}>|</span>
                         <span className={styles.institution}>University of New Hampshire</span>
                         <span className={styles.separator}>|</span>
                         <span className={styles.location}>Durham, NH</span>
-                        <span className={styles.separator}>|</span>
-                        <span className={styles.dateRange}>2017-2018</span>
                     </div>
                 </div>
 
                 <div className={styles.educationItem}>
                     <h3 className={styles.degreeTitle}>Master's Degree in Accounting</h3>
                     <div className={styles.experienceSubheader}>
+                        <span className={styles.dateRange}>2011-2013</span>
+                        <span className={styles.separator}>|</span>
                         <span className={styles.institution}>Southern New Hampshire University</span>
                         <span className={styles.separator}>|</span>
                         <span className={styles.location}>Manchester, NH</span>
-                        <span className={styles.separator}>|</span>
-                        <span className={styles.dateRange}>2011-2013</span>
                     </div>
                 </div>
 
                 <div className={styles.educationItem}>
                     <h3 className={styles.degreeTitle}>Bachelor's Degree in Business Administration</h3>
                     <div className={styles.experienceSubheader}>
-                        <span className={styles.institution}>University of New Hampshire</span>
-                        <span className={styles.separator}>|</span>
                         <span className={styles.dateRange}>1997-2001</span>
+                        <span className={styles.separator}>|</span>
+                        <span className={styles.institution}>University of New Hampshire</span>
                     </div>
                 </div>
 
                 <div className={styles.educationItem}>
                     <h3 className={styles.degreeTitle}>CPA License</h3>
                     <div className={styles.experienceSubheader}>
-                        <span className={styles.location}>New Hampshire</span>
-                        <span className={styles.separator}>|</span>
                         <span className={styles.dateRange}>June 2014 to June 2025</span>
+                        <span className={styles.separator}>|</span>
+                        <span className={styles.location}>New Hampshire</span>
                     </div>
                 </div>
             </section>
@@ -221,9 +246,6 @@ const ProfilePage = () => {
                             className={styles.videoFrame}
                         ></iframe>
                     </div>
-                    <p className={styles.videoDescription}>
-                        This video showcases the features and capabilities of the RYZE.ai analytics platform, demonstrating how it can transform data into actionable business insights.
-                    </p>
                 </div>
             </section>
 
@@ -234,13 +256,26 @@ const ProfilePage = () => {
                         Interested in working together or learning more about my projects? Feel free to reach out!
                     </p>
                     <div className={styles.contactLinks}>
-                        <a href="mailto:dane@ryze.ai" className={styles.contactButton}>
-                            Email Me
-                        </a>
-                        <a href="https://www.linkedin.com/in/dane-ahern/" target="_blank" rel="noopener noreferrer" className={styles.contactButton}>
+                        <button onClick={copyEmailToClipboard} className={styles.contactButton}>
+                            Copy Email
+                            <span className={`${styles.tooltip} ${showCopyTooltip ? styles.show : ''}`}>
+                                Copied!
+                            </span>
+                        </button>
+                        <a
+                            href="https://www.linkedin.com/in/dane-j-ahern-4b5471354/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles.contactButton}
+                        >
                             LinkedIn
                         </a>
-                        <a href="https://github.com/yourgithub" target="_blank" rel="noopener noreferrer" className={styles.contactButton}>
+                        <a
+                            href="https://github.com/djahern-max"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles.contactButton}
+                        >
                             GitHub
                         </a>
                     </div>
