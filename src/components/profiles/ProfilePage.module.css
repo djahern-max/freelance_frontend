@@ -371,12 +371,70 @@
     height: 100%;
 }
 
+.skillsGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.skillRow {
+    display: flex;
+    gap: 15px;
+}
+
+.skillBox {
+    background-color: rgba(37, 99, 235, 0.05);
+    border-radius: var(--radius-md);
+    padding: 15px;
+    border-left: 3px solid var(--color-primary);
+    flex: 1;
+}
+
+.skillCategoryTitle {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--color-primary);
+}
+
+.specialtiesList {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 5px;
+}
+
+.specialtiesList li {
+    position: relative;
+    padding-left: 18px;
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.specialtiesList li:before {
+    content: '•';
+    position: absolute;
+    left: 6px;
+    color: var(--color-primary);
+}
+
+
 /* Media Queries */
 @media (max-width: 768px) {
     .profileHeader {
         flex-direction: column;
         text-align: center;
         gap: 20px;
+    }
+
+    .skillRow {
+        flex-direction: column;
+    }
+
+    .specialtiesList {
+        grid-template-columns: 1fr;
     }
 
     .sectionHeading:after {

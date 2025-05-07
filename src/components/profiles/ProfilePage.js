@@ -55,44 +55,33 @@ const ProfilePage = () => {
             </section>
 
             <section className={styles.section}>
-                <h2 className={styles.sectionHeading}>Technical Experience</h2>
-                <div className={styles.experienceItem}>
-                    <div className={styles.experienceHeader}>
-                        <h3 className={styles.positionTitle}>Founder</h3>
-                        <span className={styles.company}>RYZE.ai & Analytics Hub</span>
+                <h2 className={styles.sectionHeading}>Technical Skills</h2>
+                <div className={styles.skillsGrid}>
+                    <div className={styles.skillRow}>
+                        <div className={styles.skillBox}>
+                            <h3 className={styles.skillCategoryTitle}>Languages</h3>
+                            <p>Python, JavaScript, SQL, HTML, CSS</p>
+                        </div>
+                        <div className={styles.skillBox}>
+                            <h3 className={styles.skillCategoryTitle}>Frameworks & Libraries</h3>
+                            <p>React, FastAPI, PostgreSQL, Node.js</p>
+                        </div>
+                        <div className={styles.skillBox}>
+                            <h3 className={styles.skillCategoryTitle}>Development Tools</h3>
+                            <p>Git, GitHub, VS Code, Docker</p>
+                        </div>
                     </div>
-                    <div className={styles.experienceSubheader}>
-                        <span className={styles.dateRange}>May 2024 to Present</span>
-                        <span className={styles.separator}>|</span>
-                        <span className={styles.location}>Exeter, NH</span>
+                    <div className={styles.skillBox} style={{ gridColumn: "1 / -1" }}>
+                        <h3 className={styles.skillCategoryTitle}>Technical Specialties</h3>
+                        <ul className={styles.specialtiesList}>
+                            <li>Database design and optimization</li>
+                            <li>API development</li>
+                            <li>Analytics implementation</li>
+                            <li>Data visualization</li>
+                            <li>Full-stack web development</li>
+                            <li>SEO-optimized code structure</li>
+                        </ul>
                     </div>
-                    <ul className={styles.responsibilitiesList}>
-                        <li>
-                            <strong>Full-Stack Application Development:</strong> Built a complete analytics platform from the
-                            ground up using Python/FastAPI backend, PostgreSQL database, and React frontend with
-                            CSS Modules
-                        </li>
-                        <li>
-                            <strong>Data Architecture Design:</strong> Implemented data tracking systems and database structures
-                            to capture and analyze user behavior, pageviews, and conversion metrics on websites
-                        </li>
-                        <li>
-                            <strong>API Integration:</strong> Developed APIs to enable seamless communication between frontend
-                            and backend components, ensuring accurate data flow and reporting
-                        </li>
-                        <li>
-                            <strong>UI/UX Implementation:</strong> Created responsive user interfaces focusing on data
-                            visualization and dashboard components using React and modern CSS techniques
-                        </li>
-                        <li>
-                            <strong>DevOps Configuration:</strong> Managed hosting environment, security implementations, and
-                            deployment processes to ensure platform reliability and performance
-                        </li>
-                        <li>
-                            <strong>Business Development:</strong> Presented technical concepts to investors in San Francisco,
-                            translating complex technical capabilities into clear business value propositions
-                        </li>
-                    </ul>
                 </div>
             </section>
 
