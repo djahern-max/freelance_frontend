@@ -12,7 +12,8 @@ import {
   Home,
   Calendar,
   Check,
-  Sparkles
+  Sparkles,
+  Info
 } from 'lucide-react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -56,6 +57,12 @@ const Header = () => {
 
   // Define navigation items
   const navigationItems = [
+    {
+      path: '/about',
+      icon: Info,
+      title: 'About',
+      className: 'navAbout'
+    },
     {
       path: '/showcase',
       icon: CheckCircle,
@@ -126,11 +133,6 @@ const Header = () => {
     },
     ...(isAuthenticated
       ? [
-        {
-          icon: UserCircle,
-          title: 'Profile',
-          onClick: () => navigate('/profile')
-        },
         {
           icon: LogOut,
           title: 'Logout',
