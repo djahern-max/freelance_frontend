@@ -223,6 +223,7 @@
     margin-left: 0;
 }
 
+
 .responsibilitiesList li,
 .specialtiesList li {
     position: relative;
@@ -242,7 +243,8 @@
 .skillsContainer {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 25px;
+    gap: 20px;
+    /* Reduced from 25px */
 }
 
 .skillCategory {
@@ -250,13 +252,18 @@
     border-radius: var(--radius-md);
     padding: 15px;
     border-left: 3px solid var(--color-primary);
-    height: 100%;
+    /* Remove the height: 100% to let elements take their natural height */
+    min-height: 80px;
+    /* Add a minimum height instead */
+    display: flex;
+    flex-direction: column;
 }
 
 .skillCategoryTitle {
     font-size: 1.1rem;
     font-weight: 600;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
+    /* Reduced from 10px */
     color: var(--color-primary);
 }
 
@@ -332,6 +339,24 @@
     transform: translateY(-2px);
     text-decoration: none !important;
 }
+
+/* Add this new style to remove excess padding in specialty lists */
+.specialtiesList {
+    margin-top: 0;
+    padding-top: 0;
+}
+
+.specialtiesList li {
+    margin-bottom: 6px;
+    /* Reduced from 8px */
+    line-height: 1.4;
+    /* Slightly reduced line height */
+}
+
+.specialtiesList li:before {
+    top: 0;
+}
+
 
 /* Media Queries */
 @media (max-width: 768px) {
