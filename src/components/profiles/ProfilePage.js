@@ -85,34 +85,6 @@ const ProfilePage = () => {
                 </div>
             </section>
 
-            <section className={styles.section}>
-                <h2 className={styles.sectionHeading}>Technical Skills</h2>
-                <div className={styles.skillsContainer}>
-                    <div className={styles.skillCategory}>
-                        <h3 className={styles.skillCategoryTitle}>Languages</h3>
-                        <p>Python, JavaScript, SQL, HTML, CSS</p>
-                    </div>
-                    <div className={styles.skillCategory}>
-                        <h3 className={styles.skillCategoryTitle}>Frameworks & Libraries</h3>
-                        <p>React, FastAPI, PostgreSQL, Node.js</p>
-                    </div>
-                    <div className={styles.skillCategory}>
-                        <h3 className={styles.skillCategoryTitle}>Development Tools</h3>
-                        <p>Git, GitHub, VS Code, Docker</p>
-                    </div>
-                    <div className={styles.skillCategory}>
-                        <h3 className={styles.skillCategoryTitle}>Technical Specialties</h3>
-                        <ul className={styles.specialtiesList}>
-                            <li>Database design and optimization</li>
-                            <li>API development</li>
-                            <li>Analytics implementation</li>
-                            <li>Data visualization</li>
-                            <li>Full-stack web development</li>
-                            <li>SEO-optimized code structure</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
 
             <section className={styles.section}>
                 <h2 className={styles.sectionHeading}>Professional Experience</h2>
