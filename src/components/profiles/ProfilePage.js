@@ -228,9 +228,9 @@ const ProfilePage = () => {
             </section>
 
             <section className={styles.section}>
-                <h2 className={styles.sectionHeading}>Featured Project</h2>
+                <h2 className={styles.sectionHeading}>About Me</h2>
                 <div className={styles.videoContainer}>
-                    <h3 className={styles.videoTitle}>RYZE.ai Analytics Platform Overview</h3>
+
                     <div className={styles.videoWrapper}>
                         <iframe
                             width="560"
