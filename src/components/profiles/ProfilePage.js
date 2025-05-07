@@ -15,7 +15,7 @@ const ProfilePage = () => {
             <div className={styles.profileHeader}>
                 <div className={styles.profileImageContainer}>
                     <img
-                        src="/images/headshot.png"
+                        src="images/headshot.png"
                         alt="Dane Ahern"
                         className={styles.profileImage}
                         onError={(e) => {
