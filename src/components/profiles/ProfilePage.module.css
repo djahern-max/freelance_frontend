@@ -121,13 +121,21 @@
     margin-bottom: 0;
 }
 
-.experienceHeader,
-.educationItem {
+.experienceHeader {
+    margin-bottom: 4px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.experienceSubheader {
     margin-bottom: 12px;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 8px;
+    color: var(--color-text-secondary);
 }
 
 .positionTitle,
@@ -144,8 +152,14 @@
     color: var(--color-text-primary);
 }
 
+.location {
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+}
+
 .dateRange {
     color: var(--color-text-secondary);
+    white-space: nowrap;
 }
 
 .responsibilitiesList,
@@ -285,6 +299,7 @@
     }
 
     .experienceHeader,
+    .experienceSubheader,
     .educationItem {
         flex-direction: column;
         align-items: flex-start;

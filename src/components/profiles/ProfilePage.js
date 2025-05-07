@@ -1,4 +1,3 @@
-
 import React from 'react';
 import styles from './ProfilePage.module.css';
 
@@ -7,7 +6,7 @@ const ProfilePage = () => {
         <div className={styles.profileContainer}>
             <div className={styles.profileHeader}>
                 <div className={styles.profileImageContainer}>
-                    <img src="/images/headshot.png" alt="Dane Ahern" className={styles.profileImage} />
+                    <img src="images/headshot.png" alt="Dane Ahern" className={styles.profileImage} />
                 </div>
                 <div className={styles.profileHeaderContent}>
                     <h1 className={styles.name}>Dane Ahern</h1>
@@ -39,7 +38,8 @@ const ProfilePage = () => {
                     <div className={styles.experienceHeader}>
                         <h3 className={styles.positionTitle}>Founder</h3>
                         <span className={styles.company}>RYZE.ai & Analytics Hub</span>
-                        <span className={styles.separator}>|</span>
+                    </div>
+                    <div className={styles.experienceSubheader}>
                         <span className={styles.location}>Exeter, NH</span>
                         <span className={styles.separator}>|</span>
                         <span className={styles.dateRange}>May 2024 to Present</span>
@@ -110,7 +110,8 @@ const ProfilePage = () => {
                     <div className={styles.experienceHeader}>
                         <h3 className={styles.positionTitle}>Controller</h3>
                         <span className={styles.company}>Severino Construction Co., Inc.</span>
-                        <span className={styles.separator}>|</span>
+                    </div>
+                    <div className={styles.experienceSubheader}>
                         <span className={styles.location}>Candia, NH</span>
                         <span className={styles.separator}>|</span>
                         <span className={styles.dateRange}>December 2023 to December 2024</span>
@@ -127,7 +128,8 @@ const ProfilePage = () => {
                     <div className={styles.experienceHeader}>
                         <h3 className={styles.positionTitle}>Chief Financial Officer (CFO)</h3>
                         <span className={styles.company}>CW Keller & Associates, Inc.</span>
-                        <span className={styles.separator}>|</span>
+                    </div>
+                    <div className={styles.experienceSubheader}>
                         <span className={styles.location}>Plaistow, NH</span>
                         <span className={styles.separator}>|</span>
                         <span className={styles.dateRange}>January 2020 to November 2023</span>
@@ -144,7 +146,8 @@ const ProfilePage = () => {
                     <div className={styles.experienceHeader}>
                         <h3 className={styles.positionTitle}>Controller</h3>
                         <span className={styles.company}>CW Keller & Associates, Inc.</span>
-                        <span className={styles.separator}>|</span>
+                    </div>
+                    <div className={styles.experienceSubheader}>
                         <span className={styles.location}>Plaistow, NH</span>
                         <span className={styles.separator}>|</span>
                         <span className={styles.dateRange}>August 2014 to January 2020</span>
@@ -163,34 +166,42 @@ const ProfilePage = () => {
 
                 <div className={styles.educationItem}>
                     <h3 className={styles.degreeTitle}>Coding Boot Camp</h3>
-                    <span className={styles.institution}>University of New Hampshire</span>
-                    <span className={styles.separator}>|</span>
-                    <span className={styles.location}>Durham, NH</span>
-                    <span className={styles.separator}>|</span>
-                    <span className={styles.dateRange}>2017-2018</span>
+                    <div className={styles.experienceSubheader}>
+                        <span className={styles.institution}>University of New Hampshire</span>
+                        <span className={styles.separator}>|</span>
+                        <span className={styles.location}>Durham, NH</span>
+                        <span className={styles.separator}>|</span>
+                        <span className={styles.dateRange}>2017-2018</span>
+                    </div>
                 </div>
 
                 <div className={styles.educationItem}>
                     <h3 className={styles.degreeTitle}>Master's Degree in Accounting</h3>
-                    <span className={styles.institution}>Southern New Hampshire University</span>
-                    <span className={styles.separator}>|</span>
-                    <span className={styles.location}>Manchester, NH</span>
-                    <span className={styles.separator}>|</span>
-                    <span className={styles.dateRange}>2011-2013</span>
+                    <div className={styles.experienceSubheader}>
+                        <span className={styles.institution}>Southern New Hampshire University</span>
+                        <span className={styles.separator}>|</span>
+                        <span className={styles.location}>Manchester, NH</span>
+                        <span className={styles.separator}>|</span>
+                        <span className={styles.dateRange}>2011-2013</span>
+                    </div>
                 </div>
 
                 <div className={styles.educationItem}>
                     <h3 className={styles.degreeTitle}>Bachelor's Degree in Business Administration</h3>
-                    <span className={styles.institution}>University of New Hampshire</span>
-                    <span className={styles.separator}>|</span>
-                    <span className={styles.dateRange}>1997-2001</span>
+                    <div className={styles.experienceSubheader}>
+                        <span className={styles.institution}>University of New Hampshire</span>
+                        <span className={styles.separator}>|</span>
+                        <span className={styles.dateRange}>1997-2001</span>
+                    </div>
                 </div>
 
                 <div className={styles.educationItem}>
                     <h3 className={styles.degreeTitle}>CPA License</h3>
-                    <span className={styles.location}>New Hampshire</span>
-                    <span className={styles.separator}>|</span>
-                    <span className={styles.dateRange}>June 2014 to June 2025</span>
+                    <div className={styles.experienceSubheader}>
+                        <span className={styles.location}>New Hampshire</span>
+                        <span className={styles.separator}>|</span>
+                        <span className={styles.dateRange}>June 2014 to June 2025</span>
+                    </div>
                 </div>
             </section>
 
